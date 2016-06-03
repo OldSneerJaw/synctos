@@ -211,9 +211,15 @@ function(doc, oldDoc) {
     }
   }
 
-  var docDefnFn = %SYNC_DOCUMENT_DEFINITIONS%
+  var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
 
-  var docDefinitions = docDefnFn();
+  var docDefinitions;
+  if (typeof rawDocDefinitions === 'function') {
+    docDefinitions = rawDocDefinitions();
+  } else {
+    docDefinitions = rawDocDefinitions;
+  }
+
 
   function getDocumentType(doc, oldDoc) {
     for (var docType in docDefinitions) {
