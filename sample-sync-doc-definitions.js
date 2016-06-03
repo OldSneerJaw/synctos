@@ -1,4 +1,3 @@
-// The sync document definitions for the business-sync database/bucket
 function() {
   // The channel that is only applicable to Kashoo staff users
   var staffChannel = 'STAFF';

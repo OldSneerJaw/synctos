@@ -1,4 +1,4 @@
-// The template for Couchbase Sync Gateway sync functions to be created by the sync-maker script.
+// The template for Couchbase Sync Gateway sync functions to be created by the sync-function-maker script.
 // More info on sync functions: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 function(doc, oldDoc) {
   // Determine if a given value is an integer. Exists as a failsafe because Number.isInteger is not guaranteed to exist in all environments.
