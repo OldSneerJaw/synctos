@@ -121,6 +121,12 @@ function() {
           mustNotBeEmpty: true
         },
         {
+          propertyName: 'type',
+          type: 'string',
+          required: true,
+          mustNotBeEmpty: true
+        },
+        {
           propertyName: 'subject',
           type: 'string',
           required: true,
@@ -166,6 +172,40 @@ function() {
       ]
     },
 
+    notificationsConfig: {
+      channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
+      typeFilter: function(doc, oldDoc) {
+        return createBusinessEntityRegex('notificationsConfig$').test(doc._id);
+      },
+      propertyValidators: [
+        {
+          propertyName: 'invoicePayments',
+          type: 'object',
+          required: false,
+          propertyValidators: [
+            {
+              propertyName: 'enabledTransports',
+              type: 'array',
+              required: true,
+              arrayElementsValidator: {
+                type: 'string',
+                mustNotBeEmpty: true
+              }
+            },
+            {
+              propertyName: 'disabledTransports',
+              type: 'array',
+              required: true,
+              arrayElementsValidator: {
+                type: 'string',
+                mustNotBeEmpty: true
+              }
+            }
+          ]
+        }
+      ]
+    },
+
     notificationsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS'),
       typeFilter: function(doc, oldDoc) {
@@ -193,6 +233,27 @@ function() {
       ]
     },
 
+    notificationTransport: {
+      channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
+      typeFilter: function(doc, oldDoc) {
+        return createBusinessEntityRegex('notificationTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
+      },
+      propertyValidators: [
+        {
+          propertyName: 'type',
+          type: 'string',
+          required: true,
+          mustNotBeEmpty: true
+        },
+        {
+          propertyName: 'recipient',
+          type: 'string',
+          required: true,
+          mustNotBeEmpty: true
+        }
+      ]
+    },
+
     notificationTransportProcessingSummary: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS'),
       typeFilter: function(doc, oldDoc) {
@@ -200,9 +261,6 @@ function() {
       },
       propertyValidators: [
         {
-          // A unique value that results in a unique document revision to prevent the notification's transport from being processed by
-          // multiple instances of a notification service. If an instance encounters a conflict when saving this element, then it can be
-          // assured that someone else is already processing it and instead move on to something else.
           propertyName: 'nonce',
           type: 'string',
           required: true,
@@ -210,21 +268,17 @@ function() {
           immutable: true
         },
         {
-          // The name/ID of the service that processed this notification for the corresponding transport
           propertyName: 'processedBy',
           type: 'string',
           immutable: true
         },
         {
-          // Used to indicate when the notification has been processed for transport (but not necessarily sent yet) by a
-          // notification service
           propertyName: 'processedAt',
           type: 'date',
           required: true,
           immutable: true
         },
         {
-          // The date/time at which the notification was actually sent. Typically distinct from the date/time at which it was processed.
           propertyName: 'sentAt',
           type: 'date'
         }

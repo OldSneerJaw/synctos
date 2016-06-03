@@ -39,7 +39,8 @@ rescue => err
 end
 
 # Inject the sync documents definition content into the sync function template
-sync_func_template.gsub!("%SYNC_DOCUMENT_DEFINITIONS%", sync_doc_defn);
+sync_func_template.gsub!("%SYNC_DOCUMENT_DEFINITIONS%", sync_doc_defn.gsub('\\', '\\\\\\'));
+
 
 # Write the completed sync function to the output file path
 begin

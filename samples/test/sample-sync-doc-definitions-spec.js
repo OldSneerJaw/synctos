@@ -3,7 +3,7 @@ var simple = require('simple-mock');
 var fs = require('fs');
 
 // Load the contents of the sync function file into a global variable called syncFunction
-eval('var syncFunction = ' + fs.readFileSync('target/sample-sync-function.js').toString());
+eval('var syncFunction = ' + fs.readFileSync('target/test-sample-sync-function.js').toString());
 
 var staffChannel = 'STAFF';
 
@@ -649,6 +649,7 @@ describe('The business-sync function', function() {
         var doc = {
           '_id': 'biz.3.notification.5',
           'sender': 'test-service',
+          'type': 'invoicePayments',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
           'createdAt': '2016-02-29T17:13:43.666Z',
@@ -664,6 +665,7 @@ describe('The business-sync function', function() {
 
         var doc = {
           '_id': 'biz.3.notification.5',
+          'type': true ,
           'subject': '', // missing sender, empty subject
           'whatsthis?': 'something I dont recognize!', // unrecognized property
           'createdAt': '2016-02-29T25:13:43.666Z', // invalid hour
@@ -671,13 +673,14 @@ describe('The business-sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notification document: required property "sender" is missing; property "subject" must not be empty; required property "message" is missing; property "createdAt" must be an ISO 8601 date string; property "actions[0].url" must be a string; required property "actions[0].label" is missing; property "whatsthis?" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notification document: required property "sender" is missing; property "type" must be a string; property "subject" must not be empty; required property "message" is missing; property "createdAt" must be an ISO 8601 date string; property "actions[0].url" must be a string; required property "actions[0].label" is missing; property "whatsthis?" is not supported' });
         });
       });
 
       it('cannot create a document for a user without permission', function() {
         var doc = {
           '_id': 'biz.3.notification.3',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -695,6 +698,7 @@ describe('The business-sync function', function() {
       it('successfully replaces a valid document', function() {
         var doc = {
           '_id': 'biz.3.notification.3',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'a different subject',
           'message': 'last warning!',
@@ -703,6 +707,7 @@ describe('The business-sync function', function() {
         };
         var oldDoc = {
           '_id': 'biz.3.notification.3',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -718,13 +723,14 @@ describe('The business-sync function', function() {
       it('cannot replace a document when the properties are invalid', function() {
         var doc = {
           '_id': 'biz.3.notification.3',
-          'sender': '', // empty sender
+          'sender': '', // missing type, empty sender
           'message': '', // missing subject, empty message
           'createdAt': '2016-04-29T17:13:43.666Z', // changed createdAt
           'actions': [ { 'label': ''} ]
         };
         var oldDoc = { // valid oldDoc
           '_id': 'biz.3.notification.3',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'a different subject',
           'message': 'last warning!',
@@ -733,13 +739,14 @@ describe('The business-sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notification document: property "sender" must not be empty; required property "subject" is missing; property "message" must not be empty; property "createdAt" may not be updated; required property "actions[0].url" is missing; property "actions[0].label" must not be empty' });
+          expect(ex).to.eql({ forbidden: 'Invalid notification document: property "sender" must not be empty; required property "type" is missing; required property "subject" is missing; property "message" must not be empty; property "createdAt" may not be updated; required property "actions[0].url" is missing; property "actions[0].label" must not be empty' });
         });
       });
 
       it('cannot replace a document for a user without permission', function() {
         var doc = {
           '_id': 'biz.3.notification.3',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'a different subject',
           'message': 'last warning!',
@@ -748,6 +755,7 @@ describe('The business-sync function', function() {
         };
         var oldDoc = {
           '_id': 'biz.3.notification.3',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -766,6 +774,7 @@ describe('The business-sync function', function() {
         var doc = { '_id': 'biz.3.notification.5', '_deleted': true };
         var oldDoc = {
           '_id': 'biz.3.notification.5',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -782,6 +791,7 @@ describe('The business-sync function', function() {
         var doc = { '_id': 'biz.3.notification.5', '_deleted': true };
         var oldDoc = {
           '_id': 'biz.3.notification.5',
+          'type': 'invoicePayments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -917,6 +927,270 @@ describe('The business-sync function', function() {
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(expectedError);
         expect(requireAccess.calls[0].arg).to.eql([ '3-REMOVE_' + notificationsRefPrivilege, staffChannel ]);
+      });
+    });
+
+    describe('business notifications config handler', function() {
+      var notificationsConfigPrivilege = 'NOTIFICATIONS_CONFIG';
+
+      it('successfully creates a valid document', function() {
+        var doc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2' ],
+            'disabledTransports': [ ]
+          }
+        };
+
+        syncFunction(doc, null);
+
+        verifyDocumentCreated(notificationsConfigPrivilege, 3);
+      });
+
+      it('cannot create a document with invalid properties', function() {
+        var doc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1' ]
+          },
+          'unknownprop': 23
+        };
+
+        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: required property "invoicePayments.disabledTransports" is missing; property "unknownprop" is not supported' });
+        });
+      });
+
+      it('cannot create a document for a user without permission', function() {
+        var doc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+        var expectedError = new Error();
+
+        requireAccess = simple.stub().throwWith(expectedError);
+
+        expect(syncFunction).withArgs(doc).to.throwException(expectedError);
+        expect(requireAccess.calls[0].arg).to.eql([ '3-ADD_' + notificationsConfigPrivilege, staffChannel ]);
+      });
+
+      it('successfully replaces a valid document', function() {
+        var doc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2', 'ET4' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+        var oldDoc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+        syncFunction(doc, oldDoc);
+
+        verifyDocumentReplaced(notificationsConfigPrivilege, 3);
+      });
+
+      it('cannot replace a document when the properties are invalid', function() {
+        var doc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2', '' ],
+            'disabledTransports': [ 'ET3', 34 ]
+          }
+        };
+        var oldDoc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+
+        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "invoicePayments.enabledTransports[2]" must not be empty; property "invoicePayments.disabledTransports[1]" must be a string' });
+        });
+      });
+
+      it('cannot replace a document for a user without permission', function() {
+        var doc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2', 'ET4' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+        var oldDoc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+        var expectedError = new Error();
+
+        requireAccess = simple.stub().throwWith(expectedError);
+
+        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(expectedError);
+        expect(requireAccess.calls[0].arg).to.eql([ '3-CHANGE_' + notificationsConfigPrivilege, staffChannel ]);
+      });
+
+      it('successfully deletes a valid document', function() {
+        var doc = { '_id': 'biz.3.notificationsConfig', '_deleted': true };
+        var oldDoc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+
+        syncFunction(doc, oldDoc);
+
+        verifyDocumentDeleted(notificationsConfigPrivilege, 3);
+      });
+
+      it('cannot delete a document for a user without permission', function() {
+        var doc = { '_id': 'biz.3.notificationsConfig', '_deleted': true };
+        var oldDoc = {
+          '_id': 'biz.3.notificationsConfig',
+          'invoicePayments': {
+            'enabledTransports': [ 'ET1', 'ET2' ],
+            'disabledTransports': [ 'ET3' ]
+          }
+        };
+        var expectedError = new Error();
+
+        requireAccess = simple.stub().throwWith(expectedError);
+
+        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(expectedError);
+        expect(requireAccess.calls[0].arg).to.eql([ '3-REMOVE_' + notificationsConfigPrivilege, staffChannel ]);
+      });
+    });
+
+    describe('business notification transport handler', function() {
+      var notificationTransportPrivilege = 'NOTIFICATIONS_CONFIG';
+
+      it('successfully creates a valid document', function() {
+        var doc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'foo.bar@example.com'
+        };
+
+        syncFunction(doc, null);
+
+        verifyDocumentCreated(notificationTransportPrivilege, 3);
+      });
+
+      it('cannot create a document with invalid properties', function() {
+        var doc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'recipient': ''
+        };
+
+        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: required property "type" is missing; property "recipient" must not be empty' });
+        });
+      });
+
+      it('cannot create a document for a user without permission', function() {
+        var doc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'foo.bar@example.com'
+        };
+        var expectedError = new Error();
+
+        requireAccess = simple.stub().throwWith(expectedError);
+
+        expect(syncFunction).withArgs(doc).to.throwException(expectedError);
+        expect(requireAccess.calls[0].arg).to.eql([ '3-ADD_' + notificationTransportPrivilege, staffChannel ]);
+      });
+
+      it('successfully replaces a valid document', function() {
+        var doc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'different.foo.bar@example.com'
+        };
+        var oldDoc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'foo.bar@example.com'
+        };
+        syncFunction(doc, oldDoc);
+
+        verifyDocumentReplaced(notificationTransportPrivilege, 3);
+      });
+
+      it('cannot replace a document when the properties are invalid', function() {
+        var doc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 23,
+        };
+        var oldDoc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'foo.bar@example.com'
+        };
+
+        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: property "type" must be a string; required property "recipient" is missing' });
+        });
+      });
+
+      it('cannot replace a document for a user without permission', function() {
+        var doc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'different.foo.bar@example.com'
+        };
+        var oldDoc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'foo.bar@example.com'
+        };
+        var expectedError = new Error();
+
+        requireAccess = simple.stub().throwWith(expectedError);
+
+        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(expectedError);
+        expect(requireAccess.calls[0].arg).to.eql([ '3-CHANGE_' + notificationTransportPrivilege, staffChannel ]);
+      });
+
+      it('successfully deletes a valid document', function() {
+        var doc = { '_id': 'biz.3.notificationTransport.ABC', '_deleted': true };
+        var oldDoc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'different.foo.bar@example.com'
+        };
+
+        syncFunction(doc, oldDoc);
+
+        verifyDocumentDeleted(notificationTransportPrivilege, 3);
+      });
+
+      it('cannot delete a document for a user without permission', function() {
+        var doc = { '_id': 'biz.3.notificationTransport.ABC', '_deleted': true };
+        var oldDoc = {
+          '_id': 'biz.3.notificationTransport.ABC',
+          'type': 'email',
+          'recipient': 'different.foo.bar@example.com'
+        };
+        var expectedError = new Error();
+
+        requireAccess = simple.stub().throwWith(expectedError);
+
+        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(expectedError);
+        expect(requireAccess.calls[0].arg).to.eql([ '3-REMOVE_' + notificationTransportPrivilege, staffChannel ]);
       });
     });
 
