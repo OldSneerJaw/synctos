@@ -10,10 +10,10 @@ function() {
   function createBusinessEntityRegex(suffixPattern) {
     // While business IDs have traditionally been numeric only, this
     return new RegExp('^biz\\.[A-Za-z0-9_-]+\\.' + suffixPattern + '$');
-  };
+  }
 
   // Checks that a business ID is valid (an integer greater than 0) and is not changed from the old version of the document
-  var validateBusinessIdProperty = function(validationErrors, doc, oldDoc) {
+  function validateBusinessIdProperty(validationErrors, doc, oldDoc) {
     if (!isInteger(doc.businessId) || doc.businessId <= 0) {
       validationErrors.push('malformed "businessId" property');
     }
@@ -21,7 +21,7 @@ function() {
     if (oldDoc && oldDoc.businessId !== doc.businessId) {
       validationErrors.push('cannot change "businessId" property');
     }
-  };
+  }
 
   // Retrieves the ID of the business to which the document belongs
   function getBusinessId(doc, oldDoc) {
@@ -36,12 +36,12 @@ function() {
       // Neither the document ID nor the old document's contents contain a business ID, so use the property from the new document
       return doc.businessId || null;
     }
-  };
+  }
 
   // Converts a Books business privilege to a Couchbase Sync Gateway document channel name
   function toSyncChannel(businessId, privilege) {
     return businessId + '-' + privilege;
-  };
+  }
 
   // Builds a function that returns the view, add, replace, remove channels extrapolated from the specified base privilege, name which is
   // formatted according to the de facto Books convention of "VIEW_FOOBAR", "ADD_FOOBAR", "CHANGE_FOOBAR" and "REMOVE_FOOBAR" assuming the
@@ -50,12 +50,14 @@ function() {
     var businessId = getBusinessId(doc, oldDoc);
 
     return function(doc, oldDoc) {
-      view: [ toSyncChannel(businessId, 'VIEW_' + basePrivilegeName), staffChannel ],
-      add: [ toSyncChannel(businessId, 'ADD_' + basePrivilegeName), staffChannel ],
-      replace: [ toSyncChannel(businessId, 'CHANGE_' + basePrivilegeName), staffChannel ],
-      remove: [ toSyncChannel(businessId, 'REMOVE_' + basePrivilegeName), staffChannel ]
+      return {
+        view: [ toSyncChannel(businessId, 'VIEW_' + basePrivilegeName), staffChannel ],
+        add: [ toSyncChannel(businessId, 'ADD_' + basePrivilegeName), staffChannel ],
+        replace: [ toSyncChannel(businessId, 'CHANGE_' + basePrivilegeName), staffChannel ],
+        remove: [ toSyncChannel(businessId, 'REMOVE_' + basePrivilegeName), staffChannel ]
+      }
     };
-  };
+  }
 
   // The document type definitions. For everyone's sanity, please keep these in case-insensitive alphabetical order
   return {
@@ -233,7 +235,7 @@ function() {
     paymentAttempt: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
       typeFilter: function(doc, oldDoc) {
-        return new RegExp('^paymentAttempt\\.[A-Za-z0-9_-]+$').test(doc._id).test(doc._id);
+        return new RegExp('^paymentAttempt\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
       propertyValidators: [
         {
@@ -294,7 +296,7 @@ function() {
     paymentProcessorDefinition: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'CUSTOMER_PAYMENT_PROCESSORS'),
       typeFilter: function(doc, oldDoc) {
-        return createEntityRegex('paymentProcessor\\.[A-Za-z0-9_-]+$').test(doc._id);
+        return createBusinessEntityRegex('paymentProcessor\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
       propertyValidators: [
         {
@@ -366,7 +368,7 @@ function() {
     paymentRequisitionsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
       typeFilter: function(doc, oldDoc) {
-        return createEntityRegex('invoice\\.[A-Za-z0-9_-]+.paymentRequisitions$').test(doc._id);
+        return createBusinessEntityRegex('invoice\\.[A-Za-z0-9_-]+.paymentRequisitions$').test(doc._id);
       },
       propertyValidators: [
         {
