@@ -1,6 +1,6 @@
 function() {
-  // The channel that is only applicable to Kashoo staff users
-  var staffChannel = 'STAFF';
+  // The channel that is only applicable to Kashoo services
+  var serviceChannel = 'SERVICE';
 
   // Matches values that look like three-letter ISO 4217 currency codes. It is not comprehensive.
   var iso4217CurrencyCodeRegex = new RegExp('^[A-Z]{3}$');
@@ -50,10 +50,10 @@ function() {
 
     return function(doc, oldDoc) {
       return {
-        view: [ toSyncChannel(businessId, 'VIEW_' + basePrivilegeName), staffChannel ],
-        add: [ toSyncChannel(businessId, 'ADD_' + basePrivilegeName), staffChannel ],
-        replace: [ toSyncChannel(businessId, 'CHANGE_' + basePrivilegeName), staffChannel ],
-        remove: [ toSyncChannel(businessId, 'REMOVE_' + basePrivilegeName), staffChannel ]
+        view: [ toSyncChannel(businessId, 'VIEW_' + basePrivilegeName), serviceChannel ],
+        add: [ toSyncChannel(businessId, 'ADD_' + basePrivilegeName), serviceChannel ],
+        replace: [ toSyncChannel(businessId, 'CHANGE_' + basePrivilegeName), serviceChannel ],
+        remove: [ toSyncChannel(businessId, 'REMOVE_' + basePrivilegeName), serviceChannel ]
       }
     };
   }
@@ -65,10 +65,10 @@ function() {
         var businessId = getBusinessId(doc, oldDoc);
 
         return {
-          view: [ toSyncChannel(businessId, 'VIEW'), staffChannel ],
-          add: [ toSyncChannel(businessId, 'CHANGE_BUSINESS'), staffChannel ],
-          replace: [ toSyncChannel(businessId, 'CHANGE_BUSINESS'), staffChannel ],
-          remove: [ toSyncChannel(businessId, 'REMOVE_BUSINESS'), staffChannel ]
+          view: [ toSyncChannel(businessId, 'VIEW'), serviceChannel ],
+          add: [ toSyncChannel(businessId, 'CHANGE_BUSINESS'), serviceChannel ],
+          replace: [ toSyncChannel(businessId, 'CHANGE_BUSINESS'), serviceChannel ],
+          remove: [ toSyncChannel(businessId, 'REMOVE_BUSINESS'), serviceChannel ]
         };
       },
       typeFilter: function(doc, oldDoc) {

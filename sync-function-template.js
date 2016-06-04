@@ -56,7 +56,6 @@ function(doc, oldDoc) {
       requiredChannels = docChannelMap.add;
     }
 
-    // Allow staff users full access to all documents, regardless of whether they belong to the specific channel
     requireAccess(requiredChannels);
   }
 
