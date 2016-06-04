@@ -158,84 +158,20 @@ function(doc, oldDoc) {
           }
           break;
         case 'array':
-          if (!(elementValue instanceof Array)) {
-            validationErrors.push('property "' + propertyPath + '" must be an array');
-          } else if (validator.arrayElementsValidator) {
-            // Validate each element in the array
-            for (var elementIndex = 0; elementIndex < elementValue.length; elementIndex++) {
-              var arrayElementName = '[' + elementIndex + ']';
-              var arrayElementPath = propertyPath ? propertyPath + arrayElementName : arrayElementName;
-              validatePropertyValue(
-                doc,
-                oldDoc,
-                validator.arrayElementsValidator,
-                arrayElementName,
-                arrayElementPath,
-                elementValue[elementIndex],
-                validationErrors);
-            }
-          }
+          validateArrayProperty(doc, oldDoc, validator.arrayElementsValidator, propertyPath, elementValue, validationErrors);
           break;
         case 'hashmap':
-          if (typeof elementValue !== 'object') {
-            validationErrors.push('property "' + propertyPath + '" must be an object/hash');
-          } else {
-            for (var hashmapKey in elementValue) {
-              var hashmapValue = elementValue[hashmapKey];
-
-              var hashmapElementName = '[' + hashmapKey + ']';
-              var hashmapElementPath = propertyPath ? propertyPath + hashmapElementName : hashmapElementName;
-              if (validator.hashmapKeysValidator) {
-                if (typeof hashmapKey !== 'string') {
-                  validationErrors.push('hashmap key "' + hashmapElementPath + '" is not a string');
-                }
-                if (validator.hashmapKeysValidator.mustNotBeEmpty && !hashmapKey) {
-                  validationErrors.push('empty hashmap key in property "' + propertyPath + '" is not allowed');
-                }
-                if (validator.hashmapKeysValidator.regexPattern) {
-                  if (hashmapKey && !(validator.hashmapKeysValidator.regexPattern.test(hashmapKey))) {
-                    validationErrors.push('hashmap key "' + hashmapElementPath + '" does not conform to expected format');
-                  }
-                }
-              }
-
-              if (validator.hashmapValuesValidator) {
-                validatePropertyValue(
-                  doc,
-                  oldDoc,
-                  validator.hashmapValuesValidator,
-                  hashmapElementName,
-                  hashmapElementPath,
-                  hashmapValue,
-                  validationErrors);
-              }
-            }
-          }
+          validateHashmapProperty(
+            doc,
+            oldDoc,
+            validator.hashmapKeysValidator,
+            validator.hashmapValuesValidator,
+            propertyPath,
+            elementValue,
+            validationErrors);
           break;
         case 'attachmentReference':
-          if (validator.supportedExtensions) {
-            var extRegex = new RegExp('\\.(' + validator.supportedExtensions.join('|') + ')$', 'i');
-            if (!extRegex.test(elementValue)) {
-              validationErrors.push('attachment property "' + propertyPath + '" must have a supported file extension (' + validator.supportedExtensions.join(',') + ')');
-            }
-          }
-
-          // Because the addition of an attachment is typically a separate operation from the creation/update of the associated document, we
-          // can't guarantee that the attachment is present when the attachment reference property is created/updated for it, so only
-          // validate it if it's present. The good news is that, because adding an attachment is a two part operation (create/update the
-          // document and add the attachment), the sync function will be run once for each part, thus ensuring the content is verified once
-          // both parts have been synced.
-          if (doc._attachments && doc._attachments[elementValue]) {
-            var attachment = doc._attachments[elementValue];
-
-            if (validator.supportedContentTypes && validator.supportedContentTypes.indexOf(attachment.content_type) < 0) {
-                validationErrors.push('attachment property "' + propertyPath + '" must have a supported content type (' + validator.supportedContentTypes.join(',') + ')');
-            }
-
-            if (validator.maximumSize && attachment.length > validator.maximumSize) {
-              validationErrors.push('attachment property "' + propertyPath + '" must not be larger than ' + validator.maximumSize + ' bytes');
-            }
-          }
+          validateAttachmentRefProperty(doc, oldDoc, validator, propertyPath, elementValue, validationErrors);
           break;
         default:
           // This is not a document validation error; the property validator is configured incorrectly and must be fixed
@@ -245,6 +181,93 @@ function(doc, oldDoc) {
     } else if (validator.required) {
       // The property has no value (either it's null or undefined), but the validator indicates it is required
       validationErrors.push('required property "' + propertyPath + '" is missing');
+    }
+  }
+
+  function validateArrayProperty(doc, oldDoc, elementValidator, propertyPath, elementValue, validationErrors) {
+    if (!(elementValue instanceof Array)) {
+      validationErrors.push('property "' + propertyPath + '" must be an array');
+    } else if (elementValidator) {
+      // Validate each element in the array
+      for (var elementIndex = 0; elementIndex < elementValue.length; elementIndex++) {
+        var arrayElementName = '[' + elementIndex + ']';
+        var arrayElementPath = propertyPath ? propertyPath + arrayElementName : arrayElementName;
+        validatePropertyValue(
+          doc,
+          oldDoc,
+          elementValidator,
+          arrayElementName,
+          arrayElementPath,
+          elementValue[elementIndex],
+          validationErrors);
+      }
+    }
+  }
+
+  function validateHashmapProperty(doc, oldDoc, keyValidator, valueValidator, propertyPath, elementValue, validationErrors) {
+    if (typeof elementValue !== 'object') {
+      validationErrors.push('property "' + propertyPath + '" must be an object/hash');
+    } else {
+      for (var hashmapKey in elementValue) {
+        var hashmapValue = elementValue[hashmapKey];
+
+        var hashmapElementName = '[' + hashmapKey + ']';
+        var hashmapElementPath = propertyPath ? propertyPath + hashmapElementName : hashmapElementName;
+        if (keyValidator) {
+          if (typeof hashmapKey !== 'string') {
+            validationErrors.push('hashmap key "' + hashmapElementPath + '" is not a string');
+          }
+          if (keyValidator.mustNotBeEmpty && !hashmapKey) {
+            validationErrors.push('empty hashmap key in property "' + propertyPath + '" is not allowed');
+          }
+          if (keyValidator.regexPattern) {
+            if (hashmapKey && !(keyValidator.regexPattern.test(hashmapKey))) {
+              validationErrors.push('hashmap key "' + hashmapElementPath + '" does not conform to expected format');
+            }
+          }
+        }
+
+        if (valueValidator) {
+          validatePropertyValue(
+            doc,
+            oldDoc,
+            valueValidator,
+            hashmapElementName,
+            hashmapElementPath,
+            hashmapValue,
+            validationErrors);
+        }
+      }
+    }
+  }
+
+  function validateAttachmentRefProperty(doc, oldDoc, validator, propertyPath, elementValue, validationErrors) {
+    if (typeof elementValue !== 'string') {
+      validationErrors.push('attachment property "' + propertyPath + '" must be a string');
+    } else {
+      if (validator.supportedExtensions) {
+        var extRegex = new RegExp('\\.(' + validator.supportedExtensions.join('|') + ')$', 'i');
+        if (!extRegex.test(elementValue)) {
+          validationErrors.push('attachment property "' + propertyPath + '" must have a supported file extension (' + validator.supportedExtensions.join(',') + ')');
+        }
+      }
+
+      // Because the addition of an attachment is typically a separate operation from the creation/update of the associated document, we
+      // can't guarantee that the attachment is present when the attachment reference property is created/updated for it, so only
+      // validate it if it's present. The good news is that, because adding an attachment is a two part operation (create/update the
+      // document and add the attachment), the sync function will be run once for each part, thus ensuring the content is verified once
+      // both parts have been synced.
+      if (doc._attachments && doc._attachments[elementValue]) {
+        var attachment = doc._attachments[elementValue];
+
+        if (validator.supportedContentTypes && validator.supportedContentTypes.indexOf(attachment.content_type) < 0) {
+            validationErrors.push('attachment property "' + propertyPath + '" must have a supported content type (' + validator.supportedContentTypes.join(',') + ')');
+        }
+
+        if (validator.maximumSize && attachment.length > validator.maximumSize) {
+          validationErrors.push('attachment property "' + propertyPath + '" must not be larger than ' + validator.maximumSize + ' bytes');
+        }
+      }
     }
   }
 

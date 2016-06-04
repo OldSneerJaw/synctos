@@ -121,14 +121,14 @@ describe('The business-sync function', function() {
     it('cannot create a business document with invalid properties', function() {
       var doc = {
         '_id': 'biz.5',
-        'businessLogoAttachment': 'bogus.mp3',
+        'businessLogoAttachment': 15,
         'defaultInvoiceTemplate': { 'templateId': '', 'some-unrecognized-property': 'baz' },
         'paymentProcessors': 0,
         'unrecognized-property1': 'foo'
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment property "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg); property "defaultInvoiceTemplate.templateId" must not be empty; property "defaultInvoiceTemplate.some-unrecognized-property" is not supported; property "paymentProcessors" must be an array; property "unrecognized-property1" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment property "businessLogoAttachment" must be a string; property "defaultInvoiceTemplate.templateId" must not be empty; property "defaultInvoiceTemplate.some-unrecognized-property" is not supported; property "paymentProcessors" must be an array; property "unrecognized-property1" is not supported' });
       });
     });
 
@@ -156,12 +156,12 @@ describe('The business-sync function', function() {
       var doc = {
         '_id': 'biz.5',
         '_attachments': {
-          'bogus.png': {
+          'bogus.mp3': {
             'content_type': 'text/plain',
             'length': 2097153
           }
         },
-        'businessLogoAttachment': 'bogus.png',
+        'businessLogoAttachment': 'bogus.mp3',
         'defaultInvoiceTemplate': { 'templateId': 6 },
         'paymentProcessors': [ 'foo', 8 ],
         'unrecognized-property2': 'bar'
@@ -169,7 +169,7 @@ describe('The business-sync function', function() {
       var oldDoc = { '_id': 'biz.5' };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment property "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg); attachment property "businessLogoAttachment" must not be larger than 2097152 bytes; property "defaultInvoiceTemplate.templateId" must be a string; property "paymentProcessors[1]" must be a string; property "unrecognized-property2" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment property "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg); attachment property "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg); attachment property "businessLogoAttachment" must not be larger than 2097152 bytes; property "defaultInvoiceTemplate.templateId" must be a string; property "paymentProcessors[1]" must be a string; property "unrecognized-property2" is not supported' });
       });
     });
 
