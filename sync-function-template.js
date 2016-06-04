@@ -168,12 +168,12 @@ function(doc, oldDoc) {
         case 'array':
           validateArrayProperty(doc, oldDoc, validator.arrayElementsValidator, propertyPath, elementValue, validationErrors);
           break;
-        case 'hashmap':
-          validateHashmapProperty(
+        case 'hashtable':
+          validateHashtableProperty(
             doc,
             oldDoc,
-            validator.hashmapKeysValidator,
-            validator.hashmapValuesValidator,
+            validator.hashtableKeysValidator,
+            validator.hashtableValuesValidator,
             propertyPath,
             elementValue,
             validationErrors);
@@ -212,25 +212,25 @@ function(doc, oldDoc) {
     }
   }
 
-  function validateHashmapProperty(doc, oldDoc, keyValidator, valueValidator, propertyPath, elementValue, validationErrors) {
+  function validateHashtableProperty(doc, oldDoc, keyValidator, valueValidator, propertyPath, elementValue, validationErrors) {
     if (typeof elementValue !== 'object') {
       validationErrors.push('property "' + propertyPath + '" must be an object/hashtable');
     } else {
-      for (var hashmapKey in elementValue) {
-        var hashmapValue = elementValue[hashmapKey];
+      for (var hashtableKey in elementValue) {
+        var hashtableValue = elementValue[hashtableKey];
 
-        var hashmapElementName = '[' + hashmapKey + ']';
-        var hashmapElementPath = propertyPath ? propertyPath + hashmapElementName : hashmapElementName;
+        var hashtableElementName = '[' + hashtableKey + ']';
+        var hashtableElementPath = propertyPath ? propertyPath + hashtableElementName : hashtableElementName;
         if (keyValidator) {
-          if (typeof hashmapKey !== 'string') {
-            validationErrors.push('hashmap key "' + hashmapElementPath + '" is not a string');
+          if (typeof hashtableKey !== 'string') {
+            validationErrors.push('hashtable key "' + hashtableElementPath + '" is not a string');
           }
-          if (keyValidator.mustNotBeEmpty && !hashmapKey) {
-            validationErrors.push('empty hashmap key in property "' + propertyPath + '" is not allowed');
+          if (keyValidator.mustNotBeEmpty && !hashtableKey) {
+            validationErrors.push('empty hashtable key in property "' + propertyPath + '" is not allowed');
           }
           if (keyValidator.regexPattern) {
-            if (hashmapKey && !(keyValidator.regexPattern.test(hashmapKey))) {
-              validationErrors.push('hashmap key "' + hashmapElementPath + '" does not conform to expected format');
+            if (hashtableKey && !(keyValidator.regexPattern.test(hashtableKey))) {
+              validationErrors.push('hashtable key "' + hashtableElementPath + '" does not conform to expected format');
             }
           }
         }
@@ -240,9 +240,9 @@ function(doc, oldDoc) {
             doc,
             oldDoc,
             valueValidator,
-            hashmapElementName,
-            hashmapElementPath,
-            hashmapValue,
+            hashtableElementName,
+            hashtableElementPath,
+            hashtableValue,
             validationErrors);
         }
       }

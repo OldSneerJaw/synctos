@@ -744,7 +744,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashmap key in property "notificationTypes" is not allowed; property "unknownprop" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in property "notificationTypes" is not allowed; property "unknownprop" is not supported' });
         });
         expect(requireAccess.calls[0].arg).to.eql([ '72-ADD_' + notificationsConfigPrivilege, serviceChannel ]);
       });
@@ -798,7 +798,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashmap key "notificationTypes[InvalidType]" does not conform to expected format' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format' });
         });
         expect(requireAccess.calls[0].arg).to.eql([ '37-CHANGE_' + notificationsConfigPrivilege, serviceChannel ]);
       });

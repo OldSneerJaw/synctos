@@ -180,13 +180,13 @@ function() {
       propertyValidators: [
         {
           propertyName: 'notificationTypes',
-          type: 'hashmap',
-          hashmapKeysValidator: {
+          type: 'hashtable',
+          hashtableKeysValidator: {
             type: 'string',
             mustNotBeEmpty: true,
             regexPattern: new RegExp('^[a-z_-]+$')
           },
-          hashmapValuesValidator: {
+          hashtableValuesValidator: {
             type: 'object',
             propertyValidators: [
               {
