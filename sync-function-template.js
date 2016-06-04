@@ -43,9 +43,18 @@ function(doc, oldDoc) {
     return allChannels;
   }
 
+  // A document definition may define its channels as either a function or an object/hashtable
+  function getDocChannelMap(doc, oldDoc, docDefinition) {
+    if (typeof(docDefinition.channels) === 'function') {
+      return docDefinition.channels(doc, oldDoc);
+    } else {
+      return docDefinition.channels;
+    }
+  }
+
   // Ensures the user is authorized to create/replace/delete this document
   function authorize(doc, oldDoc, docDefinition) {
-    var docChannelMap = docDefinition.channels(doc, oldDoc);
+    var docChannelMap = getDocChannelMap(doc, oldDoc, docDefinition);
 
     var requiredChannels;
     if (doc._deleted) {
@@ -205,7 +214,7 @@ function(doc, oldDoc) {
 
   function validateHashmapProperty(doc, oldDoc, keyValidator, valueValidator, propertyPath, elementValue, validationErrors) {
     if (typeof elementValue !== 'object') {
-      validationErrors.push('property "' + propertyPath + '" must be an object/hash');
+      validationErrors.push('property "' + propertyPath + '" must be an object/hashtable');
     } else {
       for (var hashmapKey in elementValue) {
         var hashmapValue = elementValue[hashmapKey];
