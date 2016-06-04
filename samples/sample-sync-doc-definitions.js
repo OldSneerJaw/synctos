@@ -259,6 +259,35 @@ function() {
       ]
     },
 
+    notificationTransportProcessingSummary: {
+      channels: {
+        view: serviceChannel,
+        add: serviceChannel,
+        replace: serviceChannel,
+        remove: serviceChannel
+      },
+      typeFilter: function(doc, oldDoc) {
+        return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
+      },
+      propertyValidators: [
+        {
+          propertyName: 'processedBy',
+          type: 'string',
+          immutable: true
+        },
+        {
+          propertyName: 'processedAt',
+          type: 'date',
+          required: true,
+          immutable: true
+        },
+        {
+          propertyName: 'sentAt',
+          type: 'date'
+        }
+      ]
+    },
+
     paymentAttempt: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
       typeFilter: function(doc, oldDoc) {

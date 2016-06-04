@@ -896,6 +896,98 @@ describe('The sample-sync-doc-definitions sync function', function() {
         verifyDocumentDeleted(notificationTransportPrivilege, 14);
       });
     });
+
+    describe('notification transport processing summary doc definition', function() {
+      function verifyProcessingSummaryWritten() {
+        expect(requireAccess.callCount).to.equal(1);
+        expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+        expect(channel.callCount).to.equal(1);
+        expect(channel.calls[0].arg).to.have.length(1);
+        expect(channel.calls[0].arg).to.contain(serviceChannel);
+      };
+
+      function verifyProcessingSummaryNotWritten() {
+        expect(requireAccess.callCount).to.equal(1);
+        expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+        expect(channel.callCount).to.equal(0);
+      }
+
+      it('successfully creates a valid notification transport processing summary document', function() {
+        var doc = {
+          '_id': 'biz.901.notification.ABC.processedTransport.XYZ',
+          'processedAt': '2016-06-04T21:02:19.013Z',
+          'sentAt': '2016-06-04T21:02:55.013Z'
+        };
+
+        syncFunction(doc, null);
+
+        verifyProcessingSummaryWritten();
+      });
+
+      it('cannot create a notification transport processing summary document when the properties are invalid', function() {
+        var doc = {
+          '_id': 'biz.109.notification.ABC.processedTransport.XYZ',
+          'processedBy': 'foobar',
+          'sentAt': '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
+        };
+
+        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required property "processedAt" is missing; property "sentAt" must be an ISO 8601 date string' });
+        });
+        verifyProcessingSummaryNotWritten();
+      });
+
+      it('successfully replaces a valid notification transport processing summary document', function() {
+        var doc = {
+          '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
+          'processedBy': 'foobar',
+          'processedAt': '2016-06-04T21:02:19.013Z'
+        };
+        var oldDoc = {
+          '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
+          'processedBy': 'foobar',
+          'processedAt': '2016-06-04T21:02:19.013Z',
+          'sentAt': '2016-06-04T21:02:55.013Z'
+        };
+        syncFunction(doc, oldDoc);
+
+        verifyProcessingSummaryWritten();
+      });
+
+      it('cannot replace a notification transport processing summary document when the properties are invalid', function() {
+        var doc = {
+          '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
+          'processedBy': 'barbaz',
+          'processedAt': '2016-06-04T09:27:07.514Z',
+          'sentAt': ''
+        };
+        var oldDoc = {
+          '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
+          'processedBy': 'foobar',
+          'processedAt': '2016-06-03T21:02:19.013Z',
+        };
+
+        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: property "processedBy" may not be updated; property "processedAt" may not be updated; property "sentAt" must be an ISO 8601 date string' });
+        });
+        verifyProcessingSummaryNotWritten();
+      });
+
+      it('successfully deletes a valid notification transport processing summary document', function() {
+        var doc = { '_id': 'biz.317.notification.ABC.processedTransport.XYZ', '_deleted': true };
+        var oldDoc = {
+          '_id': 'biz.317.notification.ABC.processedTransport.XYZ',
+          'processedBy': 'foobar',
+          'processedAt': '2016-06-04T21:02:19.013Z'
+        };
+
+        syncFunction(doc, oldDoc);
+
+        verifyProcessingSummaryWritten();
+      });
+    });
 });
 
 var verifyDocumentCreated = function(basePrivilegeName, businessId) {

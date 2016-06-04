@@ -18,7 +18,7 @@ function(doc, oldDoc) {
   }
 
   function appendToChannelList(allChannels, channelsToAdd) {
-    if (typeof channelsToAdd === 'string') {
+    if (typeof channelsToAdd === 'string' && allChannels.indexOf(channelsToAdd) < 0) {
       allChannels.push(channelsToAdd);
     } else if (channelsToAdd instanceof Array) {
       for (var i = 0; i < channelsToAdd.length; i++) {
@@ -30,9 +30,18 @@ function(doc, oldDoc) {
     }
   }
 
+  // A document definition may define its channels as either a function or an object/hashtable
+  function getDocChannelMap(doc, oldDoc, docDefinition) {
+    if (typeof(docDefinition.channels) === 'function') {
+      return docDefinition.channels(doc, oldDoc);
+    } else {
+      return docDefinition.channels;
+    }
+  }
+
   // Retrieves a list of channels the document belongs to based on its specified type
   function getAllDocChannels(doc, oldDoc, docDefinition) {
-    var docChannelMap = docDefinition.channels(doc, oldDoc);
+    var docChannelMap = getDocChannelMap(doc, oldDoc, docDefinition);
 
     var allChannels = [ ];
     appendToChannelList(allChannels, docChannelMap.view);
@@ -41,15 +50,6 @@ function(doc, oldDoc) {
     appendToChannelList(allChannels, docChannelMap.remove);
 
     return allChannels;
-  }
-
-  // A document definition may define its channels as either a function or an object/hashtable
-  function getDocChannelMap(doc, oldDoc, docDefinition) {
-    if (typeof(docDefinition.channels) === 'function') {
-      return docDefinition.channels(doc, oldDoc);
-    } else {
-      return docDefinition.channels;
-    }
   }
 
   // Ensures the user is authorized to create/replace/delete this document
