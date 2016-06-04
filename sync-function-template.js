@@ -163,15 +163,52 @@ function(doc, oldDoc) {
           } else if (validator.arrayElementsValidator) {
             // Validate each element in the array
             for (var elementIndex = 0; elementIndex < elementValue.length; elementIndex++) {
-              var arrayElementPath = propertyPath ? propertyPath + '[' + elementIndex + ']' : '[' + elementIndex + ']';
+              var arrayElementName = '[' + elementIndex + ']';
+              var arrayElementPath = propertyPath ? propertyPath + arrayElementName : arrayElementName;
               validatePropertyValue(
                 doc,
                 oldDoc,
                 validator.arrayElementsValidator,
-                propertyName,
+                arrayElementName,
                 arrayElementPath,
                 elementValue[elementIndex],
                 validationErrors);
+            }
+          }
+          break;
+        case 'hashmap':
+          if (typeof elementValue !== 'object') {
+            validationErrors.push('property "' + propertyPath + '" must be an object/hash');
+          } else {
+            for (var hashmapKey in elementValue) {
+              var hashmapValue = elementValue[hashmapKey];
+
+              var hashmapElementName = '[' + hashmapKey + ']';
+              var hashmapElementPath = propertyPath ? propertyPath + hashmapElementName : hashmapElementName;
+              if (validator.hashmapKeysValidator) {
+                if (typeof hashmapKey !== 'string') {
+                  validationErrors.push('hashmap key "' + hashmapElementPath + '" is not a string');
+                }
+                if (validator.hashmapKeysValidator.mustNotBeEmpty && !hashmapKey) {
+                  validationErrors.push('empty hashmap key in property "' + propertyPath + '" is not allowed');
+                }
+                if (validator.hashmapKeysValidator.regexPattern) {
+                  if (hashmapKey && !(validator.hashmapKeysValidator.regexPattern.test(hashmapKey))) {
+                    validationErrors.push('hashmap key "' + hashmapElementPath + '" does not conform to expected format');
+                  }
+                }
+              }
+
+              if (validator.hashmapValuesValidator) {
+                validatePropertyValue(
+                  doc,
+                  oldDoc,
+                  validator.hashmapValuesValidator,
+                  hashmapElementName,
+                  hashmapElementPath,
+                  hashmapValue,
+                  validationErrors);
+              }
             }
           }
           break;

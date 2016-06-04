@@ -649,7 +649,7 @@ describe('The business-sync function', function() {
         var doc = {
           '_id': 'biz.3.notification.5',
           'sender': 'test-service',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
           'createdAt': '2016-02-29T17:13:43.666Z',
@@ -680,7 +680,7 @@ describe('The business-sync function', function() {
       it('cannot create a document for a user without permission', function() {
         var doc = {
           '_id': 'biz.3.notification.3',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -698,7 +698,7 @@ describe('The business-sync function', function() {
       it('successfully replaces a valid document', function() {
         var doc = {
           '_id': 'biz.3.notification.3',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'a different subject',
           'message': 'last warning!',
@@ -707,7 +707,7 @@ describe('The business-sync function', function() {
         };
         var oldDoc = {
           '_id': 'biz.3.notification.3',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -730,7 +730,7 @@ describe('The business-sync function', function() {
         };
         var oldDoc = { // valid oldDoc
           '_id': 'biz.3.notification.3',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'a different subject',
           'message': 'last warning!',
@@ -746,7 +746,7 @@ describe('The business-sync function', function() {
       it('cannot replace a document for a user without permission', function() {
         var doc = {
           '_id': 'biz.3.notification.3',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'a different subject',
           'message': 'last warning!',
@@ -755,7 +755,7 @@ describe('The business-sync function', function() {
         };
         var oldDoc = {
           '_id': 'biz.3.notification.3',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -774,7 +774,7 @@ describe('The business-sync function', function() {
         var doc = { '_id': 'biz.3.notification.5', '_deleted': true };
         var oldDoc = {
           '_id': 'biz.3.notification.5',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -791,7 +791,7 @@ describe('The business-sync function', function() {
         var doc = { '_id': 'biz.3.notification.5', '_deleted': true };
         var oldDoc = {
           '_id': 'biz.3.notification.5',
-          'type': 'invoicePayments',
+          'type': 'invoice-payments',
           'sender': 'test-service',
           'subject': 'pay up!',
           'message': 'you best pay up now, or else...',
@@ -936,9 +936,10 @@ describe('The business-sync function', function() {
       it('successfully creates a valid document', function() {
         var doc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2' ],
-            'disabledTransports': [ ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', 'ET2' ]
+            }
           }
         };
 
@@ -950,23 +951,32 @@ describe('The business-sync function', function() {
       it('cannot create a document with invalid properties', function() {
         var doc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1' ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', '' ],
+              'disabledTransports': [ 'ET3', 34 ]
+            },
+            '': {
+              'enabledTransports': [ ],
+              'disabledTransports': [ ]
+            }
           },
           'unknownprop': 23
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: required property "invoicePayments.disabledTransports" is missing; property "unknownprop" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashmap key in property "notificationTypes" is not allowed; property "unknownprop" is not supported' });
         });
       });
 
       it('cannot create a document for a user without permission', function() {
         var doc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2' ],
-            'disabledTransports': [ 'ET3' ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', 'ET2' ],
+              'disabledTransports': [ 'ET3' ]
+            }
           }
         };
         var expectedError = new Error();
@@ -980,16 +990,19 @@ describe('The business-sync function', function() {
       it('successfully replaces a valid document', function() {
         var doc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2', 'ET4' ],
-            'disabledTransports': [ 'ET3' ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'disabledTransports': [ 'ET1' ]
+            }
           }
         };
         var oldDoc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2' ],
-            'disabledTransports': [ 'ET3' ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', 'ET2' ],
+              'disabledTransports': [ 'ET3' ]
+            }
           }
         };
         syncFunction(doc, oldDoc);
@@ -1000,37 +1013,49 @@ describe('The business-sync function', function() {
       it('cannot replace a document when the properties are invalid', function() {
         var doc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2', '' ],
-            'disabledTransports': [ 'ET3', 34 ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', 'ET2', true ],
+              'disabledTransports': [ '', 'ET3' ]
+            },
+            'InvalidType': {
+              'enabledTransports': [ ],
+              'disabledTransports': [ ]
+            }
           }
         };
         var oldDoc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2' ],
-            'disabledTransports': [ 'ET3' ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', 'ET2' ],
+              'disabledTransports': [ 'ET3' ]
+            }
           }
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "invoicePayments.enabledTransports[2]" must not be empty; property "invoicePayments.disabledTransports[1]" must be a string' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashmap key "notificationTypes[InvalidType]" does not conform to expected format' });
         });
       });
 
       it('cannot replace a document for a user without permission', function() {
         var doc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2', 'ET4' ],
-            'disabledTransports': [ 'ET3' ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', 'ET2', 'ET4' ],
+              'disabledTransports': [ 'ET3' ]
+            }
           }
         };
         var oldDoc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
-            'enabledTransports': [ 'ET1', 'ET2' ],
-            'disabledTransports': [ 'ET3' ]
+          'notificationTypes': {
+            'invoice-payments': {
+              'enabledTransports': [ 'ET1', 'ET2' ],
+              'disabledTransports': [ 'ET3' ]
+            }
           }
         };
         var expectedError = new Error();
@@ -1045,7 +1070,7 @@ describe('The business-sync function', function() {
         var doc = { '_id': 'biz.3.notificationsConfig', '_deleted': true };
         var oldDoc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
+          'invoice-payments': {
             'enabledTransports': [ 'ET1', 'ET2' ],
             'disabledTransports': [ 'ET3' ]
           }
@@ -1060,7 +1085,7 @@ describe('The business-sync function', function() {
         var doc = { '_id': 'biz.3.notificationsConfig', '_deleted': true };
         var oldDoc = {
           '_id': 'biz.3.notificationsConfig',
-          'invoicePayments': {
+          'invoice-payments': {
             'enabledTransports': [ 'ET1', 'ET2' ],
             'disabledTransports': [ 'ET3' ]
           }

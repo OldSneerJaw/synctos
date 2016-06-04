@@ -179,29 +179,34 @@ function() {
       },
       propertyValidators: [
         {
-          propertyName: 'invoicePayments',
-          type: 'object',
-          required: false,
-          propertyValidators: [
-            {
-              propertyName: 'enabledTransports',
-              type: 'array',
-              required: true,
-              arrayElementsValidator: {
-                type: 'string',
-                mustNotBeEmpty: true
+          propertyName: 'notificationTypes',
+          type: 'hashmap',
+          hashmapKeysValidator: {
+            type: 'string',
+            mustNotBeEmpty: true,
+            regexPattern: new RegExp('^[a-z_-]+$')
+          },
+          hashmapValuesValidator: {
+            type: 'object',
+            propertyValidators: [
+              {
+                propertyName: 'enabledTransports',
+                type: 'array',
+                arrayElementsValidator: {
+                  type: 'string',
+                  mustNotBeEmpty: true
+                }
+              },
+              {
+                propertyName: 'disabledTransports',
+                type: 'array',
+                arrayElementsValidator: {
+                  type: 'string',
+                  mustNotBeEmpty: true
+                }
               }
-            },
-            {
-              propertyName: 'disabledTransports',
-              type: 'array',
-              required: true,
-              arrayElementsValidator: {
-                type: 'string',
-                mustNotBeEmpty: true
-              }
-            }
-          ]
+            ]
+          }
         }
       ]
     },
@@ -250,37 +255,6 @@ function() {
           type: 'string',
           required: true,
           mustNotBeEmpty: true
-        }
-      ]
-    },
-
-    notificationTransportProcessingSummary: {
-      channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS'),
-      typeFilter: function(doc, oldDoc) {
-        return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
-      },
-      propertyValidators: [
-        {
-          propertyName: 'nonce',
-          type: 'string',
-          required: true,
-          mustNotBeEmpty: true,
-          immutable: true
-        },
-        {
-          propertyName: 'processedBy',
-          type: 'string',
-          immutable: true
-        },
-        {
-          propertyName: 'processedAt',
-          type: 'date',
-          required: true,
-          immutable: true
-        },
-        {
-          propertyName: 'sentAt',
-          type: 'date'
         }
       ]
     },
