@@ -1,14 +1,16 @@
 #!/usr/bin/env ruby
 
+current_working_directory = File.dirname(File.absolute_path $0)
+script_name = File.basename $0
+
 # Extract the command line parameters
 unless ARGV.length == 2
-  puts "Usage: #{$0} sync_document_definitions_file output_file"
-  puts "For example: #{$0} my-sync-doc-definitions.js my-sync-function.js"
+  puts "Usage: #{script_name} sync_document_definitions_file output_file"
+  puts "For example: #{script_name} my-sync-doc-definitions.js my-sync-function.js"
 
   exit!
 end
 
-current_working_directory = File.dirname(File.absolute_path $0)
 sync_doc_defn_filename = ARGV[0]
 output_filename = ARGV[1]
 
