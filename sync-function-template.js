@@ -118,11 +118,11 @@ function(doc, oldDoc) {
         validationErrors.push('property "' + propertyPath + '" must not be empty');
       }
 
-      if (validator.minimumValue && elementValue < validator.minimumValue) {
+      if (typeof(validator.minimumValue) !== 'undefined' && validator.minimumValue !== null && elementValue < validator.minimumValue) {
         validationErrors.push('property "' + propertyPath + '" must not be less than ' + validator.minimumValue);
       }
 
-      if (validator.maximumValue && elementValue > validator.maximumValue) {
+      if (typeof(validator.maximumValue) !== 'undefined' && validator.maximumValue !== null && elementValue > validator.maximumValue) {
         validationErrors.push('property "' + propertyPath + '" must not be greater than ' + validator.maximumValue);
       }
 
@@ -274,7 +274,7 @@ function(doc, oldDoc) {
             validationErrors.push('attachment property "' + propertyPath + '" must have a supported content type (' + validator.supportedContentTypes.join(',') + ')');
         }
 
-        if (validator.maximumSize && attachment.length > validator.maximumSize) {
+        if (typeof(validator.maximumSize) !== 'undefined' && validator.maximumSize !== null && attachment.length > validator.maximumSize) {
           validationErrors.push('attachment property "' + propertyPath + '" must not be larger than ' + validator.maximumSize + ' bytes');
         }
       }
