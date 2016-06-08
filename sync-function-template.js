@@ -227,7 +227,7 @@ function(doc, oldDoc) {
           if (typeof hashtableKey !== 'string') {
             validationErrors.push('hashtable key "' + hashtableElementPath + '" is not a string');
           } else {
-            if (keyValidator.mustNotBeEmpty && !hashtableKey) {
+            if (keyValidator.mustNotBeEmpty && hashtableKey.length < 1) {
               validationErrors.push('empty hashtable key in property "' + propertyPath + '" is not allowed');
             }
             if (keyValidator.regexPattern) {
