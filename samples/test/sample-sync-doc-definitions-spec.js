@@ -749,7 +749,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in property "notificationTypes" is not allowed; property "unknownprop" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in property "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format; property "unknownprop" is not supported' });
         });
         verifyDocumentNotCreated(notificationsConfigPrivilege, 72);
       });
