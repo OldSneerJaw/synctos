@@ -126,7 +126,7 @@ function(doc, oldDoc) {
         validationErrors.push('property "' + propertyPath + '" must not be greater than ' + validator.maximumValue);
       }
 
-      if (validator.immutable && oldDoc && oldDoc[propertyName] !== elementValue) {
+      if (validator.immutable && oldDoc && !(oldDoc._deleted) && oldDoc[propertyName] !== elementValue) {
         validationErrors.push('property "' + propertyPath + '" may not be updated')
       }
 

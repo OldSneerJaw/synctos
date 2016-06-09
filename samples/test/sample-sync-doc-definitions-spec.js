@@ -582,12 +582,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
         var oldDoc = {
           '_id': 'biz.7.notification.3',
-          'type': 'invoice-payments',
-          'sender': 'test-service',
-          'subject': 'pay up!',
-          'message': 'you best pay up now, or else...',
-          'createdAt': '2016-02-29T17:13:43.666Z',
-          'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
+          '_deleted': true
         };
 
         syncFunction(doc, oldDoc);
@@ -947,9 +942,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
         var oldDoc = {
           '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
-          'processedBy': 'foobar',
-          'processedAt': '2016-06-04T21:02:19.013Z',
-          'sentAt': '2016-06-04T21:02:55.013Z'
+          '_deleted': true
         };
         syncFunction(doc, oldDoc);
 
