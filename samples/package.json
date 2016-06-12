@@ -8,6 +8,6 @@
     "simple-mock": "0.3.1"
   },
   "scripts": {
-    "test": "mkdir -p target/test-reports/ && ../sync-function-maker.rb sample-sync-doc-definitions.js target/test-sample-sync-function.js && node_modules/.bin/mocha --recursive -R xunit test/ > target/test-reports/sync-function-maker.xml"
+    "test": "mkdir -p target/test-reports/ && ../make-sync-function sample-sync-doc-definitions.js target/test-sample-sync-function.js && node_modules/.bin/mocha --recursive -R xunit test/ > target/test-reports/sync-function-maker.xml"
   }
 }

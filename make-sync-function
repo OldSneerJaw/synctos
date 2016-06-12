@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var path = require('path');
+
+var errorStatus = 1;
+var successStatus = 0;
+
+var workingDir = path.dirname(process.argv[1]);
+
+// Verify the correct number of commandline params
+if (process.argv.length !== 4) {
+  var scriptName = path.basename(process.argv[1]);
+
+  console.log('Usage: ' + scriptName + ' sync_document_definitions_file output_file');
+  console.log('For example: ' + scriptName + ' my-sync-doc-definitions.js my-new-sync-function.js\n');
+  console.log('')
+
+  return errorStatus;
+}
+
+syncDocDefnFilename = process.argv[2];
+outputFilename = process.argv[3];
+
+var syncDocDefn;
+try {
+  syncDocDefn = fs.readFileSync(syncDocDefnFilename, "utf8");
+} catch (ex) {
+  console.log('Unable to read the sync document definitions file: ' + ex);
+
+  return errorStatus;
+}
+
+var syncFuncTemplate;
+try {
+  syncFuncTemplate = fs.readFileSync(workingDir + '/sync-function-template.js', "utf8");
+} catch (ex) {
+  console.log('Unable to read the sync function template file: ' + ex);
+
+  return errorStatus;
+}
+
+var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
+
+try {
+  fs.writeFileSync(outputFilename, syncFunc, 'utf8');
+} catch (ex) {
+  console.log('Unable to write the sync function to the output file: ' + ex);
+
+  return errorStatus;
+}
+
+console.log('Sync function written to ' + workingDir + '/' + outputFilename);
+
+return successStatus;
