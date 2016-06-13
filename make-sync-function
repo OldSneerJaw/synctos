@@ -26,7 +26,7 @@ if (process.argv.length !== 4) {
 
   console.log('For example:  ' + scriptName + ' /path/to/my-sync-doc-definitions.js /path/to/my-new-sync-function.js\n');
 
-  console.log('See the README for help.');
+  console.log('See the README for more information.');
 
   return errorStatus;
 }
@@ -45,7 +45,7 @@ try {
 
 var syncFuncTemplate;
 try {
-  syncFuncTemplate = fs.readFileSync(workingDir + '/sync-function-template.js', "utf8");
+  syncFuncTemplate = fs.readFileSync(workingDir + '/etc/sync-function-template.js', "utf8");
 } catch (ex) {
   console.log('Unable to read the sync function template file: ' + ex);
 
