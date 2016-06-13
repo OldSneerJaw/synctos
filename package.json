@@ -8,6 +8,8 @@
     "simple-mock": "*"
   },
   "scripts": {
-    "test": "mkdir -p target/test-reports/ && ./make-sync-function samples/sample-sync-doc-definitions.js target/test-sample-sync-function.js && node_modules/.bin/mocha --recursive -R xunit test/ > target/test-reports/sync-function-maker.xml"
-  }
+    "test": "etc/prepare-tests.sh && node_modules/.bin/mocha --recursive",
+    "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha --recursive -R xunit test/ > target/test-reports/synctos.xml"
+  },
+  "license" : "MIT"
 }
