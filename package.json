@@ -1,0 +1,15 @@
+{
+  "name": "synctos",
+  "version": "0.1.0",
+  "dependencies": { },
+  "devDependencies": {
+    "expect.js": "*",
+    "mocha": "*",
+    "simple-mock": "*"
+  },
+  "scripts": {
+    "test": "etc/prepare-tests.sh && node_modules/.bin/mocha --recursive",
+    "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha --recursive -R xunit test/ > target/test-reports/synctos.xml"
+  },
+  "license" : "MIT"
+}
