@@ -2,7 +2,7 @@
 
 Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
 
-With it, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
+With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
 
 Generates sync functions that are compatible with all Sync Gateway 1.x versions.
 
@@ -167,7 +167,7 @@ At the top level, the object contains a property for each document type that is 
 
 Each document type is specified as an object with the following properties:
 
-* `channels`: (required) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. Defined as an object with required `view`, `add`, `replace` and `remove` properties, each of which may be either an array of channel names or a single channel name as a string. For example:
+* `channels`: (required) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. Defined as an object with required `view`, `add`, `replace` and `remove` properties, each of which determines which channel(s) are required to authorize the corresponding action. Each entry may be either an array of channel names or a single channel name as a string. For example:
 
 ```
     channels: {
@@ -229,19 +229,20 @@ Validation types for simple data types:
 * `date`: The value is an ISO 8601 date string _without_ time and time zone components (e.g. "2016-06-18"). No additional parameters.
 * `attachmentReference`: The value is the name of one of the document's file attachments. Note that, because the addition of an attachment is often a separate Sync Gateway API operation from the creation/replacement of the associated document, this validation type is only applied if the attachment is actually present in the document. However, since the sync function is run twice in such situations (i.e. once when the document is created/replaced and once when the attachment is created/replaced), the validation will be performed eventually. Additional parameters:
   * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). No restriction by default.
-  * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/json"). No restriction by default.
+  * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Undefined by default.
 
 Validation types for complex data types, which allow for nesting of child properties and elements:
 
 * `array`: An array/list of elements. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an array with no elements is not allowed. Defaults to `false`.
-  * `arrayElementsValidator`: The validation that is applied to each element of the array. Any validation type may be used. Undefined by default. An example:
+  * `arrayElementsValidator`: The validation that is applied to each element of the array. Any validation type, including those for complex data types, may be used. Undefined by default. An example:
 
 ```
     {
       propertyName: 'myArray1',
       type: 'array',
+      mustNotBeEmpty: true,
       arrayElementsValidator: {
         type: 'string',
         regexPattern: new RegExp('[A-Za-z0-9_-]+')
@@ -250,7 +251,7 @@ Validation types for complex data types, which allow for nesting of child proper
 ```
 
 * `object`: An object that is able to declare which properties it supports so that unrecognized properties are rejected. Additional parameters:
-  * `propertyValidators`: An array of validators to be applied to properties that are supported by the object. Any validation type may be used for each property. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function. An example:
+  * `propertyValidators`: An array of validators to be applied to the properties that are supported by the object. Any validation type, including those for complex data types, may be used for each property validator. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function. An example:
 
 ```
     {
@@ -271,11 +272,11 @@ Validation types for complex data types, which allow for nesting of child proper
     }
 ```
 
-* `hashtable`: An object/hash that, unlike the `object` type, does not declare the names of the properties it supports. Additional parameters:
+* `hashtable`: An object/hash that, unlike the `object` type, does not declare the names of the properties it supports and may optionally define a single validator that is applied to all of its element values. Additional parameters:
   * `hashtableKeysValidator`: The validation that is applied to each of the keys in the object/hash. Undefined by default. Additional parameters:
     * `mustNotBeEmpty`: If `true`, empty key strings are not allowed. Defaults to `false`.
     * `regexPattern`: A regular expression pattern that must be satisfied for key strings to be accepted. Undefined by default.
-  * `hashtableValuesValidator`: The validation that is applied to each of the values in the object/hash. Undefined by default. Any validation type may be used. An example:
+  * `hashtableValuesValidator`: The validation that is applied to each of the values in the object/hash. Undefined by default. Any validation type, including those for complex data types, may be used. An example:
 
 ```
     {
@@ -298,11 +299,11 @@ Validation types for complex data types, which allow for nesting of child proper
     }
 ```
 
-NOTE: All validation types support the following parameters:
+**NOTE**: All validation types support the following additional parameters:
 
 * `required`: The property cannot be null or undefined. Defaults to `false`.
 * `immutable`: The property cannot be altered from its existing value if the document is being replaced. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
-* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of null, undefined or an empty array indicate there were no validation errors. An example:
+* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
 ```
     propertyValidators: [
@@ -329,6 +330,7 @@ NOTE: All validation types support the following parameters:
           var myStringPropPath = parentObjectName + '.myStringProp';
 
           var validationErrors = [ ];
+
           if (parentObjectValue.myStringProp && !currentPropValue) {
             validationErrors.push('property "' + currentPropPath + '" must be defined when "' + myStringPropPath + '" is defined');
           }
