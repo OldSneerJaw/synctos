@@ -73,6 +73,24 @@ function(doc, oldDoc) {
     requireAccess(requiredChannels);
   }
 
+  function buildItemPath(itemStack) {
+    var nameComponents = [ ];
+    for (var i = 0; i < itemStack.length; i++) {
+      var itemName = itemStack[i].itemName;
+
+      if (!itemName) {
+        // Skip null or empty names (e.g. the first element is typically the root of the document, which has no name)
+        continue;
+      } else if (nameComponents.length < 1 || itemName.startsWith('[')) {
+        nameComponents.push(itemName);
+      } else {
+        nameComponents.push('.' + itemName);
+      }
+    }
+
+    return nameComponents.join('');
+  }
+
   // Ensures the document structure and content are valid
   function validateDoc(doc, oldDoc, docDefinition, docType) {
     var validationErrors = [ ];
@@ -89,8 +107,7 @@ function(doc, oldDoc) {
       {
         itemValue: doc,
         oldItemValue: oldDoc,
-        itemName: null,
-        fullItemPath: null
+        itemName: null
       }
     ];
 
@@ -106,12 +123,10 @@ function(doc, oldDoc) {
     var currentItemEntry = itemStack[itemStack.length - 1];
     var objectValue = currentItemEntry.itemValue;
     var oldObjectValue = currentItemEntry.oldItemValue;
-    var objectPath = currentItemEntry.fullItemPath;
 
     var supportedProperties = [ ];
     for (var validatorIndex = 0; validatorIndex < propertyValidators.length; validatorIndex++) {
       var validator = propertyValidators[validatorIndex];
-      var fullPropertyPath = objectPath ? objectPath + '.' + validator.propertyName : validator.propertyName;
       var propertyName = validator.propertyName;
       var propertyValue = objectValue[propertyName];
 
@@ -125,8 +140,7 @@ function(doc, oldDoc) {
       itemStack.push({
         itemValue: propertyValue,
         oldItemValue: oldPropertyValue,
-        itemName: propertyName,
-        fullItemPath: fullPropertyPath
+        itemName: propertyName
       });
 
       validateItemValue(doc, oldDoc, validator, itemStack, validationErrors);
@@ -143,6 +157,7 @@ function(doc, oldDoc) {
       }
 
       if (supportedProperties.indexOf(propertyName) < 0) {
+        var objectPath = buildItemPath(itemStack);
         var fullPropertyPath = objectPath ? objectPath + '.' + propertyName : propertyName;
         validationErrors.push('property "' + fullPropertyPath + '" is not supported');
       }
@@ -151,7 +166,6 @@ function(doc, oldDoc) {
 
   function validateItemValue(doc, oldDoc, validator, itemStack, validationErrors) {
     var currentItemEntry = itemStack[itemStack.length - 1];
-    var itemPath = currentItemEntry.fullItemPath;
     var itemValue = currentItemEntry.itemValue;
     var oldItemValue = currentItemEntry.oldItemValue;
 
@@ -160,58 +174,58 @@ function(doc, oldDoc) {
     }
 
     if (validator.immutable && oldDoc && !(oldDoc._deleted) && oldItemValue !== itemValue) {
-      validationErrors.push('property "' + itemPath + '" may not be updated')
+      validationErrors.push('property "' + buildItemPath(itemStack) + '" may not be updated')
     }
 
     if (typeof itemValue !== 'undefined' && itemValue !== null) {
       if (validator.mustNotBeEmpty && itemValue.length < 1) {
-        validationErrors.push('property "' + itemPath + '" must not be empty');
+        validationErrors.push('property "' + buildItemPath(itemStack) + '" must not be empty');
       }
 
       if (typeof(validator.minimumValue) !== 'undefined' && validator.minimumValue !== null && itemValue < validator.minimumValue) {
-        validationErrors.push('property "' + itemPath + '" must not be less than ' + validator.minimumValue);
+        validationErrors.push('property "' + buildItemPath(itemStack) + '" must not be less than ' + validator.minimumValue);
       }
 
       if (typeof(validator.maximumValue) !== 'undefined' && validator.maximumValue !== null && itemValue > validator.maximumValue) {
-        validationErrors.push('property "' + itemPath + '" must not be greater than ' + validator.maximumValue);
+        validationErrors.push('property "' + buildItemPath(itemStack) + '" must not be greater than ' + validator.maximumValue);
       }
 
       switch (validator.type) {
         case 'string':
           if (typeof itemValue !== 'string') {
-            validationErrors.push('property "' + itemPath + '" must be a string');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be a string');
           } else if (validator.regexPattern && !(validator.regexPattern.test(itemValue))) {
-            validationErrors.push('property "' + itemPath + '" must conform to expected format');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must conform to expected format');
           }
           break;
         case 'integer':
           if (!isInteger(itemValue)) {
-            validationErrors.push('property "' + itemPath + '" must be an integer');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an integer');
           }
           break;
         case 'float':
           if (typeof itemValue !== 'number') {
-            validationErrors.push('property "' + itemPath + '" must be a floating point number');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be a floating point number');
           }
           break;
         case 'boolean':
           if (typeof itemValue !== 'boolean') {
-            validationErrors.push('property "' + itemPath + '" must be a boolean');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be a boolean');
           }
           break;
         case 'datetime':
           if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue)) {
-            validationErrors.push('property "' + itemPath + '" must be an ISO 8601 date/time string');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an ISO 8601 date/time string');
           }
           break;
         case 'date':
           if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
-            validationErrors.push('property "' + itemPath + '" must be an ISO 8601 date-only string');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an ISO 8601 date-only string');
           }
           break;
         case 'object':
           if (typeof itemValue !== 'object') {
-            validationErrors.push('property "' + itemPath + '" must be an object');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an object');
           } else if (validator.propertyValidators) {
             validateProperties(doc, oldDoc, validator.propertyValidators, itemStack, validationErrors);
           }
@@ -233,28 +247,26 @@ function(doc, oldDoc) {
           break;
         default:
           // This is not a document validation error; the property validator is configured incorrectly and must be fixed
-          throw({ forbidden: 'No data type defined for validator of property "' + itemPath + '"' });
+          throw({ forbidden: 'No data type defined for validator of property "' + buildItemPath(itemStack) + '"' });
           break;
       }
     } else if (validator.required) {
       // The property has no value (either it's null or undefined), but the validator indicates it is required
-      validationErrors.push('required property "' + itemPath + '" is missing');
+      validationErrors.push('required property "' + buildItemPath(itemStack) + '" is missing');
     }
   }
 
   function validateArray(doc, oldDoc, elementValidator, itemStack, validationErrors) {
     var currentItemEntry = itemStack[itemStack.length - 1];
-    var itemPath = currentItemEntry.fullItemPath;
     var itemValue = currentItemEntry.itemValue;
     var oldItemValue = currentItemEntry.oldItemValue;
 
     if (!(itemValue instanceof Array)) {
-      validationErrors.push('property "' + itemPath + '" must be an array');
+      validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an array');
     } else if (elementValidator) {
       // Validate each element in the array
       for (var elementIndex = 0; elementIndex < itemValue.length; elementIndex++) {
         var elementName = '[' + elementIndex + ']';
-        var elementPath = itemPath ? itemPath + elementName : elementName;
         var elementValue = itemValue[elementIndex];
 
         var oldElementValue;
@@ -264,7 +276,6 @@ function(doc, oldDoc) {
 
         itemStack.push({
           itemName: elementName,
-          fullItemPath: elementPath,
           itemValue: elementValue,
           oldItemValue: oldElementValue
         });
@@ -283,28 +294,28 @@ function(doc, oldDoc) {
 
   function validateHashtable(doc, oldDoc, keyValidator, valueValidator, itemStack, validationErrors) {
     var currentItemEntry = itemStack[itemStack.length - 1];
-    var itemPath = currentItemEntry.fullItemPath;
     var itemValue = currentItemEntry.itemValue;
     var oldItemValue = currentItemEntry.oldItemValue;
 
     if (typeof itemValue !== 'object') {
-      validationErrors.push('property "' + itemPath + '" must be an object/hashtable');
+      validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an object/hashtable');
     } else {
       for (var hashtableKey in itemValue) {
         var elementValue = itemValue[hashtableKey];
 
         var elementName = '[' + hashtableKey + ']';
-        var elementPath = itemPath ? itemPath + elementName : elementName;
         if (keyValidator) {
+          var hashtablePath = buildItemPath(itemStack);
+          var fullKeyPath = hashtablePath ? hashtablePath + elementName : elementName;
           if (typeof hashtableKey !== 'string') {
-            validationErrors.push('hashtable key "' + elementPath + '" is not a string');
+            validationErrors.push('hashtable key "' + fullKeyPath + '" is not a string');
           } else {
             if (keyValidator.mustNotBeEmpty && hashtableKey.length < 1) {
-              validationErrors.push('empty hashtable key in property "' + itemPath + '" is not allowed');
+              validationErrors.push('empty hashtable key in property "' + buildItemPath(itemStack) + '" is not allowed');
             }
             if (keyValidator.regexPattern) {
               if (!(keyValidator.regexPattern.test(hashtableKey))) {
-                validationErrors.push('hashtable key "' + elementPath + '" does not conform to expected format');
+                validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format');
               }
             }
           }
@@ -318,7 +329,6 @@ function(doc, oldDoc) {
 
           itemStack.push({
             itemName: elementName,
-            fullItemPath: elementPath,
             itemValue: elementValue,
             oldItemValue: oldElementValue
           });
@@ -338,16 +348,15 @@ function(doc, oldDoc) {
 
   function validateAttachmentRef(doc, oldDoc, validator, itemStack, validationErrors) {
     var currentItemEntry = itemStack[itemStack.length - 1];
-    var itemPath = currentItemEntry.fullItemPath;
     var itemValue = currentItemEntry.itemValue;
 
     if (typeof itemValue !== 'string') {
-      validationErrors.push('attachment property "' + itemPath + '" must be a string');
+      validationErrors.push('attachment property "' + buildItemPath(itemStack) + '" must be a string');
     } else {
       if (validator.supportedExtensions) {
         var extRegex = new RegExp('\\.(' + validator.supportedExtensions.join('|') + ')$', 'i');
         if (!extRegex.test(itemValue)) {
-          validationErrors.push('attachment property "' + itemPath + '" must have a supported file extension (' + validator.supportedExtensions.join(',') + ')');
+          validationErrors.push('attachment property "' + buildItemPath(itemStack) + '" must have a supported file extension (' + validator.supportedExtensions.join(',') + ')');
         }
       }
 
@@ -360,11 +369,11 @@ function(doc, oldDoc) {
         var attachment = doc._attachments[itemValue];
 
         if (validator.supportedContentTypes && validator.supportedContentTypes.indexOf(attachment.content_type) < 0) {
-            validationErrors.push('attachment property "' + itemPath + '" must have a supported content type (' + validator.supportedContentTypes.join(',') + ')');
+            validationErrors.push('attachment property "' + buildItemPath(itemStack) + '" must have a supported content type (' + validator.supportedContentTypes.join(',') + ')');
         }
 
         if (typeof(validator.maximumSize) !== 'undefined' && validator.maximumSize !== null && attachment.length > validator.maximumSize) {
-          validationErrors.push('attachment property "' + itemPath + '" must not be larger than ' + validator.maximumSize + ' bytes');
+          validationErrors.push('attachment property "' + buildItemPath(itemStack) + '" must not be larger than ' + validator.maximumSize + ' bytes');
         }
       }
     }
