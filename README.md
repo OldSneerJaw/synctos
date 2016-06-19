@@ -292,11 +292,11 @@ Validation types for complex data types, which allow for nesting of child proper
     }
 ```
 
-NOTE: All object property, hashtable element value and array element validators support the following parameters:
+NOTE: All validation types support the following parameters:
 
 * `required`: The property cannot be null or undefined. Defaults to `false`.
 * `immutable`: The property cannot be altered from its existing value if the document is being replaced. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
-* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element represents the direct parent of the item currently being validated. Generally, custom validation should not throw exceptions; it's better to return a list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of null, undefined or an empty array indicate there were no validation errors. An example:
+* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of null, undefined or an empty array indicate there were no validation errors. An example:
 
 ```
     propertyValidators: [
