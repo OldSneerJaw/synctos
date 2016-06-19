@@ -300,7 +300,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: malformed "businessId" property; property "businessId" must be an integer; property "invoiceRecordId" must not be less than 1; property "paymentRequisitionId" must not be empty; property "paymentAttemptSpreedlyToken" must not be empty; property "date" must be an ISO 8601 date-only string; property "internalPaymentRecordId" must not be less than 1; property "gatewayTransactionId" must not be empty; property "gatewayMessage" must be a string; property "totalAmountPaid" must be an integer; property "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
+          forbidden: 'Invalid paymentAttempt document: malformed "businessId" property; property "businessId" must be an integer; property "invoiceRecordId" must not be less than 1; property "paymentRequisitionId" must not be empty; property "paymentAttemptSpreedlyToken" must not be empty; property "date" must be an ISO 8601 date string with no time or time zone components; property "internalPaymentRecordId" must not be less than 1; property "gatewayTransactionId" must not be empty; property "gatewayMessage" must be a string; property "totalAmountPaid" must be an integer; property "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
         });
       });
       verifyDocumentNotCreated(expectedBasePrivilege, 'my-business');
@@ -517,7 +517,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql(
           {
-            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must not be less than 1; malformed "businessId" property; property "businessId" must be an integer; property "issuedAt" must be an ISO 8601 date/time string; property "issuedByUserId" must not be less than 1; property "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
+            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must not be less than 1; malformed "businessId" property; property "businessId" must be an integer; property "issuedAt" must be an ISO 8601 date string with optional time and time zone components; property "issuedByUserId" must not be less than 1; property "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
           });
       });
       verifyDocumentNotCreated(paymentRequisitionPrivilege, 6);
@@ -554,7 +554,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql(
           {
-            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must be an integer; malformed "businessId" property; cannot change "businessId" property; property "issuedAt" must be an ISO 8601 date/time string; property "issuedByUserId" must be an integer; property "invoiceRecipients" must be a string; property "unrecognized-property8" is not supported'
+            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must be an integer; malformed "businessId" property; cannot change "businessId" property; property "issuedAt" must be an ISO 8601 date string with optional time and time zone components; property "issuedByUserId" must be an integer; property "invoiceRecipients" must be a string; property "unrecognized-property8" is not supported'
           });
       });
       verifyDocumentNotReplaced(paymentRequisitionPrivilege, 20);
@@ -600,7 +600,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notification document: required property "sender" is missing; property "type" must be a string; property "subject" must not be empty; required property "message" is missing; property "createdAt" must be an ISO 8601 date/time string; property "actions[0].url" must be a string; required property "actions[0].label" is missing; property "whatsthis?" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notification document: required property "sender" is missing; property "type" must be a string; property "subject" must not be empty; required property "message" is missing; property "createdAt" must be an ISO 8601 date string with optional time and time zone components; property "actions[0].url" must be a string; required property "actions[0].label" is missing; property "whatsthis?" is not supported' });
         });
         verifyDocumentNotCreated(notificationsPrivilege, 13);
       });
@@ -960,7 +960,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required property "processedAt" is missing; property "sentAt" must be an ISO 8601 date/time string' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required property "processedAt" is missing; property "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
         });
         verifyProcessingSummaryNotWritten();
       });
@@ -993,7 +993,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: property "processedBy" may not be updated; property "processedAt" may not be updated; property "sentAt" must be an ISO 8601 date/time string' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: property "processedBy" may not be updated; property "processedAt" may not be updated; property "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
         });
         verifyProcessingSummaryNotWritten();
       });

@@ -215,12 +215,12 @@ function(doc, oldDoc) {
           break;
         case 'datetime':
           if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue)) {
-            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an ISO 8601 date/time string');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with optional time and time zone components');
           }
           break;
         case 'date':
           if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
-            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an ISO 8601 date-only string');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with no time or time zone components');
           }
           break;
         case 'object':
