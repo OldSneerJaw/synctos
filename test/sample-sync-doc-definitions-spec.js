@@ -412,7 +412,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       var oldDoc = { '_id': 'biz.2.paymentProcessor.2', 'provider': 'foo' };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: required property "provider" is missing; required property "spreedlyGatewayToken" is missing; property "accountId" must be an integer; property "displayName" must be a string; property "supportedCurrencyCodes[0]" must conform to expected format; property "unrecognized-property4" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: required property "provider" is missing; required property "spreedlyGatewayToken" is missing; property "accountId" must be an integer; property "displayName" must be a string; property "supportedCurrencyCodes[0]" must conform to expected format /^[A-Z]{3}$/; property "unrecognized-property4" is not supported' });
       });
       verifyDocumentNotReplaced(paymentProcessorPrivilege, 2);
     });
@@ -779,7 +779,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in property "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format; property "unknownprop" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in property "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format /^[a-z_-]+$/; property "unknownprop" is not supported' });
         });
         verifyDocumentNotCreated(notificationsConfigPrivilege, 72);
       });
@@ -828,7 +828,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format; required property "notificationTypes[foobar]" is missing' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format /^[a-z_-]+$/; required property "notificationTypes[foobar]" is missing' });
         });
         verifyDocumentNotReplaced(notificationsConfigPrivilege, 37);
       });

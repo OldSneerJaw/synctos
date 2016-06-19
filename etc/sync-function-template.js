@@ -195,7 +195,7 @@ function(doc, oldDoc) {
           if (typeof itemValue !== 'string') {
             validationErrors.push('property "' + buildItemPath(itemStack) + '" must be a string');
           } else if (validator.regexPattern && !(validator.regexPattern.test(itemValue))) {
-            validationErrors.push('property "' + buildItemPath(itemStack) + '" must conform to expected format');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must conform to expected format ' + validator.regexPattern);
           }
           break;
         case 'integer':
@@ -313,10 +313,8 @@ function(doc, oldDoc) {
             if (keyValidator.mustNotBeEmpty && hashtableKey.length < 1) {
               validationErrors.push('empty hashtable key in property "' + buildItemPath(itemStack) + '" is not allowed');
             }
-            if (keyValidator.regexPattern) {
-              if (!(keyValidator.regexPattern.test(hashtableKey))) {
-                validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format');
-              }
+            if (keyValidator.regexPattern && !(keyValidator.regexPattern.test(hashtableKey))) {
+              validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format ' + keyValidator.regexPattern);
             }
           }
         }
