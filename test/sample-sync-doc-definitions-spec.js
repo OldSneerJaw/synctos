@@ -77,6 +77,24 @@ describe('The sample-sync-doc-definitions sync function', function() {
       expect(requireAccess.callCount).to.equal(1);
       expect(requireAccess.calls[0].arg).to.eql([ '9-REMOVE_BUSINESS', serviceChannel ]);
     });
+
+    it('cannot specify whitelisted properties below the top level of the document', function() {
+      var doc = {
+        '_id': 'biz.417',
+        'defaultInvoiceTemplate': {
+          'templateId': 'teapot',
+          '_id': 'my-id',
+          '_rev': 'my-rev',
+          '_deleted': true,
+          '_revisions': [ ],
+          '_attachments': { }
+        }
+      };
+
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid business document: property "defaultInvoiceTemplate._id" is not supported; property "defaultInvoiceTemplate._rev" is not supported; property "defaultInvoiceTemplate._deleted" is not supported; property "defaultInvoiceTemplate._revisions" is not supported; property "defaultInvoiceTemplate._attachments" is not supported' });
+      });
+    });
   })
 
   describe('business config doc definition', function() {

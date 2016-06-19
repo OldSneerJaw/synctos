@@ -75,14 +75,14 @@ function(doc, oldDoc) {
     var validationErrors = [ ];
 
     // Execute each of the document's property validator functions
-    validateProperties(doc, oldDoc, docDefinition.propertyValidators, null, doc, oldDoc, validationErrors);
+    validateProperties(doc, oldDoc, docDefinition.propertyValidators, null, doc, oldDoc, validationErrors, true);
 
     if (validationErrors.length > 0) {
       throw { forbidden: 'Invalid ' + docType + ' document: ' + validationErrors.join('; ') };
     }
   }
 
-  function validateProperties(doc, oldDoc, propertyValidators, baseItemPath, baseItemValue, oldBaseItemValue, validationErrors) {
+  function validateProperties(doc, oldDoc, propertyValidators, baseItemPath, baseItemValue, oldBaseItemValue, validationErrors, useWhitelist) {
     var supportedProperties = [ ];
     for (var validatorIndex = 0; validatorIndex < propertyValidators.length; validatorIndex++) {
       var validator = propertyValidators[validatorIndex];
@@ -103,8 +103,8 @@ function(doc, oldDoc) {
     // Verify there are no unsupported properties in the object
     var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
     for (var propertyName in baseItemValue) {
-      if (whitelistedProperties.indexOf(propertyName) >= 0) {
-        // These properties are special cases that should always be allowed
+      if (useWhitelist && whitelistedProperties.indexOf(propertyName) >= 0) {
+        // These properties are special cases that should always be allowed - generally only applied at the top level of the document
         continue;
       }
 
