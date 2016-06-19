@@ -12,14 +12,19 @@ function() {
   }
 
   // Checks that a business ID is valid (an integer greater than 0) and is not changed from the old version of the document
-  function validateBusinessIdProperty(validationErrors, doc, oldDoc) {
-    if (!isInteger(doc.businessId) || doc.businessId <= 0) {
-      validationErrors.push('malformed "businessId" property');
-    }
+  function validateBusinessIdProperty(doc, oldDoc, currentItemElement, validationItemStack) {
+    var parentObjectElement = validationItemStack[validationItemStack.length - 1];
 
-    if (oldDoc && oldDoc.businessId !== doc.businessId) {
+    var businessId = currentItemElement.itemValue;
+    var oldBusinessId = currentItemElement.oldItemValue;
+
+    var validationErrors = [ ];
+
+    if (parentObjectElement.oldItemValue && oldBusinessId !== businessId) {
       validationErrors.push('cannot change "businessId" property');
     }
+
+    return validationErrors;
   }
 
   // Retrieves the ID of the business to which the document belongs
@@ -299,6 +304,7 @@ function() {
         {
           propertyName: 'businessId',
           type: 'integer',
+          minimumValue: 1,
           customValidation: validateBusinessIdProperty
         },
         {
@@ -405,6 +411,7 @@ function() {
         {
           propertyName: 'businessId',
           type: 'integer',
+          minimumValue: 1,
           customValidation: validateBusinessIdProperty
         },
         {

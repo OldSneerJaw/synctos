@@ -1,6 +1,6 @@
 # Introduction
 
-Synctos is a utility to aid with the process of designing sync functions for [Couchbase](http://www.couchbase.com/) [Sync Gateway](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html) 1.x. With it, you define all your JSON document formats declaratively in a structured JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation, the sync function will return a detailed error message that makes it easy to figure out exactly what went wrong.
+Synctos is a utility to aid with the process of designing sync functions for [Couchbase](http://www.couchbase.com/) [Sync Gateway](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html) 1.x. With it, you define all your JSON document formats declaratively in a structured JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation, the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
 
 # Installation
 
@@ -145,9 +145,16 @@ In the case of either file format, the document definitions object must conform 
 At the top level, the object contains a property for each document type that is to be supported by the Sync Gateway bucket. For example:
 
     {
-      myDocType1: { ... },
-      myDocType2: { ... },
-      myDocType3: { ... }
+      myDocType1: {
+        channels: ...,
+        typeFilter: ...,
+        propertyValidators: ...
+      },
+      myDocType2: {
+        channels: ...,
+        typeFilter: ...,
+        propertyValidators: ...
+      }
     }
 
 ##### Document types:
@@ -165,7 +172,7 @@ Each document type is specified as an object with the following properties:
     }
 ```
 
-* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters both the new document and the old document that is being replaced/deleted (if any). For example:
+* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters both (1) the new document and (2) the old document that is being replaced/deleted (if any). For example:
 
 ```
     typeFilter: function(doc, oldDoc) {
@@ -200,32 +207,6 @@ Each document type is specified as an object with the following properties:
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
 
-NOTE: All object property validators support the following parameters:
-
-* `required`: The property cannot be null or undefined. Defaults to `false`.
-* `immutable`: The property cannot be altered from its existing value if the document is being replaced. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
-
-In addition, all object property, hashtable value or array element validators can include custom validation via the following parameter:
-
-* `customValidation`: A function that accepts as parameters an ongoing list of validation errors, the new document and the old document that is being replaced/deleted (if any). Generally, custom validation should not throw exceptions; it's better to add an error description to the supplied list so that the client can see descriptions for all validation errors that were encountered once full validation is complete. For example:
-
-```
-    {
-      propertyName: 'myStringProp',
-      type: 'string'
-    },
-    {
-      propertyName: 'myCustomProp',
-      type: 'integer',
-      maximumValue: 100,
-      customValidation: function(validationErrors, doc, oldDoc) {
-        if (doc.myStringProp && !(doc.myCustomProp)) {
-          validationErrors.push('property myCustomProp must be defined when myProp1 is defined');
-        }
-      }
-    }
-```
-
 Validation types for simple data types:
 
 * `string`: The value is a string of characters. Additional parameters:
@@ -245,11 +226,11 @@ Validation types for simple data types:
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/json"). No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Undefined by default.
 
-Validation types for complex data types, which can include nested validation types:
+Validation types for complex data types, which allow for nesting of child properties and elements:
 
 * `array`: An array/list of elements. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an array with no elements is not allowed. Defaults to `false`.
-  * `arrayElementsValidator`: The validation that is applied to each element of the array. Any validation type may be used. Undefined by default. For example:
+  * `arrayElementsValidator`: The validation that is applied to each element of the array. Any validation type may be used. Undefined by default. An example:
 
 ```
     {
@@ -263,7 +244,7 @@ Validation types for complex data types, which can include nested validation typ
 ```
 
 * `object`: An object that is able to declare which properties it supports so that unrecognized properties are rejected. Additional parameters:
-  * `propertyValidators`: An array of properties that are supported by the object. Any validation type may be used for each property. Undefined by default. For example:
+  * `propertyValidators`: An array of validators to be applied to properties that are supported by the object. Any validation type may be used for each property. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function. An example:
 
 ```
     {
@@ -285,10 +266,10 @@ Validation types for complex data types, which can include nested validation typ
 ```
 
 * `hashtable`: An object/hash that, unlike the `object` type, does not declare the names of the properties it supports. Additional parameters:
-  * `hashtableKeysValidator`: The validation that is applied to the keys in the object/hash. Undefined by default. Additional parameters:
+  * `hashtableKeysValidator`: The validation that is applied to each of the keys in the object/hash. Undefined by default. Additional parameters:
     * `mustNotBeEmpty`: If `true`, empty key strings are not allowed. Defaults to `false`.
     * `regexPattern`: A regular expression pattern that must be satisfied for key strings to be accepted. Undefined by default.
-  * `hashtableValuesValidator`: The validation that is applied to the values in the object/hash. Undefined by default. Any validation type may be used. For example:
+  * `hashtableValuesValidator`: The validation that is applied to each of the values in the object/hash. Undefined by default. Any validation type may be used. An example:
 
 ```
     {
@@ -309,4 +290,49 @@ Validation types for complex data types, which can include nested validation typ
         ]
       }
     }
+```
+
+NOTE: All object property, hashtable element value and array element validators support the following parameters:
+
+* `required`: The property cannot be null or undefined. Defaults to `false`.
+* `immutable`: The property cannot be altered from its existing value if the document is being replaced. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
+* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element represents the direct parent of the item currently being validated. Generally, custom validation should not throw exceptions; it's better to return a list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of null, undefined or an empty array indicate there were no validation errors. An example:
+
+```
+    propertyValidators: [
+      {
+        propertyName: 'myStringProp',
+        type: 'string'
+      },
+      {
+        propertyName: 'myCustomProp',
+        type: 'integer',
+        minimumValue: 1,
+        maximumValue: 100,
+        customValidation: function(doc, oldDoc, currentItemElement, validationItemStack) {
+          var parentObjectElement = validationItemStack[validationItemStack.length - 1];
+          var parentObjectName = parentObjectElement.itemName;
+          var parentObjectValue = parentObjectElement.itemValue;
+          var parentObjectOldValue = parentObjectElement.oldItemValue;
+
+          var currentPropName = currentItemElement.itemName;
+          var currentPropValue = currentItemElement.itemValue;
+          var currentPropOldValue = currentItemElement.oldItemValue;
+
+          var currentPropPath = parentObjectName + '.' + currentPropName;
+          var myStringPropPath = parentObjectName + '.myStringProp';
+
+          var validationErrors = [ ];
+          if (parentObjectValue.myStringProp && !currentPropValue) {
+            validationErrors.push('property "' + currentPropPath + '" must be defined when "' + myStringPropPath + '" is defined');
+          }
+
+          if (currentPropOldValue && currentPropValue && currentPropValue < currentPropOldValue) {
+            validationErrors.push('property "' + currentPropPath + '" must not decrease in value');
+          }
+
+          return validationErrors;
+        }
+      }
+    ]
 ```

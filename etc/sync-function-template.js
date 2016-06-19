@@ -170,7 +170,7 @@ function(doc, oldDoc) {
     var oldItemValue = currentItemEntry.oldItemValue;
 
     if (validator.customValidation) {
-      validator.customValidation(validationErrors, doc, oldDoc, itemStack);
+      performCustomValidation(doc, oldDoc, validator, itemStack, validationErrors);
     }
 
     if (validator.immutable) {
@@ -389,6 +389,23 @@ function(doc, oldDoc) {
         if (typeof(validator.maximumSize) !== 'undefined' && validator.maximumSize !== null && attachment.length > validator.maximumSize) {
           validationErrors.push('attachment property "' + buildItemPath(itemStack) + '" must not be larger than ' + validator.maximumSize + ' bytes');
         }
+      }
+    }
+  }
+
+  function performCustomValidation(doc, oldDoc, validator, itemStack, validationErrors) {
+    var currentItemEntry = itemStack[itemStack.length - 1];
+
+    var customValidationItemStack = itemStack.slice();
+
+    // The top element in the stack should be the item's parent
+    customValidationItemStack.pop();
+
+    var customValidationErrors = validator.customValidation(doc, oldDoc, currentItemEntry, customValidationItemStack);
+
+    if (customValidationErrors instanceof Array) {
+      for (var customErrorIndex = 0; customErrorIndex < customValidationErrors.length; customErrorIndex++) {
+        validationErrors.push(customValidationErrors[customErrorIndex]);
       }
     }
   }
