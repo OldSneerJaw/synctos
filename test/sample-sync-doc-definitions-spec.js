@@ -95,7 +95,24 @@ describe('The sample-sync-doc-definitions sync function', function() {
         expect(ex).to.eql({ forbidden: 'Invalid business document: property "defaultInvoiceTemplate._id" is not supported; property "defaultInvoiceTemplate._rev" is not supported; property "defaultInvoiceTemplate._deleted" is not supported; property "defaultInvoiceTemplate._revisions" is not supported; property "defaultInvoiceTemplate._attachments" is not supported' });
       });
     });
-  })
+
+    it('cannot include attachments in documents that do not explicitly allow them', function() {
+      var doc = {
+        '_id': 'biz.1248.notificationsConfig',
+        'notificationTypes': { },
+        '_attachments': {
+          'foo.pdf': {
+            'content_type': 'application/pdf',
+            'length': 2097152
+          }
+        }
+      };
+
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: document type does not support attachments' });
+      });
+    });
+  });
 
   describe('business config doc definition', function() {
     function verifyBusinessCreated(businessId) {

@@ -77,6 +77,14 @@ function(doc, oldDoc) {
   function validateDoc(doc, oldDoc, docDefinition, docType) {
     var validationErrors = [ ];
 
+    if (!(docDefinition.allowAttachments) && doc._attachments) {
+      for (var attachment in doc._attachments) {
+        validationErrors.push('document type does not support attachments');
+
+        break;
+      }
+    }
+
     // Execute each of the document's property validator functions
     validateProperties(doc, oldDoc, docDefinition.propertyValidators, null, doc, oldDoc, validationErrors, true);
 

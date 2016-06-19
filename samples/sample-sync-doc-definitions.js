@@ -74,6 +74,7 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^biz\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
+      allowAttachments: true,
       propertyValidators: [
         {
           propertyName: 'businessLogoAttachment',
