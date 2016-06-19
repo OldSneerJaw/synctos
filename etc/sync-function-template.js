@@ -205,7 +205,7 @@ function(doc, oldDoc) {
           break;
         case 'float':
           if (typeof itemValue !== 'number') {
-            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be a floating point number');
+            validationErrors.push('property "' + buildItemPath(itemStack) + '" must be a floating point or integer number');
           }
           break;
         case 'boolean':
