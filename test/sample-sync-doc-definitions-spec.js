@@ -818,21 +818,17 @@ describe('The sample-sync-doc-definitions sync function', function() {
             'InvalidType': {
               'enabledTransports': [ ],
               'disabledTransports': [ ]
-            }
+            },
+            'foobar': null
           }
         };
         var oldDoc = {
           '_id': 'biz.37.notificationsConfig',
-          'notificationTypes': {
-            'invoice-payments': {
-              'enabledTransports': [ 'ET1', 'ET2' ],
-              'disabledTransports': [ 'ET3' ]
-            }
-          }
+          'notificationTypes': { }
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format; required property "notificationTypes[foobar]" is missing' });
         });
         verifyDocumentNotReplaced(notificationsConfigPrivilege, 37);
       });

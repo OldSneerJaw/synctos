@@ -189,6 +189,7 @@ function() {
           },
           hashtableValuesValidator: {
             type: 'object',
+            required: true,
             propertyValidators: [
               {
                 propertyName: 'enabledTransports',
