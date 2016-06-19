@@ -265,7 +265,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: malformed "businessId" property; property "invoiceRecordId" must not be less than 1; property "paymentRequisitionId" must not be empty; property "paymentAttemptSpreedlyToken" must not be empty; property "date" must be an ISO 8601 date string; property "internalPaymentRecordId" must not be less than 1; property "gatewayTransactionId" must not be empty; property "gatewayMessage" must be a string; property "totalAmountPaid" must be an integer; property "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
+          forbidden: 'Invalid paymentAttempt document: malformed "businessId" property; property "businessId" must be an integer; property "invoiceRecordId" must not be less than 1; property "paymentRequisitionId" must not be empty; property "paymentAttemptSpreedlyToken" must not be empty; property "date" must be an ISO 8601 date string; property "internalPaymentRecordId" must not be less than 1; property "gatewayTransactionId" must not be empty; property "gatewayMessage" must be a string; property "totalAmountPaid" must be an integer; property "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
         });
       });
       verifyDocumentNotCreated(expectedBasePrivilege, 'my-business');
@@ -482,7 +482,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql(
           {
-            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must not be less than 1; malformed "businessId" property; property "issuedAt" must be an ISO 8601 date string; property "issuedByUserId" must not be less than 1; property "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
+            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must not be less than 1; malformed "businessId" property; property "businessId" must be an integer; property "issuedAt" must be an ISO 8601 date string; property "issuedByUserId" must not be less than 1; property "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
           });
       });
       verifyDocumentNotCreated(paymentRequisitionPrivilege, 6);

@@ -113,7 +113,13 @@ function(doc, oldDoc) {
   function validatePropertyValue(doc, oldDoc, validator, propertyName, propertyPath, elementValue, validationErrors) {
     if (validator.customValidation) {
       validator.customValidation(validationErrors, doc, oldDoc);
-    } else if (typeof elementValue !== 'undefined' && elementValue !== null) {
+    }
+
+    if (validator.immutable && !(doc._deleted) && oldDoc && !(oldDoc._deleted) && oldDoc[propertyName] !== elementValue) {
+      validationErrors.push('property "' + propertyPath + '" may not be updated')
+    }
+
+    if (typeof elementValue !== 'undefined' && elementValue !== null) {
       if (validator.mustNotBeEmpty && elementValue.length < 1) {
         validationErrors.push('property "' + propertyPath + '" must not be empty');
       }
@@ -124,10 +130,6 @@ function(doc, oldDoc) {
 
       if (typeof(validator.maximumValue) !== 'undefined' && validator.maximumValue !== null && elementValue > validator.maximumValue) {
         validationErrors.push('property "' + propertyPath + '" must not be greater than ' + validator.maximumValue);
-      }
-
-      if (validator.immutable && oldDoc && !(oldDoc._deleted) && oldDoc[propertyName] !== elementValue) {
-        validationErrors.push('property "' + propertyPath + '" may not be updated')
       }
 
       switch (validator.type) {
