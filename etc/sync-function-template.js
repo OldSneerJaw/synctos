@@ -173,8 +173,8 @@ function(doc, oldDoc) {
       validator.customValidation(validationErrors, doc, oldDoc, itemStack);
     }
 
-    if (validator.immutable && oldDoc && !(oldDoc._deleted) && oldItemValue !== itemValue) {
-      validationErrors.push('property "' + buildItemPath(itemStack) + '" may not be updated')
+    if (validator.immutable) {
+      validateImmutable(doc, oldDoc, itemStack, validationErrors);
     }
 
     if (typeof itemValue !== 'undefined' && itemValue !== null) {
@@ -253,6 +253,22 @@ function(doc, oldDoc) {
     } else if (validator.required) {
       // The property has no value (either it's null or undefined), but the validator indicates it is required
       validationErrors.push('required property "' + buildItemPath(itemStack) + '" is missing');
+    }
+  }
+
+  function validateImmutable(doc, oldDoc, itemStack, validationErrors) {
+    if (oldDoc && !(oldDoc._deleted)) {
+      var currentItemEntry = itemStack[itemStack.length - 1];
+      var itemValue = currentItemEntry.itemValue;
+      var oldItemValue = currentItemEntry.oldItemValue;
+
+      // Only compare the item's value to the old item if the item's parent existed in the old document. For example, if the item in
+      // question is the value of a property in an object that is itself in an array, but the object did not exist in the array in the old
+      // document, then there is nothing to validate.
+      var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
+      if (typeof(oldParentItemValue) !== 'undefined' && oldParentItemValue !== null && oldItemValue !== itemValue) {
+        validationErrors.push('property "' + buildItemPath(itemStack) + '" may not be updated')
+      }
     }
   }
 
