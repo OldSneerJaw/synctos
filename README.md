@@ -1,14 +1,18 @@
 # Introduction
 
-Synctos is a utility to aid with the process of designing sync functions for [Couchbase](http://www.couchbase.com/) [Sync Gateway](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html) 1.x. With it, you define all your JSON document formats declaratively in a structured JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation, the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
+Synctos is a utility to aid with the process of designing sync functions for Couchbase Sync Gateway. With it, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
+
+Generates sync functions that are compatible with all Sync Gateway 1.x versions.
+
+More information on Sync Gateway can be found in [Couchbase](http://www.couchbase.com/)'s comprehensive developer documentation for [Sync Gateway](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html).
 
 # Installation
 
-Synctos is distributed as an npm package and has several npm dependencies. As such, it requires [Node.js](https://nodejs.org/) to run.
+Synctos is distributed as an [npm](https://www.npmjs.com/) package and has several npm dependencies. As such, it requires that [Node.js](https://nodejs.org/) is installed in order to run.
 
-To add synctos to your project, run `npm install synctos` from the project's root directory to install the package locally. Or, better yet, if you define a package.json in your project, you can run `npm install synctos --savedev` to automatically install and insert the package into your package.json's developer dependencies.
+To add synctos to your project, run `npm install synctos` from the project's root directory to install the package locally. Or, better yet, if you define a package.json in your project, you can run `npm install synctos --savedev` to automatically install locally and insert the package into your package.json's developer dependencies.
 
-For more info on npm package management, see the official npm documentation for [Installing npm packages locally](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Using a `package.json`](https://docs.npmjs.com/getting-started/using-a-package.json).
+For more info on npm package management, see the official npm documentation for [Installing npm packages locally](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Using a \`package.json\`](https://docs.npmjs.com/getting-started/using-a-package.json).
 
 # Usage
 
