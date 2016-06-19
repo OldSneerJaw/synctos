@@ -952,7 +952,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
       it('cannot replace a notification transport processing summary document when the properties are invalid', function() {
         var doc = {
           '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
-          'processedBy': 'barbaz',
           'processedAt': '2016-06-04T09:27:07.514Z',
           'sentAt': ''
         };
