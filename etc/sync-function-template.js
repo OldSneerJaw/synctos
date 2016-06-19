@@ -85,50 +85,78 @@ function(doc, oldDoc) {
       }
     }
 
+    var itemStack = [
+      {
+        itemValue: doc,
+        oldItemValue: oldDoc,
+        itemName: null,
+        fullItemPath: null
+      }
+    ];
+
     // Execute each of the document's property validator functions
-    validateProperties(doc, oldDoc, docDefinition.propertyValidators, null, doc, oldDoc, validationErrors, true);
+    validateProperties(doc, oldDoc, docDefinition.propertyValidators, itemStack, validationErrors, true);
 
     if (validationErrors.length > 0) {
       throw { forbidden: 'Invalid ' + docType + ' document: ' + validationErrors.join('; ') };
     }
   }
 
-  function validateProperties(doc, oldDoc, propertyValidators, baseItemPath, baseItemValue, oldBaseItemValue, validationErrors, useWhitelist) {
+  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, useWhitelist) {
+    var currentItemEntry = itemStack[itemStack.length - 1];
+    var objectValue = currentItemEntry.itemValue;
+    var oldObjectValue = currentItemEntry.oldItemValue;
+    var objectPath = currentItemEntry.fullItemPath;
+
     var supportedProperties = [ ];
     for (var validatorIndex = 0; validatorIndex < propertyValidators.length; validatorIndex++) {
       var validator = propertyValidators[validatorIndex];
-      var fullPropertyPath = baseItemPath ? baseItemPath + '.' + validator.propertyName : validator.propertyName;
+      var fullPropertyPath = objectPath ? objectPath + '.' + validator.propertyName : validator.propertyName;
       var propertyName = validator.propertyName;
-      var propertyValue = baseItemValue[propertyName];
+      var propertyValue = objectValue[propertyName];
 
       var oldPropertyValue;
-      if (typeof(oldBaseItemValue) !== 'undefined' && oldBaseItemValue !== null) {
-        oldPropertyValue = oldBaseItemValue[propertyName];
+      if (typeof(oldObjectValue) !== 'undefined' && oldObjectValue !== null) {
+        oldPropertyValue = oldObjectValue[propertyName];
       }
 
       supportedProperties.push(propertyName);
 
-      validateItemValue(doc, oldDoc, validator, fullPropertyPath, propertyValue, oldPropertyValue, validationErrors);
+      itemStack.push({
+        itemValue: propertyValue,
+        oldItemValue: oldPropertyValue,
+        itemName: propertyName,
+        fullItemPath: fullPropertyPath
+      });
+
+      validateItemValue(doc, oldDoc, validator, itemStack, validationErrors);
+
+      itemStack.pop();
     }
 
     // Verify there are no unsupported properties in the object
     var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
-    for (var propertyName in baseItemValue) {
+    for (var propertyName in objectValue) {
       if (useWhitelist && whitelistedProperties.indexOf(propertyName) >= 0) {
         // These properties are special cases that should always be allowed - generally only applied at the top level of the document
         continue;
       }
 
       if (supportedProperties.indexOf(propertyName) < 0) {
-        var fullPropertyPath = baseItemPath ? baseItemPath + '.' + propertyName : propertyName;
+        var fullPropertyPath = objectPath ? objectPath + '.' + propertyName : propertyName;
         validationErrors.push('property "' + fullPropertyPath + '" is not supported');
       }
     }
   }
 
-  function validateItemValue(doc, oldDoc, validator, itemPath, itemValue, oldItemValue, validationErrors) {
+  function validateItemValue(doc, oldDoc, validator, itemStack, validationErrors) {
+    var currentItemEntry = itemStack[itemStack.length - 1];
+    var itemPath = currentItemEntry.fullItemPath;
+    var itemValue = currentItemEntry.itemValue;
+    var oldItemValue = currentItemEntry.oldItemValue;
+
     if (validator.customValidation) {
-      validator.customValidation(validationErrors, doc, oldDoc);
+      validator.customValidation(validationErrors, doc, oldDoc, itemStack);
     }
 
     if (validator.immutable && oldDoc && !(oldDoc._deleted) && oldItemValue !== itemValue) {
@@ -152,10 +180,8 @@ function(doc, oldDoc) {
         case 'string':
           if (typeof itemValue !== 'string') {
             validationErrors.push('property "' + itemPath + '" must be a string');
-          } else if (validator.regexPattern) {
-            if (!(validator.regexPattern.test(itemValue))) {
-              validationErrors.push('property "' + itemPath + '" must conform to expected format');
-            }
+          } else if (validator.regexPattern && !(validator.regexPattern.test(itemValue))) {
+            validationErrors.push('property "' + itemPath + '" must conform to expected format');
           }
           break;
         case 'integer':
@@ -187,11 +213,11 @@ function(doc, oldDoc) {
           if (typeof itemValue !== 'object') {
             validationErrors.push('property "' + itemPath + '" must be an object');
           } else if (validator.propertyValidators) {
-            validateProperties(doc, oldDoc, validator.propertyValidators, itemPath, itemValue, oldItemValue, validationErrors);
+            validateProperties(doc, oldDoc, validator.propertyValidators, itemStack, validationErrors);
           }
           break;
         case 'array':
-          validateArray(doc, oldDoc, validator.arrayElementsValidator, itemPath, itemValue, oldItemValue, validationErrors);
+          validateArray(doc, oldDoc, validator.arrayElementsValidator, itemStack, validationErrors);
           break;
         case 'hashtable':
           validateHashtable(
@@ -199,13 +225,11 @@ function(doc, oldDoc) {
             oldDoc,
             validator.hashtableKeysValidator,
             validator.hashtableValuesValidator,
-            itemPath,
-            itemValue,
-            oldItemValue,
+            itemStack,
             validationErrors);
           break;
         case 'attachmentReference':
-          validateAttachmentRef(doc, oldDoc, validator, itemPath, itemValue, validationErrors);
+          validateAttachmentRef(doc, oldDoc, validator, itemStack, validationErrors);
           break;
         default:
           // This is not a document validation error; the property validator is configured incorrectly and must be fixed
@@ -218,7 +242,12 @@ function(doc, oldDoc) {
     }
   }
 
-  function validateArray(doc, oldDoc, elementValidator, itemPath, itemValue, oldItemValue, validationErrors) {
+  function validateArray(doc, oldDoc, elementValidator, itemStack, validationErrors) {
+    var currentItemEntry = itemStack[itemStack.length - 1];
+    var itemPath = currentItemEntry.fullItemPath;
+    var itemValue = currentItemEntry.itemValue;
+    var oldItemValue = currentItemEntry.oldItemValue;
+
     if (!(itemValue instanceof Array)) {
       validationErrors.push('property "' + itemPath + '" must be an array');
     } else if (elementValidator) {
@@ -233,62 +262,85 @@ function(doc, oldDoc) {
           oldElementValue = oldItemValue[elementIndex];
         }
 
+        itemStack.push({
+          itemName: elementName,
+          fullItemPath: elementPath,
+          itemValue: elementValue,
+          oldItemValue: oldElementValue
+        });
+
         validateItemValue(
           doc,
           oldDoc,
           elementValidator,
-          elementPath,
-          elementValue,
-          oldElementValue,
+          itemStack,
           validationErrors);
+
+        itemStack.pop();
       }
     }
   }
 
-  function validateHashtable(doc, oldDoc, keyValidator, valueValidator, itemPath, itemValue, oldItemValue, validationErrors) {
+  function validateHashtable(doc, oldDoc, keyValidator, valueValidator, itemStack, validationErrors) {
+    var currentItemEntry = itemStack[itemStack.length - 1];
+    var itemPath = currentItemEntry.fullItemPath;
+    var itemValue = currentItemEntry.itemValue;
+    var oldItemValue = currentItemEntry.oldItemValue;
+
     if (typeof itemValue !== 'object') {
       validationErrors.push('property "' + itemPath + '" must be an object/hashtable');
     } else {
       for (var hashtableKey in itemValue) {
-        var hashtableValue = itemValue[hashtableKey];
+        var elementValue = itemValue[hashtableKey];
 
-        var hashtableElementName = '[' + hashtableKey + ']';
-        var hashtableElementPath = itemPath ? itemPath + hashtableElementName : hashtableElementName;
+        var elementName = '[' + hashtableKey + ']';
+        var elementPath = itemPath ? itemPath + elementName : elementName;
         if (keyValidator) {
           if (typeof hashtableKey !== 'string') {
-            validationErrors.push('hashtable key "' + hashtableElementPath + '" is not a string');
+            validationErrors.push('hashtable key "' + elementPath + '" is not a string');
           } else {
             if (keyValidator.mustNotBeEmpty && hashtableKey.length < 1) {
               validationErrors.push('empty hashtable key in property "' + itemPath + '" is not allowed');
             }
             if (keyValidator.regexPattern) {
               if (!(keyValidator.regexPattern.test(hashtableKey))) {
-                validationErrors.push('hashtable key "' + hashtableElementPath + '" does not conform to expected format');
+                validationErrors.push('hashtable key "' + elementPath + '" does not conform to expected format');
               }
             }
           }
         }
 
         if (valueValidator) {
-          var oldHashtableValue;
+          var oldElementValue;
           if (typeof(oldItemValue) !== 'undefined' && oldItemValue !== null) {
-            oldHashtableValue = oldItemValue[hashtableKey];
+            oldElementValue = oldItemValue[hashtableKey];
           }
+
+          itemStack.push({
+            itemName: elementName,
+            fullItemPath: elementPath,
+            itemValue: elementValue,
+            oldItemValue: oldElementValue
+          });
 
           validateItemValue(
             doc,
             oldDoc,
             valueValidator,
-            hashtableElementPath,
-            hashtableValue,
-            oldHashtableValue,
+            itemStack,
             validationErrors);
+
+          itemStack.pop();
         }
       }
     }
   }
 
-  function validateAttachmentRef(doc, oldDoc, validator, itemPath, itemValue, validationErrors) {
+  function validateAttachmentRef(doc, oldDoc, validator, itemStack, validationErrors) {
+    var currentItemEntry = itemStack[itemStack.length - 1];
+    var itemPath = currentItemEntry.fullItemPath;
+    var itemValue = currentItemEntry.itemValue;
+
     if (typeof itemValue !== 'string') {
       validationErrors.push('attachment property "' + itemPath + '" must be a string');
     } else {
