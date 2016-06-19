@@ -1,6 +1,8 @@
 # Introduction
 
-Synctos is a utility to aid with the process of designing sync functions for Couchbase Sync Gateway. With it, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
+Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
+
+With it, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
 
 Generates sync functions that are compatible with all Sync Gateway 1.x versions.
 
