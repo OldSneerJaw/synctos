@@ -2,19 +2,22 @@
 // More info on sync functions: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 function(doc, oldDoc) {
   // Determine if a given value is an integer. Exists as a failsafe because Number.isInteger is not guaranteed to exist in all environments.
-  // Defined by https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/isInteger#Polyfill
   var isInteger = Number.isInteger || function(value) {
     return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
   };
 
-  // Check that a given value is a valid ISO 8601 format date string
-  function isIso8601DateString(dateString) {
-    // Initially borrowed from http://www.pelagodesign.com/blog/2009/05/20/iso-8601-date-validation-that-doesnt-suck/
-    // Heavily modified to simplify and remove regex features that were not supported by the Javascript regex parser. As a result, it is
-    // not only significantly easier to comprehend but also less comprehensive than before.
+  // Check that a given value is a valid ISO 8601 format date string with optional time and time zone components
+  function isIso8601DateTimeString(value) {
     var regex = new RegExp('^(([\\+-]?[0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))([T ]([01][0-9]|2[0-4])(:[0-5][0-9])?(:[0-5][0-9])?([\\.,][0-9]{1,3})?)?([zZ]|([\\+-])([01][0-9]|2[0-3]):?([0-5][0-9])?)$');
 
-    return regex.test(dateString);
+    return regex.test(value);
+  }
+
+  // Check that a given value is a valid ISO 8601 date string without time and time zone components
+  function isIso8601DateString(value) {
+    var regex = new RegExp('^(([\\+-]?[0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$');
+
+    return regex.test(value);
   }
 
   // A document definition may define its channels for each operation (view, add, replace, delete) as either a string or an array of
@@ -147,11 +150,6 @@ function(doc, oldDoc) {
             }
           }
           break;
-        case 'date':
-          if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
-            validationErrors.push('property "' + itemPath + '" must be an ISO 8601 date string');
-          }
-          break;
         case 'integer':
           if (!isInteger(itemValue)) {
             validationErrors.push('property "' + itemPath + '" must be an integer');
@@ -165,6 +163,16 @@ function(doc, oldDoc) {
         case 'boolean':
           if (typeof itemValue !== 'boolean') {
             validationErrors.push('property "' + itemPath + '" must be a boolean');
+          }
+          break;
+        case 'datetime':
+          if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue)) {
+            validationErrors.push('property "' + itemPath + '" must be an ISO 8601 date/time string');
+          }
+          break;
+        case 'date':
+          if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
+            validationErrors.push('property "' + itemPath + '" must be an ISO 8601 date-only string');
           }
           break;
         case 'object':

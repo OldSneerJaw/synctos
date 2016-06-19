@@ -140,13 +140,13 @@ function() {
         },
         {
           propertyName: 'createdAt',
-          type: 'date',
+          type: 'datetime',
           required: true,
           immutable: true
         },
         {
           propertyName: 'firstReadAt',
-          type: 'date'
+          type: 'datetime'
         },
         {
           propertyName: 'actions',
@@ -277,13 +277,13 @@ function() {
         },
         {
           propertyName: 'processedAt',
-          type: 'date',
+          type: 'datetime',
           required: true,
           immutable: true
         },
         {
           propertyName: 'sentAt',
-          type: 'date'
+          type: 'datetime'
         }
       ]
     },
@@ -407,7 +407,7 @@ function() {
         },
         {
           propertyName: 'issuedAt',
-          type: 'date'
+          type: 'datetime'
         },
         {
           propertyName: 'issuedByUserId',
