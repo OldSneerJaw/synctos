@@ -214,7 +214,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment property "businessLogoAttachment" must be a string; property "defaultInvoiceTemplate.templateId" must not be empty; property "defaultInvoiceTemplate.some-unrecognized-property" is not supported; property "paymentProcessors" must be an array; property "unrecognized-property1" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment reference "businessLogoAttachment" must be a string; item "defaultInvoiceTemplate.templateId" must not be empty; property "defaultInvoiceTemplate.some-unrecognized-property" is not supported; item "paymentProcessors" must be an array; property "unrecognized-property1" is not supported' });
       });
       verifyBusinessNotCreated(5);
     });
@@ -245,7 +245,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       var oldDoc = { '_id': 'biz.551' };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment property "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg); attachment property "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg); attachment property "businessLogoAttachment" must not be larger than 2097152 bytes; property "defaultInvoiceTemplate.templateId" must be a string; property "paymentProcessors[1]" must be a string; property "unrecognized-property2" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment reference "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg); attachment reference "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg); attachment reference "businessLogoAttachment" must not be larger than 2097152 bytes; item "defaultInvoiceTemplate.templateId" must be a string; item "paymentProcessors[1]" must be a string; property "unrecognized-property2" is not supported' });
       });
       verifyBusinessNotReplaced(551);
     });
@@ -300,7 +300,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: property "businessId" must be an integer; property "invoiceRecordId" must not be less than 1; property "paymentRequisitionId" must not be empty; property "paymentAttemptSpreedlyToken" must not be empty; property "date" must be an ISO 8601 date string with no time or time zone components; property "internalPaymentRecordId" must not be less than 1; property "gatewayTransactionId" must not be empty; property "gatewayMessage" must be a string; property "totalAmountPaid" must be an integer; property "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
+          forbidden: 'Invalid paymentAttempt document: item "businessId" must be an integer; item "invoiceRecordId" must not be less than 1; item "paymentRequisitionId" must not be empty; item "paymentAttemptSpreedlyToken" must not be empty; item "date" must be an ISO 8601 date string with no time or time zone components; item "internalPaymentRecordId" must not be less than 1; item "gatewayTransactionId" must not be empty; item "gatewayMessage" must be a string; item "totalAmountPaid" must be an integer; item "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
         });
       });
       verifyDocumentNotCreated(expectedBasePrivilege, 'my-business');
@@ -336,7 +336,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: cannot change "businessId" property; required property "invoiceRecordId" is missing; required property "paymentRequisitionId" is missing; required property "paymentAttemptSpreedlyToken" is missing; required property "date" is missing; property "gatewayTransactionId" must be a string; property "gatewayMessage" must be a string; property "totalAmountPaid" must not be less than 1; property "totalAmountPaidFormatted" must not be empty; property "unsupportedProperty" is not supported'
+          forbidden: 'Invalid paymentAttempt document: cannot change "businessId" property; required item "invoiceRecordId" is missing; required item "paymentRequisitionId" is missing; required item "paymentAttemptSpreedlyToken" is missing; required item "date" is missing; item "gatewayTransactionId" must be a string; item "gatewayMessage" must be a string; item "totalAmountPaid" must not be less than 1; item "totalAmountPaidFormatted" must not be empty; property "unsupportedProperty" is not supported'
         });
       });
       verifyDocumentNotReplaced(expectedBasePrivilege, 23);
@@ -382,7 +382,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: property "provider" must not be empty; property "spreedlyGatewayToken" must not be empty; property "accountId" must not be less than 1; property "displayName" must be a string; property "supportedCurrencyCodes" must be an array; property "unrecognized-property3" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: item "provider" must not be empty; item "spreedlyGatewayToken" must not be empty; item "accountId" must not be less than 1; item "displayName" must be a string; item "supportedCurrencyCodes" must be an array; property "unrecognized-property3" is not supported' });
       });
       verifyDocumentNotCreated(paymentProcessorPrivilege, 1);
     });
@@ -412,7 +412,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       var oldDoc = { '_id': 'biz.2.paymentProcessor.2', 'provider': 'foo' };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: required property "provider" is missing; required property "spreedlyGatewayToken" is missing; property "accountId" must be an integer; property "displayName" must be a string; property "supportedCurrencyCodes[0]" must conform to expected format /^[A-Z]{3}$/; property "unrecognized-property4" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: required item "provider" is missing; required item "spreedlyGatewayToken" is missing; item "accountId" must be an integer; item "displayName" must be a string; item "supportedCurrencyCodes[0]" must conform to expected format /^[A-Z]{3}$/; property "unrecognized-property4" is not supported' });
       });
       verifyDocumentNotReplaced(paymentProcessorPrivilege, 2);
     });
@@ -446,7 +446,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentRequisitionsReference document: required property "paymentProcessorId" is missing; property "paymentRequisitionIds" must not be empty; property "paymentAttemptIds" must be an array; property "unrecognized-property5" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid paymentRequisitionsReference document: required item "paymentProcessorId" is missing; item "paymentRequisitionIds" must not be empty; item "paymentAttemptIds" must be an array; property "unrecognized-property5" is not supported' });
       });
       verifyDocumentNotCreated(expectedBasePrivilege, 18);
     });
@@ -471,7 +471,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       var oldDoc = { '_id': 'biz.666.invoice.3.paymentRequisitions', 'paymentProcessorId': 'foo', 'paymentRequisitionIds': [ 'req1' ] };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentRequisitionsReference document: property "paymentProcessorId" must not be empty; property "paymentRequisitionIds[1]" must be a string; property "paymentAttemptIds[0]" must be a string; property "unrecognized-property6" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid paymentRequisitionsReference document: item "paymentProcessorId" must not be empty; item "paymentRequisitionIds[1]" must be a string; item "paymentAttemptIds[0]" must be a string; property "unrecognized-property6" is not supported' });
       });
       verifyDocumentNotReplaced(expectedBasePrivilege, 666);
     });
@@ -517,7 +517,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql(
           {
-            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must not be less than 1; property "businessId" must be an integer; property "issuedAt" must be an ISO 8601 date string with optional time and time zone components; property "issuedByUserId" must not be less than 1; property "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
+            forbidden: 'Invalid paymentRequisition document: item "invoiceRecordId" must not be less than 1; item "businessId" must be an integer; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; item "issuedByUserId" must not be less than 1; item "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
           });
       });
       verifyDocumentNotCreated(paymentRequisitionPrivilege, 6);
@@ -554,7 +554,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql(
           {
-            forbidden: 'Invalid paymentRequisition document: property "invoiceRecordId" must be an integer; cannot change "businessId" property; property "businessId" must not be less than 1; property "issuedAt" must be an ISO 8601 date string with optional time and time zone components; property "issuedByUserId" must be an integer; property "invoiceRecipients" must be a string; property "unrecognized-property8" is not supported'
+            forbidden: 'Invalid paymentRequisition document: item "invoiceRecordId" must be an integer; cannot change "businessId" property; item "businessId" must not be less than 1; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; item "issuedByUserId" must be an integer; item "invoiceRecipients" must be a string; property "unrecognized-property8" is not supported'
           });
       });
       verifyDocumentNotReplaced(paymentRequisitionPrivilege, 20);
@@ -600,7 +600,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notification document: required property "sender" is missing; property "type" must be a string; property "subject" must not be empty; required property "message" is missing; property "createdAt" must be an ISO 8601 date string with optional time and time zone components; property "actions[0].url" must be a string; required property "actions[0].label" is missing; property "whatsthis?" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notification document: required item "sender" is missing; item "type" must be a string; item "subject" must not be empty; required item "message" is missing; item "createdAt" must be an ISO 8601 date string with optional time and time zone components; item "actions[0].url" must be a string; required item "actions[0].label" is missing; property "whatsthis?" is not supported' });
         });
         verifyDocumentNotCreated(notificationsPrivilege, 13);
       });
@@ -644,7 +644,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notification document: property "sender" must not be empty; required property "type" is missing; required property "subject" is missing; property "message" must not be empty; property "createdAt" may not be updated; required property "actions[0].url" is missing; property "actions[0].label" must not be empty' });
+          expect(ex).to.eql({ forbidden: 'Invalid notification document: item "sender" must not be empty; required item "type" is missing; required item "subject" is missing; item "message" must not be empty; value of item "createdAt" may not be modified; required item "actions[0].url" is missing; item "actions[0].label" must not be empty' });
         });
         verifyDocumentNotReplaced(notificationsPrivilege, 10);
       });
@@ -690,7 +690,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: property "allNotificationIds[0]" must be a string; property "unreadNotificationIds[1]" must not be empty' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[0]" must be a string; item "unreadNotificationIds[1]" must not be empty' });
         });
         verifyDocumentNotCreated(notificationsRefPrivilege, 123);
       });
@@ -725,7 +725,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: property "allNotificationIds[3]" must not be empty; property "unreadNotificationIds[2]" must be a string' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[3]" must not be empty; item "unreadNotificationIds[2]" must be a string' });
         });
         verifyDocumentNotReplaced(notificationsRefPrivilege, 29);
       });
@@ -779,7 +779,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; property "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in property "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format /^[a-z_-]+$/; property "unknownprop" is not supported' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: item "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; item "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in item "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format /^[a-z_-]+$/; property "unknownprop" is not supported' });
         });
         verifyDocumentNotCreated(notificationsConfigPrivilege, 72);
       });
@@ -828,7 +828,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; property "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format /^[a-z_-]+$/; required property "notificationTypes[foobar]" is missing' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: item "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; item "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format /^[a-z_-]+$/; required item "notificationTypes[foobar]" is missing' });
         });
         verifyDocumentNotReplaced(notificationsConfigPrivilege, 37);
       });
@@ -871,7 +871,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: required property "type" is missing; property "recipient" must not be empty' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: required item "type" is missing; item "recipient" must not be empty' });
         });
         verifyDocumentNotCreated(notificationTransportPrivilege, 75);
       });
@@ -904,7 +904,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: property "type" must be a string; required property "recipient" is missing' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: item "type" must be a string; required item "recipient" is missing' });
         });
         verifyDocumentNotReplaced(notificationTransportPrivilege, 73);
       });
@@ -960,7 +960,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required property "processedAt" is missing; property "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
         });
         verifyProcessingSummaryNotWritten();
       });
@@ -993,7 +993,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         };
 
         expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: property "processedBy" may not be updated; property "processedAt" may not be updated; property "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
+          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: value of item "processedBy" may not be modified; value of item "processedAt" may not be modified; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
         });
         verifyProcessingSummaryNotWritten();
       });
