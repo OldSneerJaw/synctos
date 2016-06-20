@@ -2,11 +2,9 @@
 
 Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
 
-With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for sync functions with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
+With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for [sync functions]((http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/sync-function-api-guide/index.html)) with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
 
-Generates sync functions that are compatible with all Sync Gateway 1.x versions.
-
-More information on Sync Gateway can be found in [Couchbase](http://www.couchbase.com/)'s comprehensive developer documentation for [Sync Gateway](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html).
+To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html).
 
 # Installation
 
@@ -24,9 +22,9 @@ Once synctos is installed, you can run it from your project's directory as follo
 
     node_modules/synctos/make-sync-function /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js
 
-This will take the sync document definitions that are defined in `/path/to/my-document-definitions.js` and build a new [sync function](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/sync-function-api-guide/index.html) that is output to `/path/to/my-generated-sync-function.js`.
+This will take the sync document definitions that are defined in `/path/to/my-document-definitions.js` and build a new sync function that is output to `/path/to/my-generated-sync-function.js`. The generated sync function contents can then be inserted into the definition of a bucket/database in a Sync Gateway [configuration file](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/configuring-sync-gateway/config-properties/index.html#story-h2-3) as a multi-line string surrounded with backquotes ( \` ).
 
-The generated sync function contents can then be inserted into the definition of a bucket/database in a Sync Gateway [configuration file](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/configuring-sync-gateway/config-properties/index.html#story-h2-3) as a multi-line string surrounded with backquotes ( \` ).
+Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
 **NOTE**: Due to a [known issue](https://github.com/couchbase/sync_gateway/issues/1866) in Sync Gateway versions up to and including 1.2.1, when specifying a bucket/database's sync function in a configuration file as a multi-line string, you will have to be sure to escape any literal backslash characters in the sync function body. For example, if your sync function contains a regular expression like `new RegExp('\\w+')`, you will have to escape the backslashes when inserting the sync function into the configuration file so that it becomes `new RegExp('\\\\w+')`.
 
@@ -213,7 +211,7 @@ Each document type is specified as an object with the following properties:
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
 
-Validation types for simple data types:
+Validation for simple data types:
 
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
@@ -232,7 +230,11 @@ Validation types for simple data types:
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Undefined by default.
 
-Validation types for complex data types, which allow for nesting of child properties and elements:
+**NOTE**: Validation for all _simple data types_ support the following additional parameter:
+
+* `immutable`: The property cannot be altered from its existing value if the document is being replaced. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
+
+Validation for complex data types, which allow for nesting of child properties and elements:
 
 * `array`: An array/list of elements. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an array with no elements is not allowed. Defaults to `false`.
@@ -299,10 +301,9 @@ Validation types for complex data types, which allow for nesting of child proper
     }
 ```
 
-**NOTE**: All validation types support the following additional parameters:
+**NOTE**: Validation for all simple and complex data types support the following additional parameters:
 
 * `required`: The property cannot be null or undefined. Defaults to `false`.
-* `immutable`: The property cannot be altered from its existing value if the document is being replaced. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
 * `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
 ```
