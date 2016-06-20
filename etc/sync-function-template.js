@@ -316,20 +316,20 @@ function(doc, oldDoc) {
     if (typeof itemValue !== 'object') {
       validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object/hashtable');
     } else {
-      for (var hashtableKey in itemValue) {
-        var elementValue = itemValue[hashtableKey];
+      for (var elementKey in itemValue) {
+        var elementValue = itemValue[elementKey];
 
-        var elementName = '[' + hashtableKey + ']';
+        var elementName = '[' + elementKey + ']';
         if (keyValidator) {
           var hashtablePath = buildItemPath(itemStack);
           var fullKeyPath = hashtablePath ? hashtablePath + elementName : elementName;
-          if (typeof hashtableKey !== 'string') {
+          if (typeof elementKey !== 'string') {
             validationErrors.push('hashtable key "' + fullKeyPath + '" is not a string');
           } else {
-            if (keyValidator.mustNotBeEmpty && hashtableKey.length < 1) {
+            if (keyValidator.mustNotBeEmpty && elementKey.length < 1) {
               validationErrors.push('empty hashtable key in item "' + buildItemPath(itemStack) + '" is not allowed');
             }
-            if (keyValidator.regexPattern && !(keyValidator.regexPattern.test(hashtableKey))) {
+            if (keyValidator.regexPattern && !(keyValidator.regexPattern.test(elementKey))) {
               validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format ' + keyValidator.regexPattern);
             }
           }
@@ -338,7 +338,7 @@ function(doc, oldDoc) {
         if (valueValidator) {
           var oldElementValue;
           if (typeof(oldItemValue) !== 'undefined' && oldItemValue !== null) {
-            oldElementValue = oldItemValue[hashtableKey];
+            oldElementValue = oldItemValue[elementKey];
           }
 
           itemStack.push({
