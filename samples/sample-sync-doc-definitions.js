@@ -190,7 +190,7 @@ function() {
           hashtableKeysValidator: {
             type: 'string',
             mustNotBeEmpty: true,
-            regexPattern: new RegExp('^[a-z_-]+$')
+            regexPattern: new RegExp('^[a-zA-Z]+$')
           },
           hashtableValuesValidator: {
             type: 'object',
@@ -200,16 +200,16 @@ function() {
                 propertyName: 'enabledTransports',
                 type: 'array',
                 arrayElementsValidator: {
-                  type: 'string',
-                  mustNotBeEmpty: true
-                }
-              },
-              {
-                propertyName: 'disabledTransports',
-                type: 'array',
-                arrayElementsValidator: {
-                  type: 'string',
-                  mustNotBeEmpty: true
+                  type: 'object',
+                  required: true,
+                  propertyValidators: [
+                    {
+                      propertyName: 'transportId',
+                      type: 'string',
+                      required: true,
+                      mustNotBeEmpty: true
+                    }
+                  ]
                 }
               }
             ]

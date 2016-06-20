@@ -265,6 +265,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
     it('successfully creates a valid payment processing result document', function() {
       var doc = {
         '_id': 'paymentAttempt.foo-bar',
+        '_attachments': { },
         'businessId': 20,
         'invoiceRecordId': 10,
         'paymentRequisitionId': 'my-payment-requisition',
@@ -571,446 +572,455 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('business notification doc definition', function() {
-      var notificationsPrivilege = 'NOTIFICATIONS';
+    var notificationsPrivilege = 'NOTIFICATIONS';
 
-      it('successfully creates a valid notification document', function() {
-        var doc = {
-          '_id': 'biz.63.notification.5',
-          'sender': 'test-service',
-          'type': 'invoice-payments',
-          'subject': 'pay up!',
-          'message': 'you best pay up now, or else...',
-          'createdAt': '2016-02-29T17:13:43.666Z',
-          'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
-        };
+    it('successfully creates a valid notification document', function() {
+      var doc = {
+        '_id': 'biz.63.notification.5',
+        'sender': 'test-service',
+        'type': 'invoice-payments',
+        'subject': 'pay up!',
+        'message': 'you best pay up now, or else...',
+        'createdAt': '2016-02-29T17:13:43.666Z',
+        'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
+      };
 
-        syncFunction(doc, null);
+      syncFunction(doc, null);
 
-        verifyDocumentCreated(notificationsPrivilege, 63);
-      });
-
-      it('cannot create a notification document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.13.notification.5',
-          'type': true ,
-          'subject': '', // missing sender, empty subject
-          'whatsthis?': 'something I dont recognize!', // unrecognized property
-          'createdAt': '2016-02-29T25:13:43.666Z', // invalid hour
-          'actions': [ { 'url': 24 } ] // integer url, non-existent label
-        };
-
-        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notification document: required item "sender" is missing; item "type" must be a string; item "subject" must not be empty; required item "message" is missing; item "createdAt" must be an ISO 8601 date string with optional time and time zone components; item "actions[0].url" must be a string; required item "actions[0].label" is missing; property "whatsthis?" is not supported' });
-        });
-        verifyDocumentNotCreated(notificationsPrivilege, 13);
-      });
-
-      it('successfully replaces a valid notification document', function() {
-        var doc = {
-          '_id': 'biz.7.notification.3',
-          'type': 'invoice-payments',
-          'sender': 'test-service',
-          'subject': 'a different subject',
-          'message': 'last warning!',
-          'createdAt': '2016-02-29T17:13:43.666Z',
-          'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
-        };
-        var oldDoc = {
-          '_id': 'biz.7.notification.3',
-          '_deleted': true
-        };
-
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentReplaced(notificationsPrivilege, 7);
-      });
-
-      it('cannot replace a notification document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.10.notification.3',
-          'sender': '', // missing type, empty sender
-          'message': '', // missing subject, empty message
-          'createdAt': '2016-04-29T17:13:43.666Z', // changed createdAt
-          'actions': [ { 'label': ''} ]
-        };
-        var oldDoc = { // valid oldDoc
-          '_id': 'biz.10.notification.3',
-          'type': 'invoice-payments',
-          'sender': 'test-service',
-          'subject': 'a different subject',
-          'message': 'last warning!',
-          'createdAt': '2016-02-29T17:13:43.666Z',
-          'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
-        };
-
-        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notification document: item "sender" must not be empty; required item "type" is missing; required item "subject" is missing; item "message" must not be empty; value of item "createdAt" may not be modified; required item "actions[0].url" is missing; item "actions[0].label" must not be empty' });
-        });
-        verifyDocumentNotReplaced(notificationsPrivilege, 10);
-      });
-
-      it('successfully deletes a valid notification document', function() {
-        var doc = { '_id': 'biz.71.notification.5', '_deleted': true };
-        var oldDoc = {
-          '_id': 'biz.71.notification.5',
-          'type': 'invoice-payments',
-          'sender': 'test-service',
-          'subject': 'pay up!',
-          'message': 'you best pay up now, or else...',
-          'createdAt': '2016-02-29T17:13:43.666Z',
-          'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
-        };
-
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentDeleted(notificationsPrivilege, 71);
-      });
+      verifyDocumentCreated(notificationsPrivilege, 63);
     });
 
-    describe('business notifications reference doc definition', function() {
-      var notificationsRefPrivilege = 'NOTIFICATIONS';
+    it('cannot create a notification document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.13.notification.5',
+        'type': true ,
+        'subject': '', // missing sender, empty subject
+        'whatsthis?': 'something I dont recognize!', // unrecognized property
+        'createdAt': '2016-02-29T25:13:43.666Z', // invalid hour
+        'actions': [ { 'url': 24 } ] // integer url, non-existent label
+      };
 
-      it('successfully creates a valid notifications reference document', function() {
-        var doc = {
-          '_id': 'biz.4.notifications',
-          'allNotificationIds': [ 'X', 'Y', 'Z' ],
-          'unreadNotificationIds': [ 'X', 'Z' ]
-        };
-
-        syncFunction(doc, null);
-
-        verifyDocumentCreated(notificationsRefPrivilege, 4);
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notification document: required item "sender" is missing; item "type" must be a string; item "subject" must not be empty; required item "message" is missing; item "createdAt" must be an ISO 8601 date string with optional time and time zone components; item "actions[0].url" must be a string; required item "actions[0].label" is missing; property "whatsthis?" is not supported' });
       });
-
-      it('cannot create a notifications reference document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.123.notifications',
-          'allNotificationIds': [ 23, 'Y', 'Z' ],
-          'unreadNotificationIds': [ 'Z', '' ]
-        };
-
-        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[0]" must be a string; item "unreadNotificationIds[1]" must not be empty' });
-        });
-        verifyDocumentNotCreated(notificationsRefPrivilege, 123);
-      });
-
-      it('successfully replaces a valid notifications reference document', function() {
-        var doc = {
-          '_id': 'biz.44.notifications',
-          'allNotificationIds': [ 'X', 'Y', 'Z', 'A' ],
-          'unreadNotificationIds': [ 'X', 'Z', 'A' ]
-        };
-        var oldDoc = {
-          '_id': 'biz.44.notifications',
-          'allNotificationIds': [ 'X', 'Y', 'Z' ],
-          'unreadNotificationIds': [ 'X', 'Z' ]
-        };
-
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentReplaced(notificationsRefPrivilege, 44);
-      });
-
-      it('cannot replace a notifications reference document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.29.notifications',
-          'allNotificationIds': [ 'X', 'Y', 'Z', '' ],
-          'unreadNotificationIds': [ 'X', 'Z', 5 ]
-        };
-        var oldDoc = {
-          '_id': 'biz.29.notifications',
-          'allNotificationIds': [ 'X', 'Y', 'Z' ],
-          'unreadNotificationIds': [ 'X', 'Z' ]
-        };
-
-        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[3]" must not be empty; item "unreadNotificationIds[2]" must be a string' });
-        });
-        verifyDocumentNotReplaced(notificationsRefPrivilege, 29);
-      });
-
-      it('successfully deletes a valid notifications reference document', function() {
-        var doc = { '_id': 'biz.369.notifications', '_deleted': true };
-        var oldDoc = {
-          '_id': 'biz.369.notifications',
-          'allNotificationIds': [ 'X', 'Y', 'Z' ],
-          'unreadNotificationIds': [ 'X', 'Z' ]
-        };
-
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentDeleted(notificationsRefPrivilege, 369);
-      });
+      verifyDocumentNotCreated(notificationsPrivilege, 13);
     });
 
-    describe('business notifications config doc definition', function() {
-      var notificationsConfigPrivilege = 'NOTIFICATIONS_CONFIG';
+    it('successfully replaces a valid notification document', function() {
+      var doc = {
+        '_id': 'biz.7.notification.3',
+        'type': 'invoice-payments',
+        'sender': 'test-service',
+        'subject': 'a different subject',
+        'message': 'last warning!',
+        'createdAt': '2016-02-29T17:13:43.666Z',
+        'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
+      };
+      var oldDoc = {
+        '_id': 'biz.7.notification.3',
+        '_deleted': true
+      };
 
-      it('successfully creates a valid notifications config document', function() {
-        var doc = {
-          '_id': 'biz.1248.notificationsConfig',
-          'notificationTypes': {
-            'invoice-payments': {
-              'enabledTransports': [ 'ET1', 'ET2' ]
-            }
+      syncFunction(doc, oldDoc);
+
+      verifyDocumentReplaced(notificationsPrivilege, 7);
+    });
+
+    it('cannot replace a notification document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.10.notification.3',
+        'sender': '', // missing type, empty sender
+        'message': '', // missing subject, empty message
+        'createdAt': '2016-04-29T17:13:43.666Z', // changed createdAt
+        'actions': [ { 'label': ''} ]
+      };
+      var oldDoc = { // valid oldDoc
+        '_id': 'biz.10.notification.3',
+        'type': 'invoice-payments',
+        'sender': 'test-service',
+        'subject': 'a different subject',
+        'message': 'last warning!',
+        'createdAt': '2016-02-29T17:13:43.666Z',
+        'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
+      };
+
+      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notification document: item "sender" must not be empty; required item "type" is missing; required item "subject" is missing; item "message" must not be empty; value of item "createdAt" may not be modified; required item "actions[0].url" is missing; item "actions[0].label" must not be empty' });
+      });
+      verifyDocumentNotReplaced(notificationsPrivilege, 10);
+    });
+
+    it('successfully deletes a valid notification document', function() {
+      var doc = { '_id': 'biz.71.notification.5', '_deleted': true };
+      var oldDoc = {
+        '_id': 'biz.71.notification.5',
+        'type': 'invoice-payments',
+        'sender': 'test-service',
+        'subject': 'pay up!',
+        'message': 'you best pay up now, or else...',
+        'createdAt': '2016-02-29T17:13:43.666Z',
+        'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
+      };
+
+      syncFunction(doc, oldDoc);
+
+      verifyDocumentDeleted(notificationsPrivilege, 71);
+    });
+  });
+
+  describe('business notifications reference doc definition', function() {
+    var notificationsRefPrivilege = 'NOTIFICATIONS';
+
+    it('successfully creates a valid notifications reference document', function() {
+      var doc = {
+        '_id': 'biz.4.notifications',
+        'allNotificationIds': [ 'X', 'Y', 'Z' ],
+        'unreadNotificationIds': [ 'X', 'Z' ]
+      };
+
+      syncFunction(doc, null);
+
+      verifyDocumentCreated(notificationsRefPrivilege, 4);
+    });
+
+    it('cannot create a notifications reference document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.123.notifications',
+        'allNotificationIds': [ 23, 'Y', 'Z' ],
+        'unreadNotificationIds': [ 'Z', '' ]
+      };
+
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[0]" must be a string; item "unreadNotificationIds[1]" must not be empty' });
+      });
+      verifyDocumentNotCreated(notificationsRefPrivilege, 123);
+    });
+
+    it('successfully replaces a valid notifications reference document', function() {
+      var doc = {
+        '_id': 'biz.44.notifications',
+        'allNotificationIds': [ 'X', 'Y', 'Z', 'A' ],
+        'unreadNotificationIds': [ 'X', 'Z', 'A' ]
+      };
+      var oldDoc = {
+        '_id': 'biz.44.notifications',
+        'allNotificationIds': [ 'X', 'Y', 'Z' ],
+        'unreadNotificationIds': [ 'X', 'Z' ]
+      };
+
+      syncFunction(doc, oldDoc);
+
+      verifyDocumentReplaced(notificationsRefPrivilege, 44);
+    });
+
+    it('cannot replace a notifications reference document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.29.notifications',
+        'allNotificationIds': [ 'X', 'Y', 'Z', '' ],
+        'unreadNotificationIds': [ 'X', 'Z', 5 ]
+      };
+      var oldDoc = {
+        '_id': 'biz.29.notifications',
+        'allNotificationIds': [ 'X', 'Y', 'Z' ],
+        'unreadNotificationIds': [ 'X', 'Z' ]
+      };
+
+      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[3]" must not be empty; item "unreadNotificationIds[2]" must be a string' });
+      });
+      verifyDocumentNotReplaced(notificationsRefPrivilege, 29);
+    });
+
+    it('successfully deletes a valid notifications reference document', function() {
+      var doc = { '_id': 'biz.369.notifications', '_deleted': true };
+      var oldDoc = {
+        '_id': 'biz.369.notifications',
+        'allNotificationIds': [ 'X', 'Y', 'Z' ],
+        'unreadNotificationIds': [ 'X', 'Z' ]
+      };
+
+      syncFunction(doc, oldDoc);
+
+      verifyDocumentDeleted(notificationsRefPrivilege, 369);
+    });
+  });
+
+  describe('business notifications config doc definition', function() {
+    var notificationsConfigPrivilege = 'NOTIFICATIONS_CONFIG';
+
+    it('successfully creates a valid notifications config document', function() {
+      var doc = {
+        '_id': 'biz.1248.notificationsConfig',
+        'notificationTypes': {
+          'invoicePayments': {
+            'enabledTransports': [
+              { 'transportId': 'ET1' },
+              { 'transportId': 'ET2' }
+            ]
           }
-        };
+        }
+      };
 
-        syncFunction(doc, null);
+      syncFunction(doc, null);
 
-        verifyDocumentCreated(notificationsConfigPrivilege, 1248);
-      });
+      verifyDocumentCreated(notificationsConfigPrivilege, 1248);
+    });
 
-      it('cannot create a notifications config document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.72.notificationsConfig',
-          'notificationTypes': {
-            'invoice-payments': {
-              'enabledTransports': [ 'ET1', '' ],
-              'disabledTransports': [ 'ET3', 34 ]
-            },
-            '': {
-              'enabledTransports': [ ],
-              'disabledTransports': [ ]
-            }
+    it('cannot create a notifications config document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.72.notificationsConfig',
+        'notificationTypes': {
+          'invoicePayments': {
+            'enabledTransports': [
+              { 'invalid-property': 'blah' },
+              { 'transportId': '' }
+            ]
           },
-          'unknownprop': 23
-        };
+          'Invalid-Type': {
+            'enabledTransports': [ ]
+          },
+          '' : null
+        },
+        'unknownprop': 23
+      };
 
-        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: item "notificationTypes[invoice-payments].enabledTransports[1]" must not be empty; item "notificationTypes[invoice-payments].disabledTransports[1]" must be a string; empty hashtable key in item "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format /^[a-z_-]+$/; property "unknownprop" is not supported' });
-        });
-        verifyDocumentNotCreated(notificationsConfigPrivilege, 72);
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: required item "notificationTypes[invoicePayments].enabledTransports[0].transportId" is missing; property "notificationTypes[invoicePayments].enabledTransports[0].invalid-property" is not supported; item "notificationTypes[invoicePayments].enabledTransports[1].transportId" must not be empty; hashtable key "notificationTypes[Invalid-Type]" does not conform to expected format /^[a-zA-Z]+$/; empty hashtable key in item "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format /^[a-zA-Z]+$/; required item "notificationTypes[]" is missing; property "unknownprop" is not supported' });
       });
-
-      it('successfully replaces a valid notifications config document', function() {
-        var doc = {
-          '_id': 'biz.191.notificationsConfig',
-          'notificationTypes': {
-            'invoice-payments': {
-              'disabledTransports': [ 'ET1' ]
-            }
-          }
-        };
-        var oldDoc = {
-          '_id': 'biz.191.notificationsConfig',
-          'notificationTypes': {
-            'invoice-payments': {
-              'enabledTransports': [ 'ET1', 'ET2' ],
-              'disabledTransports': [ 'ET3' ]
-            }
-          }
-        };
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentReplaced(notificationsConfigPrivilege, 191);
-      });
-
-      it('cannot replace a notifications config document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.37.notificationsConfig',
-          'notificationTypes': {
-            'invoice-payments': {
-              'enabledTransports': [ 'ET1', 'ET2', true ],
-              'disabledTransports': [ '', 'ET3' ]
-            },
-            'InvalidType': {
-              'enabledTransports': [ ],
-              'disabledTransports': [ ]
-            },
-            'foobar': null
-          }
-        };
-        var oldDoc = {
-          '_id': 'biz.37.notificationsConfig',
-          'notificationTypes': { }
-        };
-
-        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: item "notificationTypes[invoice-payments].enabledTransports[2]" must be a string; item "notificationTypes[invoice-payments].disabledTransports[0]" must not be empty; hashtable key "notificationTypes[InvalidType]" does not conform to expected format /^[a-z_-]+$/; required item "notificationTypes[foobar]" is missing' });
-        });
-        verifyDocumentNotReplaced(notificationsConfigPrivilege, 37);
-      });
-
-      it('successfully deletes a valid notifications config document', function() {
-        var doc = { '_id': 'biz.333.notificationsConfig', '_deleted': true };
-        var oldDoc = {
-          '_id': 'biz.333.notificationsConfig',
-          'invoice-payments': {
-            'enabledTransports': [ 'ET1', 'ET2' ],
-            'disabledTransports': [ 'ET3' ]
-          }
-        };
-
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentDeleted(notificationsConfigPrivilege, 333);
-      });
+      verifyDocumentNotCreated(notificationsConfigPrivilege, 72);
     });
 
-    describe('business notification transport doc definition', function() {
-      var notificationTransportPrivilege = 'NOTIFICATIONS_CONFIG';
+    it('successfully replaces a valid notifications config document', function() {
+      var doc = {
+        '_id': 'biz.191.notificationsConfig',
+        'notificationTypes': {
+          'invoicePayments': {
+            'enabledTransports': [
+              { 'transportId': 'ET1' },
+              { 'transportId': 'ET2' },
+              { 'transportId': 'ET4' }
+            ]
+          }
+        }
+      };
+      var oldDoc = {
+        '_id': 'biz.191.notificationsConfig',
+        'notificationTypes': {
+          'invoicePayments': {
+            'enabledTransports': [ ]
+          }
+        }
+      };
 
-      it('successfully creates a valid notification transport document', function() {
-        var doc = {
-          '_id': 'biz.82.notificationTransport.ABC',
-          'type': 'email',
-          'recipient': 'foo.bar@example.com'
-        };
+      syncFunction(doc, oldDoc);
 
-        syncFunction(doc, null);
-
-        verifyDocumentCreated(notificationTransportPrivilege, 82);
-      });
-
-      it('cannot create a notification transport document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.75.notificationTransport.ABC',
-          'recipient': ''
-        };
-
-        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: required item "type" is missing; item "recipient" must not be empty' });
-        });
-        verifyDocumentNotCreated(notificationTransportPrivilege, 75);
-      });
-
-      it('successfully replaces a valid notification transport document', function() {
-        var doc = {
-          '_id': 'biz.38.notificationTransport.ABC',
-          'type': 'email',
-          'recipient': 'different.foo.bar@example.com'
-        };
-        var oldDoc = {
-          '_id': 'biz.38.notificationTransport.ABC',
-          'type': 'email',
-          'recipient': 'foo.bar@example.com'
-        };
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentReplaced(notificationTransportPrivilege, 38);
-      });
-
-      it('cannot replace a notification transport document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.73.notificationTransport.ABC',
-          'type': 23,
-        };
-        var oldDoc = {
-          '_id': 'biz.73.notificationTransport.ABC',
-          'type': 'email',
-          'recipient': 'foo.bar@example.com'
-        };
-
-        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: item "type" must be a string; required item "recipient" is missing' });
-        });
-        verifyDocumentNotReplaced(notificationTransportPrivilege, 73);
-      });
-
-      it('successfully deletes a valid notification transport document', function() {
-        var doc = { '_id': 'biz.14.notificationTransport.ABC', '_deleted': true };
-        var oldDoc = {
-          '_id': 'biz.14.notificationTransport.ABC',
-          'type': 'email',
-          'recipient': 'different.foo.bar@example.com'
-        };
-
-        syncFunction(doc, oldDoc);
-
-        verifyDocumentDeleted(notificationTransportPrivilege, 14);
-      });
+      verifyDocumentReplaced(notificationsConfigPrivilege, 191);
     });
 
-    describe('notification transport processing summary doc definition', function() {
-      function verifyProcessingSummaryWritten() {
-        expect(requireAccess.callCount).to.equal(1);
-        expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+    it('cannot replace a notifications config document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.37.notificationsConfig',
+        'notificationTypes': {
+          'invoicePayments': {
+            'enabledTransports': [
+              { 'transportId': 'ET1' },
+              { 'transportId': 'ET2', 'invalid-property': 73 },
+              { 'transportId': 34 },
+              null
+            ]
+          },
+          'foobar': null
+        }
+      };
+      var oldDoc = {
+        '_id': 'biz.37.notificationsConfig',
+        'notificationTypes': { }
+      };
 
-        expect(channel.callCount).to.equal(1);
-        expect(channel.calls[0].arg).to.have.length(1);
-        expect(channel.calls[0].arg).to.contain(serviceChannel);
-      }
-
-      function verifyProcessingSummaryNotWritten() {
-        expect(requireAccess.callCount).to.equal(1);
-        expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
-
-        expect(channel.callCount).to.equal(0);
-      }
-
-      it('successfully creates a valid notification transport processing summary document', function() {
-        var doc = {
-          '_id': 'biz.901.notification.ABC.processedTransport.XYZ',
-          'processedAt': '2016-06-04T21:02:19.013Z',
-          'sentAt': '2016-06-04T21:02:55.013Z'
-        };
-
-        syncFunction(doc, null);
-
-        verifyProcessingSummaryWritten();
+      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoicePayments].enabledTransports[1].invalid-property" is not supported; item "notificationTypes[invoicePayments].enabledTransports[2].transportId" must be a string; required item "notificationTypes[invoicePayments].enabledTransports[3]" is missing; required item "notificationTypes[foobar]" is missing' });
       });
-
-      it('cannot create a notification transport processing summary document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.109.notification.ABC.processedTransport.XYZ',
-          'processedBy': 'foobar',
-          'sentAt': '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
-        };
-
-        expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
-        });
-        verifyProcessingSummaryNotWritten();
-      });
-
-      it('successfully replaces a valid notification transport processing summary document', function() {
-        var doc = {
-          '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
-          'processedBy': 'foobar',
-          'processedAt': '2016-06-04T21:02:19.013Z'
-        };
-        var oldDoc = {
-          '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
-          '_deleted': true
-        };
-        syncFunction(doc, oldDoc);
-
-        verifyProcessingSummaryWritten();
-      });
-
-      it('cannot replace a notification transport processing summary document when the properties are invalid', function() {
-        var doc = {
-          '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
-          'processedAt': '2016-06-04T09:27:07.514Z',
-          'sentAt': ''
-        };
-        var oldDoc = {
-          '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
-          'processedBy': 'foobar',
-          'processedAt': '2016-06-03T21:02:19.013Z',
-        };
-
-        expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-          expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: value of item "processedBy" may not be modified; value of item "processedAt" may not be modified; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
-        });
-        verifyProcessingSummaryNotWritten();
-      });
-
-      it('successfully deletes a valid notification transport processing summary document', function() {
-        var doc = { '_id': 'biz.317.notification.ABC.processedTransport.XYZ', '_deleted': true };
-        var oldDoc = {
-          '_id': 'biz.317.notification.ABC.processedTransport.XYZ',
-          'processedBy': 'foobar',
-          'processedAt': '2016-06-04T21:02:19.013Z'
-        };
-
-        syncFunction(doc, oldDoc);
-
-        verifyProcessingSummaryWritten();
-      });
+      verifyDocumentNotReplaced(notificationsConfigPrivilege, 37);
     });
+
+    it('successfully deletes a valid notifications config document', function() {
+      var doc = { '_id': 'biz.333.notificationsConfig', '_deleted': true };
+      var oldDoc = {
+        '_id': 'biz.333.notificationsConfig',
+        'invoice-payments': {
+          'enabledTransports': [ 'ET1', 'ET2' ],
+          'disabledTransports': [ 'ET3' ]
+        }
+      };
+
+      syncFunction(doc, oldDoc);
+
+      verifyDocumentDeleted(notificationsConfigPrivilege, 333);
+    });
+  });
+
+  describe('business notification transport doc definition', function() {
+    var notificationTransportPrivilege = 'NOTIFICATIONS_CONFIG';
+
+    it('successfully creates a valid notification transport document', function() {
+      var doc = {
+        '_id': 'biz.82.notificationTransport.ABC',
+        'type': 'email',
+        'recipient': 'foo.bar@example.com'
+      };
+
+      syncFunction(doc, null);
+
+      verifyDocumentCreated(notificationTransportPrivilege, 82);
+    });
+
+    it('cannot create a notification transport document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.75.notificationTransport.ABC',
+        'recipient': ''
+      };
+
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: required item "type" is missing; item "recipient" must not be empty' });
+      });
+      verifyDocumentNotCreated(notificationTransportPrivilege, 75);
+    });
+
+    it('successfully replaces a valid notification transport document', function() {
+      var doc = {
+        '_id': 'biz.38.notificationTransport.ABC',
+        'type': 'email',
+        'recipient': 'different.foo.bar@example.com'
+      };
+      var oldDoc = {
+        '_id': 'biz.38.notificationTransport.ABC',
+        'type': 'email',
+        'recipient': 'foo.bar@example.com'
+      };
+      syncFunction(doc, oldDoc);
+
+      verifyDocumentReplaced(notificationTransportPrivilege, 38);
+    });
+
+    it('cannot replace a notification transport document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.73.notificationTransport.ABC',
+        'type': 23,
+      };
+      var oldDoc = {
+        '_id': 'biz.73.notificationTransport.ABC',
+        'type': 'email',
+        'recipient': 'foo.bar@example.com'
+      };
+
+      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: item "type" must be a string; required item "recipient" is missing' });
+      });
+      verifyDocumentNotReplaced(notificationTransportPrivilege, 73);
+    });
+
+    it('successfully deletes a valid notification transport document', function() {
+      var doc = { '_id': 'biz.14.notificationTransport.ABC', '_deleted': true };
+      var oldDoc = {
+        '_id': 'biz.14.notificationTransport.ABC',
+        'type': 'email',
+        'recipient': 'different.foo.bar@example.com'
+      };
+
+      syncFunction(doc, oldDoc);
+
+      verifyDocumentDeleted(notificationTransportPrivilege, 14);
+    });
+  });
+
+  describe('notification transport processing summary doc definition', function() {
+    function verifyProcessingSummaryWritten() {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+      expect(channel.callCount).to.equal(1);
+      expect(channel.calls[0].arg).to.have.length(1);
+      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    }
+
+    function verifyProcessingSummaryNotWritten() {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+      expect(channel.callCount).to.equal(0);
+    }
+
+    it('successfully creates a valid notification transport processing summary document', function() {
+      var doc = {
+        '_id': 'biz.901.notification.ABC.processedTransport.XYZ',
+        'processedAt': '2016-06-04T21:02:19.013Z',
+        'sentAt': '2016-06-04T21:02:55.013Z'
+      };
+
+      syncFunction(doc, null);
+
+      verifyProcessingSummaryWritten();
+    });
+
+    it('cannot create a notification transport processing summary document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.109.notification.ABC.processedTransport.XYZ',
+        'processedBy': 'foobar',
+        'sentAt': '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
+      };
+
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
+      });
+      verifyProcessingSummaryNotWritten();
+    });
+
+    it('successfully replaces a valid notification transport processing summary document', function() {
+      var doc = {
+        '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
+        'processedBy': 'foobar',
+        'processedAt': '2016-06-04T21:02:19.013Z'
+      };
+      var oldDoc = {
+        '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
+        '_deleted': true
+      };
+      syncFunction(doc, oldDoc);
+
+      verifyProcessingSummaryWritten();
+    });
+
+    it('cannot replace a notification transport processing summary document when the properties are invalid', function() {
+      var doc = {
+        '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
+        'processedAt': '2016-06-04T09:27:07.514Z',
+        'sentAt': ''
+      };
+      var oldDoc = {
+        '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
+        'processedBy': 'foobar',
+        'processedAt': '2016-06-03T21:02:19.013Z',
+      };
+
+      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: value of item "processedBy" may not be modified; value of item "processedAt" may not be modified; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
+      });
+      verifyProcessingSummaryNotWritten();
+    });
+
+    it('successfully deletes a valid notification transport processing summary document', function() {
+      var doc = { '_id': 'biz.317.notification.ABC.processedTransport.XYZ', '_deleted': true };
+      var oldDoc = {
+        '_id': 'biz.317.notification.ABC.processedTransport.XYZ',
+        'processedBy': 'foobar',
+        'processedAt': '2016-06-04T21:02:19.013Z'
+      };
+
+      syncFunction(doc, oldDoc);
+
+      verifyProcessingSummaryWritten();
+    });
+  });
 });
 
 function verifyDocumentCreated(basePrivilegeName, businessId) {
