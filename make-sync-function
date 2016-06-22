@@ -40,7 +40,7 @@ try {
 
   // Normalize line endings and indent each line so that it matches the indentation of the sync function template into
   // which it will be injected
-  syncDocDefn = syncDocDefn.replace(/(?:\r\n)|(?:\r)|(?:\n)/g, function() { return '\n  '; });
+  syncDocDefn = syncDocDefn.trim().replace(/(?:\r\n)|(?:\r)|(?:\n)/g, function() { return '\n  '; });
 } catch (ex) {
   console.log('Unable to read the sync document definitions file: ' + ex);
 
