@@ -954,6 +954,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       var doc = {
         '_id': 'biz.901.notification.ABC.processedTransport.XYZ',
         'processedAt': '2016-06-04T21:02:19.013Z',
+        'processedBy': 'foobar',
         'sentAt': '2016-06-04T21:02:55.013Z'
       };
 
@@ -965,12 +966,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
     it('cannot create a notification transport processing summary document when the properties are invalid', function() {
       var doc = {
         '_id': 'biz.109.notification.ABC.processedTransport.XYZ',
-        'processedBy': 'foobar',
+        'processedBy': [ ],
         'sentAt': '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
+        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: item "processedBy" must be a string; required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
       });
       verifyProcessingSummaryNotWritten();
     });
@@ -978,12 +979,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
     it('successfully replaces a valid notification transport processing summary document', function() {
       var doc = {
         '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
-        'processedBy': 'foobar',
         'processedAt': '2016-06-04T21:02:19.013Z'
       };
       var oldDoc = {
         '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
-        '_deleted': true
+        'processedBy': null,
+        'processedAt': '2016-06-04T21:02:19.013Z'
       };
       syncFunction(doc, oldDoc);
 

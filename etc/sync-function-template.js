@@ -20,6 +20,10 @@ function(doc, oldDoc) {
     return regex.test(value);
   }
 
+  function isValueNullOrUndefined(value) {
+    return typeof(value) === 'undefined' || value === null;
+  }
+
   // A document definition may define its channels for each operation (view, add, replace, delete) as either a string or an array of
   // strings. In either case, add them to the list if they are not already present.
   function appendToChannelList(allChannels, channelsToAdd) {
@@ -131,7 +135,7 @@ function(doc, oldDoc) {
       var propertyValue = objectValue[propertyName];
 
       var oldPropertyValue;
-      if (typeof(oldObjectValue) !== 'undefined' && oldObjectValue !== null) {
+      if (!isValueNullOrUndefined(oldObjectValue)) {
         oldPropertyValue = oldObjectValue[propertyName];
       }
 
@@ -177,16 +181,16 @@ function(doc, oldDoc) {
       validateImmutable(doc, oldDoc, itemStack, validationErrors);
     }
 
-    if (typeof itemValue !== 'undefined' && itemValue !== null) {
+    if (!isValueNullOrUndefined(itemValue)) {
       if (validator.mustNotBeEmpty && itemValue.length < 1) {
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be empty');
       }
 
-      if (typeof(validator.minimumValue) !== 'undefined' && validator.minimumValue !== null && itemValue < validator.minimumValue) {
+      if (!isValueNullOrUndefined(validator.minimumValue) && itemValue < validator.minimumValue) {
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be less than ' + validator.minimumValue);
       }
 
-      if (typeof(validator.maximumValue) !== 'undefined' && validator.maximumValue !== null && itemValue > validator.maximumValue) {
+      if (!isValueNullOrUndefined(validator.maximumValue) && itemValue > validator.maximumValue) {
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be greater than ' + validator.maximumValue);
       }
 
@@ -266,8 +270,10 @@ function(doc, oldDoc) {
       // question is the value of a property in an object that is itself in an array, but the object did not exist in the array in the old
       // document, then there is nothing to validate.
       var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
-      if (typeof(oldParentItemValue) !== 'undefined' && oldParentItemValue !== null && oldItemValue !== itemValue) {
-        validationErrors.push('value of item "' + buildItemPath(itemStack) + '" may not be modified')
+      if (!isValueNullOrUndefined(oldParentItemValue)) {
+        if (oldItemValue !== itemValue && !(isValueNullOrUndefined(oldItemValue) && isValueNullOrUndefined(itemValue))) {
+          validationErrors.push('value of item "' + buildItemPath(itemStack) + '" may not be modified')
+        }
       }
     }
   }
@@ -286,7 +292,7 @@ function(doc, oldDoc) {
         var elementValue = itemValue[elementIndex];
 
         var oldElementValue;
-        if (typeof(oldItemValue) !== 'undefined' && oldItemValue !== null && elementIndex < oldItemValue.length) {
+        if (!isValueNullOrUndefined(oldItemValue) && elementIndex < oldItemValue.length) {
           oldElementValue = oldItemValue[elementIndex];
         }
 
@@ -337,7 +343,7 @@ function(doc, oldDoc) {
 
         if (valueValidator) {
           var oldElementValue;
-          if (typeof(oldItemValue) !== 'undefined' && oldItemValue !== null) {
+          if (!isValueNullOrUndefined(oldItemValue)) {
             oldElementValue = oldItemValue[elementKey];
           }
 
@@ -386,7 +392,7 @@ function(doc, oldDoc) {
             validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported content type (' + validator.supportedContentTypes.join(',') + ')');
         }
 
-        if (typeof(validator.maximumSize) !== 'undefined' && validator.maximumSize !== null && attachment.length > validator.maximumSize) {
+        if (!isValueNullOrUndefined(validator.maximumSize) && attachment.length > validator.maximumSize) {
           validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must not be larger than ' + validator.maximumSize + ' bytes');
         }
       }
