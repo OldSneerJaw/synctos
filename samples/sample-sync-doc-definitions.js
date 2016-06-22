@@ -124,25 +124,29 @@ function() {
           propertyName: 'sender',
           type: 'string',
           required: true,
-          mustNotBeEmpty: true
+          mustNotBeEmpty: true,
+          immutable: true
         },
         {
           propertyName: 'type',
           type: 'string',
           required: true,
-          mustNotBeEmpty: true
+          mustNotBeEmpty: true,
+          immutable: true
         },
         {
           propertyName: 'subject',
           type: 'string',
           required: true,
-          mustNotBeEmpty: true
+          mustNotBeEmpty: true,
+          immutable: true
         },
         {
           propertyName: 'message',
           type: 'string',
           required: true,
-          mustNotBeEmpty: true
+          mustNotBeEmpty: true,
+          immutable: true
         },
         {
           propertyName: 'createdAt',
@@ -155,22 +159,31 @@ function() {
           type: 'datetime'
         },
         {
+          propertyName: 'siteName',
+          type: 'string',
+          mustNotBeEmpty: true,
+          immutable: true
+        },
+        {
           propertyName: 'actions',
           type: 'array',
           arrayElementsValidator: {
             type: 'object',
+            required: true,
             propertyValidators: [
               {
                 propertyName: 'url',
                 type: 'string',
                 required: true,
-                mustNotBeEmpty: true
+                mustNotBeEmpty: true,
+                immutable: true
               },
               {
                 propertyName: 'label',
                 type: 'string',
                 required: true,
-                mustNotBeEmpty: true
+                mustNotBeEmpty: true,
+                immutable: true
               }
             ]
           }

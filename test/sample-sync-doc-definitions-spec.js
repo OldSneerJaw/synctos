@@ -597,11 +597,11 @@ describe('The sample-sync-doc-definitions sync function', function() {
         'subject': '', // missing sender, empty subject
         'whatsthis?': 'something I dont recognize!', // unrecognized property
         'createdAt': '2016-02-29T25:13:43.666Z', // invalid hour
-        'actions': [ { 'url': 24 } ] // integer url, non-existent label
+        'actions': [ { 'url': 24 }, null ] // integer url, non-existent label
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notification document: required item "sender" is missing; item "type" must be a string; item "subject" must not be empty; required item "message" is missing; item "createdAt" must be an ISO 8601 date string with optional time and time zone components; item "actions[0].url" must be a string; required item "actions[0].label" is missing; property "whatsthis?" is not supported' });
+        expect(ex).to.eql({ forbidden: 'Invalid notification document: required item "sender" is missing; item "type" must be a string; item "subject" must not be empty; required item "message" is missing; item "createdAt" must be an ISO 8601 date string with optional time and time zone components; item "actions[0].url" must be a string; required item "actions[0].label" is missing; required item "actions[1]" is missing; property "whatsthis?" is not supported' });
       });
       verifyDocumentNotCreated(notificationsPrivilege, 13);
     });
@@ -645,7 +645,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notification document: item "sender" must not be empty; required item "type" is missing; required item "subject" is missing; item "message" must not be empty; value of item "createdAt" may not be modified; required item "actions[0].url" is missing; item "actions[0].label" must not be empty' });
+        expect(ex).to.eql({ forbidden: 'Invalid notification document: value of item "sender" may not be modified; item "sender" must not be empty; value of item "type" may not be modified; required item "type" is missing; value of item "subject" may not be modified; required item "subject" is missing; value of item "message" may not be modified; item "message" must not be empty; value of item "createdAt" may not be modified; value of item "actions[0].url" may not be modified; required item "actions[0].url" is missing; value of item "actions[0].label" may not be modified; item "actions[0].label" must not be empty' });
       });
       verifyDocumentNotReplaced(notificationsPrivilege, 10);
     });
