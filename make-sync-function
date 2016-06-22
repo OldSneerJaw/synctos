@@ -36,7 +36,11 @@ outputFilename = process.argv[3];
 
 var syncDocDefn;
 try {
-  syncDocDefn = fs.readFileSync(syncDocDefnFilename, "utf8");
+  syncDocDefn = fs.readFileSync(syncDocDefnFilename, 'utf8');
+
+  // Normalize line endings and indent each line so that it matches the indentation of the sync function template into
+  // which it will be injected
+  syncDocDefn = syncDocDefn.replace(/(?:\r\n)|(?:\r)|(?:\n)/g, function() { return '\n  '; });
 } catch (ex) {
   console.log('Unable to read the sync document definitions file: ' + ex);
 
@@ -45,7 +49,7 @@ try {
 
 var syncFuncTemplate;
 try {
-  syncFuncTemplate = fs.readFileSync(workingDir + '/etc/sync-function-template.js', "utf8");
+  syncFuncTemplate = fs.readFileSync(workingDir + '/etc/sync-function-template.js', 'utf8');
 } catch (ex) {
   console.log('Unable to read the sync function template file: ' + ex);
 
