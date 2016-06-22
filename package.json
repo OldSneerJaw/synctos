@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "etc/prepare-tests.sh && node_modules/.bin/mocha --recursive",
-    "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha --recursive -R xunit test/ > target/test-reports/synctos.xml"
+    "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha --recursive -R xunit test/ > build/test-reports/synctos.xml"
   },
   "license": "MIT"
 }
