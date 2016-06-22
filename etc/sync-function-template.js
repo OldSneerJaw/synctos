@@ -396,16 +396,14 @@ function(doc, oldDoc) {
   function performCustomValidation(doc, oldDoc, validator, itemStack, validationErrors) {
     var currentItemEntry = itemStack[itemStack.length - 1];
 
-    var customValidationItemStack = itemStack.slice();
-
-    // The top element in the stack should be the item's parent
-    customValidationItemStack.pop();
+    // Copy all but the last/top element so that the item's parent is at the top of the stack for the custom validation function
+    var customValidationItemStack = itemStack.slice(-1);
 
     var customValidationErrors = validator.customValidation(doc, oldDoc, currentItemEntry, customValidationItemStack);
 
     if (customValidationErrors instanceof Array) {
-      for (var customErrorIndex = 0; customErrorIndex < customValidationErrors.length; customErrorIndex++) {
-        validationErrors.push(customValidationErrors[customErrorIndex]);
+      for (var errorIndex = 0; errorIndex < customValidationErrors.length; errorIndex++) {
+        validationErrors.push(customValidationErrors[errorIndex]);
       }
     }
   }
