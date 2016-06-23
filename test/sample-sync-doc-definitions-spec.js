@@ -3,9 +3,9 @@ var simple = require('simple-mock');
 var fs = require('fs');
 
 // Load the contents of the sync function file into a global variable called syncFunction
-eval('var syncFunction = ' + fs.readFileSync('build/test-sample-sync-function.js').toString());
+eval('var syncFunction = ' + fs.readFileSync('build/resources/test-sample-sync-function.js').toString());
 
-var serviceChannel = 'SERVICE';
+const serviceChannel = 'SERVICE';
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
