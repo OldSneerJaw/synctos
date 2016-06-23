@@ -216,6 +216,8 @@ Validation for simple data types:
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
   * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')`). Undefined by default.
+  * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. Undefined by default.
+  * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. Undefined by default.
 * `integer`: The value is a number with no fractional component. Additional parameters:
   * `minimumValue`: The smallest (inclusive) value that is allowed. Undefined by default.
   * `maximumValue`: The largest (inclusive) value that is allowed. Undefined by default.
@@ -238,6 +240,8 @@ Validation for complex data types, which allow for nesting of child properties a
 
 * `array`: An array/list of elements. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an array with no elements is not allowed. Defaults to `false`.
+  * `minimumLength`: The minimum number of elements (inclusive) allowed in the array. Undefined by default.
+  * `maximumLength`: The maximum number of elements (inclusive) allowed in the array. Undefined by default.
   * `arrayElementsValidator`: The validation that is applied to each element of the array. Any validation type, including those for complex data types, may be used. Undefined by default. An example:
 
 ```

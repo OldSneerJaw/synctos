@@ -194,6 +194,14 @@ function(doc, oldDoc) {
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be greater than ' + validator.maximumValue);
       }
 
+      if (!isValueNullOrUndefined(validator.minimumLength) && itemValue.length < validator.minimumLength) {
+        validationErrors.push('length of item "' + buildItemPath(itemStack) + '" must not be less than ' + validator.minimumLength);
+      }
+
+      if (!isValueNullOrUndefined(validator.maximumLength) && itemValue.length > validator.maximumLength) {
+        validationErrors.push('length of item "' + buildItemPath(itemStack) + '" must not be greater than ' + validator.maximumLength);
+      }
+
       switch (validator.type) {
         case 'string':
           if (typeof itemValue !== 'string') {
