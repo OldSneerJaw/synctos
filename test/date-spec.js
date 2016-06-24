@@ -37,6 +37,7 @@ describe('Date validation type', function() {
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
         expect(ex.forbidden).to.contain('Invalid dateDoc document');
         expect(ex.forbidden).to.contain('item "rangeValidationProp" must not be less than 2016-06-23');
+        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
       });
 
       verifyDocumentWriteDenied();
@@ -51,6 +52,7 @@ describe('Date validation type', function() {
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
         expect(ex.forbidden).to.contain('Invalid dateDoc document');
         expect(ex.forbidden).to.contain('item "rangeValidationProp" must not be greater than 2016-06-23');
+        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
       });
 
       verifyDocumentWriteDenied();
@@ -77,4 +79,8 @@ function verifyDocumentReplaced() {
 function verifyDocumentWriteDenied() {
   expect(requireAccess.callCount).to.equal(1);
   expect(channel.callCount).to.equal(0);
+}
+
+function numberOfValidationErrors(message) {
+  return message.split(';').length;
 }
