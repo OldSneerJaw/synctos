@@ -15,7 +15,7 @@ function(doc, oldDoc) {
 
   // Check that a given value is a valid ISO 8601 date string without time and time zone components
   function isIso8601DateString(value) {
-    var regex = new RegExp('^(([\\+-]?[0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$');
+    var regex = new RegExp('^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$');
 
     return regex.test(value);
   }
