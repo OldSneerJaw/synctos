@@ -167,6 +167,7 @@ function() {
         {
           propertyName: 'actions',
           type: 'array',
+          immutable: true,
           arrayElementsValidator: {
             type: 'object',
             required: true,
@@ -175,15 +176,13 @@ function() {
                 propertyName: 'url',
                 type: 'string',
                 required: true,
-                mustNotBeEmpty: true,
-                immutable: true
+                mustNotBeEmpty: true
               },
               {
                 propertyName: 'label',
                 type: 'string',
                 required: true,
-                mustNotBeEmpty: true,
-                immutable: true
+                mustNotBeEmpty: true
               }
             ]
           }

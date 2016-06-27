@@ -293,11 +293,10 @@ function(doc, oldDoc) {
     if (oldItemValue === itemValue || (isValueNullOrUndefined(oldItemValue) && isValueNullOrUndefined(itemValue))) {
       return true;
     } else {
-      if (itemValue instanceof Array && oldItemValue instanceof Array) {
+      if (itemValue instanceof Array || oldItemValue instanceof Array) {
         return validateImmutableArray(itemValue, oldItemValue);
-      } else if (typeof(itemValue) === 'object' && typeof(oldItemValue) === 'object') {
-        // TODO
-        return true;
+      } else if (typeof(itemValue) === 'object' || typeof(oldItemValue) === 'object') {
+        return validateImmutableObject(itemValue, oldItemValue);
       } else {
         return false;
       }
@@ -305,7 +304,9 @@ function(doc, oldDoc) {
   }
 
   function validateImmutableArray(itemValue, oldItemValue) {
-    if (itemValue.length !== oldItemValue.length) {
+    if (!(itemValue instanceof Array && oldItemValue instanceof Array)) {
+      return false;
+    } else if (itemValue.length !== oldItemValue.length) {
       return false;
     }
 
@@ -314,6 +315,39 @@ function(doc, oldDoc) {
       var oldElementValue = oldItemValue[elementIndex];
 
       if (!validateImmutableItem(elementValue, oldElementValue)) {
+        return false;
+      }
+    }
+
+    // If we got here, all elements match
+    return true;
+  }
+
+  function validateImmutableObject(itemValue, oldItemValue) {
+    if (typeof(itemValue) !== 'object' || typeof(oldItemValue) !== 'object') {
+      return false;
+    }
+
+    var itemProperties = [ ];
+    for (var itemProp in itemValue) {
+      itemProperties.push(itemProp);
+    }
+
+    var oldItemProperties = [ ];
+    for (var oldItemProp in oldItemValue) {
+      oldItemProperties.push(oldItemProp);
+    }
+
+    if (itemProperties.length !== oldItemProperties.length) {
+      return false;
+    }
+
+    for (var propIndex = 0; propIndex < itemProperties.length; propIndex++) {
+      var propertyName = itemProperties[propIndex];
+      var propertyValue = itemValue[propertyName];
+      var oldPropertyValue = oldItemValue[propertyName];
+
+      if (!validateImmutableItem(propertyValue, oldPropertyValue)) {
         return false;
       }
     }

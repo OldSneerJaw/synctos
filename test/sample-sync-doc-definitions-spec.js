@@ -654,7 +654,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notification document: value of item "sender" may not be modified; item "sender" must not be empty; value of item "type" may not be modified; required item "type" is missing; value of item "subject" may not be modified; required item "subject" is missing; value of item "message" may not be modified; item "message" must not be empty; value of item "createdAt" may not be modified; value of item "actions[0].url" may not be modified; required item "actions[0].url" is missing; value of item "actions[0].label" may not be modified; item "actions[0].label" must not be empty' });
+        expect(ex).to.eql({ forbidden: 'Invalid notification document: value of item "sender" may not be modified; item "sender" must not be empty; value of item "type" may not be modified; required item "type" is missing; value of item "subject" may not be modified; required item "subject" is missing; value of item "message" may not be modified; item "message" must not be empty; value of item "createdAt" may not be modified; value of item "actions" may not be modified; required item "actions[0].url" is missing; item "actions[0].label" must not be empty' });
       });
       verifyDocumentNotReplaced(notificationsPrivilege, 10);
     });

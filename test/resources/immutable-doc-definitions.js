@@ -14,6 +14,16 @@
         propertyName: 'immutableArrayProp',
         type: 'array',
         immutable: true
+      },
+      {
+        propertyName: 'immutableObjectProp',
+        type: 'object',
+        immutable: true
+      },
+      {
+        propertyName: 'immutableHashtableProp',
+        type: 'hashtable',
+        immutable: true
       }
     ]
   }
