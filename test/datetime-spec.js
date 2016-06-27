@@ -20,7 +20,7 @@ describe('Date/time validation type', function() {
     it('can create a doc with a date/time that is within the minimum and maximum values', function() {
       var doc = {
         _id: 'datetimeDoc',
-        rangeValidationAsDatetimesProp: '2016-06-24T08:22:17.123+02:30'  // Same date/time as the min and max values, different time zone
+        rangeValidationAsDatetimesProp: '2016-06-24 08:22:17.123+0230'  // Same date/time as the min and max values, different time zone
       };
 
       syncFunction(doc);
@@ -82,6 +82,25 @@ describe('Date/time validation type', function() {
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
         expect(ex.forbidden).to.contain('Invalid datetimeDoc document');
         expect(ex.forbidden).to.contain('item "rangeValidationAsDatetimesProp" must not be greater than 2016-06-24T05:52:17.123Z');
+        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
+      });
+
+      verifyDocumentWriteDenied();
+    });
+
+    it('does not consider an invalid date/time as out of range', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        rangeValidationAsDatetimesProp: 'not-a-date'
+      };
+
+      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(ex.forbidden).not.to.contain('item "rangeValidationAsDatetimesProp" must not be less than 2016-06-23T21:52:17.123-08:00');
+        expect(ex.forbidden).not.to.contain('item "rangeValidationAsDatetimesProp" must not be greater than 2016-06-24T05:52:17.123Z');
+
+        // While the invalid input is not considered out of range, the document is still rejected because the format is invalid
+        expect(ex.forbidden).to.contain('Invalid datetimeDoc document');
+        expect(ex.forbidden).to.contain('item "rangeValidationAsDatetimesProp" must be an ISO 8601 date string with optional time and time zone components');
         expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
       });
 
@@ -171,6 +190,25 @@ describe('Date/time validation type', function() {
 
       verifyDocumentWriteDenied();
     });
+  });
+
+  it('does not consider an invalid date as out of range', function() {
+    var doc = {
+      _id: 'datetimeDoc',
+      rangeValidationAsDatesOnlyProp: 'not-a-date'
+    };
+
+    expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
+      expect(ex.forbidden).not.to.contain('item "rangeValidationAsDatesOnlyProp" must not be less than 2016-06-24');
+      expect(ex.forbidden).not.to.contain('item "rangeValidationAsDatesOnlyProp" must not be greater than 2016-06-24');
+
+      // While the invalid input is not considered out of range, the document is still rejected because the format is invalid
+      expect(ex.forbidden).to.contain('Invalid datetimeDoc document');
+      expect(ex.forbidden).to.contain('item "rangeValidationAsDatesOnlyProp" must be an ISO 8601 date string with optional time and time zone components');
+      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
+    });
+
+    verifyDocumentWriteDenied();
   });
 });
 
