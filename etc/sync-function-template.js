@@ -68,7 +68,7 @@ function(doc, oldDoc) {
     var requiredChannels;
     if (doc._deleted) {
       requiredChannels = docChannelMap.remove;
-    } else if (oldDoc) {
+    } else if (oldDoc && !oldDoc._deleted) {
       requiredChannels = docChannelMap.replace;
     } else {
       requiredChannels = docChannelMap.add;

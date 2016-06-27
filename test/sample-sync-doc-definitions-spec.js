@@ -584,8 +584,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         'createdAt': '2016-02-29T17:13:43.666Z',
         'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
       };
+      var oldDoc = {
+        '_id': 'biz.63.notification.5',
+        '_deleted': true
+      };
 
-      syncFunction(doc, null);
+      syncFunction(doc, oldDoc);
 
       verifyDocumentCreated(notificationsPrivilege, 63);
     });
@@ -618,7 +622,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
       var oldDoc = {
         '_id': 'biz.7.notification.3',
-        '_deleted': true
+        'type': 'invoice-payments',
+        'sender': 'test-service',
+        'subject': 'a different subject',
+        'message': 'last warning!',
+        'createdAt': '2016-02-29T17:13:43.666Z',
+        'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
       };
 
       syncFunction(doc, oldDoc);
