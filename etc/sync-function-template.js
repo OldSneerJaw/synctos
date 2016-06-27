@@ -8,14 +8,14 @@ function(doc, oldDoc) {
 
   // Check that a given value is a valid ISO 8601 format date string with optional time and time zone components
   function isIso8601DateTimeString(value) {
-    var regex = new RegExp('^(([\\+-]?[0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))([T ]([01][0-9]|2[0-4])(:[0-5][0-9])?(:[0-5][0-9])?([\\.,][0-9]{1,3})?)?([zZ]|([\\+-])([01][0-9]|2[0-3]):?([0-5][0-9])?)$');
+    var regex = new RegExp('^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))([T ]([01][0-9]|2[0-4])(:[0-5][0-9])?(:[0-5][0-9])?([\\.,][0-9]{1,3})?)?([zZ]|([\\+-])([01][0-9]|2[0-3]):?([0-5][0-9])?)?$');
 
     return regex.test(value);
   }
 
   // Check that a given value is a valid ISO 8601 date string without time and time zone components
   function isIso8601DateString(value) {
-    var regex = new RegExp('^(([\\+-]?[0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$');
+    var regex = new RegExp('^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$');
 
     return regex.test(value);
   }
@@ -186,12 +186,18 @@ function(doc, oldDoc) {
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be empty');
       }
 
-      if (!isValueNullOrUndefined(validator.minimumValue) && itemValue < validator.minimumValue) {
-        validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be less than ' + validator.minimumValue);
+      if (!isValueNullOrUndefined(validator.minimumValue)) {
+        var comparator = function(left, right) {
+          return left < right;
+        };
+        validateRangeConstraint(validator.minimumValue, validator.type, itemStack, comparator, 'less', validationErrors);
       }
 
-      if (!isValueNullOrUndefined(validator.maximumValue) && itemValue > validator.maximumValue) {
-        validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be greater than ' + validator.maximumValue);
+      if (!isValueNullOrUndefined(validator.maximumValue)) {
+        var comparator = function(left, right) {
+          return left > right;
+        };
+        validateRangeConstraint(validator.maximumValue, validator.type, itemStack, comparator, 'greater', validationErrors);
       }
 
       if (!isValueNullOrUndefined(validator.minimumLength) && itemValue.length < validator.minimumLength) {
@@ -283,6 +289,26 @@ function(doc, oldDoc) {
           validationErrors.push('value of item "' + buildItemPath(itemStack) + '" may not be modified')
         }
       }
+    }
+  }
+
+  function validateRangeConstraint(rangeLimit, validationType, itemStack, comparator, violationType, validationErrors) {
+    var itemValue = itemStack[itemStack.length - 1].itemValue;
+    var outOfRange;
+    if (validationType === 'datetime') {
+      // Date/times require special handling because their time and time zone components are optional and time zones may differ
+      try {
+        outOfRange = comparator(new Date(itemValue).getTime(), new Date(rangeLimit).getTime());
+      } catch (ex) {
+        // The date/time's format may be invalid but it isn't technically in violation of the range constraint
+        outOfRange = false;
+      }
+    } else if (comparator(itemValue, rangeLimit)) {
+      outOfRange = true;
+    }
+
+    if (outOfRange) {
+      validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationType + ' than ' + rangeLimit);
     }
   }
 
