@@ -236,10 +236,6 @@ Validation for simple data types:
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Undefined by default.
 
-**NOTE**: Validation for all _simple data types_ support the following additional parameter:
-
-* `immutable`: The item cannot be changed from its existing value if the document is being replaced. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
-
 Validation for complex data types, which allow for nesting of child properties and elements:
 
 * `array`: An array/list of elements. Additional parameters:
@@ -312,6 +308,7 @@ Validation for complex data types, which allow for nesting of child properties a
 **NOTE**: Validation for all simple and complex data types support the following additional parameters:
 
 * `required`: The value cannot be null or undefined. Defaults to `false`.
+* `immutable`: The item cannot be changed from its existing value if the document is being replaced. Applied recursively so that, if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
 * `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
 ```

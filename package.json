@@ -11,5 +11,9 @@
     "test": "etc/prepare-tests.sh && node_modules/.bin/mocha",
     "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha -R xunit test/ > build/test-reports/synctos.xml"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/Kashoo/synctos"
+  }
 }

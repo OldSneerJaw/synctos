@@ -284,12 +284,82 @@ function(doc, oldDoc) {
       // question is the value of a property in an object that is itself in an array, but the object did not exist in the array in the old
       // document, then there is nothing to validate.
       var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
+      var constraintSatisfied = true;
       if (!isValueNullOrUndefined(oldParentItemValue)) {
-        if (oldItemValue !== itemValue && !(isValueNullOrUndefined(oldItemValue) && isValueNullOrUndefined(itemValue))) {
-          validationErrors.push('value of item "' + buildItemPath(itemStack) + '" may not be modified')
-        }
+        constraintSatisfied = validateImmutableItem(itemValue, oldItemValue);
+      }
+
+      if (!constraintSatisfied) {
+        validationErrors.push('value of item "' + buildItemPath(itemStack) + '" may not be modified');
       }
     }
+  }
+
+  function validateImmutableItem(itemValue, oldItemValue) {
+    if (oldItemValue === itemValue || (isValueNullOrUndefined(oldItemValue) && isValueNullOrUndefined(itemValue))) {
+      return true;
+    } else {
+      if (itemValue instanceof Array || oldItemValue instanceof Array) {
+        return validateImmutableArray(itemValue, oldItemValue);
+      } else if (typeof(itemValue) === 'object' || typeof(oldItemValue) === 'object') {
+        return validateImmutableObject(itemValue, oldItemValue);
+      } else {
+        return false;
+      }
+    }
+  }
+
+  function validateImmutableArray(itemValue, oldItemValue) {
+    if (!(itemValue instanceof Array && oldItemValue instanceof Array)) {
+      return false;
+    } else if (itemValue.length !== oldItemValue.length) {
+      return false;
+    }
+
+    for (var elementIndex = 0; elementIndex < itemValue.length; elementIndex++) {
+      var elementValue = itemValue[elementIndex];
+      var oldElementValue = oldItemValue[elementIndex];
+
+      if (!validateImmutableItem(elementValue, oldElementValue)) {
+        return false;
+      }
+    }
+
+    // If we got here, all elements match
+    return true;
+  }
+
+  function validateImmutableObject(itemValue, oldItemValue) {
+    if (typeof(itemValue) !== 'object' || typeof(oldItemValue) !== 'object') {
+      return false;
+    }
+
+    var itemProperties = [ ];
+    for (var itemProp in itemValue) {
+      itemProperties.push(itemProp);
+    }
+
+    var oldItemPropertiesCount = 0;
+    for (var oldItemProp in oldItemValue) {
+      oldItemPropertiesCount++;
+    }
+
+    if (itemProperties.length !== oldItemPropertiesCount) {
+      return false;
+    }
+
+    for (var propIndex = 0; propIndex < itemProperties.length; propIndex++) {
+      var propertyName = itemProperties[propIndex];
+      var propertyValue = itemValue[propertyName];
+      var oldPropertyValue = oldItemValue[propertyName];
+
+      if (!validateImmutableItem(propertyValue, oldPropertyValue)) {
+        return false;
+      }
+    }
+
+    // If we got here, all properties match
+    return true;
   }
 
   function validateRangeConstraint(rangeLimit, validationType, itemStack, comparator, violationType, validationErrors) {
