@@ -85,7 +85,7 @@ function(doc, oldDoc) {
       if (!itemName) {
         // Skip null or empty names (e.g. the first element is typically the root of the document, which has no name)
         continue;
-      } else if (nameComponents.length < 1 || itemName.startsWith('[')) {
+      } else if (nameComponents.length < 1 || itemName.indexOf('[') === 0) {
         nameComponents.push(itemName);
       } else {
         nameComponents.push('.' + itemName);
