@@ -10,3 +10,5 @@ mkdir -p build/test-reports/
 ./make-sync-function test/resources/immutable-doc-definitions.js build/resources/test-immutable-sync-function.js
 ./make-sync-function samples/sample-sync-doc-definitions.js build/resources/test-sample-sync-function.js
 ./make-sync-function test/resources/string-doc-definitions.js build/resources/test-string-sync-function.js
+./make-sync-function test/resources/date-doc-definitions.js build/resources/test-date-sync-function.js
+./make-sync-function test/resources/datetime-doc-definitions.js build/resources/test-datetime-sync-function.js

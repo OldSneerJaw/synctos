@@ -3,24 +3,24 @@ var simple = require('simple-mock');
 var fs = require('fs');
 
 // Load the contents of the sync function file into a global variable called syncFunction
-eval('var syncFunction = ' + fs.readFileSync('build/resources/test-array-sync-function.js').toString());
+eval('var syncFunction = ' + fs.readFileSync('build/resources/test-date-sync-function.js').toString());
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 var requireAccess;
 var channel;
 
-describe('Array validation type', function() {
+describe('Date validation type', function() {
   beforeEach(function() {
     requireAccess = simple.stub();
     channel = simple.stub();
   });
 
-  describe('length validation', function() {
-    it('can create a doc with an array that is within the minimum and maximum lengths', function() {
+  describe('range validation', function() {
+    it('can create a doc with a date that is within the minimum and maximum values', function() {
       var doc = {
-        _id: 'arrayDoc',
-        lengthValidationProp: [ 'foo', 'bar' ]
+        _id: 'dateDoc',
+        rangeValidationProp: '2016-06-23'
       };
 
       syncFunction(doc);
@@ -28,30 +28,30 @@ describe('Array validation type', function() {
       verifyDocumentCreated();
     });
 
-    it('cannot create a doc with an array that is shorter than the minimum length', function() {
+    it('cannot create a doc with a date that is before the minimum value', function() {
       var doc = {
-        _id: 'arrayDoc',
-        lengthValidationProp: [ 'foo' ]
+        _id: 'dateDoc',
+        rangeValidationProp: '2016-06-22'
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid arrayDoc document');
-        expect(ex.forbidden).to.contain('length of item "lengthValidationProp" must not be less than 2');
+        expect(ex.forbidden).to.contain('Invalid dateDoc document');
+        expect(ex.forbidden).to.contain('item "rangeValidationProp" must not be less than 2016-06-23');
         expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
       });
 
       verifyDocumentWriteDenied();
     });
 
-    it('cannot create a doc with an array that is longer than the maximum length', function() {
+    it('cannot create a doc with a date that is after than the maximum value', function() {
       var doc = {
-        _id: 'arrayDoc',
-        lengthValidationProp: [ 'foo', 'bar', 'baz' ]
+        _id: 'dateDoc',
+        rangeValidationProp: '2016-06-24'
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid arrayDoc document');
-        expect(ex.forbidden).to.contain('length of item "lengthValidationProp" must not be greater than 2');
+        expect(ex.forbidden).to.contain('Invalid dateDoc document');
+        expect(ex.forbidden).to.contain('item "rangeValidationProp" must not be greater than 2016-06-23');
         expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
       });
 
