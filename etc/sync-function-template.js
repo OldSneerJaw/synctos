@@ -339,12 +339,12 @@ function(doc, oldDoc) {
       itemProperties.push(itemProp);
     }
 
-    var oldItemProperties = [ ];
+    var oldItemPropertiesCount = 0;
     for (var oldItemProp in oldItemValue) {
-      oldItemProperties.push(oldItemProp);
+      oldItemPropertiesCount++;
     }
 
-    if (itemProperties.length !== oldItemProperties.length) {
+    if (itemProperties.length !== oldItemPropertiesCount) {
       return false;
     }
 
@@ -358,7 +358,7 @@ function(doc, oldDoc) {
       }
     }
 
-    // If we got here, all elements match
+    // If we got here, all properties match
     return true;
   }
 
