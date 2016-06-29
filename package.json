@@ -1,6 +1,6 @@
 {
   "name": "synctos",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "dependencies": {},
   "devDependencies": {
     "expect.js": "*",
@@ -12,8 +12,8 @@
     "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha -R xunit test/ > build/test-reports/synctos.xml"
   },
   "license": "MIT",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/Kashoo/synctos"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kashoo/synctos"
   }
 }
