@@ -6,7 +6,7 @@ var path = require('path');
 var errorStatus = 1;
 var successStatus = 0;
 
-var workingDir = path.dirname(process.argv[1]);
+var scriptDir = path.dirname(process.argv[1]);
 
 // Verify the correct number of commandline params
 if (process.argv.length !== 4) {
@@ -20,7 +20,7 @@ if (process.argv.length !== 4) {
 
   console.log('Arguments:');
   console.log('    sync_document_definitions_file');
-  console.log('        Path to the JavaScript/JSON file that defines the document types to use in the sync function');
+  console.log('        Path to the JavaScript file that defines the document types to use in the sync function');
   console.log('    output_file');
   console.log('        Path to the file in which to output the sync function\n');
 
@@ -49,7 +49,7 @@ try {
 
 var syncFuncTemplate;
 try {
-  syncFuncTemplate = fs.readFileSync(workingDir + '/etc/sync-function-template.js', 'utf8');
+  syncFuncTemplate = fs.readFileSync(scriptDir + '/etc/sync-function-template.js', 'utf8');
 } catch (ex) {
   console.log('Unable to read the sync function template file: ' + ex);
 
@@ -66,6 +66,6 @@ try {
   return errorStatus;
 }
 
-console.log('Sync function written to ' + workingDir + '/' + outputFilename);
+console.log('Sync function written to ' + outputFilename);
 
 return successStatus;
