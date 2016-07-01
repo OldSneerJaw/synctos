@@ -1,5 +1,5 @@
 {
-  immutableDoc: {
+  immutableItemsDoc: {
     channels: {
       view: 'view',
       add: 'add',
@@ -7,7 +7,7 @@
       remove: 'remove'
     },
     typeFilter: function(doc) {
-      return doc._id === 'immutableDoc';
+      return doc._id === 'immutableItemsDoc';
     },
     propertyValidators: [
       {

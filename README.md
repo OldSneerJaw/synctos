@@ -207,6 +207,8 @@ Each document type is specified as an object with the following properties:
 
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files.
 
+* `immutable`: (optional) The document's properties cannot be changed if the document is being replaced. Applied recursively so that, even if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
+
 ##### Validation:
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
@@ -308,7 +310,7 @@ Validation for complex data types, which allow for nesting of child properties a
 **NOTE**: Validation for all simple and complex data types support the following additional parameters:
 
 * `required`: The value cannot be null or undefined. Defaults to `false`.
-* `immutable`: The item cannot be changed from its existing value if the document is being replaced. Applied recursively so that, if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
+* `immutable`: The item cannot be changed from its existing value if the document is being replaced. Applied recursively so that, even if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
 * `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
 ```

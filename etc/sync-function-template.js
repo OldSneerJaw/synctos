@@ -115,6 +115,10 @@ function(doc, oldDoc) {
       }
     ];
 
+    if (docDefinition.immutable && oldDoc && !oldDoc._deleted && !validateImmutableObject(doc, oldDoc)) {
+      validationErrors.push('properties of this document may not be modified');
+    }
+
     // Execute each of the document's property validators
     validateProperties(doc, oldDoc, docDefinition.propertyValidators, itemStack, validationErrors, true);
 
