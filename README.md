@@ -207,7 +207,7 @@ Each document type is specified as an object with the following properties:
 
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files.
 
-* `immutable`: (optional) The document's properties cannot be changed if the document is being replaced. Applied recursively so that, even if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Also does not prevent the creation, modification or deletion of attachments (i.e. the `_attachments` property) because attachment writes are often done in two HTTP operations (create the document and add the attachment). Defaults to `false`.
+* `immutable`: (optional) The document's properties cannot be changed if the document is being replaced. Applied recursively so that, even if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Note that it will not be possible to create, modify or delete attachments after the document has been created, which means that, if the document type allows attachments, they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 
 ##### Validation:
 

@@ -136,6 +136,16 @@ function(doc, oldDoc) {
     var objectValue = currentItemEntry.itemValue;
     var oldObjectValue = currentItemEntry.oldItemValue;
 
+    if (immutableProperties && oldDoc && !oldDoc._deleted) {
+      // Treat a null or undefined attachments property the same as an empty object/hash by initializing it to an empty object
+      var attachments = objectValue._attachments || { };
+      var oldAttachments = oldObjectValue._attachments || { };
+
+      if (!validateImmutableItem(attachments, oldAttachments)) {
+        validationErrors.push('attachments of this document may not be modified');
+      }
+    }
+
     var supportedProperties = [ ];
     for (var validatorIndex = 0; validatorIndex < propertyValidators.length; validatorIndex++) {
       var validator = propertyValidators[validatorIndex];

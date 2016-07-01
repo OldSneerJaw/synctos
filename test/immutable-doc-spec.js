@@ -46,9 +46,11 @@ describe('Immutable document validation parameter', function() {
   });
 
   it('can replace a document that has not been modified', function() {
-    // The revision property has been removed (i.e. it was specified via the "rev" query string param), but nothing else has changed
+    // The attachments property has been added but it is empty, which is functionally equal to null or undefined in this one case
     var doc = {
       _id: 'immutableDoc',
+      _rev: 'rev1',
+      _attachments: { },
       arrayProp: [ 'foo' ],
       objectProp: { foo: 'bar' },
       hashtableProp: { bar: 'baz' },
@@ -68,16 +70,10 @@ describe('Immutable document validation parameter', function() {
     verifyDocumentReplaced();
   });
 
-  it('can replace a document when the only modification is replacing null values with undefined or vice versa', function() {
-    // The attachments property has been added, but otherwise they're equal
+  it('can replace a document when replacing null values with undefined or vice versa', function() {
+    // The revision property has been removed (i.e. it was specified via the "rev" query string param instead), but otherwise they're equal
     var doc = {
       _id: 'immutableDoc',
-      _rev: 'rev1',
-      _attachments: {
-        'foobar.pdf': {
-          'content_type': 'application/pdf'
-        }
-      },
       objectProp: { },
       stringProp: null
     };
@@ -92,6 +88,32 @@ describe('Immutable document validation parameter', function() {
     syncFunction(doc, oldDoc);
 
     verifyDocumentReplaced();
+  });
+
+  it('cannot replace a document when the attachments have been modified', function() {
+    var doc = {
+      _id: 'immutableDoc',
+      _rev: 'rev1',
+      _attachments: {
+        'foobar.pdf': {
+          'content_type': 'application/pdf'
+        }
+      },
+      stringProp: 'foobar'
+    };
+    var oldDoc = {
+      _id: 'immutableDoc',
+      _rev: 'rev1',
+      stringProp: 'foobar'
+    };
+
+    expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+      expect(ex.forbidden).to.contain('Invalid immutableDoc document');
+      expect(ex.forbidden).to.contain('attachments of this document may not be modified');
+      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
+    });
+
+    verifyDocumentWriteDenied();
   });
 
   it('cannot replace a document when a root-level simple type property has been modified', function() {
