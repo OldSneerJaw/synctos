@@ -286,7 +286,7 @@ describe('Immutable item validation parameter', function() {
       verifyDocumentReplaced();
     });
 
-    it('can replace a document with an immutable object when the property order has changed', function() {
+    it('can replace a document with an immutable object when the property order has changed and a null property becomes undefined', function() {
       var doc = {
         _id: 'immutableItemsDoc',
         immutableObjectProp: {
@@ -298,7 +298,8 @@ describe('Immutable item validation parameter', function() {
         _id: 'immutableItemsDoc',
         immutableObjectProp: {
           myStringProp: 'foobar',
-          myIntegerProp: 8
+          myIntegerProp: 8,
+          myNullProp: null
         }
       };
 
@@ -505,12 +506,13 @@ describe('Immutable item validation parameter', function() {
       verifyDocumentReplaced();
     });
 
-    it('can replace a document with an immutable hashtable when the property order has changed', function() {
+    it('can replace a document with an immutable hashtable when the property order has changed and an undefined property becomes null', function() {
       var doc = {
         _id: 'immutableItemsDoc',
         immutableHashtableProp: {
           myIntegerProp: 8,
-          myStringProp: 'foobar'
+          myStringProp: 'foobar',
+          myUndefinedProp: null
         }
       };
       var oldDoc = {

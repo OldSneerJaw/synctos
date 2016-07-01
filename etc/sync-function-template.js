@@ -307,8 +307,13 @@ function(doc, oldDoc) {
   }
 
   function validateImmutableItem(itemValue, oldItemValue) {
-    if (oldItemValue === itemValue || (isValueNullOrUndefined(oldItemValue) && isValueNullOrUndefined(itemValue))) {
+    var itemMissing = isValueNullOrUndefined(itemValue);
+    var oldItemMissing = isValueNullOrUndefined(oldItemValue);
+    if (oldItemValue === itemValue || (itemMissing && oldItemMissing)) {
       return true;
+    } else if (itemMissing !== oldItemMissing) {
+      // One value is null or undefined but the other is not, so they cannot be equal
+      return false;
     } else {
       if (itemValue instanceof Array || oldItemValue instanceof Array) {
         return validateImmutableArray(itemValue, oldItemValue);
@@ -350,13 +355,10 @@ function(doc, oldDoc) {
       itemProperties.push(itemProp);
     }
 
-    var oldItemPropertiesCount = 0;
     for (var oldItemProp in oldItemValue) {
-      oldItemPropertiesCount++;
-    }
-
-    if (itemProperties.length !== oldItemPropertiesCount) {
-      return false;
+      if (itemProperties.indexOf(oldItemProp) < 0) {
+        itemProperties.push(oldItemProp);
+      }
     }
 
     for (var propIndex = 0; propIndex < itemProperties.length; propIndex++) {

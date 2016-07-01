@@ -78,13 +78,14 @@ describe('Immutable document validation parameter', function() {
           'content_type': 'application/pdf'
         }
       },
-      objectProp: null,
+      objectProp: { },
       stringProp: null
     };
     var oldDoc = {
       _id: 'immutableDoc',
       _rev: 'rev1',
       arrayProp: null,
+      objectProp: { foo: null },
       hashtableProp: null
     };
 
