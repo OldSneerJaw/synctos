@@ -46,6 +46,7 @@ describe('Immutable document validation parameter', function() {
   });
 
   it('can replace a document that has not been modified', function() {
+    // The revision property has been removed (i.e. it was specified via the "rev" query string param), but nothing else has changed
     var doc = {
       _id: 'immutableDoc',
       arrayProp: [ 'foo' ],
@@ -55,6 +56,7 @@ describe('Immutable document validation parameter', function() {
     };
     var oldDoc = {
       _id: 'immutableDoc',
+      _rev: 'rev1',
       arrayProp: [ 'foo' ],
       objectProp: { foo: 'bar' },
       hashtableProp: { bar: 'baz' },
@@ -67,13 +69,21 @@ describe('Immutable document validation parameter', function() {
   });
 
   it('can replace a document when the only modification is replacing null values with undefined or vice versa', function() {
+    // The attachments property has been added, but otherwise they're equal
     var doc = {
       _id: 'immutableDoc',
+      _rev: 'rev1',
+      _attachments: {
+        'foobar.pdf': {
+          'content_type': 'application/pdf'
+        }
+      },
       objectProp: null,
       stringProp: null
     };
     var oldDoc = {
       _id: 'immutableDoc',
+      _rev: 'rev1',
       arrayProp: null,
       hashtableProp: null
     };

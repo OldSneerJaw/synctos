@@ -115,19 +115,23 @@ function(doc, oldDoc) {
       }
     ];
 
-    if (docDefinition.immutable && oldDoc && !oldDoc._deleted && !validateImmutableObject(doc, oldDoc)) {
-      validationErrors.push('properties of this document may not be modified');
-    }
-
-    // Execute each of the document's property validators
-    validateProperties(doc, oldDoc, docDefinition.propertyValidators, itemStack, validationErrors, true);
+    // Execute each of the document's property validators while ignoring these whitelisted properties at the root level
+    var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
+    validateProperties(
+      doc,
+      oldDoc,
+      docDefinition.propertyValidators,
+      itemStack,
+      validationErrors,
+      whitelistedProperties,
+      docDefinition.immutable);
 
     if (validationErrors.length > 0) {
       throw { forbidden: 'Invalid ' + docType + ' document: ' + validationErrors.join('; ') };
     }
   }
 
-  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, useWhitelist) {
+  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, whitelistedProperties, immutableProperties) {
     var currentItemEntry = itemStack[itemStack.length - 1];
     var objectValue = currentItemEntry.itemValue;
     var oldObjectValue = currentItemEntry.oldItemValue;
@@ -141,6 +145,10 @@ function(doc, oldDoc) {
       var oldPropertyValue;
       if (!isValueNullOrUndefined(oldObjectValue)) {
         oldPropertyValue = oldObjectValue[propertyName];
+      }
+
+      if (immutableProperties && oldDoc && !oldDoc._deleted && !validateImmutableItem(propertyValue, oldPropertyValue)) {
+        validationErrors.push('properties of this document may not be modified');
       }
 
       supportedProperties.push(propertyName);
@@ -157,10 +165,9 @@ function(doc, oldDoc) {
     }
 
     // Verify there are no unsupported properties in the object
-    var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
     for (var propertyName in objectValue) {
-      if (useWhitelist && whitelistedProperties.indexOf(propertyName) >= 0) {
-        // These properties are special cases that should always be allowed - generally only applied at the top level of the document
+      if (whitelistedProperties && whitelistedProperties.indexOf(propertyName) >= 0) {
+        // These properties are special cases that should always be allowed - generally only applied at the root level of the document
         continue;
       }
 

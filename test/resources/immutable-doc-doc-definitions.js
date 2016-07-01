@@ -27,6 +27,7 @@
         type: 'string'
       }
     ],
+    allowAttachments: true,
     immutable: true
   }
 }
