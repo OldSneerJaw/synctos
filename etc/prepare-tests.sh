@@ -7,7 +7,7 @@ outputDir="build/sync-functions"
 mkdir -p "$outputDir"
 mkdir -p build/test-reports/
 
-# Create a temporary sync function from from the sample document definitions file
+# Create a temporary sync function from the sample document definitions file
 ./make-sync-function samples/sample-sync-doc-definitions.js "$outputDir"/test-sample-sync-function.js
 
 # Automatically create a sync function from each document definitions file in the test resources directory

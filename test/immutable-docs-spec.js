@@ -3,7 +3,7 @@ var simple = require('simple-mock');
 var fs = require('fs');
 
 // Load the contents of the sync function file into a global variable called syncFunction
-eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-immutable-doc-sync-function.js').toString());
+eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-immutable-docs-sync-function.js').toString());
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
@@ -50,7 +50,17 @@ describe('Immutable document validation parameter', function() {
     verifyDocumentDeleted();
   });
 
-  it('cannot replace a document even if its properties have not been modified', function() {
+  it('can delete a document if the old document does not exist', function() {
+    // There doesn't seem to be much point in deleting something that doesn't exist, but since Sync Gateway allows you to do it, check
+    // that it works properly
+    var doc = { _id: 'immutableDoc', _deleted: true };
+
+    syncFunction(doc);
+
+    verifyDocumentDeleted();
+  });
+
+  it('cannot replace an existing document even if its properties have not been modified', function() {
     var doc = {
       _id: 'immutableDoc',
       stringProp: 'foobar'
@@ -69,7 +79,7 @@ describe('Immutable document validation parameter', function() {
     verifyDocumentWriteDenied();
   });
 
-  it('cannot delete a document', function() {
+  it('cannot delete an existing document', function() {
     var doc = {
       _id: 'immutableDoc',
       _deleted: true
