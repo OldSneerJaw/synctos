@@ -49,17 +49,15 @@ For example, a document definition file implemented as an object:
             return doc.type === 'myDocType1';
           }
         },
-        propertyValidators: [
-          {
-            propertyName: 'type',
+        propertyValidators: {
+          type: {
             type: 'string',
             required: true
           },
-          {
-            propertyName: 'myProp1',
+          myProp1: {
             type: 'integer'
           }
-        ]
+        }
       },
       myDocType2: {
         channels: {
@@ -75,17 +73,15 @@ For example, a document definition file implemented as an object:
             return doc.type === 'myDocType2';
           }
         },
-        propertyValidators: [
-          {
-            propertyName: 'type',
+        propertyValidators: {
+          type: {
             type: 'string',
             required: true
           },
-          {
-            propertyName: 'myProp2',
+          myProp2: {
             type: 'datetime'
           }
-        ]
+        }
       }
     }
 
@@ -99,7 +95,6 @@ Or a functionally equivalent document definition file implemented as a function:
         remove: 'delete'
       };
       var typePropertyValidator = {
-        propertyName: 'type',
         type: 'string',
         required: true
       };
@@ -118,24 +113,22 @@ Or a functionally equivalent document definition file implemented as a function:
         myDocType1: {
           channels: sharedChannels,
           typeFilter: makeDocTypeFilter(doc, oldDoc, 'myDocType1'),
-          propertyValidators: [
-            typePropertyValidator,
-            {
-              propertyName: 'myProp1',
+          propertyValidators: {
+            type: typePropertyValidator,
+            myProp1: {
               type: 'integer'
             }
-          ]
+          }
         },
         myDocType2: {
           channels: sharedChannels,
           typeFilter: makeDocTypeFilter(doc, oldDoc, 'myDocType2'),
-          propertyValidators: [
-            typePropertyValidator,
-            {
-              propertyName: 'myProp2',
+          propertyValidators: {
+            type: typePropertyValidator,
+            myProp2: {
               type: 'datetime'
             }
-          ]
+          }
         }
       };
     }
@@ -188,21 +181,19 @@ Each document type is specified as an object with the following properties:
     }
 ```
 
-* `propertyValidators`: (required) An array of validators that specify the format of each of the document type's supported properties. Each property must declare a name and a type and, optionally, some number of parameters. For example:
+* `propertyValidators`: (required) An object/hash of validators that specify the format of each of the document type's supported properties. Each entry consists of a key that specifies the property name and a value that specifies the validation to perform on that property. Each element must declare a type and, optionally, some number of additional parameters. Any property that is not declared will be rejected by the sync function. An example:
 
 ```
-    propertyValidators: [
-      {
-        propertyName: 'myProp1',
+    propertyValidators: {
+      myProp1: {
         type: 'boolean',
         required: true
       },
-      {
-        propertyName: 'myProp2',
+      myProp2: {
         type: 'array',
         mustNotBeEmpty: true
       }
-    ]
+    }
 ```
 
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files.
@@ -247,8 +238,7 @@ Validation for complex data types, which allow for nesting of child properties a
   * `arrayElementsValidator`: The validation that is applied to each element of the array. Any validation type, including those for complex data types, may be used. Undefined by default. An example:
 
 ```
-    {
-      propertyName: 'myArray1',
+    myArray1: {
       type: 'array',
       mustNotBeEmpty: true,
       arrayElementsValidator: {
@@ -259,24 +249,21 @@ Validation for complex data types, which allow for nesting of child properties a
 ```
 
 * `object`: An object that is able to declare which properties it supports so that unrecognized properties are rejected. Additional parameters:
-  * `propertyValidators`: An array of validators to be applied to the properties that are supported by the object. Any validation type, including those for complex data types, may be used for each property validator. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function. An example:
+  * `propertyValidators`: An object/hash of validators to be applied to the properties that are supported by the object. Any validation type, including those for complex data types, may be used for each property validator. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function. An example:
 
 ```
-    {
-      propertyName: 'myObj1',
+    myObj1: {
       type: 'object',
-      propertyValidators: [
-        {
-          propertyName: 'myProp1',
+      propertyValidators: {
+        myProp1: {
           type: 'date',
           immutable: true
         },
-        {
-          propertyName: 'myProp2',
+        myProp2: {
           type: 'integer',
           minimumValue: 1
         }
-      ]
+      }
     }
 ```
 
@@ -287,8 +274,7 @@ Validation for complex data types, which allow for nesting of child properties a
   * `hashtableValuesValidator`: The validation that is applied to each of the values in the object/hash. Undefined by default. Any validation type, including those for complex data types, may be used. An example:
 
 ```
-    {
-      propertyName: 'myHash1',
+    myHash1: {
       type: 'hashtable',
       hashtableKeysValidator: {
         mustNotBeEmpty: false,
@@ -297,12 +283,11 @@ Validation for complex data types, which allow for nesting of child properties a
       hashtableValuesValidator: {
         type: 'object',
         required: true,
-        propertyValidators: [
-          {
-            propertyName: 'mySubObjProp1',
+        propertyValidators: {
+          mySubObjProp1: {
             type: 'string'
           }
-        ]
+        }
       }
     }
 ```
@@ -314,13 +299,11 @@ Validation for complex data types, which allow for nesting of child properties a
 * `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
 ```
-    propertyValidators: [
-      {
-        propertyName: 'myStringProp',
+    propertyValidators: {
+      myStringProp: {
         type: 'string'
       },
-      {
-        propertyName: 'myCustomProp',
+      myCustomProp: {
         type: 'integer',
         minimumValue: 1,
         maximumValue: 100,
@@ -350,5 +333,5 @@ Validation for complex data types, which allow for nesting of child properties a
           return validationErrors;
         }
       }
-    ]
+    }
 ```

@@ -9,9 +9,8 @@
     typeFilter: function(doc) {
       return doc._id === 'arrayDoc';
     },
-    propertyValidators: [
-      {
-        propertyName: 'lengthValidationProp',
+    propertyValidators: {
+      lengthValidationProp: {
         type: 'array',
         minimumLength: 2,
         maximumLength: 2,
@@ -19,6 +18,6 @@
           type: 'string'
         }
       }
-    ]
+    }
   }
 }

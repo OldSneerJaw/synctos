@@ -9,13 +9,12 @@
     typeFilter: function(doc) {
       return doc._id === 'stringDoc';
     },
-    propertyValidators: [
-      {
-        propertyName: 'lengthValidationProp',
+    propertyValidators: {
+      lengthValidationProp: {
         type: 'string',
         minimumLength: 3,
         maximumLength: 3
       }
-    ]
+    }
   }
 }
