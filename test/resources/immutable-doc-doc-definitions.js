@@ -11,23 +11,11 @@
     },
     propertyValidators: [
       {
-        propertyName: 'arrayProp',
-        type: 'array'
-      },
-      {
-        propertyName: 'objectProp',
-        type: 'object'
-      },
-      {
-        propertyName: 'hashtableProp',
-        type: 'hashtable'
-      },
-      {
         propertyName: 'stringProp',
         type: 'string'
       }
     ],
-    allowAttachments: true,
-    immutable: true
+    immutable: true,
+    allowAttachments: true
   }
 }

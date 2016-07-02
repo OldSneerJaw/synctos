@@ -19,9 +19,6 @@ describe('Immutable document validation parameter', function() {
   it('can create a document if the old document does not exist', function() {
     var doc = {
       _id: 'immutableDoc',
-      arrayProp: [ 'foo' ],
-      objectProp: { foo: 'bar' },
-      hashtableProp: { bar: 'baz' },
       stringProp: 'foobar'
     };
 
@@ -33,10 +30,7 @@ describe('Immutable document validation parameter', function() {
   it('can create a document if the old document was deleted', function() {
     var doc = {
       _id: 'immutableDoc',
-      arrayProp: [ 'foo' ],
-      objectProp: { foo: 'bar' },
-      hashtableProp: { bar: 'baz' },
-      stringProp: 'foobar'
+      stringProp: 'barfoo'
     };
     var oldDoc = { _id: 'immutableDoc', _deleted: true };
 
@@ -45,57 +39,60 @@ describe('Immutable document validation parameter', function() {
     verifyDocumentCreated();
   });
 
-  it('can replace a document that has not been modified', function() {
-    // The attachments property has been added but it is empty, which is functionally equal to null or undefined in this one case
+  it('can delete a document if the old document was already deleted', function() {
+    // There doesn't seem to be much point in deleting something that is already deleted, but since Sync Gateway allows you to do it, check
+    // that it works properly
+    var doc = { _id: 'immutableDoc', _deleted: true };
+    var oldDoc = { _id: 'immutableDoc', _deleted: true };
+
+    syncFunction(doc, oldDoc);
+
+    verifyDocumentDeleted();
+  });
+
+  it('cannot replace a document even if its properties have not been modified', function() {
     var doc = {
       _id: 'immutableDoc',
-      _rev: 'rev1',
-      _attachments: { },
-      arrayProp: [ 'foo' ],
-      objectProp: { foo: 'bar' },
-      hashtableProp: { bar: 'baz' },
       stringProp: 'foobar'
     };
     var oldDoc = {
       _id: 'immutableDoc',
-      _rev: 'rev1',
-      arrayProp: [ 'foo' ],
-      objectProp: { foo: 'bar' },
-      hashtableProp: { bar: 'baz' },
       stringProp: 'foobar'
     };
 
-    syncFunction(doc, oldDoc);
+    expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+      expect(ex.forbidden).to.contain('Invalid immutableDoc document');
+      expect(ex.forbidden).to.contain('documents of this type cannot be replaced or deleted');
+      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
+    });
 
-    verifyDocumentReplaced();
+    verifyDocumentWriteDenied();
   });
 
-  it('can replace a document when replacing null values with undefined or vice versa', function() {
-    // The revision property has been removed (i.e. it was specified via the "rev" query string param instead), but otherwise they're equal
+  it('cannot delete a document', function() {
     var doc = {
       _id: 'immutableDoc',
-      objectProp: { },
-      stringProp: null
+      _deleted: true
     };
     var oldDoc = {
       _id: 'immutableDoc',
-      _rev: 'rev1',
-      arrayProp: null,
-      objectProp: { foo: null },
-      hashtableProp: null
+      stringProp: 'foobar'
     };
 
-    syncFunction(doc, oldDoc);
+    expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+      expect(ex.forbidden).to.contain('Invalid immutableDoc document');
+      expect(ex.forbidden).to.contain('documents of this type cannot be replaced or deleted');
+      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
+    });
 
-    verifyDocumentReplaced();
+    verifyDocumentWriteDenied();
   });
 
-  it('cannot replace a document when the attachments have been modified', function() {
+  it('cannot modify attachments after the document has been created', function() {
     var doc = {
       _id: 'immutableDoc',
-      _rev: 'rev1',
       _attachments: {
-        'foobar.pdf': {
+        'bar.pdf': {
           'content_type': 'application/pdf'
         }
       },
@@ -103,107 +100,17 @@ describe('Immutable document validation parameter', function() {
     };
     var oldDoc = {
       _id: 'immutableDoc',
-      _rev: 'rev1',
+      _attachments: {
+        'foo.pdf': {
+          'content_type': 'application/pdf'
+        }
+      },
       stringProp: 'foobar'
     };
 
     expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
       expect(ex.forbidden).to.contain('Invalid immutableDoc document');
-      expect(ex.forbidden).to.contain('attachments of this document may not be modified');
-      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-    });
-
-    verifyDocumentWriteDenied();
-  });
-
-  it('cannot replace a document when a root-level simple type property has been modified', function() {
-    var doc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'baz' } ],
-      objectProp: { foo: [ 'bar' ] },
-      hashtableProp: { bar: 'baz' },
-      stringProp: 'CHANGED'
-    };
-    var oldDoc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'baz' } ],
-      objectProp: { foo: [ 'bar' ] },
-      hashtableProp: { bar: 'baz' },
-      stringProp: 'foobar'
-    };
-
-    expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-      expect(ex.forbidden).to.contain('Invalid immutableDoc document');
-      expect(ex.forbidden).to.contain('properties of this document may not be modified');
-      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-    });
-
-    verifyDocumentWriteDenied();
-  });
-
-  it('cannot replace a document when a property nested in an array has been modified', function() {
-    var doc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'CHANGED' } ],
-      objectProp: { foo: [ 'bar' ] },
-      hashtableProp: { bar: 'baz' }
-    };
-    var oldDoc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'baz' } ],
-      objectProp: { foo: [ 'bar' ] },
-      hashtableProp: { bar: 'baz' }
-    };
-
-    expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-      expect(ex.forbidden).to.contain('Invalid immutableDoc document');
-      expect(ex.forbidden).to.contain('properties of this document may not be modified');
-      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-    });
-
-    verifyDocumentWriteDenied();
-  });
-
-  it('cannot replace a document when a property nested in an object has been modified', function() {
-    var doc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'baz' } ],
-      objectProp: { foo: [ 'CHANGED' ] },
-      hashtableProp: { bar: 'baz' }
-    };
-    var oldDoc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'baz' } ],
-      objectProp: { foo: [ 'bar' ] },
-      hashtableProp: { bar: 'baz' }
-    };
-
-    expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-      expect(ex.forbidden).to.contain('Invalid immutableDoc document');
-      expect(ex.forbidden).to.contain('properties of this document may not be modified');
-      expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-    });
-
-    verifyDocumentWriteDenied();
-  });
-
-  it('cannot replace a document when a property nested in a hashtable has been modified', function() {
-    var doc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'baz' } ],
-      objectProp: { foo: [ 'bar' ] },
-      hashtableProp: { bar: 'CHANGED' }
-    };
-    var oldDoc = {
-      _id: 'immutableDoc',
-      arrayProp: [ { foo: 'baz' } ],
-      objectProp: { foo: [ 'bar' ] },
-      hashtableProp: { bar: 'baz' }
-    };
-
-    expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-      expect(ex.forbidden).to.contain('Invalid immutableDoc document');
-      expect(ex.forbidden).to.contain('properties of this document may not be modified');
+      expect(ex.forbidden).to.contain('documents of this type cannot be replaced or deleted');
       expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
     });
 
@@ -221,10 +128,6 @@ function verifyDocumentWriteAccepted(expectedChannel) {
 
 function verifyDocumentCreated() {
   verifyDocumentWriteAccepted('add');
-}
-
-function verifyDocumentReplaced() {
-  verifyDocumentWriteAccepted('replace');
 }
 
 function verifyDocumentDeleted() {

@@ -99,52 +99,42 @@ function(doc, oldDoc) {
   function validateDoc(doc, oldDoc, docDefinition, docType) {
     var validationErrors = [ ];
 
-    if (!(docDefinition.allowAttachments) && doc._attachments) {
-      for (var attachment in doc._attachments) {
-        validationErrors.push('document type does not support attachments');
-
-        break;
-      }
+    if (docDefinition.immutable && oldDoc && !(oldDoc._deleted)) {
+      validationErrors.push('documents of this type cannot be replaced or deleted');
     }
 
-    var itemStack = [
-      {
-        itemValue: doc,
-        oldItemValue: oldDoc,
-        itemName: null
-      }
-    ];
+    // Only validate the document's contents if it's being created or replaced. But there's no need if it's being deleted.
+    if (!doc._deleted) {
+      if (!(docDefinition.allowAttachments) && doc._attachments) {
+        for (var attachment in doc._attachments) {
+          validationErrors.push('document type does not support attachments');
 
-    // Execute each of the document's property validators while ignoring these whitelisted properties at the root level
-    var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
-    validateProperties(
-      doc,
-      oldDoc,
-      docDefinition.propertyValidators,
-      itemStack,
-      validationErrors,
-      whitelistedProperties,
-      docDefinition.immutable);
+          break;
+        }
+      }
+
+      var itemStack = [
+        {
+          itemValue: doc,
+          oldItemValue: oldDoc,
+          itemName: null
+        }
+      ];
+
+      // Execute each of the document's property validators while ignoring these whitelisted properties at the root level
+      var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
+      validateProperties(doc, oldDoc, docDefinition.propertyValidators, itemStack, validationErrors, whitelistedProperties);
+    }
 
     if (validationErrors.length > 0) {
       throw { forbidden: 'Invalid ' + docType + ' document: ' + validationErrors.join('; ') };
     }
   }
 
-  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, whitelistedProperties, immutableProperties) {
+  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, whitelistedProperties) {
     var currentItemEntry = itemStack[itemStack.length - 1];
     var objectValue = currentItemEntry.itemValue;
     var oldObjectValue = currentItemEntry.oldItemValue;
-
-    if (immutableProperties && oldDoc && !oldDoc._deleted) {
-      // Treat a null or undefined attachments property the same as an empty object/hash by initializing it to an empty object
-      var attachments = objectValue._attachments || { };
-      var oldAttachments = oldObjectValue._attachments || { };
-
-      if (!validateImmutableItem(attachments, oldAttachments)) {
-        validationErrors.push('attachments of this document may not be modified');
-      }
-    }
 
     var supportedProperties = [ ];
     for (var validatorIndex = 0; validatorIndex < propertyValidators.length; validatorIndex++) {
@@ -155,10 +145,6 @@ function(doc, oldDoc) {
       var oldPropertyValue;
       if (!isValueNullOrUndefined(oldObjectValue)) {
         oldPropertyValue = oldObjectValue[propertyName];
-      }
-
-      if (immutableProperties && oldDoc && !oldDoc._deleted && !validateImmutableItem(propertyValue, oldPropertyValue)) {
-        validationErrors.push('properties of this document may not be modified');
       }
 
       supportedProperties.push(propertyName);
@@ -575,11 +561,8 @@ function(doc, oldDoc) {
 
   authorize(doc, oldDoc, theDocDefinition);
 
-  // There's nothing to validate if the doc is being deleted
-  if (!doc._deleted) {
-    validateDoc(doc, oldDoc, theDocDefinition, theDocType);
-  }
+  validateDoc(doc, oldDoc, theDocDefinition, theDocType);
 
-  // Getting here means the document write is authorized and valid, and the appropriate channels should now be assigned
+  // Getting here means the document write is authorized and valid, and the appropriate channel(s) should now be assigned
   channel(getAllDocChannels(doc, oldDoc, theDocDefinition));
 }
