@@ -90,16 +90,16 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully creates a valid business document', function() {
       var doc = {
-        '_id': 'biz.2',
-        '_attachments': {
+        _id: 'biz.2',
+        _attachments: {
           'logo.gIf': {
-            'content_type': 'image/gif',
-            'length': 2097152
+            content_type: 'image/gif',
+            length: 2097152
           }
         },
-        'businessLogoAttachment': 'logo.gIf',
-        'defaultInvoiceTemplate': {
-          'templateId': 'salmon'
+        businessLogoAttachment: 'logo.gIf',
+        defaultInvoiceTemplate: {
+          templateId: 'salmon'
         }
       };
 
@@ -110,10 +110,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a business document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.5',
-        'businessLogoAttachment': 15,
-        'defaultInvoiceTemplate': { 'templateId': '', 'some-unrecognized-property': 'baz' },
-        'paymentProcessors': 0,
+        _id: 'biz.5',
+        businessLogoAttachment: 15,
+        defaultInvoiceTemplate: { templateId: '', 'some-unrecognized-property': 'baz' },
+        paymentProcessors: 0,
         'unrecognized-property1': 'foo'
       };
 
@@ -124,8 +124,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully replaces a valid business document', function() {
-      var doc = { '_id': 'biz.8', 'paymentProcessors': [ 'foo', 'bar' ], 'businessLogoAttachment': 'foobar.png' };
-      var oldDoc = { '_id': 'biz.8' };
+      var doc = { _id: 'biz.8', paymentProcessors: [ 'foo', 'bar' ], businessLogoAttachment: 'foobar.png' };
+      var oldDoc = { _id: 'biz.8' };
 
       syncFunction(doc, oldDoc);
 
@@ -134,19 +134,19 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a business document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.551',
-        '_attachments': {
+        _id: 'biz.551',
+        _attachments: {
           'bogus.mp3': {
-            'content_type': 'text/plain',
-            'length': 2097153
+            content_type: 'text/plain',
+            length: 2097153
           }
         },
-        'businessLogoAttachment': 'bogus.mp3',
-        'defaultInvoiceTemplate': { 'templateId': 6 },
-        'paymentProcessors': [ 'foo', 8 ],
+        businessLogoAttachment: 'bogus.mp3',
+        defaultInvoiceTemplate: { templateId: 6 },
+        paymentProcessors: [ 'foo', 8 ],
         'unrecognized-property2': 'bar'
       };
-      var oldDoc = { '_id': 'biz.551' };
+      var oldDoc = { _id: 'biz.551' };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql({ forbidden: 'Invalid business document: attachment reference "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg); attachment reference "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg); attachment reference "businessLogoAttachment" must not be larger than 2097152 bytes; item "defaultInvoiceTemplate.templateId" must be a string; item "paymentProcessors[1]" must be a string; property "unrecognized-property2" is not supported' });
@@ -155,7 +155,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid business document', function() {
-      var doc = { '_id': 'biz.11', '_deleted': true };
+      var doc = { _id: 'biz.11', _deleted: true };
 
       syncFunction(doc, null);
 
@@ -166,94 +166,108 @@ describe('The sample-sync-doc-definitions sync function', function() {
   describe('invoice payment processing result doc definition', function() {
     var expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
 
+    function verifyPaymentAttemptWritten(businessId) {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+      expect(channel.callCount).to.equal(1);
+      expect(channel.calls[0].arg).to.have.length(2);
+      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + expectedBasePrivilege);
+      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    }
+
+    function verifyPaymentAttemptNotWritten(businessId) {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+      expect(channel.callCount).to.equal(0);
+    }
+
     it('successfully creates a valid payment processing result document', function() {
       var doc = {
-        '_id': 'paymentAttempt.foo-bar',
-        '_attachments': { },
-        'businessId': 20,
-        'invoiceRecordId': 10,
-        'paymentRequisitionId': 'my-payment-requisition',
-        'paymentAttemptSpreedlyToken': 'my-spreedly-token',
-        'date': '2016-02-29',
-        'internalPaymentRecordId': 30,
-        'gatewayTransactionId': 'my-gateway-transaction',
-        'gatewayMessage': 'my-gateway-message',
-        'totalAmountPaid': 72838,
-        'totalAmountPaidFormatted': '$728.38'
+        _id: 'paymentAttempt.foo-bar',
+        _attachments: { },
+        businessId: 20,
+        invoiceRecordId: 10,
+        paymentRequisitionId: 'my-payment-requisition',
+        paymentAttemptSpreedlyToken: 'my-spreedly-token',
+        date: '2016-02-29',
+        internalPaymentRecordId: 30,
+        gatewayTransactionId: 'my-gateway-transaction',
+        gatewayMessage: 'my-gateway-message',
+        totalAmountPaid: 72838,
+        totalAmountPaidFormatted: '$728.38'
       };
 
       syncFunction(doc, null);
 
-      verifyDocumentCreated(expectedBasePrivilege, 20);
+      verifyPaymentAttemptWritten(20);
     });
 
     it('cannot create a payment processing result document when the properties are invalid', function() {
       var doc = {
-        '_id': 'paymentAttempt.foo-bar',
-        'businessId': 'my-business',
-        'invoiceRecordId': 0,
-        'paymentRequisitionId': '',
-        'paymentAttemptSpreedlyToken': '',
-        'date': '2016-00-30', // The month is invalid
-        'internalPaymentRecordId': 0,
-        'gatewayTransactionId': '',
-        'gatewayMessage': 17,
-        'totalAmountPaid': 'invalid',
-        'totalAmountPaidFormatted': 999,
-        'unsupportedProperty': 'foobar'
+        _id: 'paymentAttempt.foo-bar',
+        businessId: 'my-business',
+        paymentRequisitionId: '',
+        paymentAttemptSpreedlyToken: '',
+        date: '2016-00-30', // The month is invalid
+        internalPaymentRecordId: 0,
+        gatewayTransactionId: '',
+        gatewayMessage: 17,
+        totalAmountPaid: 'invalid',
+        totalAmountPaidFormatted: 999,
+        unsupportedProperty: 'foobar'
       };
 
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: item "businessId" must be an integer; item "invoiceRecordId" must not be less than 1; item "paymentRequisitionId" must not be empty; item "paymentAttemptSpreedlyToken" must not be empty; item "date" must be an ISO 8601 date string with no time or time zone components; item "internalPaymentRecordId" must not be less than 1; item "gatewayTransactionId" must not be empty; item "gatewayMessage" must be a string; item "totalAmountPaid" must be an integer; item "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
+          forbidden: 'Invalid paymentAttempt document: item "businessId" must be an integer; required item "invoiceRecordId" is missing; item "paymentRequisitionId" must not be empty; item "paymentAttemptSpreedlyToken" must not be empty; item "date" must be an ISO 8601 date string with optional time and time zone components; item "internalPaymentRecordId" must not be less than 1; item "gatewayTransactionId" must not be empty; item "gatewayMessage" must be a string; item "totalAmountPaid" must be an integer; item "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
         });
       });
-      verifyDocumentNotCreated(expectedBasePrivilege, 'my-business');
+
+      verifyPaymentAttemptNotWritten('my-business');
     });
 
-    it('successfully replaces a valid payment processing result document', function() {
+    it('cannot replace a payment processing result document because it is immutable', function() {
       var doc = {
-        '_id': 'paymentAttempt.foo-bar',
-        'businessId': 22,
-        'invoiceRecordId': 6,
-        'paymentRequisitionId': 'my-payment-requisition2',
-        'paymentAttemptSpreedlyToken': 'my-spreedly-token2',
-        'date': '2016-12-31'
+        _id: 'paymentAttempt.foo-bar',
+        businessId: 0,
+        invoiceRecordId: 0,
+        gatewayTransactionId: 7,
+        gatewayMessage: true,
+        totalAmountPaid: 0,
+        totalAmountPaidFormatted: '',
+        unsupportedProperty: 'foobar'
       };
-      var oldDoc = { '_id': 'paymentAttempt.foo-bar', 'businessId': 22 };
-
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced(expectedBasePrivilege, 22);
-    });
-
-    it('cannot replace a payment processing result document when the properties are invalid', function() {
-      var doc = {
-        '_id': 'paymentAttempt.foo-bar',
-        'businessId': 66,
-        'gatewayTransactionId': 7,
-        'gatewayMessage': true,
-        'totalAmountPaid': 0,
-        'totalAmountPaidFormatted': '',
-        'unsupportedProperty': 'foobar'
+      var oldDoc = {
+        _id: 'paymentAttempt.foo-bar',
+        businessId: 23,
+        invoiceRecordId: 79,
+        paymentRequisitionId: 'my-payment-req',
+        paymentAttemptSpreedlyToken: 'my-spreedly-token',
+        date: '2016-06-29'
       };
-      var oldDoc = { '_id': 'paymentAttempt.foo-bar', 'businessId': 23 };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: cannot change "businessId" property; required item "invoiceRecordId" is missing; required item "paymentRequisitionId" is missing; required item "paymentAttemptSpreedlyToken" is missing; required item "date" is missing; item "gatewayTransactionId" must be a string; item "gatewayMessage" must be a string; item "totalAmountPaid" must not be less than 1; item "totalAmountPaidFormatted" must not be empty; property "unsupportedProperty" is not supported'
+          forbidden: 'Invalid paymentAttempt document: documents of this type cannot be replaced or deleted; item "businessId" must not be less than 1; item "invoiceRecordId" must not be less than 1; required item "paymentRequisitionId" is missing; required item "paymentAttemptSpreedlyToken" is missing; required item "date" is missing; item "gatewayTransactionId" must be a string; item "gatewayMessage" must be a string; item "totalAmountPaid" must not be less than 1; item "totalAmountPaidFormatted" must not be empty; property "unsupportedProperty" is not supported'
         });
       });
-      verifyDocumentNotReplaced(expectedBasePrivilege, 23);
+
+      verifyPaymentAttemptNotWritten(23);
     });
 
-    it('successfully deletes a valid payment processing result document', function() {
-      var doc = { '_id': 'paymentAttempt.foo-bar', '_deleted': true };
-      var oldDoc = { '_id': 'paymentAttempt.foo-bar', 'businessId': 20 };
+    it('cannot deletes a valid payment processing result document because it is immutable', function() {
+      var doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
+      var oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
 
-      syncFunction(doc, oldDoc);
+      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(ex).to.eql({
+          forbidden: 'Invalid paymentAttempt document: documents of this type cannot be replaced or deleted'
+        });
+      });
 
-      verifyDocumentDeleted(expectedBasePrivilege, 20);
+      verifyPaymentAttemptNotWritten(20);
     });
   });
 
@@ -262,12 +276,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully creates a valid payment processor document', function() {
       var doc = {
-        '_id': 'biz.3.paymentProcessor.2',
-        'provider': 'foo',
-        'spreedlyGatewayToken': 'bar',
-        'accountId': 555,
-        'displayName': 'Foo Bar',
-        'supportedCurrencyCodes': [ 'CAD', 'USD' ]
+        _id: 'biz.3.paymentProcessor.2',
+        provider: 'foo',
+        spreedlyGatewayToken: 'bar',
+        accountId: 555,
+        displayName: 'Foo Bar',
+        supportedCurrencyCodes: [ 'CAD', 'USD' ]
       };
 
       syncFunction(doc, null);
@@ -277,12 +291,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a payment processor document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.1.paymentProcessor.2',
-        'provider': '',
-        'spreedlyGatewayToken': '',
-        'accountId': 0,
-        'displayName': 7,
-        'supportedCurrencyCodes': '',
+        _id: 'biz.1.paymentProcessor.2',
+        provider: '',
+        spreedlyGatewayToken: '',
+        accountId: 0,
+        displayName: 7,
+        supportedCurrencyCodes: '',
         'unrecognized-property3': 'foo'
       };
 
@@ -294,12 +308,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully replaces a valid payment processor document', function() {
       var doc = {
-        '_id': 'biz.5.paymentProcessor.2',
-        'provider': 'foobar',
-        'spreedlyGatewayToken': 'barfoo',
-        'accountId': 1
+        _id: 'biz.5.paymentProcessor.2',
+        provider: 'foobar',
+        spreedlyGatewayToken: 'barfoo',
+        accountId: 1
       };
-      var oldDoc = { '_id': 'biz.5.paymentProcessor.2', 'provider': 'bar' };
+      var oldDoc = { _id: 'biz.5.paymentProcessor.2', provider: 'bar' };
 
       syncFunction(doc, oldDoc);
 
@@ -308,13 +322,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a payment processor document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.2.paymentProcessor.2',
-        'accountId': 555.9,
-        'displayName': [ ],
-        'supportedCurrencyCodes': [ '666', 'CAD' ],
+        _id: 'biz.2.paymentProcessor.2',
+        accountId: 555.9,
+        displayName: [ ],
+        supportedCurrencyCodes: [ '666', 'CAD' ],
         'unrecognized-property4': 'bar'
       };
-      var oldDoc = { '_id': 'biz.2.paymentProcessor.2', 'provider': 'foo' };
+      var oldDoc = { _id: 'biz.2.paymentProcessor.2', provider: 'foo' };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: required item "provider" is missing; required item "spreedlyGatewayToken" is missing; item "accountId" must be an integer; item "displayName" must be a string; item "supportedCurrencyCodes[0]" must conform to expected format /^[A-Z]{3}$/; property "unrecognized-property4" is not supported' });
@@ -323,7 +337,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid payment processor document', function() {
-      var doc = { '_id': 'biz.8.paymentProcessor.2', '_deleted': true };
+      var doc = { _id: 'biz.8.paymentProcessor.2', _deleted: true };
 
       syncFunction(doc, null);
 
@@ -335,7 +349,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
     var expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
 
     it('successfully creates a valid payment requisitions reference document', function() {
-      var doc = { '_id': 'biz.92.invoice.15.paymentRequisitions', 'paymentProcessorId': 'foo', 'paymentRequisitionIds': [ 'req1', 'req2' ] };
+      var doc = { _id: 'biz.92.invoice.15.paymentRequisitions', paymentProcessorId: 'foo', paymentRequisitionIds: [ 'req1', 'req2' ] };
 
       syncFunction(doc, null);
 
@@ -344,10 +358,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a payment requisitions reference document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.18.invoice.7.paymentRequisitions',
-        'paymentRequisitionIds': [ ],
+        _id: 'biz.18.invoice.7.paymentRequisitions',
+        paymentRequisitionIds: [ ],
         'unrecognized-property5': 'foo',
-        'paymentAttemptIds': 79
+        paymentAttemptIds: 79
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
@@ -357,8 +371,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully replaces a valid payment requisitions reference document', function() {
-      var doc = { '_id': 'biz.3612.invoice.222.paymentRequisitions', 'paymentProcessorId': 'bar', 'paymentRequisitionIds': [ 'req2' ] };
-      var oldDoc = { '_id': 'biz.3612.invoice.222.paymentRequisitions', 'paymentProcessorId': 'foo', 'paymentRequisitionIds': [ 'req1' ] };
+      var doc = { _id: 'biz.3612.invoice.222.paymentRequisitions', paymentProcessorId: 'bar', paymentRequisitionIds: [ 'req2' ] };
+      var oldDoc = { _id: 'biz.3612.invoice.222.paymentRequisitions', paymentProcessorId: 'foo', paymentRequisitionIds: [ 'req1' ] };
 
       syncFunction(doc, oldDoc);
 
@@ -367,13 +381,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a payment requisitions reference document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.666.invoice.3.paymentRequisitions',
-        'paymentProcessorId': '',
-        'paymentRequisitionIds': [ 'foo', 15 ],
+        _id: 'biz.666.invoice.3.paymentRequisitions',
+        paymentProcessorId: '',
+        paymentRequisitionIds: [ 'foo', 15 ],
         'unrecognized-property6': 'bar',
-        'paymentAttemptIds': [ 73, 'bar' ]
+        paymentAttemptIds: [ 73, 'bar' ]
       };
-      var oldDoc = { '_id': 'biz.666.invoice.3.paymentRequisitions', 'paymentProcessorId': 'foo', 'paymentRequisitionIds': [ 'req1' ] };
+      var oldDoc = { _id: 'biz.666.invoice.3.paymentRequisitions', paymentProcessorId: 'foo', paymentRequisitionIds: [ 'req1' ] };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql({ forbidden: 'Invalid paymentRequisitionsReference document: item "paymentProcessorId" must not be empty; item "paymentRequisitionIds[1]" must be a string; item "paymentAttemptIds[0]" must be a string; property "unrecognized-property6" is not supported' });
@@ -382,7 +396,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid payment requisitions reference document', function() {
-      var doc = { '_id': 'biz.987.invoice.2.paymentRequisitions', '_deleted': true };
+      var doc = { _id: 'biz.987.invoice.2.paymentRequisitions', _deleted: true };
 
       syncFunction(doc, null);
 
@@ -395,12 +409,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully creates a valid payment requisition document', function() {
       var doc = {
-        '_id': 'paymentRequisition.foo-bar',
-        'invoiceRecordId': 10,
-        'businessId': 20,
-        'issuedAt': '2016-02-29T17:13:43.666Z',
-        'issuedByUserId': 42,
-        'invoiceRecipients': 'foo@bar.baz'
+        _id: 'paymentRequisition.foo-bar',
+        invoiceRecordId: 10,
+        businessId: 20,
+        issuedAt: '2016-02-29T17:13:43.666Z',
+        issuedByUserId: 42,
+        invoiceRecipients: 'foo@bar.baz'
       };
 
       syncFunction(doc, null);
@@ -410,33 +424,31 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a payment requisition document when the properties are invalid', function() {
       var doc = {
-        '_id': 'paymentRequisition.foo-bar',
-        'invoiceRecordId': 0,
-        'businessId': '6',
-        'issuedAt': '2016-13-29T17:13:43.666Z', // The month is invalid
-        'issuedByUserId': 0,
-        'invoiceRecipients': [ 'foo@bar.baz' ],
+        _id: 'paymentRequisition.foo-bar',
+        invoiceRecordId: 0,
+        businessId: '6',
+        issuedAt: '2016-13-29T17:13:43.666Z', // The month is invalid
+        issuedByUserId: 0,
+        invoiceRecipients: [ 'foo@bar.baz' ],
         'unrecognized-property7': 'foo'
       };
 
       expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
         expect(ex).to.eql(
           {
-            forbidden: 'Invalid paymentRequisition document: item "invoiceRecordId" must not be less than 1; item "businessId" must be an integer; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; item "issuedByUserId" must not be less than 1; item "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
+            forbidden: 'Invalid paymentRequisition document: item "businessId" must be an integer; item "invoiceRecordId" must not be less than 1; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; item "issuedByUserId" must not be less than 1; item "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
           });
       });
       verifyDocumentNotCreated(paymentRequisitionPrivilege, 6);
     });
 
     it('successfully replaces a valid payment requisition document', function() {
-      var doc = { '_id': 'paymentRequisition.foo-bar', 'invoiceRecordId': 90, 'businessId': 21 };
+      var doc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 90, businessId: 21 };
       var oldDoc = {
-        '_id': 'paymentRequisition.foo-bar',
-        'invoiceRecordId': 10,
-        'businessId': 21,
-        'issuedAt': '2016-02-29T17:13:43.666Z',
-        'issuedByUserId': 42,
-        'invoiceRecipients': 'foo@bar.baz'
+        _id: 'paymentRequisition.foo-bar',
+        invoiceRecordId: 90,
+        businessId: 21,
+        issuedByUserId: null
       };
 
       syncFunction(doc, oldDoc);
@@ -446,28 +458,28 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a payment requisition document when the properties are invalid', function() {
       var doc = {
-        '_id': 'paymentRequisition.foo-bar',
-        'invoiceRecordId': '7',
-        'businessId': 0,
-        'issuedAt': '2016-02-29T25:13:43.666Z', // The hour is invalid
-        'issuedByUserId': '42',
-        'invoiceRecipients': 15,
+        _id: 'paymentRequisition.foo-bar',
+        invoiceRecordId: '7',
+        businessId: 0,
+        issuedAt: '2016-02-29T25:13:43.666Z', // The hour is invalid
+        issuedByUserId: '42',
+        invoiceRecipients: 15,
         'unrecognized-property8': 'bar'
       };
-      var oldDoc = { '_id': 'paymentRequisition.foo-bar', 'invoiceRecordId': 10, 'businessId': 20 };
+      var oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 20 };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql(
           {
-            forbidden: 'Invalid paymentRequisition document: item "invoiceRecordId" must be an integer; cannot change "businessId" property; item "businessId" must not be less than 1; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; item "issuedByUserId" must be an integer; item "invoiceRecipients" must be a string; property "unrecognized-property8" is not supported'
+            forbidden: 'Invalid paymentRequisition document: cannot change "businessId" property; item "businessId" must not be less than 1; value of item "invoiceRecordId" may not be modified; item "invoiceRecordId" must be an integer; value of item "issuedAt" may not be modified; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; value of item "issuedByUserId" may not be modified; item "issuedByUserId" must be an integer; value of item "invoiceRecipients" may not be modified; item "invoiceRecipients" must be a string; property "unrecognized-property8" is not supported'
           });
       });
       verifyDocumentNotReplaced(paymentRequisitionPrivilege, 20);
     });
 
     it('successfully deletes a valid payment requisition document', function() {
-      var doc = { '_id': 'paymentRequisition.foo-bar', '_deleted': true };
-      var oldDoc = { '_id': 'paymentRequisition.foo-bar', 'invoiceRecordId': 10, 'businessId': 17 };
+      var doc = { _id: 'paymentRequisition.foo-bar', _deleted: true };
+      var oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 17 };
 
       syncFunction(doc, oldDoc);
 
@@ -478,106 +490,164 @@ describe('The sample-sync-doc-definitions sync function', function() {
   describe('business notification doc definition', function() {
     var notificationsPrivilege = 'NOTIFICATIONS';
 
+    function verifyNotificationCreated(businessId) {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+      expect(channel.callCount).to.equal(1);
+      expect(channel.calls[0].arg).to.have.length(4);
+      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    }
+
+    function verifyNotificationReplaced(businessId) {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.have.length(2);
+      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
+      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
+
+      expect(channel.callCount).to.equal(1);
+      expect(channel.calls[0].arg).to.have.length(4);
+      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    }
+
+    function verifyNotificationDeleted(businessId) {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.have.length(2);
+      expect(requireAccess.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
+      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
+
+      expect(channel.callCount).to.equal(1);
+      expect(channel.calls[0].arg).to.have.length(4);
+      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
+      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    }
+
+    function verifyNotificationNotCreated(businessId) {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
+
+      expect(channel.callCount).to.equal(0);
+    }
+
+    function verifyNotificationNotReplaced(businessId) {
+      expect(requireAccess.callCount).to.equal(1);
+      expect(requireAccess.calls[0].arg).to.have.length(2);
+      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
+      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
+
+      expect(channel.callCount).to.equal(0);
+    }
+
     it('successfully creates a valid notification document', function() {
       var doc = {
-        '_id': 'biz.63.notification.5',
-        'sender': 'test-service',
-        'type': 'invoice-payments',
-        'subject': 'pay up!',
-        'message': 'you best pay up now, or else...',
-        'createdAt': '2016-02-29T17:13:43.666Z',
-        'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
+        _id: 'biz.63.notification.5',
+        sender: 'test-service',
+        type: 'invoice-payments',
+        subject: 'pay up!',
+        message: 'you best pay up now, or else...',
+        createdAt: '2016-02-29T17:13:43.666Z',
+        actions: [ { url: 'http://foobar.baz', label: 'pay up here'} ]
       };
       var oldDoc = {
-        '_id': 'biz.63.notification.5',
-        '_deleted': true
+        _id: 'biz.63.notification.5',
+        _deleted: true
       };
 
       syncFunction(doc, oldDoc);
 
-      verifyDocumentCreated(notificationsPrivilege, 63);
+      verifyNotificationCreated(63);
     });
 
     it('cannot create a notification document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.13.notification.5',
-        'type': true ,
-        'subject': '', // missing sender, empty subject
+        _id: 'biz.13.notification.5',
+        type: true ,
+        subject: '', // missing sender, empty subject
         'whatsthis?': 'something I dont recognize!', // unrecognized property
-        'createdAt': '2016-02-29T25:13:43.666Z', // invalid hour
-        'actions': [ { 'url': 24 }, null ] // integer url, non-existent label
+        createdAt: '2016-02-29T25:13:43.666Z', // invalid hour
+        actions: [ { url: 24 }, null ] // integer url, non-existent label
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
         expect(ex).to.eql({ forbidden: 'Invalid notification document: required item "sender" is missing; item "type" must be a string; item "subject" must not be empty; required item "message" is missing; item "createdAt" must be an ISO 8601 date string with optional time and time zone components; item "actions[0].url" must be a string; required item "actions[0].label" is missing; required item "actions[1]" is missing; property "whatsthis?" is not supported' });
       });
-      verifyDocumentNotCreated(notificationsPrivilege, 13);
+
+      verifyNotificationNotCreated(13);
     });
 
     it('successfully replaces a valid notification document', function() {
       var doc = {
-        '_id': 'biz.7.notification.3',
-        'type': 'invoice-payments',
-        'sender': 'test-service',
-        'subject': 'a different subject',
-        'message': 'last warning!',
-        'createdAt': '2016-02-29T17:13:43.666Z',
-        'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
+        _id: 'biz.7.notification.3',
+        type: 'invoice-payments',
+        sender: 'test-service',
+        subject: 'a different subject',
+        message: 'last warning!',
+        createdAt: '2016-02-29T17:13:43.666Z',
+        actions: [ { url: 'http://foobar.baz/lastwarning', label: 'pay up here'} ]
       };
       var oldDoc = {
-        '_id': 'biz.7.notification.3',
-        'type': 'invoice-payments',
-        'sender': 'test-service',
-        'subject': 'a different subject',
-        'message': 'last warning!',
-        'createdAt': '2016-02-29T17:13:43.666Z',
-        'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
+        _id: 'biz.7.notification.3',
+        type: 'invoice-payments',
+        sender: 'test-service',
+        subject: 'a different subject',
+        message: 'last warning!',
+        createdAt: '2016-02-29T17:13:43.666Z',
+        actions: [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
       };
 
       syncFunction(doc, oldDoc);
 
-      verifyDocumentReplaced(notificationsPrivilege, 7);
+      verifyNotificationReplaced(7);
     });
 
     it('cannot replace a notification document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.10.notification.3',
-        'sender': '', // missing type, empty sender
-        'message': '', // missing subject, empty message
-        'createdAt': '2016-04-29T17:13:43.666Z', // changed createdAt
-        'actions': [ { 'label': ''} ]
+        _id: 'biz.10.notification.3',
+        sender: '', // missing type, empty sender
+        message: '', // missing subject, empty message
+        createdAt: '2016-04-29T17:13:43.666Z', // changed createdAt
+        actions: [ { label: ''} ]
       };
       var oldDoc = { // valid oldDoc
-        '_id': 'biz.10.notification.3',
-        'type': 'invoice-payments',
-        'sender': 'test-service',
-        'subject': 'a different subject',
-        'message': 'last warning!',
-        'createdAt': '2016-02-29T17:13:43.666Z',
-        'actions': [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
+        _id: 'biz.10.notification.3',
+        type: 'invoice-payments',
+        sender: 'test-service',
+        subject: 'a different subject',
+        message: 'last warning!',
+        createdAt: '2016-02-29T17:13:43.666Z',
+        actions: [ { url: 'http://foobar.baz/lastwarning', label: 'pay up here'} ]
       };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex).to.eql({ forbidden: 'Invalid notification document: value of item "sender" may not be modified; item "sender" must not be empty; value of item "type" may not be modified; required item "type" is missing; value of item "subject" may not be modified; required item "subject" is missing; value of item "message" may not be modified; item "message" must not be empty; value of item "createdAt" may not be modified; value of item "actions" may not be modified; required item "actions[0].url" is missing; item "actions[0].label" must not be empty' });
       });
-      verifyDocumentNotReplaced(notificationsPrivilege, 10);
+
+      verifyNotificationNotReplaced(10);
     });
 
     it('successfully deletes a valid notification document', function() {
-      var doc = { '_id': 'biz.71.notification.5', '_deleted': true };
+      var doc = { _id: 'biz.71.notification.5', _deleted: true };
       var oldDoc = {
-        '_id': 'biz.71.notification.5',
-        'type': 'invoice-payments',
-        'sender': 'test-service',
-        'subject': 'pay up!',
-        'message': 'you best pay up now, or else...',
-        'createdAt': '2016-02-29T17:13:43.666Z',
-        'actions': [ { 'url': 'http://foobar.baz', 'label': 'pay up here'} ]
+        _id: 'biz.71.notification.5',
+        type: 'invoice-payments',
+        sender: 'test-service',
+        subject: 'pay up!',
+        message: 'you best pay up now, or else...',
+        createdAt: '2016-02-29T17:13:43.666Z',
+        actions: [ { url: 'http://foobar.baz', label: 'pay up here'} ]
       };
 
       syncFunction(doc, oldDoc);
 
-      verifyDocumentDeleted(notificationsPrivilege, 71);
+      verifyNotificationDeleted(71);
     });
   });
 
@@ -586,9 +656,9 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully creates a valid notifications reference document', function() {
       var doc = {
-        '_id': 'biz.4.notifications',
-        'allNotificationIds': [ 'X', 'Y', 'Z' ],
-        'unreadNotificationIds': [ 'X', 'Z' ]
+        _id: 'biz.4.notifications',
+        allNotificationIds: [ 'X', 'Y', 'Z' ],
+        unreadNotificationIds: [ 'X', 'Z' ]
       };
 
       syncFunction(doc, null);
@@ -598,9 +668,9 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a notifications reference document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.123.notifications',
-        'allNotificationIds': [ 23, 'Y', 'Z' ],
-        'unreadNotificationIds': [ 'Z', '' ]
+        _id: 'biz.123.notifications',
+        allNotificationIds: [ 23, 'Y', 'Z' ],
+        unreadNotificationIds: [ 'Z', '' ]
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
@@ -611,14 +681,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully replaces a valid notifications reference document', function() {
       var doc = {
-        '_id': 'biz.44.notifications',
-        'allNotificationIds': [ 'X', 'Y', 'Z', 'A' ],
-        'unreadNotificationIds': [ 'X', 'Z', 'A' ]
+        _id: 'biz.44.notifications',
+        allNotificationIds: [ 'X', 'Y', 'Z', 'A' ],
+        unreadNotificationIds: [ 'X', 'Z', 'A' ]
       };
       var oldDoc = {
-        '_id': 'biz.44.notifications',
-        'allNotificationIds': [ 'X', 'Y', 'Z' ],
-        'unreadNotificationIds': [ 'X', 'Z' ]
+        _id: 'biz.44.notifications',
+        allNotificationIds: [ 'X', 'Y', 'Z' ],
+        unreadNotificationIds: [ 'X', 'Z' ]
       };
 
       syncFunction(doc, oldDoc);
@@ -628,14 +698,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a notifications reference document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.29.notifications',
-        'allNotificationIds': [ 'X', 'Y', 'Z', '' ],
-        'unreadNotificationIds': [ 'X', 'Z', 5 ]
+        _id: 'biz.29.notifications',
+        allNotificationIds: [ 'X', 'Y', 'Z', '' ],
+        unreadNotificationIds: [ 'X', 'Z', 5 ]
       };
       var oldDoc = {
-        '_id': 'biz.29.notifications',
-        'allNotificationIds': [ 'X', 'Y', 'Z' ],
-        'unreadNotificationIds': [ 'X', 'Z' ]
+        _id: 'biz.29.notifications',
+        allNotificationIds: [ 'X', 'Y', 'Z' ],
+        unreadNotificationIds: [ 'X', 'Z' ]
       };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
@@ -645,11 +715,11 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid notifications reference document', function() {
-      var doc = { '_id': 'biz.369.notifications', '_deleted': true };
+      var doc = { _id: 'biz.369.notifications', _deleted: true };
       var oldDoc = {
-        '_id': 'biz.369.notifications',
-        'allNotificationIds': [ 'X', 'Y', 'Z' ],
-        'unreadNotificationIds': [ 'X', 'Z' ]
+        _id: 'biz.369.notifications',
+        allNotificationIds: [ 'X', 'Y', 'Z' ],
+        unreadNotificationIds: [ 'X', 'Z' ]
       };
 
       syncFunction(doc, oldDoc);
@@ -663,12 +733,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully creates a valid notifications config document', function() {
       var doc = {
-        '_id': 'biz.1248.notificationsConfig',
-        'notificationTypes': {
-          'invoicePayments': {
-            'enabledTransports': [
-              { 'transportId': 'ET1' },
-              { 'transportId': 'ET2' }
+        _id: 'biz.1248.notificationsConfig',
+        notificationTypes: {
+          invoicePayments: {
+            enabledTransports: [
+              { transportId: 'ET1' },
+              { transportId: 'ET2' }
             ]
           }
         }
@@ -681,20 +751,20 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a notifications config document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.72.notificationsConfig',
-        'notificationTypes': {
-          'invoicePayments': {
-            'enabledTransports': [
+        _id: 'biz.72.notificationsConfig',
+        notificationTypes: {
+          invoicePayments: {
+            enabledTransports: [
               { 'invalid-property': 'blah' },
-              { 'transportId': '' }
+              { transportId: '' }
             ]
           },
           'Invalid-Type': {
-            'enabledTransports': [ ]
+            enabledTransports: [ ]
           },
           '' : null
         },
-        'unknownprop': 23
+        unknownprop: 23
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
@@ -705,22 +775,22 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully replaces a valid notifications config document', function() {
       var doc = {
-        '_id': 'biz.191.notificationsConfig',
-        'notificationTypes': {
-          'invoicePayments': {
-            'enabledTransports': [
-              { 'transportId': 'ET1' },
-              { 'transportId': 'ET2' },
-              { 'transportId': 'ET4' }
+        _id: 'biz.191.notificationsConfig',
+        notificationTypes: {
+          invoicePayments: {
+            enabledTransports: [
+              { transportId: 'ET1' },
+              { transportId: 'ET2' },
+              { transportId: 'ET4' }
             ]
           }
         }
       };
       var oldDoc = {
-        '_id': 'biz.191.notificationsConfig',
-        'notificationTypes': {
-          'invoicePayments': {
-            'enabledTransports': [ ]
+        _id: 'biz.191.notificationsConfig',
+        notificationTypes: {
+          invoicePayments: {
+            enabledTransports: [ ]
           }
         }
       };
@@ -732,22 +802,22 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a notifications config document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.37.notificationsConfig',
-        'notificationTypes': {
-          'invoicePayments': {
-            'enabledTransports': [
-              { 'transportId': 'ET1' },
-              { 'transportId': 'ET2', 'invalid-property': 73 },
-              { 'transportId': 34 },
+        _id: 'biz.37.notificationsConfig',
+        notificationTypes: {
+          invoicePayments: {
+            enabledTransports: [
+              { transportId: 'ET1' },
+              { transportId: 'ET2', 'invalid-property': 73 },
+              { transportId: 34 },
               null
             ]
           },
-          'foobar': null
+          foobar: null
         }
       };
       var oldDoc = {
-        '_id': 'biz.37.notificationsConfig',
-        'notificationTypes': { }
+        _id: 'biz.37.notificationsConfig',
+        notificationTypes: { }
       };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
@@ -757,12 +827,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid notifications config document', function() {
-      var doc = { '_id': 'biz.333.notificationsConfig', '_deleted': true };
+      var doc = { _id: 'biz.333.notificationsConfig', _deleted: true };
       var oldDoc = {
-        '_id': 'biz.333.notificationsConfig',
-        'invoice-payments': {
-          'enabledTransports': [ 'ET1', 'ET2' ],
-          'disabledTransports': [ 'ET3' ]
+        _id: 'biz.333.notificationsConfig',
+        notificationTypes: {
+          invoicePayments: {
+            enabledTransports: [ 'ET1', 'ET2' ],
+            disabledTransports: [ 'ET3' ]
+          }
         }
       };
 
@@ -777,9 +849,9 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully creates a valid notification transport document', function() {
       var doc = {
-        '_id': 'biz.82.notificationTransport.ABC',
-        'type': 'email',
-        'recipient': 'foo.bar@example.com'
+        _id: 'biz.82.notificationTransport.ABC',
+        type: 'email',
+        recipient: 'foo.bar@example.com'
       };
 
       syncFunction(doc, null);
@@ -789,8 +861,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a notification transport document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.75.notificationTransport.ABC',
-        'recipient': ''
+        _id: 'biz.75.notificationTransport.ABC',
+        recipient: ''
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
@@ -801,14 +873,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully replaces a valid notification transport document', function() {
       var doc = {
-        '_id': 'biz.38.notificationTransport.ABC',
-        'type': 'email',
-        'recipient': 'different.foo.bar@example.com'
+        _id: 'biz.38.notificationTransport.ABC',
+        type: 'email',
+        recipient: 'different.foo.bar@example.com'
       };
       var oldDoc = {
-        '_id': 'biz.38.notificationTransport.ABC',
-        'type': 'email',
-        'recipient': 'foo.bar@example.com'
+        _id: 'biz.38.notificationTransport.ABC',
+        type: 'email',
+        recipient: 'foo.bar@example.com'
       };
       syncFunction(doc, oldDoc);
 
@@ -817,13 +889,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a notification transport document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.73.notificationTransport.ABC',
-        'type': 23,
+        _id: 'biz.73.notificationTransport.ABC',
+        type: 23,
       };
       var oldDoc = {
-        '_id': 'biz.73.notificationTransport.ABC',
-        'type': 'email',
-        'recipient': 'foo.bar@example.com'
+        _id: 'biz.73.notificationTransport.ABC',
+        type: 'email',
+        recipient: 'foo.bar@example.com'
       };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
@@ -833,11 +905,11 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid notification transport document', function() {
-      var doc = { '_id': 'biz.14.notificationTransport.ABC', '_deleted': true };
+      var doc = { _id: 'biz.14.notificationTransport.ABC', _deleted: true };
       var oldDoc = {
-        '_id': 'biz.14.notificationTransport.ABC',
-        'type': 'email',
-        'recipient': 'different.foo.bar@example.com'
+        _id: 'biz.14.notificationTransport.ABC',
+        type: 'email',
+        recipient: 'different.foo.bar@example.com'
       };
 
       syncFunction(doc, oldDoc);
@@ -865,10 +937,11 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('successfully creates a valid notification transport processing summary document', function() {
       var doc = {
-        '_id': 'biz.901.notification.ABC.processedTransport.XYZ',
-        'processedAt': '2016-06-04T21:02:19.013Z',
-        'processedBy': 'foobar',
-        'sentAt': '2016-06-04T21:02:55.013Z'
+        _id: 'biz.901.notification.ABC.processedTransport.XYZ',
+        nonce: 'my-nonce',
+        processedAt: '2016-06-04T21:02:19.013Z',
+        processedBy: 'foobar',
+        sentAt: '2016-06-04T21:02:55.013Z'
       };
 
       syncFunction(doc, null);
@@ -878,26 +951,28 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot create a notification transport processing summary document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.109.notification.ABC.processedTransport.XYZ',
-        'processedBy': [ ],
-        'sentAt': '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
+        _id: 'biz.109.notification.ABC.processedTransport.XYZ',
+        processedBy: [ ],
+        sentAt: '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
       };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: item "processedBy" must be a string; required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
+        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required item "nonce" is missing; item "processedBy" must be a string; required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
       });
       verifyProcessingSummaryNotWritten();
     });
 
     it('successfully replaces a valid notification transport processing summary document', function() {
       var doc = {
-        '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
-        'processedAt': '2016-06-04T21:02:19.013Z'
+        _id: 'biz.119.notification.ABC.processedTransport.XYZ',
+        nonce: 'my-nonce',
+        processedAt: '2016-06-04T21:02:19.013Z'
       };
       var oldDoc = {
-        '_id': 'biz.119.notification.ABC.processedTransport.XYZ',
-        'processedBy': null,
-        'processedAt': '2016-06-04T21:02:19.013Z'
+        _id: 'biz.119.notification.ABC.processedTransport.XYZ',
+        nonce: 'my-nonce',
+        processedBy: null,
+        processedAt: '2016-06-04T21:02:19.013Z'
       };
       syncFunction(doc, oldDoc);
 
@@ -906,28 +981,29 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
     it('cannot replace a notification transport processing summary document when the properties are invalid', function() {
       var doc = {
-        '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
-        'processedAt': '2016-06-04T09:27:07.514Z',
-        'sentAt': ''
+        _id: 'biz.275.notification.ABC.processedTransport.XYZ',
+        nonce: 471,
+        processedAt: '2016-06-04T09:27:07.514Z',
+        sentAt: ''
       };
       var oldDoc = {
-        '_id': 'biz.275.notification.ABC.processedTransport.XYZ',
-        'processedBy': 'foobar',
-        'processedAt': '2016-06-03T21:02:19.013Z',
+        _id: 'biz.275.notification.ABC.processedTransport.XYZ',
+        processedBy: 'foobar',
+        processedAt: '2016-06-03T21:02:19.013Z',
       };
 
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: value of item "processedBy" may not be modified; value of item "processedAt" may not be modified; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
+        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: value of item "nonce" may not be modified; item "nonce" must be a string; value of item "processedBy" may not be modified; value of item "processedAt" may not be modified; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
       });
       verifyProcessingSummaryNotWritten();
     });
 
     it('successfully deletes a valid notification transport processing summary document', function() {
-      var doc = { '_id': 'biz.317.notification.ABC.processedTransport.XYZ', '_deleted': true };
+      var doc = { _id: 'biz.317.notification.ABC.processedTransport.XYZ', _deleted: true };
       var oldDoc = {
-        '_id': 'biz.317.notification.ABC.processedTransport.XYZ',
-        'processedBy': 'foobar',
-        'processedAt': '2016-06-04T21:02:19.013Z'
+        _id: 'biz.317.notification.ABC.processedTransport.XYZ',
+        processedBy: 'foobar',
+        processedAt: '2016-06-04T21:02:19.013Z'
       };
 
       syncFunction(doc, oldDoc);
