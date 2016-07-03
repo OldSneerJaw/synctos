@@ -16,14 +16,34 @@ function init(syncFunctionPath) {
   channel = simple.stub();
 }
 
+function verifyChannelAccess(expectedChannels) {
+  expect(requireAccess.callCount).to.equal(1);
+  var actualChannels = requireAccess.calls[0].arg;
+  if (expectedChannels instanceof Array && actualChannels instanceof Array) {
+    expect(actualChannels.length).to.equal(expectedChannels.length);
+    for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
+      expect(actualChannels).to.contain(expectedChannels[channelIndex]);
+    }
+  } else {
+    expect(actualChannels).to.equal(expectedChannels);
+  }
+}
+
 function verifyDocumentAccepted(doc, oldDoc, expectedChannels) {
   syncFunction(doc, oldDoc);
 
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.eql(expectedChannels);
+  verifyChannelAccess(expectedChannels);
 
   expect(channel.callCount).to.equal(1);
-  expect(channel.calls[0].arg).to.contain(expectedChannels);
+
+  var actualChannels = channel.calls[0].arg;
+  if (expectedChannels instanceof Array && actualChannels instanceof Array) {
+    for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
+      expect(actualChannels).to.contain(expectedChannels[channelIndex]);
+    }
+  } else {
+    expect(actualChannels).to.contain(expectedChannels);
+  }
 }
 
 function verifyDocumentCreated(doc, oldDoc) {
@@ -43,8 +63,7 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
     verifyValidationErrors(docType, expectedErrorMessages, ex);
   });
 
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.eql(expectedChannels);
+  verifyChannelAccess(expectedChannels);
 
   expect(channel.callCount).to.equal(0);
 }

@@ -1,91 +1,27 @@
-var expect = require('expect.js');
-var simple = require('simple-mock');
-var fs = require('fs');
-
-// Load the contents of the sync function file into a global variable called syncFunction
-eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-sample-sync-function.js').toString());
+const testHelper = require('../etc/test-helper.js');
 
 const serviceChannel = 'SERVICE';
 
-// Placeholders for stubbing built-in Sync Gateway support functions.
-// More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
-var requireAccess;
-var channel;
-
 describe('The sample-sync-doc-definitions sync function', function() {
   beforeEach(function() {
-    requireAccess = simple.stub();
-    channel = simple.stub();
+    testHelper.init('build/sync-functions/test-sample-sync-function.js');
   });
 
   describe('business config doc definition', function() {
-    function verifyBusinessCreated(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_BUSINESS');
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(4);
-      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW');
-      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_BUSINESS');
-      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_BUSINESS');
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    function verifyBusinessConfigCreated(businessId, doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
     }
 
-    function verifyBusinessReplaced(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_BUSINESS');
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(4);
-      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW');
-      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_BUSINESS');
-      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_BUSINESS');
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    function verifyBusinessConfigReplaced(businessId, doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
     }
 
-    function verifyBusinessDeleted(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-REMOVE_BUSINESS');
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(4);
-      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW');
-      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_BUSINESS');
-      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_BUSINESS');
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    function verifyBusinessConfigDeleted(businessId, doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-REMOVE_BUSINESS' ]);
     }
 
-    function verifyBusinessNotCreated(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_BUSINESS');
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(0);
-    }
-
-    function verifyBusinessNotReplaced(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_BUSINESS');
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(0);
-    }
-
-    function verifyBusinessNotDeleted(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-REMOVE_BUSINESS');
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(0);
+    function verifyBusinessConfigRejected(businessId, doc, oldDoc, expectedErrorMessages) {
+      testHelper.verifyDocumentRejected(doc, oldDoc, 'business', expectedErrorMessages, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
     }
 
     it('successfully creates a valid business document', function() {
@@ -103,9 +39,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         }
       };
 
-      syncFunction(doc, null);
-
-      verifyBusinessCreated(2);
+      verifyBusinessConfigCreated(2, doc);
     });
 
     it('cannot create a business document when the properties are invalid', function() {
@@ -117,19 +51,24 @@ describe('The sample-sync-doc-definitions sync function', function() {
         'unrecognized-property1': 'foo'
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment reference "businessLogoAttachment" must be a string; item "defaultInvoiceTemplate.templateId" must not be empty; property "defaultInvoiceTemplate.some-unrecognized-property" is not supported; item "paymentProcessors" must be an array; property "unrecognized-property1" is not supported' });
-      });
-      verifyBusinessNotCreated(5);
+      verifyBusinessConfigRejected(
+        5,
+        doc,
+        undefined,
+        [
+          'item "paymentProcessors" must be an array',
+          'attachment reference "businessLogoAttachment" must be a string',
+          'item "defaultInvoiceTemplate.templateId" must not be empty',
+          'property "defaultInvoiceTemplate.some-unrecognized-property" is not supported',
+          'property "unrecognized-property1" is not supported'
+        ]);
     });
 
     it('successfully replaces a valid business document', function() {
       var doc = { _id: 'biz.8', paymentProcessors: [ 'foo', 'bar' ], businessLogoAttachment: 'foobar.png' };
       var oldDoc = { _id: 'biz.8' };
 
-      syncFunction(doc, oldDoc);
-
-      verifyBusinessReplaced(8);
+      verifyBusinessConfigReplaced(8, doc, oldDoc);
     });
 
     it('cannot replace a business document when the properties are invalid', function() {
@@ -148,42 +87,37 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
       var oldDoc = { _id: 'biz.551' };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid business document: attachment reference "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg); attachment reference "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg); attachment reference "businessLogoAttachment" must not be larger than 2097152 bytes; item "defaultInvoiceTemplate.templateId" must be a string; item "paymentProcessors[1]" must be a string; property "unrecognized-property2" is not supported' });
-      });
-      verifyBusinessNotReplaced(551);
+      verifyBusinessConfigRejected(
+        551,
+        doc,
+        oldDoc,
+        [
+          'attachment reference "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg)',
+          'attachment reference "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg)',
+          'attachment reference "businessLogoAttachment" must not be larger than 2097152 bytes',
+          'item "defaultInvoiceTemplate.templateId" must be a string',
+          'item "paymentProcessors[1]" must be a string',
+          'property "unrecognized-property2" is not supported'
+        ]);
     });
 
     it('successfully deletes a valid business document', function() {
       var doc = { _id: 'biz.11', _deleted: true };
 
-      syncFunction(doc, null);
-
-      verifyBusinessDeleted(11);
+      verifyBusinessConfigDeleted(11, doc);
     });
   });
 
-  describe('invoice payment processing result doc definition', function() {
-    var expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
-
-    function verifyPaymentAttemptWritten(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(2);
-      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + expectedBasePrivilege);
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+  describe('invoice payment processing attempt doc definition', function() {
+    function verifyPaymentAttemptWritten(businessId, doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, serviceChannel);
     }
 
-    function verifyPaymentAttemptNotWritten(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
-
-      expect(channel.callCount).to.equal(0);
+    function verifyPaymentAttemptNotWritten(businessId, doc, oldDoc, expectedErrorMessages) {
+      testHelper.verifyDocumentRejected(doc, oldDoc, 'paymentAttempt', expectedErrorMessages, serviceChannel);
     }
 
-    it('successfully creates a valid payment processing result document', function() {
+    it('successfully creates a valid payment processing attempt document', function() {
       var doc = {
         _id: 'paymentAttempt.foo-bar',
         _attachments: { },
@@ -199,12 +133,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         totalAmountPaidFormatted: '$728.38'
       };
 
-      syncFunction(doc, null);
-
-      verifyPaymentAttemptWritten(20);
+      verifyPaymentAttemptWritten(20, doc);
     });
 
-    it('cannot create a payment processing result document when the properties are invalid', function() {
+    it('cannot create a payment processing attempt document when the properties are invalid', function() {
       var doc = {
         _id: 'paymentAttempt.foo-bar',
         businessId: 'my-business',
@@ -219,16 +151,26 @@ describe('The sample-sync-doc-definitions sync function', function() {
         unsupportedProperty: 'foobar'
       };
 
-      expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
-        expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: item "businessId" must be an integer; required item "invoiceRecordId" is missing; item "paymentRequisitionId" must not be empty; item "paymentAttemptSpreedlyToken" must not be empty; item "date" must be an ISO 8601 date string with optional time and time zone components; item "internalPaymentRecordId" must not be less than 1; item "gatewayTransactionId" must not be empty; item "gatewayMessage" must be a string; item "totalAmountPaid" must be an integer; item "totalAmountPaidFormatted" must be a string; property "unsupportedProperty" is not supported'
-        });
-      });
-
-      verifyPaymentAttemptNotWritten('my-business');
+      verifyPaymentAttemptNotWritten(
+        'my-business',
+        doc,
+        undefined,
+        [
+          'item "businessId" must be an integer',
+          'required item "invoiceRecordId" is missing',
+          'item "paymentRequisitionId" must not be empty',
+          'item "paymentAttemptSpreedlyToken" must not be empty',
+          'item "date" must be an ISO 8601 date string with optional time and time zone components',
+          'item "internalPaymentRecordId" must not be less than 1',
+          'item "gatewayTransactionId" must not be empty',
+          'item "gatewayMessage" must be a string',
+          'item "totalAmountPaid" must be an integer',
+          'item "totalAmountPaidFormatted" must be a string',
+          'property "unsupportedProperty" is not supported'
+        ]);
     });
 
-    it('cannot replace a payment processing result document because it is immutable', function() {
+    it('cannot replace a payment processing attempt document because it is immutable', function() {
       var doc = {
         _id: 'paymentAttempt.foo-bar',
         businessId: 0,
@@ -248,31 +190,36 @@ describe('The sample-sync-doc-definitions sync function', function() {
         date: '2016-06-29'
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: documents of this type cannot be replaced or deleted; item "businessId" must not be less than 1; item "invoiceRecordId" must not be less than 1; required item "paymentRequisitionId" is missing; required item "paymentAttemptSpreedlyToken" is missing; required item "date" is missing; item "gatewayTransactionId" must be a string; item "gatewayMessage" must be a string; item "totalAmountPaid" must not be less than 1; item "totalAmountPaidFormatted" must not be empty; property "unsupportedProperty" is not supported'
-        });
-      });
-
-      verifyPaymentAttemptNotWritten(23);
+      verifyPaymentAttemptNotWritten(
+        23,
+        doc,
+        oldDoc,
+        [
+          'documents of this type cannot be replaced or deleted',
+          'item "businessId" must not be less than 1',
+          'item "invoiceRecordId" must not be less than 1',
+          'required item "paymentRequisitionId" is missing',
+          'required item "paymentAttemptSpreedlyToken" is missing',
+          'required item "date" is missing',
+          'item "gatewayTransactionId" must be a string',
+          'item "gatewayMessage" must be a string',
+          'item "totalAmountPaid" must not be less than 1',
+          'item "totalAmountPaidFormatted" must not be empty',
+          'property "unsupportedProperty" is not supported'
+        ]);
     });
 
-    it('cannot deletes a valid payment processing result document because it is immutable', function() {
+    it('cannot deletes a valid payment processing attempt document because it is immutable', function() {
       var doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
       var oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({
-          forbidden: 'Invalid paymentAttempt document: documents of this type cannot be replaced or deleted'
-        });
-      });
-
-      verifyPaymentAttemptNotWritten(20);
+      verifyPaymentAttemptNotWritten(20, doc, oldDoc, [ 'documents of this type cannot be replaced or deleted' ]);
     });
   });
 
   describe('payment processor definition doc definition', function() {
-    var paymentProcessorPrivilege = 'CUSTOMER_PAYMENT_PROCESSORS';
+    const expectedDocType = 'paymentProcessorDefinition';
+    const expectedBasePrivilege = 'CUSTOMER_PAYMENT_PROCESSORS';
 
     it('successfully creates a valid payment processor document', function() {
       var doc = {
@@ -284,9 +231,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         supportedCurrencyCodes: [ 'CAD', 'USD' ]
       };
 
-      syncFunction(doc, null);
-
-      verifyDocumentCreated(paymentProcessorPrivilege, 3);
+      verifyDocumentCreated(expectedBasePrivilege, 3, doc);
     });
 
     it('cannot create a payment processor document when the properties are invalid', function() {
@@ -300,10 +245,20 @@ describe('The sample-sync-doc-definitions sync function', function() {
         'unrecognized-property3': 'foo'
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: item "provider" must not be empty; item "spreedlyGatewayToken" must not be empty; item "accountId" must not be less than 1; item "displayName" must be a string; item "supportedCurrencyCodes" must be an array; property "unrecognized-property3" is not supported' });
-      });
-      verifyDocumentNotCreated(paymentProcessorPrivilege, 1);
+      verifyDocumentNotCreated(
+        expectedBasePrivilege,
+        1,
+        doc,
+        null,
+        expectedDocType,
+        [
+          'item "provider" must not be empty',
+          'item "spreedlyGatewayToken" must not be empty',
+          'item "accountId" must not be less than 1',
+          'item "displayName" must be a string',
+          'item "supportedCurrencyCodes" must be an array',
+          'property "unrecognized-property3" is not supported'
+        ]);
     });
 
     it('successfully replaces a valid payment processor document', function() {
@@ -315,9 +270,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
       var oldDoc = { _id: 'biz.5.paymentProcessor.2', provider: 'bar' };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced(paymentProcessorPrivilege, 5);
+      verifyDocumentReplaced(expectedBasePrivilege, 5, doc, oldDoc);
     });
 
     it('cannot replace a payment processor document when the properties are invalid', function() {
@@ -330,30 +283,37 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
       var oldDoc = { _id: 'biz.2.paymentProcessor.2', provider: 'foo' };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentProcessorDefinition document: required item "provider" is missing; required item "spreedlyGatewayToken" is missing; item "accountId" must be an integer; item "displayName" must be a string; item "supportedCurrencyCodes[0]" must conform to expected format /^[A-Z]{3}$/; property "unrecognized-property4" is not supported' });
-      });
-      verifyDocumentNotReplaced(paymentProcessorPrivilege, 2);
+      verifyDocumentNotReplaced(
+        expectedBasePrivilege,
+        2,
+        doc,
+        oldDoc,
+        expectedDocType,
+        [
+          'item "supportedCurrencyCodes[0]" must conform to expected format /^[A-Z]{3}$/',
+          'item "accountId" must be an integer',
+          'item "displayName" must be a string',
+          'required item "provider" is missing',
+          'required item "spreedlyGatewayToken" is missing',
+          'property "unrecognized-property4" is not supported'
+        ]);
     });
 
     it('successfully deletes a valid payment processor document', function() {
       var doc = { _id: 'biz.8.paymentProcessor.2', _deleted: true };
 
-      syncFunction(doc, null);
-
-      verifyDocumentDeleted(paymentProcessorPrivilege, 8);
+      verifyDocumentDeleted(expectedBasePrivilege, 8, doc);
     });
   });
 
   describe('payment requisitions reference doc definition', function() {
-    var expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
+    const expectedDocType = 'paymentRequisitionsReference';
+    const expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
 
     it('successfully creates a valid payment requisitions reference document', function() {
       var doc = { _id: 'biz.92.invoice.15.paymentRequisitions', paymentProcessorId: 'foo', paymentRequisitionIds: [ 'req1', 'req2' ] };
 
-      syncFunction(doc, null);
-
-      verifyDocumentCreated(expectedBasePrivilege, 92);
+      verifyDocumentCreated(expectedBasePrivilege, 92, doc);
     });
 
     it('cannot create a payment requisitions reference document when the properties are invalid', function() {
@@ -364,19 +324,25 @@ describe('The sample-sync-doc-definitions sync function', function() {
         paymentAttemptIds: 79
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentRequisitionsReference document: required item "paymentProcessorId" is missing; item "paymentRequisitionIds" must not be empty; item "paymentAttemptIds" must be an array; property "unrecognized-property5" is not supported' });
-      });
-      verifyDocumentNotCreated(expectedBasePrivilege, 18);
+      verifyDocumentNotCreated(
+        expectedBasePrivilege,
+        18,
+        doc,
+        undefined,
+        expectedDocType,
+        [
+          'required item "paymentProcessorId" is missing',
+          'item "paymentRequisitionIds" must not be empty',
+          'item "paymentAttemptIds" must be an array',
+          'property "unrecognized-property5" is not supported'
+        ]);
     });
 
     it('successfully replaces a valid payment requisitions reference document', function() {
       var doc = { _id: 'biz.3612.invoice.222.paymentRequisitions', paymentProcessorId: 'bar', paymentRequisitionIds: [ 'req2' ] };
       var oldDoc = { _id: 'biz.3612.invoice.222.paymentRequisitions', paymentProcessorId: 'foo', paymentRequisitionIds: [ 'req1' ] };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced(expectedBasePrivilege, 3612);
+      verifyDocumentReplaced(expectedBasePrivilege, 3612, doc, oldDoc);
     });
 
     it('cannot replace a payment requisitions reference document when the properties are invalid', function() {
@@ -389,23 +355,30 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
       var oldDoc = { _id: 'biz.666.invoice.3.paymentRequisitions', paymentProcessorId: 'foo', paymentRequisitionIds: [ 'req1' ] };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid paymentRequisitionsReference document: item "paymentProcessorId" must not be empty; item "paymentRequisitionIds[1]" must be a string; item "paymentAttemptIds[0]" must be a string; property "unrecognized-property6" is not supported' });
-      });
-      verifyDocumentNotReplaced(expectedBasePrivilege, 666);
+      verifyDocumentNotReplaced(
+        expectedBasePrivilege,
+        666,
+        doc,
+        oldDoc,
+        expectedDocType,
+        [
+          'item "paymentProcessorId" must not be empty',
+          'item "paymentRequisitionIds[1]" must be a string',
+          'item "paymentAttemptIds[0]" must be a string',
+          'property "unrecognized-property6" is not supported'
+        ]);
     });
 
     it('successfully deletes a valid payment requisitions reference document', function() {
       var doc = { _id: 'biz.987.invoice.2.paymentRequisitions', _deleted: true };
 
-      syncFunction(doc, null);
-
-      verifyDocumentDeleted(expectedBasePrivilege, 987);
+      verifyDocumentDeleted(expectedBasePrivilege, 987, doc, null);
     });
   });
 
   describe('invoice payment requisition doc definition', function() {
-    var paymentRequisitionPrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
+    const expectedDocType = 'paymentRequisition';
+    const expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
 
     it('successfully creates a valid payment requisition document', function() {
       var doc = {
@@ -417,9 +390,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         invoiceRecipients: 'foo@bar.baz'
       };
 
-      syncFunction(doc, null);
-
-      verifyDocumentCreated(paymentRequisitionPrivilege, 20);
+      verifyDocumentCreated(expectedBasePrivilege, 20, doc);
     });
 
     it('cannot create a payment requisition document when the properties are invalid', function() {
@@ -433,13 +404,20 @@ describe('The sample-sync-doc-definitions sync function', function() {
         'unrecognized-property7': 'foo'
       };
 
-      expect(syncFunction).withArgs(doc, null).to.throwException(function(ex) {
-        expect(ex).to.eql(
-          {
-            forbidden: 'Invalid paymentRequisition document: item "businessId" must be an integer; item "invoiceRecordId" must not be less than 1; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; item "issuedByUserId" must not be less than 1; item "invoiceRecipients" must be a string; property "unrecognized-property7" is not supported'
-          });
-      });
-      verifyDocumentNotCreated(paymentRequisitionPrivilege, 6);
+      verifyDocumentNotCreated(
+        expectedBasePrivilege,
+        6,
+        doc,
+        undefined,
+        expectedDocType,
+        [
+          'item "businessId" must be an integer',
+          'item "invoiceRecordId" must not be less than 1',
+          'item "issuedAt" must be an ISO 8601 date string with optional time and time zone components',
+          'item "issuedByUserId" must not be less than 1',
+          'item "invoiceRecipients" must be a string',
+          'property "unrecognized-property7" is not supported'
+        ]);
     });
 
     it('successfully replaces a valid payment requisition document', function() {
@@ -451,9 +429,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         issuedByUserId: null
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced(paymentRequisitionPrivilege, 21);
+      verifyDocumentReplaced(expectedBasePrivilege, 21, doc, oldDoc);
     });
 
     it('cannot replace a payment requisition document when the properties are invalid', function() {
@@ -468,82 +444,62 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
       var oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 20 };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql(
-          {
-            forbidden: 'Invalid paymentRequisition document: cannot change "businessId" property; item "businessId" must not be less than 1; value of item "invoiceRecordId" may not be modified; item "invoiceRecordId" must be an integer; value of item "issuedAt" may not be modified; item "issuedAt" must be an ISO 8601 date string with optional time and time zone components; value of item "issuedByUserId" may not be modified; item "issuedByUserId" must be an integer; value of item "invoiceRecipients" may not be modified; item "invoiceRecipients" must be a string; property "unrecognized-property8" is not supported'
-          });
-      });
-      verifyDocumentNotReplaced(paymentRequisitionPrivilege, 20);
+      verifyDocumentNotReplaced(
+        expectedBasePrivilege,
+        20,
+        doc,
+        oldDoc,
+        expectedDocType,
+        [
+          'cannot change "businessId" property',
+          'item "businessId" must not be less than 1',
+          'value of item "invoiceRecordId" may not be modified',
+          'item "invoiceRecordId" must be an integer',
+          'value of item "issuedAt" may not be modified',
+          'item "issuedAt" must be an ISO 8601 date string with optional time and time zone components',
+          'value of item "issuedByUserId" may not be modified',
+          'item "issuedByUserId" must be an integer',
+          'value of item "invoiceRecipients" may not be modified',
+          'item "invoiceRecipients" must be a string',
+          'property "unrecognized-property8" is not supported'
+        ]);
     });
 
     it('successfully deletes a valid payment requisition document', function() {
       var doc = { _id: 'paymentRequisition.foo-bar', _deleted: true };
       var oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 17 };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentDeleted(paymentRequisitionPrivilege, 17);
+      verifyDocumentDeleted(expectedBasePrivilege, 17, doc, oldDoc);
     });
   });
 
   describe('business notification doc definition', function() {
-    var notificationsPrivilege = 'NOTIFICATIONS';
+    const expectedDocType = 'notification';
+    const expectedBasePrivilege = 'NOTIFICATIONS';
 
-    function verifyNotificationCreated(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(4);
-      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    function verifyNotificationCreated(businessId, doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, serviceChannel);
     }
 
-    function verifyNotificationReplaced(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(4);
-      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    function verifyNotificationReplaced(businessId, doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ]);
     }
 
-    function verifyNotificationDeleted(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(4);
-      expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + notificationsPrivilege);
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    function verifyNotificationDeleted(businessId, doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-REMOVE_' + expectedBasePrivilege ]);
     }
 
-    function verifyNotificationNotCreated(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
-
-      expect(channel.callCount).to.equal(0);
+    function verifyNotificationNotCreated(businessId, doc, oldDoc, expectedErrorMessages) {
+      testHelper.verifyDocumentRejected(doc, oldDoc, expectedDocType, expectedErrorMessages, serviceChannel);
     }
 
-    function verifyNotificationNotReplaced(businessId) {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.have.length(2);
-      expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_' + notificationsPrivilege);
-      expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-      expect(channel.callCount).to.equal(0);
+    function verifyNotificationNotReplaced(businessId, doc, oldDoc, expectedErrorMessages) {
+      testHelper.verifyDocumentRejected(
+        doc,
+        oldDoc,
+        expectedDocType,
+        expectedErrorMessages,
+        [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ]);
     }
 
     it('successfully creates a valid notification document', function() {
@@ -561,9 +517,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         _deleted: true
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyNotificationCreated(63);
+      verifyNotificationCreated(63, doc, oldDoc);
     });
 
     it('cannot create a notification document when the properties are invalid', function() {
@@ -576,11 +530,21 @@ describe('The sample-sync-doc-definitions sync function', function() {
         actions: [ { url: 24 }, null ] // integer url, non-existent label
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notification document: required item "sender" is missing; item "type" must be a string; item "subject" must not be empty; required item "message" is missing; item "createdAt" must be an ISO 8601 date string with optional time and time zone components; item "actions[0].url" must be a string; required item "actions[0].label" is missing; required item "actions[1]" is missing; property "whatsthis?" is not supported' });
-      });
-
-      verifyNotificationNotCreated(13);
+      verifyNotificationNotCreated(
+        13,
+        doc,
+        undefined,
+        [
+          'required item "sender" is missing',
+          'item "type" must be a string',
+          'item "subject" must not be empty',
+          'required item "message" is missing',
+          'item "createdAt" must be an ISO 8601 date string with optional time and time zone components',
+          'item "actions[0].url" must be a string',
+          'required item "actions[0].label" is missing',
+          'required item "actions[1]" is missing',
+          'property "whatsthis?" is not supported'
+        ]);
     });
 
     it('successfully replaces a valid notification document', function() {
@@ -603,9 +567,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         actions: [ { 'url': 'http://foobar.baz/lastwarning', 'label': 'pay up here'} ]
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyNotificationReplaced(7);
+      verifyNotificationReplaced(7, doc, oldDoc);
     });
 
     it('cannot replace a notification document when the properties are invalid', function() {
@@ -626,11 +588,24 @@ describe('The sample-sync-doc-definitions sync function', function() {
         actions: [ { url: 'http://foobar.baz/lastwarning', label: 'pay up here'} ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notification document: value of item "sender" may not be modified; item "sender" must not be empty; value of item "type" may not be modified; required item "type" is missing; value of item "subject" may not be modified; required item "subject" is missing; value of item "message" may not be modified; item "message" must not be empty; value of item "createdAt" may not be modified; value of item "actions" may not be modified; required item "actions[0].url" is missing; item "actions[0].label" must not be empty' });
-      });
-
-      verifyNotificationNotReplaced(10);
+      verifyNotificationNotReplaced(
+        10,
+        doc,
+        oldDoc,
+        [
+          'value of item "sender" may not be modified',
+          'item "sender" must not be empty',
+          'value of item "type" may not be modified',
+          'required item "type" is missing',
+          'value of item "subject" may not be modified',
+          'required item "subject" is missing',
+          'value of item "message" may not be modified',
+          'item "message" must not be empty',
+          'value of item "createdAt" may not be modified',
+          'value of item "actions" may not be modified',
+          'required item "actions[0].url" is missing',
+          'item "actions[0].label" must not be empty'
+        ]);
     });
 
     it('successfully deletes a valid notification document', function() {
@@ -645,14 +620,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
         actions: [ { url: 'http://foobar.baz', label: 'pay up here'} ]
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyNotificationDeleted(71);
+      verifyNotificationDeleted(71, doc, oldDoc);
     });
   });
 
   describe('business notifications reference doc definition', function() {
-    var notificationsRefPrivilege = 'NOTIFICATIONS';
+    const expectedDocType = 'notificationsReference';
+    const expectedBasePrivilege = 'NOTIFICATIONS';
 
     it('successfully creates a valid notifications reference document', function() {
       var doc = {
@@ -661,9 +635,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         unreadNotificationIds: [ 'X', 'Z' ]
       };
 
-      syncFunction(doc, null);
-
-      verifyDocumentCreated(notificationsRefPrivilege, 4);
+      verifyDocumentCreated(expectedBasePrivilege, 4, doc);
     });
 
     it('cannot create a notifications reference document when the properties are invalid', function() {
@@ -673,10 +645,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
         unreadNotificationIds: [ 'Z', '' ]
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[0]" must be a string; item "unreadNotificationIds[1]" must not be empty' });
-      });
-      verifyDocumentNotCreated(notificationsRefPrivilege, 123);
+      verifyDocumentNotCreated(
+        expectedBasePrivilege,
+        123,
+        doc,
+        undefined,
+        expectedDocType,
+        [ 'item "allNotificationIds[0]" must be a string', 'item "unreadNotificationIds[1]" must not be empty' ]);
     });
 
     it('successfully replaces a valid notifications reference document', function() {
@@ -691,9 +666,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         unreadNotificationIds: [ 'X', 'Z' ]
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced(notificationsRefPrivilege, 44);
+      verifyDocumentReplaced(expectedBasePrivilege, 44, doc, oldDoc);
     });
 
     it('cannot replace a notifications reference document when the properties are invalid', function() {
@@ -708,10 +681,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
         unreadNotificationIds: [ 'X', 'Z' ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationsReference document: item "allNotificationIds[3]" must not be empty; item "unreadNotificationIds[2]" must be a string' });
-      });
-      verifyDocumentNotReplaced(notificationsRefPrivilege, 29);
+      verifyDocumentNotReplaced(
+        expectedBasePrivilege,
+        29,
+        doc,
+        oldDoc,
+        expectedDocType,
+        [ 'item "allNotificationIds[3]" must not be empty', 'item "unreadNotificationIds[2]" must be a string' ]);
     });
 
     it('successfully deletes a valid notifications reference document', function() {
@@ -722,14 +698,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
         unreadNotificationIds: [ 'X', 'Z' ]
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentDeleted(notificationsRefPrivilege, 369);
+      verifyDocumentDeleted(expectedBasePrivilege, 369, doc, oldDoc);
     });
   });
 
   describe('business notifications config doc definition', function() {
-    var notificationsConfigPrivilege = 'NOTIFICATIONS_CONFIG';
+    const expectedDocType = 'notificationsConfig';
+    const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
     it('successfully creates a valid notifications config document', function() {
       var doc = {
@@ -744,9 +719,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         }
       };
 
-      syncFunction(doc, null);
-
-      verifyDocumentCreated(notificationsConfigPrivilege, 1248);
+      verifyDocumentCreated(expectedBasePrivilege, 1248, doc);
     });
 
     it('cannot create a notifications config document when the properties are invalid', function() {
@@ -767,10 +740,22 @@ describe('The sample-sync-doc-definitions sync function', function() {
         unknownprop: 23
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: required item "notificationTypes[invoicePayments].enabledTransports[0].transportId" is missing; property "notificationTypes[invoicePayments].enabledTransports[0].invalid-property" is not supported; item "notificationTypes[invoicePayments].enabledTransports[1].transportId" must not be empty; hashtable key "notificationTypes[Invalid-Type]" does not conform to expected format /^[a-zA-Z]+$/; empty hashtable key in item "notificationTypes" is not allowed; hashtable key "notificationTypes[]" does not conform to expected format /^[a-zA-Z]+$/; required item "notificationTypes[]" is missing; property "unknownprop" is not supported' });
-      });
-      verifyDocumentNotCreated(notificationsConfigPrivilege, 72);
+      verifyDocumentNotCreated(
+        expectedBasePrivilege,
+        72,
+        doc,
+        null,
+        expectedDocType,
+        [
+          'property "notificationTypes[invoicePayments].enabledTransports[0].invalid-property" is not supported',
+          'required item "notificationTypes[invoicePayments].enabledTransports[0].transportId" is missing',
+          'item "notificationTypes[invoicePayments].enabledTransports[1].transportId" must not be empty',
+          'hashtable key "notificationTypes[Invalid-Type]" does not conform to expected format /^[a-zA-Z]+$/',
+          'empty hashtable key in item "notificationTypes" is not allowed',
+          'hashtable key "notificationTypes[]" does not conform to expected format /^[a-zA-Z]+$/',
+          'required item "notificationTypes[]" is missing',
+          'property "unknownprop" is not supported'
+        ]);
     });
 
     it('successfully replaces a valid notifications config document', function() {
@@ -795,9 +780,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced(notificationsConfigPrivilege, 191);
+      verifyDocumentReplaced(expectedBasePrivilege, 191, doc, oldDoc);
     });
 
     it('cannot replace a notifications config document when the properties are invalid', function() {
@@ -820,10 +803,18 @@ describe('The sample-sync-doc-definitions sync function', function() {
         notificationTypes: { }
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationsConfig document: property "notificationTypes[invoicePayments].enabledTransports[1].invalid-property" is not supported; item "notificationTypes[invoicePayments].enabledTransports[2].transportId" must be a string; required item "notificationTypes[invoicePayments].enabledTransports[3]" is missing; required item "notificationTypes[foobar]" is missing' });
-      });
-      verifyDocumentNotReplaced(notificationsConfigPrivilege, 37);
+      verifyDocumentNotReplaced(
+        expectedBasePrivilege,
+        37,
+        doc,
+        oldDoc,
+        expectedDocType,
+        [
+          'property "notificationTypes[invoicePayments].enabledTransports[1].invalid-property" is not supported',
+          'item "notificationTypes[invoicePayments].enabledTransports[2].transportId" must be a string',
+          'required item "notificationTypes[invoicePayments].enabledTransports[3]" is missing',
+          'required item "notificationTypes[foobar]" is missing'
+        ]);
     });
 
     it('successfully deletes a valid notifications config document', function() {
@@ -838,14 +829,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentDeleted(notificationsConfigPrivilege, 333);
+      verifyDocumentDeleted(expectedBasePrivilege, 333, doc, oldDoc);
     });
   });
 
   describe('business notification transport doc definition', function() {
-    var notificationTransportPrivilege = 'NOTIFICATIONS_CONFIG';
+    const expectedDocType = 'notificationTransport';
+    const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
     it('successfully creates a valid notification transport document', function() {
       var doc = {
@@ -854,9 +844,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         recipient: 'foo.bar@example.com'
       };
 
-      syncFunction(doc, null);
-
-      verifyDocumentCreated(notificationTransportPrivilege, 82);
+      verifyDocumentCreated(expectedBasePrivilege, 82, doc);
     });
 
     it('cannot create a notification transport document when the properties are invalid', function() {
@@ -865,10 +853,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
         recipient: ''
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: required item "type" is missing; item "recipient" must not be empty' });
-      });
-      verifyDocumentNotCreated(notificationTransportPrivilege, 75);
+      verifyDocumentNotCreated(
+        expectedBasePrivilege,
+        75,
+        doc,
+        undefined,
+        expectedDocType,
+        [ 'required item "type" is missing', 'item "recipient" must not be empty' ]);
     });
 
     it('successfully replaces a valid notification transport document', function() {
@@ -882,9 +873,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
         type: 'email',
         recipient: 'foo.bar@example.com'
       };
-      syncFunction(doc, oldDoc);
 
-      verifyDocumentReplaced(notificationTransportPrivilege, 38);
+      verifyDocumentReplaced(expectedBasePrivilege, 38, doc, oldDoc);
     });
 
     it('cannot replace a notification transport document when the properties are invalid', function() {
@@ -898,10 +888,13 @@ describe('The sample-sync-doc-definitions sync function', function() {
         recipient: 'foo.bar@example.com'
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationTransport document: item "type" must be a string; required item "recipient" is missing' });
-      });
-      verifyDocumentNotReplaced(notificationTransportPrivilege, 73);
+      verifyDocumentNotReplaced(
+        expectedBasePrivilege,
+        73,
+        doc,
+        oldDoc,
+        expectedDocType,
+        [ 'item "type" must be a string', 'required item "recipient" is missing' ]);
     });
 
     it('successfully deletes a valid notification transport document', function() {
@@ -912,27 +905,17 @@ describe('The sample-sync-doc-definitions sync function', function() {
         recipient: 'different.foo.bar@example.com'
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentDeleted(notificationTransportPrivilege, 14);
+      verifyDocumentDeleted(expectedBasePrivilege, 14, doc, oldDoc);
     });
   });
 
   describe('notification transport processing summary doc definition', function() {
-    function verifyProcessingSummaryWritten() {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
-
-      expect(channel.callCount).to.equal(1);
-      expect(channel.calls[0].arg).to.have.length(1);
-      expect(channel.calls[0].arg).to.contain(serviceChannel);
+    function verifyProcessingSummaryWritten(doc, oldDoc) {
+      testHelper.verifyDocumentAccepted(doc, oldDoc, serviceChannel);
     }
 
-    function verifyProcessingSummaryNotWritten() {
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.equal(serviceChannel);
-
-      expect(channel.callCount).to.equal(0);
+    function verifyProcessingSummaryNotWritten(doc, oldDoc, expectedErrorMessages) {
+      testHelper.verifyDocumentRejected(doc, oldDoc, 'notificationTransportProcessingSummary', expectedErrorMessages, serviceChannel);
     }
 
     it('successfully creates a valid notification transport processing summary document', function() {
@@ -944,9 +927,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         sentAt: '2016-06-04T21:02:55.013Z'
       };
 
-      syncFunction(doc, null);
-
-      verifyProcessingSummaryWritten();
+      verifyProcessingSummaryWritten(doc);
     });
 
     it('cannot create a notification transport processing summary document when the properties are invalid', function() {
@@ -956,10 +937,15 @@ describe('The sample-sync-doc-definitions sync function', function() {
         sentAt: '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: required item "nonce" is missing; item "processedBy" must be a string; required item "processedAt" is missing; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
-      });
-      verifyProcessingSummaryNotWritten();
+      verifyProcessingSummaryNotWritten(
+        doc,
+        undefined,
+        [
+          'required item "nonce" is missing',
+          'item "processedBy" must be a string',
+          'required item "processedAt" is missing',
+          'item "sentAt" must be an ISO 8601 date string with optional time and time zone components'
+        ]);
     });
 
     it('successfully replaces a valid notification transport processing summary document', function() {
@@ -974,9 +960,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
         processedBy: null,
         processedAt: '2016-06-04T21:02:19.013Z'
       };
-      syncFunction(doc, oldDoc);
 
-      verifyProcessingSummaryWritten();
+      verifyProcessingSummaryWritten(doc, oldDoc);
     });
 
     it('cannot replace a notification transport processing summary document when the properties are invalid', function() {
@@ -992,10 +977,16 @@ describe('The sample-sync-doc-definitions sync function', function() {
         processedAt: '2016-06-03T21:02:19.013Z',
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex).to.eql({ forbidden: 'Invalid notificationTransportProcessingSummary document: value of item "nonce" may not be modified; item "nonce" must be a string; value of item "processedBy" may not be modified; value of item "processedAt" may not be modified; item "sentAt" must be an ISO 8601 date string with optional time and time zone components' });
-      });
-      verifyProcessingSummaryNotWritten();
+      verifyProcessingSummaryNotWritten(
+        doc,
+        oldDoc,
+        [
+          'value of item "nonce" may not be modified',
+          'item "nonce" must be a string',
+          'value of item "processedBy" may not be modified',
+          'value of item "processedAt" may not be modified',
+          'item "sentAt" must be an ISO 8601 date string with optional time and time zone components'
+        ]);
     });
 
     it('successfully deletes a valid notification transport processing summary document', function() {
@@ -1006,81 +997,46 @@ describe('The sample-sync-doc-definitions sync function', function() {
         processedAt: '2016-06-04T21:02:19.013Z'
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyProcessingSummaryWritten();
+      verifyProcessingSummaryWritten(doc, oldDoc);
     });
   });
 });
 
-function verifyDocumentCreated(basePrivilegeName, businessId) {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.have.length(2);
-  expect(requireAccess.calls[0].arg).to.contain(businessId + '-ADD_' + basePrivilegeName);
-  expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-  expect(channel.callCount).to.equal(1);
-  expect(channel.calls[0].arg).to.have.length(5);
-  expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-ADD_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(serviceChannel);
+function verifyDocumentCreated(basePrivilegeName, businessId, doc, oldDoc) {
+  testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-ADD_' + basePrivilegeName ]);
 }
 
-function verifyDocumentReplaced(basePrivilegeName, businessId) {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.have.length(2);
-  expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_' + basePrivilegeName);
-  expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-  expect(channel.callCount).to.equal(1);
-  expect(channel.calls[0].arg).to.have.length(5);
-  expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-ADD_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(serviceChannel);
+function verifyDocumentReplaced(basePrivilegeName, businessId, doc, oldDoc) {
+  testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + basePrivilegeName ]);
 }
 
-function verifyDocumentDeleted(basePrivilegeName, businessId) {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.have.length(2);
-  expect(requireAccess.calls[0].arg).to.contain(businessId + '-REMOVE_' + basePrivilegeName);
-  expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-  expect(channel.callCount).to.equal(1);
-  expect(channel.calls[0].arg).to.have.length(5);
-  expect(channel.calls[0].arg).to.contain(businessId + '-VIEW_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-ADD_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-CHANGE_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(businessId + '-REMOVE_' + basePrivilegeName);
-  expect(channel.calls[0].arg).to.contain(serviceChannel);
+function verifyDocumentDeleted(basePrivilegeName, businessId, doc, oldDoc) {
+  testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-REMOVE_' + basePrivilegeName ]);
 }
 
-function verifyDocumentNotCreated(basePrivilegeName, businessId) {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.have.length(2);
-  expect(requireAccess.calls[0].arg).to.contain(businessId + '-ADD_' + basePrivilegeName);
-  expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-  expect(channel.callCount).to.equal(0);
+function verifyDocumentNotCreated(basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) {
+  testHelper.verifyDocumentRejected(
+    doc,
+    oldDoc,
+    expectedDocType,
+    expectedErrorMessages,
+    [ serviceChannel, businessId + '-ADD_' + basePrivilegeName ]);
 }
 
-function verifyDocumentNotReplaced(basePrivilegeName, businessId) {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.have.length(2);
-  expect(requireAccess.calls[0].arg).to.contain(businessId + '-CHANGE_' + basePrivilegeName);
-  expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-  expect(channel.callCount).to.equal(0);
+function verifyDocumentNotReplaced(basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) {
+  testHelper.verifyDocumentRejected(
+    doc,
+    oldDoc,
+    expectedDocType,
+    expectedErrorMessages,
+    [ serviceChannel, businessId + '-CHANGE_' + basePrivilegeName ]);
 }
 
-function verifyDocumentNotDeleted(basePrivilegeName, businessId) {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.have.length(2);
-  expect(requireAccess.calls[0].arg).to.contain(businessId + '-REMOVE_' + basePrivilegeName);
-  expect(requireAccess.calls[0].arg).to.contain(serviceChannel);
-
-  expect(channel.callCount).to.equal(0);
+function verifyDocumentNotDeleted(basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) {
+  testHelper.verifyDocumentRejected(
+    doc,
+    oldDoc,
+    expectedDocType,
+    expectedErrorMessages,
+    [ serviceChannel, businessId + '-REMOVE_' + basePrivilegeName ]);
 }
