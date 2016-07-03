@@ -54,8 +54,8 @@ describe('Functionality that is common to all documents', function() {
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
         expect(ex.message).to.equal(expectedError.message);
       });
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.eql('add');
+      expect(requireAccess.callCount).to.be(1);
+      expect(requireAccess.calls[0].arg).to.equal('add');
     });
 
     it('cannot replace a document for a user without permission', function() {
@@ -68,8 +68,9 @@ describe('Functionality that is common to all documents', function() {
       expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         expect(ex.message).to.equal(expectedError.message);
       });
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.eql('replace');
+      expect(requireAccess.callCount).to.be(1);
+      expect(requireAccess.calls[0].arg).to.contain('update');
+      expect(requireAccess.calls[0].arg).to.contain('replace');
     });
 
     it('cannot delete a document for a user without permission', function() {
@@ -81,8 +82,50 @@ describe('Functionality that is common to all documents', function() {
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
         expect(ex.message).to.equal(expectedError.message);
       });
-      expect(requireAccess.callCount).to.equal(1);
-      expect(requireAccess.calls[0].arg).to.eql('remove');
+      expect(requireAccess.callCount).to.be(1);
+      expect(requireAccess.calls[0].arg.length).to.be(2);
+      expect(requireAccess.calls[0].arg).to.contain('delete');
+      expect(requireAccess.calls[0].arg).to.contain('remove');
+    });
+  });
+
+  describe('channel assignment', function() {
+    const allChannels = [ 'add', 'update', 'replace', 'view', 'delete', 'remove' ];
+
+    function verifyChannelArgs() {
+      expect(channel.callCount).to.be(1);
+
+      var channelArg = channel.calls[0].arg;
+      expect(channelArg.length).to.equal(allChannels.length);
+
+      for (var channelIndex = 0; channelIndex < allChannels.length; channelIndex++) {
+        expect(channelArg).to.contain(allChannels[channelIndex]);
+      }
+    }
+
+    it('includes all configured channels when assigning channels to a new document', function() {
+      var doc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
+
+      syncFunction(doc);
+
+      verifyChannelArgs();
+    });
+
+    it('includes all configured channels when assigning channels to a replaced document', function() {
+      var doc = { _id: 'generalDoc', objectProp: { foo: 'baz' } };
+      var oldDoc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
+
+      syncFunction(doc);
+
+      verifyChannelArgs();
+    });
+
+    it('includes all configured channels when assigning channels to a deleted document', function() {
+      var doc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
+
+      syncFunction(doc);
+
+      verifyChannelArgs();
     });
   });
 
