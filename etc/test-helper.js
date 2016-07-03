@@ -1,16 +1,16 @@
-var expect = require('expect.js');
-var simple = require('simple-mock');
-var fs = require('fs');
+const expect = require('expect.js');
+const simple = require('simple-mock');
+const fs = require('fs');
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 var requireAccess;
 var channel;
 
-// Load the contents of the sync function file into a global variable called syncFunction
 var syncFunction;
 
 function init(syncFunctionPath) {
+  // Load the contents of the sync function file into a global variable called syncFunction
   eval('syncFunction = ' + fs.readFileSync(syncFunctionPath).toString());
   requireAccess = simple.stub();
   channel = simple.stub();
@@ -20,7 +20,7 @@ function verifyDocumentAccepted(doc, oldDoc, expectedChannels) {
   syncFunction(doc, oldDoc);
 
   expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.contain(expectedChannels);
+  expect(requireAccess.calls[0].arg).to.eql(expectedChannels);
 
   expect(channel.callCount).to.equal(1);
   expect(channel.calls[0].arg).to.contain(expectedChannels);
@@ -44,7 +44,7 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
   });
 
   expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.contain(expectedChannels);
+  expect(requireAccess.calls[0].arg).to.eql(expectedChannels);
 
   expect(channel.callCount).to.equal(0);
 }
@@ -71,7 +71,7 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   var invalidDocMessage = exceptionMessageMatches[1].trim();
   expect(invalidDocMessage).to.equal('Invalid ' + docType + ' document');
 
-  var actualErrorMessages = exceptionMessageMatches[2].trim().split(/;(\s*)/);
+  var actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
   expect(expectedErrorMessages.length).to.equal(actualErrorMessages.length);
 
   for (var errorIndex = 0; errorIndex < expectedErrorMessages.length; errorIndex++) {
