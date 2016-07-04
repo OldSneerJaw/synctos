@@ -9,12 +9,11 @@
     typeFilter: function(doc) {
       return doc._id === 'immutableDoc';
     },
-    propertyValidators: [
-      {
-        propertyName: 'stringProp',
+    propertyValidators: {
+      stringProp: {
         type: 'string'
       }
-    ],
+    },
     immutable: true,
     allowAttachments: true
   }

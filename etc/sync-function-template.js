@@ -137,9 +137,13 @@ function(doc, oldDoc) {
     var oldObjectValue = currentItemEntry.oldItemValue;
 
     var supportedProperties = [ ];
-    for (var validatorIndex = 0; validatorIndex < propertyValidators.length; validatorIndex++) {
-      var validator = propertyValidators[validatorIndex];
-      var propertyName = validator.propertyName;
+    for (var propertyName in propertyValidators) {
+      var validator = propertyValidators[propertyName];
+      if (isValueNullOrUndefined(validator) || isValueNullOrUndefined(validator.type)) {
+        // Skip over non-validator fields/properties
+        continue;
+      }
+
       var propertyValue = objectValue[propertyName];
 
       var oldPropertyValue;

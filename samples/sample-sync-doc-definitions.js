@@ -80,30 +80,26 @@ function() {
         return new RegExp('^biz\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
       allowAttachments: true,
-      propertyValidators: [
-        {
-          propertyName: 'businessLogoAttachment',
+      propertyValidators: {
+        businessLogoAttachment: {
           type: 'attachmentReference',
           required: false,
           maximumSize: 2097152,
           supportedExtensions: [ 'png', 'gif', 'jpg', 'jpeg' ],
           supportedContentTypes: [ 'image/png', 'image/gif', 'image/jpeg' ]
         },
-        {
-          propertyName: 'defaultInvoiceTemplate',
+        defaultInvoiceTemplate: {
           type: 'object',
           required: false,
-          propertyValidators: [
-            {
-              propertyName: 'templateId',
+          propertyValidators: {
+            templateId: {
               type: 'string',
               required: false,
               mustNotBeEmpty: true
             }
-          ],
+          },
         },
-        {
-          propertyName: 'paymentProcessors',
+        paymentProcessors: {
           type: 'array',
           required: false,
           arrayElementsValidator: {
@@ -111,7 +107,7 @@ function() {
             mustNotBeEmpty: true
           }
         }
-      ]
+      }
     },
 
     notification: {
@@ -119,75 +115,65 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'sender',
+      propertyValidators: {
+        sender: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
-        {
-          propertyName: 'type',
+        type: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
-        {
-          propertyName: 'subject',
+        subject: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
-        {
-          propertyName: 'message',
+        message: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
-        {
-          propertyName: 'createdAt',
+        createdAt: {
           type: 'datetime',
           required: true,
           immutable: true
         },
-        {
-          propertyName: 'firstReadAt',
+        firstReadAt: {
           type: 'datetime'
         },
-        {
-          propertyName: 'siteName',
+        siteName: {
           type: 'string',
           mustNotBeEmpty: true,
           immutable: true
         },
-        {
-          propertyName: 'actions',
+        actions: {
           type: 'array',
           immutable: true,
           arrayElementsValidator: {
             type: 'object',
             required: true,
-            propertyValidators: [
-              {
-                propertyName: 'url',
+            propertyValidators: {
+              url: {
                 type: 'string',
                 required: true,
                 mustNotBeEmpty: true
               },
-              {
-                propertyName: 'label',
+              label: {
                 type: 'string',
                 required: true,
                 mustNotBeEmpty: true
               }
-            ]
+            }
           }
         }
-      ]
+      }
     },
 
     notificationsConfig: {
@@ -195,9 +181,8 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notificationsConfig$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'notificationTypes',
+      propertyValidators: {
+        notificationTypes: {
           type: 'hashtable',
           hashtableKeysValidator: {
             type: 'string',
@@ -207,27 +192,25 @@ function() {
           hashtableValuesValidator: {
             type: 'object',
             required: true,
-            propertyValidators: [
-              {
-                propertyName: 'enabledTransports',
+            propertyValidators: {
+              enabledTransports: {
                 type: 'array',
                 arrayElementsValidator: {
                   type: 'object',
                   required: true,
-                  propertyValidators: [
-                    {
-                      propertyName: 'transportId',
+                  propertyValidators: {
+                    transportId: {
                       type: 'string',
                       required: true,
                       mustNotBeEmpty: true
                     }
-                  ]
+                  }
                 }
               }
-            ]
+            }
           }
         }
-      ]
+      }
     },
 
     notificationsReference: {
@@ -235,9 +218,8 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notifications$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'allNotificationIds',
+      propertyValidators: {
+        allNotificationIds: {
           type: 'array',
           required: false,
           arrayElementsValidator: {
@@ -245,8 +227,7 @@ function() {
             mustNotBeEmpty: true
           }
         },
-        {
-          propertyName: 'unreadNotificationIds',
+        unreadNotificationIds: {
           type: 'array',
           required: false,
           arrayElementsValidator: {
@@ -254,7 +235,7 @@ function() {
             mustNotBeEmpty: true
           }
         }
-      ]
+      }
     },
 
     notificationTransport: {
@@ -262,20 +243,18 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notificationTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'type',
+      propertyValidators: {
+        type: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
-        {
-          propertyName: 'recipient',
+        recipient: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         }
-      ]
+      }
     },
 
     notificationTransportProcessingSummary: {
@@ -288,23 +267,20 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'processedBy',
+      propertyValidators: {
+        processedBy: {
           type: 'string',
           immutable: true
         },
-        {
-          propertyName: 'processedAt',
+        processedAt: {
           type: 'datetime',
           required: true,
           immutable: true
         },
-        {
-          propertyName: 'sentAt',
+        sentAt: {
           type: 'datetime'
         }
-      ]
+      }
     },
 
     paymentAttempt: {
@@ -312,61 +288,51 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentAttempt\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'businessId',
+      propertyValidators: {
+        businessId: {
           type: 'integer',
           minimumValue: 1,
           customValidation: validateBusinessIdProperty
         },
-        {
-          propertyName: 'invoiceRecordId',
+        invoiceRecordId: {
           type: 'integer',
           required: true,
           minimumValue: 1
         },
-        {
-          propertyName: 'paymentRequisitionId',
+        paymentRequisitionId: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
-        {
-          propertyName: 'paymentAttemptSpreedlyToken',
+        paymentAttemptSpreedlyToken: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
         },
-        {
-          propertyName: 'date',
+        date: {
           type: 'date',
           required: true
         },
-        {
-          propertyName: 'internalPaymentRecordId',
+        internalPaymentRecordId: {
           type: 'integer',
           minimumValue: 1
         },
-        {
-          propertyName: 'gatewayTransactionId',
+        gatewayTransactionId: {
           type: 'string',
           mustNotBeEmpty: true
         },
-        {
-          propertyName: 'gatewayMessage',
+        gatewayMessage: {
           type: 'string'
         },
-        {
-          propertyName: 'totalAmountPaid',
+        totalAmountPaid: {
           type: 'integer',
           minimumValue: 1
         },
-        {
-          propertyName: 'totalAmountPaidFormatted',
+        totalAmountPaidFormatted: {
           type: 'string',
           mustNotBeEmpty: true
         }
-      ]
+      }
     },
 
     paymentProcessorDefinition: {
@@ -374,38 +340,33 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('paymentProcessor\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'provider',
+      propertyValidators: {
+        provider: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
-        {
-          propertyName: 'spreedlyGatewayToken',
+        spreedlyGatewayToken: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
-        {
-          propertyName: 'accountId',
+        accountId: {
           type: 'integer',
           required: true,
           minimumValue: 1
         },
-        {
-          propertyName: 'displayName',
+        displayName: {
           type: 'string'
         },
-        {
-          propertyName: 'supportedCurrencyCodes',
+        supportedCurrencyCodes: {
           type: 'array',
           arrayElementsValidator: {
             type: 'string',
             regexPattern: iso4217CurrencyCodeRegex
           }
         }
-      ]
+      }
     },
 
     paymentRequisition: {
@@ -413,33 +374,28 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentRequisition\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'invoiceRecordId',
+      propertyValidators: {
+        invoiceRecordId: {
           type: 'integer',
           required: true,
           minimumValue: 1
         },
-        {
-          propertyName: 'businessId',
+        businessId: {
           type: 'integer',
           minimumValue: 1,
           customValidation: validateBusinessIdProperty
         },
-        {
-          propertyName: 'issuedAt',
+        issuedAt: {
           type: 'datetime'
         },
-        {
-          propertyName: 'issuedByUserId',
+        issuedByUserId: {
           type: 'integer',
           minimumValue: 1
         },
-        {
-          propertyName: 'invoiceRecipients',
+        invoiceRecipients: {
           type: 'string'
         }
-      ]
+      }
     },
 
     paymentRequisitionsReference: {
@@ -447,15 +403,13 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('invoice\\.[A-Za-z0-9_-]+.paymentRequisitions$').test(doc._id);
       },
-      propertyValidators: [
-        {
-          propertyName: 'paymentProcessorId',
+      propertyValidators: {
+        paymentProcessorId: {
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
-        {
-          propertyName: 'paymentRequisitionIds',
+        paymentRequisitionIds: {
           type: 'array',
           required: true,
           mustNotBeEmpty: true,
@@ -464,15 +418,14 @@ function() {
             mustNotBeEmpty: true
           }
         },
-        {
-          propertyName: 'paymentAttemptIds',
+        paymentAttemptIds: {
           type: 'array',
           arrayElementsValidator: {
             type: 'string',
             mustNotBeEmpty: true
           }
         }
-      ]
+      }
     }
   };
 }

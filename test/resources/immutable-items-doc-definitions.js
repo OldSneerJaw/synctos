@@ -9,22 +9,19 @@
     typeFilter: function(doc) {
       return doc._id === 'immutableItemsDoc';
     },
-    propertyValidators: [
-      {
-        propertyName: 'immutableArrayProp',
+    propertyValidators: {
+      immutableArrayProp: {
         type: 'array',
         immutable: true
       },
-      {
-        propertyName: 'immutableObjectProp',
+      immutableObjectProp: {
         type: 'object',
         immutable: true
       },
-      {
-        propertyName: 'immutableHashtableProp',
+      immutableHashtableProp: {
         type: 'hashtable',
         immutable: true
       }
-    ]
+    }
   }
 }
