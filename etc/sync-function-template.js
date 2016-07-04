@@ -99,31 +99,39 @@ function(doc, oldDoc) {
   function validateDoc(doc, oldDoc, docDefinition, docType) {
     var validationErrors = [ ];
 
-    if (!(docDefinition.allowAttachments) && doc._attachments) {
-      for (var attachment in doc._attachments) {
-        validationErrors.push('document type does not support attachments');
-
-        break;
-      }
+    if (docDefinition.immutable && oldDoc && !(oldDoc._deleted)) {
+      validationErrors.push('documents of this type cannot be replaced or deleted');
     }
 
-    var itemStack = [
-      {
-        itemValue: doc,
-        oldItemValue: oldDoc,
-        itemName: null
-      }
-    ];
+    // Only validate the document's contents if it's being created or replaced. But there's no need if it's being deleted.
+    if (!doc._deleted) {
+      if (!(docDefinition.allowAttachments) && doc._attachments) {
+        for (var attachment in doc._attachments) {
+          validationErrors.push('document type does not support attachments');
 
-    // Execute each of the document's property validators
-    validateProperties(doc, oldDoc, docDefinition.propertyValidators, itemStack, validationErrors, true);
+          break;
+        }
+      }
+
+      var itemStack = [
+        {
+          itemValue: doc,
+          oldItemValue: oldDoc,
+          itemName: null
+        }
+      ];
+
+      // Execute each of the document's property validators while ignoring these whitelisted properties at the root level
+      var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
+      validateProperties(doc, oldDoc, docDefinition.propertyValidators, itemStack, validationErrors, whitelistedProperties);
+    }
 
     if (validationErrors.length > 0) {
       throw { forbidden: 'Invalid ' + docType + ' document: ' + validationErrors.join('; ') };
     }
   }
 
-  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, useWhitelist) {
+  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, whitelistedProperties) {
     var currentItemEntry = itemStack[itemStack.length - 1];
     var objectValue = currentItemEntry.itemValue;
     var oldObjectValue = currentItemEntry.oldItemValue;
@@ -153,10 +161,9 @@ function(doc, oldDoc) {
     }
 
     // Verify there are no unsupported properties in the object
-    var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
     for (var propertyName in objectValue) {
-      if (useWhitelist && whitelistedProperties.indexOf(propertyName) >= 0) {
-        // These properties are special cases that should always be allowed - generally only applied at the top level of the document
+      if (whitelistedProperties && whitelistedProperties.indexOf(propertyName) >= 0) {
+        // These properties are special cases that should always be allowed - generally only applied at the root level of the document
         continue;
       }
 
@@ -296,8 +303,13 @@ function(doc, oldDoc) {
   }
 
   function validateImmutableItem(itemValue, oldItemValue) {
-    if (oldItemValue === itemValue || (isValueNullOrUndefined(oldItemValue) && isValueNullOrUndefined(itemValue))) {
+    var itemMissing = isValueNullOrUndefined(itemValue);
+    var oldItemMissing = isValueNullOrUndefined(oldItemValue);
+    if (oldItemValue === itemValue || (itemMissing && oldItemMissing)) {
       return true;
+    } else if (itemMissing !== oldItemMissing) {
+      // One value is null or undefined but the other is not, so they cannot be equal
+      return false;
     } else {
       if (itemValue instanceof Array || oldItemValue instanceof Array) {
         return validateImmutableArray(itemValue, oldItemValue);
@@ -339,13 +351,10 @@ function(doc, oldDoc) {
       itemProperties.push(itemProp);
     }
 
-    var oldItemPropertiesCount = 0;
     for (var oldItemProp in oldItemValue) {
-      oldItemPropertiesCount++;
-    }
-
-    if (itemProperties.length !== oldItemPropertiesCount) {
-      return false;
+      if (itemProperties.indexOf(oldItemProp) < 0) {
+        itemProperties.push(oldItemProp);
+      }
     }
 
     for (var propIndex = 0; propIndex < itemProperties.length; propIndex++) {
@@ -552,11 +561,8 @@ function(doc, oldDoc) {
 
   authorize(doc, oldDoc, theDocDefinition);
 
-  // There's nothing to validate if the doc is being deleted
-  if (!doc._deleted) {
-    validateDoc(doc, oldDoc, theDocDefinition, theDocType);
-  }
+  validateDoc(doc, oldDoc, theDocDefinition, theDocType);
 
-  // Getting here means the document write is authorized and valid, and the appropriate channels should now be assigned
+  // Getting here means the document write is authorized and valid, and the appropriate channel(s) should now be assigned
   channel(getAllDocChannels(doc, oldDoc, theDocDefinition));
 }

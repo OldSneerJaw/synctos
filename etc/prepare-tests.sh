@@ -1,14 +1,24 @@
 #!/bin/sh
 
-cd "$(dirname "$0")"/..
+cd "$(dirname "$0")"/.. || exit 1
 
-mkdir -p build/resources/
+outputDir="build/sync-functions"
+
+mkdir -p "$outputDir"
 mkdir -p build/test-reports/
 
-# Create a temporary sync function from test resource document definitions to use in test cases
-./make-sync-function samples/sample-sync-doc-definitions.js build/resources/test-sample-sync-function.js
-./make-sync-function test/resources/array-doc-definitions.js build/resources/test-array-sync-function.js
-./make-sync-function test/resources/immutable-doc-definitions.js build/resources/test-immutable-sync-function.js
-./make-sync-function test/resources/string-doc-definitions.js build/resources/test-string-sync-function.js
-./make-sync-function test/resources/date-doc-definitions.js build/resources/test-date-sync-function.js
-./make-sync-function test/resources/datetime-doc-definitions.js build/resources/test-datetime-sync-function.js
+# Create a temporary sync function from the sample document definitions file
+./make-sync-function samples/sample-sync-doc-definitions.js "$outputDir"/test-sample-sync-function.js
+
+# Automatically create a sync function from each document definitions file in the test resources directory
+definitionsDir="test/resources"
+for docDefinitionPath in "$definitionsDir"/*-doc-definitions.js; do
+  # Skip entries that are not files
+  if [ ! -f "$docDefinitionPath" ]; then continue; fi
+
+  syncFuncName=$(basename "$docDefinitionPath" "-doc-definitions.js")
+
+  outputFile="$outputDir/test-$syncFuncName-sync-function.js"
+
+  ./make-sync-function "$docDefinitionPath" "$outputFile"
+done
