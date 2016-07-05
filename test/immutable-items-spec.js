@@ -1,19 +1,8 @@
-var expect = require('expect.js');
-var simple = require('simple-mock');
-var fs = require('fs');
-
-// Load the contents of the sync function file into a global variable called syncFunction
-eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-immutable-items-sync-function.js').toString());
-
-// Placeholders for stubbing built-in Sync Gateway support functions.
-// More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
-var requireAccess;
-var channel;
+var testHelper = require('../etc/test-helper.js');
 
 describe('Immutable item validation parameter', function() {
   beforeEach(function() {
-    requireAccess = simple.stub();
-    channel = simple.stub();
+    testHelper.init('build/sync-functions/test-immutable-items-sync-function.js');
   });
 
   describe('array type validation', function() {
@@ -27,9 +16,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 46 ]
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable array when the nested complex type elements have not changed', function() {
@@ -42,9 +29,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ [ 'foobar', 3, false ], [ 45.9 ], [ ], undefined, { foo: 'bar' } ]
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable array when it is null or undefined', function() {
@@ -54,9 +39,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: null
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can create a document with an immutable array when the old document does not exist', function() {
@@ -65,9 +48,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ [ 'foobar', 3, false ], [ 45.9 ], [ ], { foo: 'bar' } ]
       };
 
-      syncFunction(doc);
-
-      verifyDocumentCreated();
+      testHelper.verifyDocumentCreated(doc);
     });
 
     it('can create a document with an immutable array when the old document was deleted', function() {
@@ -77,9 +58,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentCreated();
+      testHelper.verifyDocumentCreated(doc, oldDoc);
     });
 
     it('can delete a document with an immutable array', function() {
@@ -89,9 +68,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9 ]
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentDeleted();
+      testHelper.verifyDocumentDeleted(doc, oldDoc);
     });
 
     it('cannot replace a document with an immutable array when the elements are not equal', function() {
@@ -104,13 +81,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9 ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableArrayProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableArrayProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable array when a nested element is not equal', function() {
@@ -123,13 +94,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ], { bar: null } ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableArrayProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableArrayProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable array when one is a subset of the other', function() {
@@ -142,13 +107,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, { }, [ ] ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableArrayProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableArrayProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable array when nested complex type elements are not the same type', function() {
@@ -161,13 +120,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ] ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableArrayProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableArrayProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable array when the element order has changed', function() {
@@ -180,13 +133,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ] ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableArrayProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableArrayProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable array when it is missing in the new document', function() {
@@ -199,13 +146,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ] ]
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableArrayProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableArrayProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable array when it is missing in the old document', function() {
@@ -215,13 +156,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc' };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableArrayProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableArrayProp" may not be modified' ]);
     });
   });
 
@@ -246,9 +181,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable object when the nested complex type elements have not changed', function() {
@@ -267,9 +200,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable object when the property is null or undefined', function() {
@@ -281,9 +212,7 @@ describe('Immutable item validation parameter', function() {
         _id: 'immutableItemsDoc'
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable object when the property order has changed and a null property becomes undefined', function() {
@@ -303,9 +232,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can create a document with an immutable object when the old document does not exist', function() {
@@ -317,9 +244,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc);
-
-      verifyDocumentCreated();
+      testHelper.verifyDocumentCreated(doc);
     });
 
     it('can create a document with an immutable object when the old document was deleted', function() {
@@ -332,9 +257,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentCreated();
+      testHelper.verifyDocumentCreated(doc, oldDoc);
     });
 
     it('can delete a document with an immutable object', function() {
@@ -347,9 +270,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentDeleted();
+      testHelper.verifyDocumentDeleted(doc, oldDoc);
     });
 
     it('cannot replace a document with an immutable object when the nested properties are not equal', function() {
@@ -368,13 +289,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableObjectProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableObjectProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable object when a nested property is missing', function() {
@@ -396,13 +311,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableObjectProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableObjectProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable object when it is missing in the new document', function() {
@@ -419,13 +328,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableObjectProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableObjectProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable object when it is missing in the old document', function() {
@@ -435,13 +338,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc' };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableObjectProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableObjectProp" may not be modified' ]);
     });
   });
 
@@ -466,9 +363,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable hashtable when the nested complex type elements have not changed', function() {
@@ -487,9 +382,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable hashtable when the property is null or undefined', function() {
@@ -501,9 +394,7 @@ describe('Immutable item validation parameter', function() {
         immutableHashtableProp: null
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can replace a document with an immutable hashtable when the property order has changed and an undefined property becomes null', function() {
@@ -523,9 +414,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentReplaced();
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can create a document with an immutable hashtable when the old document does not exist', function() {
@@ -537,9 +426,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc);
-
-      verifyDocumentCreated();
+      testHelper.verifyDocumentCreated(doc);
     });
 
     it('can create a document with an immutable hashtable when the old document was deleted', function() {
@@ -552,9 +439,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentCreated();
+      testHelper.verifyDocumentCreated(doc, oldDoc);
     });
 
     it('can delete a document with an immutable hashtable', function() {
@@ -567,9 +452,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      syncFunction(doc, oldDoc);
-
-      verifyDocumentDeleted();
+      testHelper.verifyDocumentDeleted(doc, oldDoc);
     });
 
     it('cannot replace a document with an immutable hashtable when the properties are not equal', function() {
@@ -588,13 +471,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableHashtableProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableHashtableProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable hashtable when a property is missing', function() {
@@ -616,13 +493,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableHashtableProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableHashtableProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable hashtable when it is missing in the new document', function() {
@@ -639,13 +510,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableHashtableProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableHashtableProp" may not be modified' ]);
     });
 
     it('cannot replace a document with an immutable hashtable when it is missing in the old document', function() {
@@ -655,42 +520,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc' };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.forbidden).to.contain('Invalid immutableItemsDoc document');
-        expect(ex.forbidden).to.contain('value of item "immutableHashtableProp" may not be modified');
-        expect(numberOfValidationErrors(ex.forbidden)).to.be(1);
-      });
-
-      verifyDocumentWriteDenied();
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', [ 'value of item "immutableHashtableProp" may not be modified' ]);
     });
   });
 });
-
-function verifyDocumentWriteAccepted(expectedChannel) {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(requireAccess.calls[0].arg).to.contain(expectedChannel);
-
-  expect(channel.callCount).to.equal(1);
-  expect(channel.calls[0].arg).to.contain(expectedChannel);
-}
-
-function verifyDocumentCreated() {
-  verifyDocumentWriteAccepted('add');
-}
-
-function verifyDocumentReplaced() {
-  verifyDocumentWriteAccepted('replace');
-}
-
-function verifyDocumentDeleted() {
-  verifyDocumentWriteAccepted('remove');
-}
-
-function verifyDocumentWriteDenied() {
-  expect(requireAccess.callCount).to.equal(1);
-  expect(channel.callCount).to.equal(0);
-}
-
-function numberOfValidationErrors(message) {
-  return message.split(';').length;
-}
