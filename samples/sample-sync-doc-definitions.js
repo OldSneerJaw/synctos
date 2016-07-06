@@ -63,12 +63,17 @@ function() {
     };
   }
 
-  // The document type definitions. For everyone's sanity, please keep these in case-insensitive alphabetical order
+  // The document type definitions. For everyone's sanity, please keep the document types in case-insensitive alphabetical order
   return {
+    // The base business configuration. Should not be expanded with new properties unless they are directly related to the existing
+    // properties so as to keep the document type from becoming even more of a dumping ground for general business configuration, which
+    // makes it more difficult to resolve sync conflicts. Instead, create a new document type.
     business: {
       channels: function(doc, oldDoc) {
         var businessId = getBusinessId(doc, oldDoc);
 
+        // Because creating a business config document is not the same as creating a business, reuse the same permission for both creating
+        // and updating
         return {
           view: [ toSyncChannel(businessId, 'VIEW'), serviceChannel ],
           add: [ toSyncChannel(businessId, 'CHANGE_BUSINESS'), serviceChannel ],
@@ -82,6 +87,7 @@ function() {
       allowAttachments: true,
       propertyValidators: {
         businessLogoAttachment: {
+          // The name of the Sync Gateway file attachment that is to be used as the business/invoice logo image
           type: 'attachmentReference',
           required: false,
           maximumSize: 2097152,
@@ -89,6 +95,7 @@ function() {
           supportedContentTypes: [ 'image/png', 'image/gif', 'image/jpeg' ]
         },
         defaultInvoiceTemplate: {
+          // Configuration for the default template to use in invoice PDFs
           type: 'object',
           required: false,
           propertyValidators: {
@@ -100,60 +107,81 @@ function() {
           },
         },
         paymentProcessors: {
+          // The list of payment processor IDs that are available for the business
           type: 'array',
           required: false,
           arrayElementsValidator: {
             type: 'string',
+            required: true,
             mustNotBeEmpty: true
           }
         }
       }
     },
 
+    // A notification to be delivered to the registered notification transports for the corresponding notification type
     notification: {
-      channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS'),
+      channels: function(doc, oldDoc) {
+        var businessId = getBusinessId(doc, oldDoc);
+
+        // Only service users can create new notifications
+        return {
+          view: [ toSyncChannel(businessId, 'VIEW_NOTIFICATIONS'), serviceChannel ],
+          add: serviceChannel,
+          replace: [ toSyncChannel(businessId, 'CHANGE_NOTIFICATIONS'), serviceChannel ],
+          remove: [ toSyncChannel(businessId, 'REMOVE_NOTIFICATIONS'), serviceChannel ]
+        };
+      },
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
       propertyValidators: {
         sender: {
+          // Which Kashoo app/service generated the notification
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
         type: {
+          // The type of notification. Corresponds to an entry in the business' notificationsConfig.notificationTypes property.
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
         subject: {
+          // The subject line of the notification
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
         message: {
+          // The message body of the notification
           type: 'string',
           required: true,
           mustNotBeEmpty: true,
           immutable: true
         },
         createdAt: {
+          // When the notification was first created
           type: 'datetime',
           required: true,
           immutable: true
         },
         firstReadAt: {
+          // When the notification was first read
           type: 'datetime'
         },
         siteName: {
+          // The name of the white label site/brand for which the notification was generated
           type: 'string',
           mustNotBeEmpty: true,
           immutable: true
         },
         actions: {
+          // A list of actions that are available to the recipient of the notification
           type: 'array',
           immutable: true,
           arrayElementsValidator: {
@@ -161,11 +189,13 @@ function() {
             required: true,
             propertyValidators: {
               url: {
+                // The URL of the action
                 type: 'string',
                 required: true,
                 mustNotBeEmpty: true
               },
               label: {
+                // A plain text label for the action
                 type: 'string',
                 required: true,
                 mustNotBeEmpty: true
@@ -176,6 +206,7 @@ function() {
       }
     },
 
+    // Configuration of notification transports for the business
     notificationsConfig: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
       typeFilter: function(doc, oldDoc) {
@@ -183,6 +214,7 @@ function() {
       },
       propertyValidators: {
         notificationTypes: {
+          // A map of notification types -> enabled notification transports
           type: 'hashtable',
           hashtableKeysValidator: {
             type: 'string',
@@ -194,12 +226,14 @@ function() {
             required: true,
             propertyValidators: {
               enabledTransports: {
+                // The list of notification transports that are enabled for the notification type
                 type: 'array',
                 arrayElementsValidator: {
                   type: 'object',
                   required: true,
                   propertyValidators: {
                     transportId: {
+                      // The ID of the notification transport
                       type: 'string',
                       required: true,
                       mustNotBeEmpty: true
@@ -213,6 +247,7 @@ function() {
       }
     },
 
+    // Keeps track of all notifications that have been generated for a business
     notificationsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS'),
       typeFilter: function(doc, oldDoc) {
@@ -220,24 +255,29 @@ function() {
       },
       propertyValidators: {
         allNotificationIds: {
+          // A list of the IDs of every notification that has ever been generated for the business
           type: 'array',
           required: false,
           arrayElementsValidator: {
             type: 'string',
+            required: true,
             mustNotBeEmpty: true
           }
         },
         unreadNotificationIds: {
+          // The IDs of notifications that have not yet been read
           type: 'array',
           required: false,
           arrayElementsValidator: {
             type: 'string',
+            required: true,
             mustNotBeEmpty: true
           }
         }
       }
     },
 
+    // Configuration for a notification transport
     notificationTransport: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
       typeFilter: function(doc, oldDoc) {
@@ -245,11 +285,14 @@ function() {
       },
       propertyValidators: {
         type: {
+          // The type of notification transport (e.g. email, sms). Used by a notification service to determine how to deliver a
+          // notification.
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
         recipient: {
+          // The intended recipient for notifications that are configured to use this transport
           type: 'string',
           required: true,
           mustNotBeEmpty: true
@@ -257,6 +300,7 @@ function() {
       }
     },
 
+    // A summary of the progress of processing and sending a notification via a specific notification transport method
     notificationTransportProcessingSummary: {
       channels: {
         view: serviceChannel,
@@ -268,73 +312,109 @@ function() {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
       propertyValidators: {
+        nonce: {
+          // A unique value that results in a unique document revision to prevent the notification's transport from being processed by
+          // multiple instances of a notification service. If an instance encounters a conflict when saving this element, then it can be
+          // assured that someone else is already processing it and instead move on to something else.
+          type: 'string',
+          required: true,
+          mustNotBeEmpty: true,
+          immutable: true
+        },
         processedBy: {
+          // The name/ID of the service that processed this notification for the corresponding transport
           type: 'string',
           immutable: true
         },
         processedAt: {
+          // Used to indicate when the notification has been processed for transport (but not necessarily sent yet) by a
+          // notification service
           type: 'datetime',
           required: true,
           immutable: true
         },
         sentAt: {
+          // The date/time at which the notification was actually sent. Typically distinct from the date/time at which it was processed.
           type: 'datetime'
         }
       }
     },
 
+    // Describes an attempt to pay an invoice payment requisition, whether successful or not. May not be replaced or deleted once created.
     paymentAttempt: {
-      channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
+      channels: function(doc, oldDoc) {
+        var businessId = getBusinessId(doc, oldDoc);
+
+        // Only service users can create, replace or delete payment attempts to prevent regular users from tampering
+        return {
+          view: [ toSyncChannel(businessId, 'VIEW_INVOICE_PAYMENT_REQUISITIONS'), serviceChannel ],
+          add: serviceChannel,
+          replace: serviceChannel,
+          remove: serviceChannel
+        };
+      },
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentAttempt\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
+      immutable: true,
       propertyValidators: {
         businessId: {
+          // The ID of the business with which the payment attempt is associated
           type: 'integer',
-          minimumValue: 1,
-          customValidation: validateBusinessIdProperty
+          required: true,
+          minimumValue: 1
         },
         invoiceRecordId: {
+          // The ID of the invoice with which the payment attempt is associated
           type: 'integer',
           required: true,
           minimumValue: 1
         },
         paymentRequisitionId: {
+          // The ID of the payment requisition
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
         paymentAttemptSpreedlyToken: {
+          // The unique token that was assigned to the payment attempt by Spreedly
           type: 'string',
           required: true,
-          mustNotBeEmpty: true,
+          mustNotBeEmpty: true
         },
         date: {
-          type: 'date',
+          // When the payment was attempted
+          type: 'datetime',
           required: true
         },
         internalPaymentRecordId: {
+          // The ID of the payment record in Books' general ledger
           type: 'integer',
           minimumValue: 1
         },
         gatewayTransactionId: {
+          // The ID of the payment attempt as specified by the payment processor
           type: 'string',
           mustNotBeEmpty: true
         },
         gatewayMessage: {
+          // The message specified by the payment processor in response to the payment attempt
           type: 'string'
         },
         totalAmountPaid: {
+          // The raw amount that was paid as an integer (e.g. 19999)
           type: 'integer',
           minimumValue: 1
         },
         totalAmountPaidFormatted: {
+          // The formatted amount that was paid (e.g. $199.99)
           type: 'string',
           mustNotBeEmpty: true
         }
       }
     },
 
+    // Configuration for a payment processor
     paymentProcessorDefinition: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'CUSTOMER_PAYMENT_PROCESSORS'),
       typeFilter: function(doc, oldDoc) {
@@ -342,62 +422,80 @@ function() {
       },
       propertyValidators: {
         provider: {
+          // The payment processor type (e.g. "bluepay", "stripe")
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
         spreedlyGatewayToken: {
+          // The unique token assigned to the payment processor when it was registered with Spreedly
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
         accountId: {
+          // The ID of the Books account in which to record payments
           type: 'integer',
           required: true,
           minimumValue: 1
         },
         displayName: {
+          // A friendly display name for the payment processor
           type: 'string'
         },
         supportedCurrencyCodes: {
+          // A list of currency codes that are supported by the payment processor. If this property is null or undefined, it means that all
+          // currencies are supported by the payment processor.
           type: 'array',
           arrayElementsValidator: {
             type: 'string',
+            required: true,
             regexPattern: iso4217CurrencyCodeRegex
           }
         }
       }
     },
 
+    // A request/requisition for payment of an invoice
     paymentRequisition: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentRequisition\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
       propertyValidators: {
-        invoiceRecordId: {
-          type: 'integer',
-          required: true,
-          minimumValue: 1
-        },
         businessId: {
+          // The ID of the business with which the payment requisition is associated
           type: 'integer',
           minimumValue: 1,
           customValidation: validateBusinessIdProperty
         },
+        invoiceRecordId: {
+          // The ID of the invoice with which the payment requisition is associated
+          type: 'integer',
+          required: true,
+          minimumValue: 1,
+          immutable: true
+        },
         issuedAt: {
-          type: 'datetime'
+          // When the payment requisition was sent/issued
+          type: 'datetime',
+          immutable: true
         },
         issuedByUserId: {
+          // The ID of the Kashoo user that issued the payment requisition
           type: 'integer',
-          minimumValue: 1
+          minimumValue: 1,
+          immutable: true
         },
         invoiceRecipients: {
-          type: 'string'
+          // Who received the payment requisition
+          type: 'string',
+          immutable: true
         }
       }
     },
 
+    // References the payment requisitions and payment attempts that were created for an invoice
     paymentRequisitionsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
       typeFilter: function(doc, oldDoc) {
@@ -405,23 +503,28 @@ function() {
       },
       propertyValidators: {
         paymentProcessorId: {
+          // The ID of the payment processor to use
           type: 'string',
           required: true,
           mustNotBeEmpty: true
         },
         paymentRequisitionIds: {
+          // A list of payment requisitions that were issued for the invoice
           type: 'array',
           required: true,
           mustNotBeEmpty: true,
           arrayElementsValidator: {
             type: 'string',
+            required: true,
             mustNotBeEmpty: true
           }
         },
         paymentAttemptIds: {
+          // A list of payment attempts that were made for the invoice
           type: 'array',
           arrayElementsValidator: {
             type: 'string',
+            required: true,
             mustNotBeEmpty: true
           }
         }

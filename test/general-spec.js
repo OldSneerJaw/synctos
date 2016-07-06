@@ -11,14 +11,14 @@ eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-general-
 var requireAccess;
 var channel;
 
-describe('Functionality that is common to all documents', function() {
+describe('Functionality that is common to all documents:', function() {
   beforeEach(function() {
     requireAccess = simple.stub();
     channel = simple.stub();
   });
 
-  describe('unrecognized document types', function() {
-    it('cannot create a document with an unrecognized type', function() {
+  describe('the document type identifier', function() {
+    it('rejects document creation with an unrecognized doc type', function() {
       var doc = { _id: 'my-invalid-doc' };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
@@ -26,7 +26,7 @@ describe('Functionality that is common to all documents', function() {
       });
     });
 
-    it('cannot replace a document with an unrecognized type', function() {
+    it('rejects document replacement with an unrecognized doc type', function() {
       var doc = { _id: 'my-invalid-doc', foo: 'bar' };
       var oldDoc = { _id: 'my-invalid-doc' };
 
@@ -35,7 +35,7 @@ describe('Functionality that is common to all documents', function() {
       });
     });
 
-    it('cannot delete a document with an unrecognized type', function() {
+    it('rejects document deletion with an unrecognized type', function() {
       var doc = { _id: 'my-invalid-doc', _deleted: true };
 
       expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
@@ -45,7 +45,7 @@ describe('Functionality that is common to all documents', function() {
   });
 
   describe('access control', function() {
-    it('cannot create a document for a user without permission', function() {
+    it('rejects document creation for a user without permission', function() {
       var doc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
       var expectedError = new Error('access denied');
 
@@ -58,7 +58,7 @@ describe('Functionality that is common to all documents', function() {
       expect(requireAccess.calls[0].arg).to.eql('add');
     });
 
-    it('cannot replace a document for a user without permission', function() {
+    it('rejects document replacement for a user without permission', function() {
       var doc = { _id: 'generalDoc', objectProp: { } };
       var oldDoc = { _id: 'generalDoc' };
       var expectedError = new Error('access denied');
@@ -72,7 +72,7 @@ describe('Functionality that is common to all documents', function() {
       expect(requireAccess.calls[0].arg).to.eql('replace');
     });
 
-    it('cannot delete a document for a user without permission', function() {
+    it('rejects document deletion for a user without permission', function() {
       var doc = { _id: 'generalDoc', _deleted: true };
       var expectedError = new Error('access denied');
 
