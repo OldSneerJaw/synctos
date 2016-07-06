@@ -8,20 +8,20 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('business config doc definition', function() {
-    function verifyBusinessConfigCreated(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
+    function verifyBusinessConfigCreated(businessId, doc) {
+      testHelper.verifyDocumentCreated(doc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
     }
 
     function verifyBusinessConfigReplaced(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
+      testHelper.verifyDocumentReplaced(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
     }
 
-    function verifyBusinessConfigDeleted(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-REMOVE_BUSINESS' ]);
+    function verifyBusinessConfigDeleted(businessId, oldDoc) {
+      testHelper.verifyDocumentDeleted(oldDoc, [ serviceChannel, businessId + '-REMOVE_BUSINESS' ]);
     }
 
     function verifyBusinessConfigRejected(businessId, doc, oldDoc, expectedErrorMessages) {
-      testHelper.verifyDocumentRejected(doc, oldDoc, 'business', expectedErrorMessages, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'business', expectedErrorMessages, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
     }
 
     it('successfully creates a valid business document', function() {
@@ -102,9 +102,9 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid business document', function() {
-      var doc = { _id: 'biz.11', _deleted: true };
+      var oldDoc = { _id: 'biz.11' };
 
-      verifyBusinessConfigDeleted(11, doc);
+      verifyBusinessConfigDeleted(11, oldDoc);
     });
   });
 
@@ -249,7 +249,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
         expectedBasePrivilege,
         1,
         doc,
-        null,
         expectedDocType,
         [
           'item "provider" must not be empty',
@@ -299,10 +298,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully deletes a valid payment processor document', function() {
-      var doc = { _id: 'biz.8.paymentProcessor.2', _deleted: true };
+    it('successfully deletes a payment processor document', function() {
+      var oldDoc = { _id: 'biz.8.paymentProcessor.2' };
 
-      verifyDocumentDeleted(expectedBasePrivilege, 8, doc);
+      verifyDocumentDeleted(expectedBasePrivilege, 8, oldDoc);
     });
   });
 
@@ -328,7 +327,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
         expectedBasePrivilege,
         18,
         doc,
-        undefined,
         expectedDocType,
         [
           'required item "paymentProcessorId" is missing',
@@ -369,10 +367,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully deletes a valid payment requisitions reference document', function() {
-      var doc = { _id: 'biz.987.invoice.2.paymentRequisitions', _deleted: true };
+    it('successfully deletes a payment requisitions reference document', function() {
+      var oldDoc = { _id: 'biz.987.invoice.2.paymentRequisitions' };
 
-      verifyDocumentDeleted(expectedBasePrivilege, 987, doc, null);
+      verifyDocumentDeleted(expectedBasePrivilege, 987, oldDoc);
     });
   });
 
@@ -408,7 +406,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
         expectedBasePrivilege,
         6,
         doc,
-        undefined,
         expectedDocType,
         [
           'item "businessId" must be an integer',
@@ -465,11 +462,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully deletes a valid payment requisition document', function() {
-      var doc = { _id: 'paymentRequisition.foo-bar', _deleted: true };
+    it('successfully deletes a payment requisition document', function() {
       var oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 17 };
 
-      verifyDocumentDeleted(expectedBasePrivilege, 17, doc, oldDoc);
+      verifyDocumentDeleted(expectedBasePrivilege, 17, oldDoc);
     });
   });
 
@@ -477,24 +473,24 @@ describe('The sample-sync-doc-definitions sync function', function() {
     const expectedDocType = 'notification';
     const expectedBasePrivilege = 'NOTIFICATIONS';
 
-    function verifyNotificationCreated(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, serviceChannel);
+    function verifyNotificationCreated(businessId, doc) {
+      testHelper.verifyDocumentCreated(doc, serviceChannel);
     }
 
     function verifyNotificationReplaced(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ]);
+      testHelper.verifyDocumentReplaced(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ]);
     }
 
-    function verifyNotificationDeleted(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-REMOVE_' + expectedBasePrivilege ]);
+    function verifyNotificationDeleted(businessId, oldDoc) {
+      testHelper.verifyDocumentDeleted(oldDoc, [ serviceChannel, businessId + '-REMOVE_' + expectedBasePrivilege ]);
     }
 
-    function verifyNotificationNotCreated(businessId, doc, oldDoc, expectedErrorMessages) {
-      testHelper.verifyDocumentRejected(doc, oldDoc, expectedDocType, expectedErrorMessages, serviceChannel);
+    function verifyNotificationNotCreated(businessId, doc, expectedErrorMessages) {
+      testHelper.verifyDocumentNotCreated(doc, expectedDocType, expectedErrorMessages, serviceChannel);
     }
 
     function verifyNotificationNotReplaced(businessId, doc, oldDoc, expectedErrorMessages) {
-      testHelper.verifyDocumentRejected(
+      testHelper.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         expectedDocType,
@@ -512,12 +508,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
         createdAt: '2016-02-29T17:13:43.666Z',
         actions: [ { url: 'http://foobar.baz', label: 'pay up here'} ]
       };
-      var oldDoc = {
-        _id: 'biz.63.notification.5',
-        _deleted: true
-      };
 
-      verifyNotificationCreated(63, doc, oldDoc);
+      verifyNotificationCreated(63, doc);
     });
 
     it('cannot create a notification document when the properties are invalid', function() {
@@ -533,7 +525,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
       verifyNotificationNotCreated(
         13,
         doc,
-        undefined,
         [
           'required item "sender" is missing',
           'item "type" must be a string',
@@ -609,7 +600,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
     });
 
     it('successfully deletes a valid notification document', function() {
-      var doc = { _id: 'biz.71.notification.5', _deleted: true };
       var oldDoc = {
         _id: 'biz.71.notification.5',
         type: 'invoice-payments',
@@ -620,7 +610,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         actions: [ { url: 'http://foobar.baz', label: 'pay up here'} ]
       };
 
-      verifyNotificationDeleted(71, doc, oldDoc);
+      verifyNotificationDeleted(71, oldDoc);
     });
   });
 
@@ -649,7 +639,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
         expectedBasePrivilege,
         123,
         doc,
-        undefined,
         expectedDocType,
         [ 'item "allNotificationIds[0]" must be a string', 'item "unreadNotificationIds[1]" must not be empty' ]);
     });
@@ -690,15 +679,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
         [ 'item "allNotificationIds[3]" must not be empty', 'item "unreadNotificationIds[2]" must be a string' ]);
     });
 
-    it('successfully deletes a valid notifications reference document', function() {
-      var doc = { _id: 'biz.369.notifications', _deleted: true };
+    it('successfully deletes a notifications reference document', function() {
       var oldDoc = {
         _id: 'biz.369.notifications',
         allNotificationIds: [ 'X', 'Y', 'Z' ],
         unreadNotificationIds: [ 'X', 'Z' ]
       };
 
-      verifyDocumentDeleted(expectedBasePrivilege, 369, doc, oldDoc);
+      verifyDocumentDeleted(expectedBasePrivilege, 369, oldDoc);
     });
   });
 
@@ -744,7 +732,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
         expectedBasePrivilege,
         72,
         doc,
-        null,
         expectedDocType,
         [
           'property "notificationTypes[invoicePayments].enabledTransports[0].invalid-property" is not supported',
@@ -817,8 +804,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully deletes a valid notifications config document', function() {
-      var doc = { _id: 'biz.333.notificationsConfig', _deleted: true };
+    it('successfully deletes a notifications config document', function() {
       var oldDoc = {
         _id: 'biz.333.notificationsConfig',
         notificationTypes: {
@@ -829,7 +815,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         }
       };
 
-      verifyDocumentDeleted(expectedBasePrivilege, 333, doc, oldDoc);
+      verifyDocumentDeleted(expectedBasePrivilege, 333, oldDoc);
     });
   });
 
@@ -857,7 +843,6 @@ describe('The sample-sync-doc-definitions sync function', function() {
         expectedBasePrivilege,
         75,
         doc,
-        undefined,
         expectedDocType,
         [ 'required item "type" is missing', 'item "recipient" must not be empty' ]);
     });
@@ -897,15 +882,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
         [ 'item "type" must be a string', 'required item "recipient" is missing' ]);
     });
 
-    it('successfully deletes a valid notification transport document', function() {
-      var doc = { _id: 'biz.14.notificationTransport.ABC', _deleted: true };
+    it('successfully deletes a notification transport document', function() {
       var oldDoc = {
         _id: 'biz.14.notificationTransport.ABC',
         type: 'email',
         recipient: 'different.foo.bar@example.com'
       };
 
-      verifyDocumentDeleted(expectedBasePrivilege, 14, doc, oldDoc);
+      verifyDocumentDeleted(expectedBasePrivilege, 14, oldDoc);
     });
   });
 
@@ -1002,41 +986,31 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 });
 
-function verifyDocumentCreated(basePrivilegeName, businessId, doc, oldDoc) {
-  testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-ADD_' + basePrivilegeName ]);
+function verifyDocumentCreated(basePrivilegeName, businessId, doc) {
+  testHelper.verifyDocumentCreated(doc, [ serviceChannel, businessId + '-ADD_' + basePrivilegeName ]);
 }
 
 function verifyDocumentReplaced(basePrivilegeName, businessId, doc, oldDoc) {
-  testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + basePrivilegeName ]);
+  testHelper.verifyDocumentReplaced(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + basePrivilegeName ]);
 }
 
-function verifyDocumentDeleted(basePrivilegeName, businessId, doc, oldDoc) {
-  testHelper.verifyDocumentAccepted(doc, oldDoc, [ serviceChannel, businessId + '-REMOVE_' + basePrivilegeName ]);
+function verifyDocumentDeleted(basePrivilegeName, businessId, oldDoc) {
+  testHelper.verifyDocumentDeleted(oldDoc, [ serviceChannel, businessId + '-REMOVE_' + basePrivilegeName ]);
 }
 
-function verifyDocumentNotCreated(basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) {
-  testHelper.verifyDocumentRejected(
+function verifyDocumentNotCreated(basePrivilegeName, businessId, doc, expectedDocType, expectedErrorMessages) {
+  testHelper.verifyDocumentNotCreated(
     doc,
-    oldDoc,
     expectedDocType,
     expectedErrorMessages,
     [ serviceChannel, businessId + '-ADD_' + basePrivilegeName ]);
 }
 
 function verifyDocumentNotReplaced(basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) {
-  testHelper.verifyDocumentRejected(
+  testHelper.verifyDocumentNotReplaced(
     doc,
     oldDoc,
     expectedDocType,
     expectedErrorMessages,
     [ serviceChannel, businessId + '-CHANGE_' + basePrivilegeName ]);
-}
-
-function verifyDocumentNotDeleted(basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) {
-  testHelper.verifyDocumentRejected(
-    doc,
-    oldDoc,
-    expectedDocType,
-    expectedErrorMessages,
-    [ serviceChannel, businessId + '-REMOVE_' + basePrivilegeName ]);
 }
