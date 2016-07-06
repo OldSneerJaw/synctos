@@ -6,6 +6,8 @@ With this utility, you define all your JSON document types in a declarative Java
 
 To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html).
 
+[![Build Status](https://travis-ci.org/Kashoo/synctos.svg?branch=master)](https://travis-ci.org/Kashoo/synctos)
+
 # Installation
 
 Synctos is distributed as an [npm](https://www.npmjs.com/) package and has several npm dependencies. As such, it requires that [Node.js](https://nodejs.org/) is installed in order to run.
