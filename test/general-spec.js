@@ -168,7 +168,7 @@ describe('Functionality that is common to all documents', function() {
     };
 
     expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-      testHelper.verifyValidationErrors('generalDoc', [ 'document type does not support attachments' ], ex);
+      testHelper.verifyValidationErrors('generalDoc', 'document type does not support attachments', ex);
     });
   });
 });
