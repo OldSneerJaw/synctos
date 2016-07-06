@@ -346,15 +346,17 @@ To include the test helper module in your own sync function test cases, you must
 * [simple-mock](https://www.npmjs.com/package/simple-mock) for mocking/stubbing the built-in Sync Gateway functions `requireAccess` and `channel`
 * [mocha](https://mochajs.org/) or another JavaScript test runner/framework that supports `expect.js`
 
-The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like.
+The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like. Once your dev dependencies have been set up, run `npm install`, if necessary, to download the extra dependencies.
 
-Once your dev dependencies have been set up, run `npm install`, if necessary, to download the extra dependencies.
+After that, run the `make-sync-function` script on your document definitions to generate the sync function to test. For example:
+
+    `node_modules/synctos/make-sync-function /path/to/my-doc-definitions.js /path/to/my-generated-sync-function.js`
 
 Next, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
     const testHelper = require('../node_modules/synctos/etc/test-helper.js');
 
-Create a new `describe` block to encapsulate the forthcoming test cases and initialize the synctos test helper before each test case using the `beforeEach` function. For example:
+Create a new `describe` block to encapsulate the forthcoming test cases and and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
 
     describe('My new sync function', function() {
       beforeEach(function() {
@@ -364,4 +366,34 @@ Create a new `describe` block to encapsulate the forthcoming test cases and init
       ...
     });
 
-Now you can begin writing specs/test cases using the test helper's convenience functions to verify the behaviour of the generated sync function. See this project's `test/` directory for examples.
+Now you can begin writing specs/test cases inside the `describe` block using the test helper's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a document that passes validation can be created:
+
+```
+it('can create a myDocType document', function() {
+  var doc = {
+    _id: 'myDocId',
+    type: 'myDocType',
+    foo: 'bar',
+    bar: -32
+  }
+
+  testHelper.verifyDocumentCreated(doc, [ 'my-add-channel1', 'my-add-channel2' ]);
+});
+```
+
+Or to verify that a document cannot be created because it fails validation:
+
+```
+it('cannot create a myDocType doc when required property foo is missing', function() {
+  var doc = {
+    _id: 'myDocId',
+    type: 'myDocType',
+    bar: 79
+  };
+
+  testHelper.verifyDocumentNotCreated(doc, 'myDocType', [ 'required item "foo" is missing' ], [ 'my-add-channel1', 'my-add-channel2' ]);
+});
+
+```
+
+See this project's `test/` directory for many more examples.
