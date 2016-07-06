@@ -21,24 +21,26 @@ describe('Immutable document validation parameter', function() {
     };
     var oldDoc = { _id: 'immutableDoc', _deleted: true };
 
-    testHelper.verifyDocumentCreated(doc, oldDoc);
+    testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
   });
 
   it('can delete a document if the old document was already deleted', function() {
     // There doesn't seem to be much point in deleting something that is already deleted, but since Sync Gateway allows you to do it, check
     // that it works properly
-    var doc = { _id: 'immutableDoc', _deleted: true };
     var oldDoc = { _id: 'immutableDoc', _deleted: true };
 
-    testHelper.verifyDocumentDeleted(doc, oldDoc);
+    testHelper.verifyDocumentDeleted(oldDoc);
   });
 
   it('can delete a document if the old document does not exist', function() {
     // There doesn't seem to be much point in deleting something that doesn't exist, but since Sync Gateway allows you to do it, check
     // that it works properly
-    var doc = { _id: 'immutableDoc', _deleted: true };
+    var doc = {
+      _id: 'immutableDoc',
+      _deleted: true
+    }
 
-    testHelper.verifyDocumentDeleted(doc);
+    testHelper.verifyDocumentAccepted(doc, undefined, 'remove');
   });
 
   it('cannot replace an existing document even if its properties have not been modified', function() {
@@ -55,16 +57,12 @@ describe('Immutable document validation parameter', function() {
   });
 
   it('cannot delete an existing document', function() {
-    var doc = {
-      _id: 'immutableDoc',
-      _deleted: true
-    };
     var oldDoc = {
       _id: 'immutableDoc',
       stringProp: 'foobar'
     };
 
-    testHelper.verifyDocumentNotDeleted(doc, oldDoc, 'immutableDoc', [ 'documents of this type cannot be replaced or deleted' ]);
+    testHelper.verifyDocumentNotDeleted(oldDoc, 'immutableDoc', [ 'documents of this type cannot be replaced or deleted' ]);
   });
 
   it('cannot modify attachments after the document has been created', function() {

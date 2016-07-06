@@ -46,16 +46,16 @@ function verifyDocumentAccepted(doc, oldDoc, expectedChannels) {
   }
 }
 
-function verifyDocumentCreated(doc, oldDoc) {
-  verifyDocumentAccepted(doc, oldDoc, 'add');
+function verifyDocumentCreated(doc, expectedChannels) {
+  verifyDocumentAccepted(doc, undefined, expectedChannels || 'add');
 }
 
-function verifyDocumentReplaced(doc, oldDoc) {
-  verifyDocumentAccepted(doc, oldDoc, 'replace');
+function verifyDocumentReplaced(doc, oldDoc, expectedChannels) {
+  verifyDocumentAccepted(doc, oldDoc, expectedChannels || 'replace');
 }
 
-function verifyDocumentDeleted(doc, oldDoc) {
-  verifyDocumentAccepted(doc, oldDoc, 'remove');
+function verifyDocumentDeleted(oldDoc, expectedChannels) {
+  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedChannels || 'remove');
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedChannels) {
@@ -68,16 +68,16 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
   expect(channel.callCount).to.equal(0);
 }
 
-function verifyDocumentNotCreated(doc, oldDoc, docType, expectedErrorMessages) {
-  verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, 'add');
+function verifyDocumentNotCreated(doc, docType, expectedErrorMessages, expectedChannels) {
+  verifyDocumentRejected(doc, undefined, docType, expectedErrorMessages, expectedChannels || 'add');
 }
 
-function verifyDocumentNotReplaced(doc, oldDoc, docType, expectedErrorMessages) {
-  verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, 'replace');
+function verifyDocumentNotReplaced(doc, oldDoc, docType, expectedErrorMessages, expectedChannels) {
+  verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedChannels || 'replace');
 }
 
-function verifyDocumentNotDeleted(doc, oldDoc, docType, expectedErrorMessages) {
-  verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, 'remove');
+function verifyDocumentNotDeleted(oldDoc, docType, expectedErrorMessages, expectedChannels) {
+  verifyDocumentRejected({ _id: oldDoc._id, _deleted: true }, oldDoc, docType, expectedErrorMessages, expectedChannels || 'remove');
 }
 
 function verifyValidationErrors(docType, expectedErrorMessages, exception) {
@@ -122,32 +122,35 @@ exports.init = init;
 exports.verifyDocumentAccepted = verifyDocumentAccepted;
 
 /**
- * Attempts to create the specified doc and then verifies that it completed successfully with the "add" channel.
+ * Attempts to create the specified doc and then verifies that it completed successfully with the expected channels.
  *
  * @param {Object} doc The new document
- * @param {Object} oldDoc The document to replace, if any. Should be null or undefined or include property "_deleted=true" to simulate a
- *                        create operation.
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected. Set to "add" by default if not specified.
  */
 exports.verifyDocumentCreated = verifyDocumentCreated;
 
 /**
- * Attempts to replace the specified doc and then verifies that it completed successfully with the "replace" channel.
+ * Attempts to replace the specified doc and then verifies that it completed successfully with the expected channels.
  *
  * @param {Object} doc The updated document
  * @param {Object} oldDoc The document to replace
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected. Set to "replace" by default if not specified.
  */
 exports.verifyDocumentReplaced = verifyDocumentReplaced;
 
 /**
- * Attempts to delete the specified doc and then verifies that it completed successfully with the "remove" channel.
+ * Attempts to delete the specified doc and then verifies that it completed successfully with the expected channels.
  *
- * @param {Object} doc The deleted document. Should include property "_deleted=true" to simulate a delete operation.
  * @param {Object} oldDoc The document to delete
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected. Set to "remove" by default if not specified.
  */
 exports.verifyDocumentDeleted = verifyDocumentDeleted;
 
 /**
- * Attempts to write the specified doc and then verifies that it failed validation.
+ * Attempts to write the specified doc and then verifies that it failed validation with the expected channels.
  *
  * @param {Object} doc The document to write. May include property "_deleted=true" to simulate a delete operation.
  * @param {Object} oldDoc The document to replace or delete. May be null or undefined or include property "_deleted=true" to simulate a
@@ -161,36 +164,39 @@ exports.verifyDocumentDeleted = verifyDocumentDeleted;
 exports.verifyDocumentRejected = verifyDocumentRejected;
 
 /**
- * Attempts to create the specified doc and then verifies that it failed validation with the "add" channel.
+ * Attempts to create the specified doc and then verifies that it failed validation with the expected channels.
  *
  * @param {Object} doc The new document
- * @param {Object} oldDoc The document to replace, if any. Should be null or undefined or include property "_deleted=true" to simulate a
- *                        create operation.
  * @param {string} docType The document's type as specified in the document definition
  * @param {string[]} expectedErrorMessages The list of validation error messages that should be generated by the operation. May be a string
  *                                         if only one validation error is expected.
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected. Set to "add" by default if not specified.
  */
 exports.verifyDocumentNotCreated = verifyDocumentNotCreated;
 
 /**
- * Attempts to replace the specified doc and then verifies that it failed validation with the "replace" channel.
+ * Attempts to replace the specified doc and then verifies that it failed validation with the expected channels.
  *
  * @param {Object} doc The updated document
  * @param {Object} oldDoc The document to replace
  * @param {string} docType The document's type as specified in the document definition
  * @param {string[]} expectedErrorMessages The list of validation error messages that should be generated by the operation. May be a string
  *                                         if only one validation error is expected.
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected. Set to "replace" by default if not specified.
  */
 exports.verifyDocumentNotReplaced = verifyDocumentNotReplaced;
 
 /**
- * Attempts to delete the specified doc and then verifies that it failed validation with the "remove" channel.
+ * Attempts to delete the specified doc and then verifies that it failed validation with the expected channels.
  *
- * @param {Object} doc The document to delete. Should include property "_deleted=true" to simulate a delete operation.
  * @param {Object} oldDoc The document to delete
  * @param {string} docType The document's type as specified in the document definition
  * @param {string[]} expectedErrorMessages The list of validation error messages that should be generated by the operation. May be a string
  *                                         if only one validation error is expected.
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected. Set to "remove" by default if not specified.
  */
 exports.verifyDocumentNotDeleted = verifyDocumentNotDeleted;
 

@@ -58,17 +58,16 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      testHelper.verifyDocumentCreated(doc, oldDoc);
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
     });
 
     it('can delete a document with an immutable array', function() {
-      var doc = { _id: 'immutableItemsDoc', _deleted: true };
       var oldDoc = {
         _id: 'immutableItemsDoc',
         immutableArrayProp: [ 'foobar', 3, false, 45.9 ]
       };
 
-      testHelper.verifyDocumentDeleted(doc, oldDoc);
+      testHelper.verifyDocumentDeleted(oldDoc);
     });
 
     it('cannot replace a document with an immutable array when the elements are not equal', function() {
@@ -257,11 +256,10 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      testHelper.verifyDocumentCreated(doc, oldDoc);
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
     });
 
     it('can delete a document with an immutable object', function() {
-      var doc = { _id: 'immutableItemsDoc', _deleted: true };
       var oldDoc = {
         _id: 'immutableItemsDoc',
         immutableObjectProp: {
@@ -270,7 +268,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentDeleted(doc, oldDoc);
+      testHelper.verifyDocumentDeleted(oldDoc);
     });
 
     it('cannot replace a document with an immutable object when the nested properties are not equal', function() {
@@ -439,11 +437,10 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      testHelper.verifyDocumentCreated(doc, oldDoc);
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
     });
 
     it('can delete a document with an immutable hashtable', function() {
-      var doc = { _id: 'immutableItemsDoc', _deleted: true };
       var oldDoc = {
         _id: 'immutableItemsDoc',
         immutableHashtableProp: {
@@ -452,7 +449,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentDeleted(doc, oldDoc);
+      testHelper.verifyDocumentDeleted(oldDoc);
     });
 
     it('cannot replace a document with an immutable hashtable when the properties are not equal', function() {
