@@ -23,9 +23,8 @@ describe('Date/time validation type', function() {
 
       testHelper.verifyDocumentNotCreated(
         doc,
-        undefined,
         'datetimeDoc',
-        [ 'item "rangeValidationAsDatetimesProp" must not be less than 2016-06-23T21:52:17.123-08:00' ]);
+        'item "rangeValidationAsDatetimesProp" must not be less than 2016-06-23T21:52:17.123-08:00');
     });
 
     it('cannot create a doc with a date without time and time zone components that is less than the minimum value', function() {
@@ -36,9 +35,8 @@ describe('Date/time validation type', function() {
 
       testHelper.verifyDocumentNotCreated(
         doc,
-        undefined,
         'datetimeDoc',
-        [ 'item "rangeValidationAsDatetimesProp" must not be less than 2016-06-23T21:52:17.123-08:00' ]);
+        'item "rangeValidationAsDatetimesProp" must not be less than 2016-06-23T21:52:17.123-08:00');
     });
 
     it('cannot create a doc with a date/time that is greater than the maximum value', function() {
@@ -49,9 +47,8 @@ describe('Date/time validation type', function() {
 
       testHelper.verifyDocumentNotCreated(
         doc,
-        undefined,
         'datetimeDoc',
-        [ 'item "rangeValidationAsDatetimesProp" must not be greater than 2016-06-24T05:52:17.123Z' ]);
+        'item "rangeValidationAsDatetimesProp" must not be greater than 2016-06-24T05:52:17.123Z');
     });
 
     it('cannot create a doc with a date without time and time zone components that is greater than the maximum value', function() {
@@ -62,9 +59,8 @@ describe('Date/time validation type', function() {
 
       testHelper.verifyDocumentNotCreated(
         doc,
-        undefined,
         'datetimeDoc',
-        [ 'item "rangeValidationAsDatetimesProp" must not be greater than 2016-06-24T05:52:17.123Z' ]);
+        'item "rangeValidationAsDatetimesProp" must not be greater than 2016-06-24T05:52:17.123Z');
     });
 
     it('does not consider an invalid date/time as out of range', function() {
@@ -76,9 +72,8 @@ describe('Date/time validation type', function() {
       // While the invalid input is not considered out of range, the document is still rejected because the format is invalid
       testHelper.verifyDocumentNotCreated(
         doc,
-        undefined,
         'datetimeDoc',
-        [ 'item "rangeValidationAsDatetimesProp" must be an ISO 8601 date string with optional time and time zone components' ]);
+        'item "rangeValidationAsDatetimesProp" must be an ISO 8601 date string with optional time and time zone components');
     });
   });
 
@@ -107,11 +102,7 @@ describe('Date/time validation type', function() {
         rangeValidationAsDatesOnlyProp: '2016-06-23T23:59:59.999Z'
       };
 
-      testHelper.verifyDocumentNotCreated(
-        doc,
-        undefined,
-        'datetimeDoc',
-        [ 'item "rangeValidationAsDatesOnlyProp" must not be less than 2016-06-24' ]);
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', 'item "rangeValidationAsDatesOnlyProp" must not be less than 2016-06-24');
     });
 
     it('cannot create a doc with a date without time and time zone components that is less than the minimum value', function() {
@@ -120,11 +111,7 @@ describe('Date/time validation type', function() {
         rangeValidationAsDatesOnlyProp: '2016-06-23'
       };
 
-      testHelper.verifyDocumentNotCreated(
-        doc,
-        undefined,
-        'datetimeDoc',
-        [ 'item "rangeValidationAsDatesOnlyProp" must not be less than 2016-06-24' ]);
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', 'item "rangeValidationAsDatesOnlyProp" must not be less than 2016-06-24');
     });
 
     it('cannot create a doc with a date/time that is greater than the maximum value', function() {
@@ -133,11 +120,7 @@ describe('Date/time validation type', function() {
         rangeValidationAsDatesOnlyProp: '2016-06-24T00:00:00.001Z'
       };
 
-      testHelper.verifyDocumentNotCreated(
-        doc,
-        undefined,
-        'datetimeDoc',
-        [ 'item "rangeValidationAsDatesOnlyProp" must not be greater than 2016-06-24' ]);
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', 'item "rangeValidationAsDatesOnlyProp" must not be greater than 2016-06-24');
     });
 
     it('cannot create a doc with a date without time and time zone components that is greater than the maximum value', function() {
@@ -146,11 +129,7 @@ describe('Date/time validation type', function() {
         rangeValidationAsDatesOnlyProp: '2016-06-25'
       };
 
-      testHelper.verifyDocumentNotCreated(
-        doc,
-        undefined,
-        'datetimeDoc',
-        [ 'item "rangeValidationAsDatesOnlyProp" must not be greater than 2016-06-24' ]);
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', 'item "rangeValidationAsDatesOnlyProp" must not be greater than 2016-06-24');
     });
 
     it('does not consider an invalid date as out of range', function() {
@@ -162,9 +141,8 @@ describe('Date/time validation type', function() {
       // While the invalid input is not considered out of range, the document is still rejected because the format is invalid
       testHelper.verifyDocumentNotCreated(
         doc,
-        undefined,
         'datetimeDoc',
-        [ 'item "rangeValidationAsDatesOnlyProp" must be an ISO 8601 date string with optional time and time zone components' ]);
+        'item "rangeValidationAsDatesOnlyProp" must be an ISO 8601 date string with optional time and time zone components');
     });
   });
 });

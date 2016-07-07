@@ -21,7 +21,7 @@ describe('String validation type', function() {
         lengthValidationProp: 'fo'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, undefined, 'stringDoc', [ 'length of item "lengthValidationProp" must not be less than 3' ]);
+      testHelper.verifyDocumentNotCreated(doc, 'stringDoc', 'length of item "lengthValidationProp" must not be less than 3');
     });
 
     it('cannot create a doc with a string that is longer than the maximum length', function() {
@@ -30,7 +30,7 @@ describe('String validation type', function() {
         lengthValidationProp: 'foob'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, undefined, 'stringDoc', [ 'length of item "lengthValidationProp" must not be greater than 3' ]);
+      testHelper.verifyDocumentNotCreated(doc, 'stringDoc', 'length of item "lengthValidationProp" must not be greater than 3');
     });
   });
 });
