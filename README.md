@@ -358,7 +358,7 @@ Next, create a new spec file in your project's `test/` directory (e.g. `test/foo
 
     const testHelper = require('../node_modules/synctos/etc/test-helper.js');
 
-Create a new `describe` block to encapsulate the forthcoming test cases and and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
+Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
 
     describe('My new sync function', function() {
       beforeEach(function() {
