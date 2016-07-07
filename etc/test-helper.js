@@ -1,6 +1,6 @@
-const expect = require('expect.js');
-const simple = require('simple-mock');
-const fs = require('fs');
+var expect = require('expect.js');
+var simple = require('simple-mock');
+var fs = require('fs');
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
