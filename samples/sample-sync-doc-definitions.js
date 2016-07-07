@@ -59,7 +59,7 @@ function() {
         add: [ toSyncChannel(businessId, 'ADD_' + basePrivilegeName), serviceChannel ],
         replace: [ toSyncChannel(businessId, 'CHANGE_' + basePrivilegeName), serviceChannel ],
         remove: [ toSyncChannel(businessId, 'REMOVE_' + basePrivilegeName), serviceChannel ]
-      }
+      };
     };
   }
 
