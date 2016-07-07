@@ -3,9 +3,10 @@
   "version": "0.1.13",
   "dependencies": {},
   "devDependencies": {
-    "expect.js": "*",
-    "mocha": "*",
-    "simple-mock": "*"
+    "expect.js": "^0.3.1",
+    "jshint": "^2.9.2",
+    "mocha": "^2.5.3",
+    "simple-mock": "^0.7.0"
   },
   "scripts": {
     "test": "etc/prepare-tests.sh && node_modules/.bin/mocha",

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 cd "$(dirname "$0")"/.. || exit 1
 
@@ -22,3 +22,6 @@ for docDefinitionPath in "$definitionsDir"/*-doc-definitions.js; do
 
   ./make-sync-function "$docDefinitionPath" "$outputFile"
 done
+
+echo "\nLinting generated sync functions with JSHint"
+node_modules/jshint/bin/jshint "$outputDir"/*.js
