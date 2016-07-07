@@ -18,14 +18,20 @@ function init(syncFunctionPath) {
 
 function verifyChannelAccess(expectedChannels) {
   expect(requireAccess.callCount).to.equal(1);
+
+  if (!(expectedChannels instanceof Array)) {
+    expectedChannels = [ expectedChannels ];
+  }
+
   var actualChannels = requireAccess.calls[0].arg;
-  if (expectedChannels instanceof Array && actualChannels instanceof Array) {
-    expect(actualChannels.length).to.equal(expectedChannels.length);
-    for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
-      expect(actualChannels).to.contain(expectedChannels[channelIndex]);
-    }
-  } else {
-    expect(actualChannels).to.equal(expectedChannels);
+  if (!(actualChannels instanceof Array)) {
+    actualChannels = [ actualChannels ];
+  }
+
+  expect(actualChannels.length).to.equal(expectedChannels.length);
+
+  for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
+    expect(actualChannels).to.contain(expectedChannels[channelIndex]);
   }
 }
 
