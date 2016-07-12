@@ -367,7 +367,7 @@ The synctos project uses `mocha` for writing and executing test cases and the fo
 
 After that, run the `make-sync-function` script on your document definitions to generate the sync function to test. For example:
 
-    `node_modules/synctos/make-sync-function /path/to/my-doc-definitions.js /path/to/my-generated-sync-function.js`
+    node_modules/synctos/make-sync-function /path/to/my-doc-definitions.js /path/to/my-generated-sync-function.js
 
 Next, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
