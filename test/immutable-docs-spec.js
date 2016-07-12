@@ -38,7 +38,7 @@ describe('Immutable document validation parameter', function() {
     var doc = {
       _id: 'immutableDoc',
       _deleted: true
-    }
+    };
 
     testHelper.verifyDocumentAccepted(doc, undefined, 'remove');
   });
