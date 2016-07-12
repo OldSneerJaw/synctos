@@ -21,7 +21,7 @@ describe('Immutable document validation parameter', function() {
     };
     var oldDoc = { _id: 'immutableDoc', _deleted: true };
 
-    testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
+    testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
   });
 
   it('can delete a document if the old document was already deleted', function() {
@@ -40,7 +40,7 @@ describe('Immutable document validation parameter', function() {
       _deleted: true
     };
 
-    testHelper.verifyDocumentAccepted(doc, undefined, 'remove');
+    testHelper.verifyDocumentAccepted(doc, undefined, 'write');
   });
 
   it('cannot replace an existing document even if its properties have not been modified', function() {
