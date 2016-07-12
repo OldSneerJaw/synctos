@@ -89,46 +89,6 @@ describe('Functionality that is common to all documents:', function() {
     });
   });
 
-  describe('channel assignment', function() {
-    const allChannels = [ 'add', 'update', 'replace', 'view', 'delete', 'remove' ];
-
-    function verifyChannelArgs() {
-      expect(channel.callCount).to.be(1);
-
-      var channelArg = channel.calls[0].arg;
-      expect(channelArg.length).to.equal(allChannels.length);
-
-      for (var channelIndex = 0; channelIndex < allChannels.length; channelIndex++) {
-        expect(channelArg).to.contain(allChannels[channelIndex]);
-      }
-    }
-
-    it('includes all configured channels when assigning channels to a new document', function() {
-      var doc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
-
-      syncFunction(doc);
-
-      verifyChannelArgs();
-    });
-
-    it('includes all configured channels when assigning channels to a replaced document', function() {
-      var doc = { _id: 'generalDoc', objectProp: { foo: 'baz' } };
-      var oldDoc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
-
-      syncFunction(doc);
-
-      verifyChannelArgs();
-    });
-
-    it('includes all configured channels when assigning channels to a deleted document', function() {
-      var doc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
-
-      syncFunction(doc);
-
-      verifyChannelArgs();
-    });
-  });
-
   it('cannot specify whitelisted properties below the root level of the document', function() {
     var doc = {
       _id: 'generalDoc',

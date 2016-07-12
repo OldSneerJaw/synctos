@@ -18,14 +18,23 @@ function init(syncFunctionPath) {
   channel = simple.stub();
 }
 
-function verifyChannelAccess(expectedChannels) {
-  expect(requireAccess.callCount).to.equal(1);
+function verifyRequireAccess(expectedChannels) {
+  expect(requireAccess.callCount).to.be(1);
 
+  verifyChannels(expectedChannels, requireAccess.calls[0].arg);
+}
+
+function verifyChannelAssignment(expectedChannels) {
+  expect(channel.callCount).to.be(1);
+
+  verifyChannels(expectedChannels, channel.calls[0].arg);
+}
+
+function verifyChannels(expectedChannels, actualChannels) {
   if (!(expectedChannels instanceof Array)) {
     expectedChannels = [ expectedChannels ];
   }
 
-  var actualChannels = requireAccess.calls[0].arg;
   if (!(actualChannels instanceof Array)) {
     actualChannels = [ actualChannels ];
   }
@@ -40,7 +49,7 @@ function verifyChannelAccess(expectedChannels) {
 function verifyDocumentAccepted(doc, oldDoc, expectedChannels) {
   syncFunction(doc, oldDoc);
 
-  verifyChannelAccess(expectedChannels);
+  verifyRequireAccess(expectedChannels);
 
   expect(channel.callCount).to.equal(1);
 
@@ -71,7 +80,7 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
     verifyValidationErrors(docType, expectedErrorMessages, ex);
   });
 
-  verifyChannelAccess(expectedChannels);
+  verifyRequireAccess(expectedChannels);
 
   expect(channel.callCount).to.equal(0);
 }
@@ -217,3 +226,11 @@ exports.verifyDocumentNotDeleted = verifyDocumentNotDeleted;
  * @param {Object} exception The exception that was thrown by the sync function. Should include a "forbidden" property of type string.
  */
 exports.verifyValidationErrors = verifyValidationErrors;
+
+/**
+ * Verifies that the specified channels were all assigned to a document that was created, replaced or deleted.
+ *
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected.
+ */
+exports.verifyChannelAssignment = verifyChannelAssignment;
