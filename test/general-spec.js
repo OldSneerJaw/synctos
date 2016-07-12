@@ -44,6 +44,68 @@ describe('Functionality that is common to all documents:', function() {
     });
   });
 
+  describe('validator of supported properties', function() {
+    beforeEach(function() {
+      testHelper.init('build/sync-functions/test-general-sync-function.js');
+    });
+
+    it('rejects a property that is not supported at the root level when a document is created', function() {
+      var doc = {
+        _id: 'generalDoc',
+        objectProp: { foo: 'bar' },
+        unsupportedProperty: 'invalid!'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ 'property "unsupportedProperty" is not supported' ], 'add');
+    });
+
+    it('rejects a property that is not supported at the root level when a document is replaced', function() {
+      var doc = {
+        _id: 'generalDoc',
+        objectProp: { foo: 'bar' },
+        unsupportedProperty: 'invalid!'
+      };
+      var oldDoc = { _id: 'generalDoc' };
+
+      testHelper.verifyDocumentNotReplaced(
+        doc,
+        oldDoc,
+        'generalDoc',
+        [ 'property "unsupportedProperty" is not supported' ],
+        [ 'replace', 'update' ]);
+    });
+
+    it('rejects an unsupported property that is nested in an object when a document is created', function() {
+      var doc = {
+        _id: 'generalDoc',
+        objectProp: {
+          foo: 'bar',
+          unsupportedProperty: 'invalid!'
+        }
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ 'property "objectProp.unsupportedProperty" is not supported' ], 'add');
+    });
+
+    it('rejects an unsupported property that is nested in an object when a document is replaced', function() {
+      var doc = {
+        _id: 'generalDoc',
+        objectProp: {
+          foo: 'bar',
+          unsupportedProperty: 'invalid!'
+        }
+      };
+      var oldDoc = { _id: 'generalDoc' };
+
+      testHelper.verifyDocumentNotReplaced(
+        doc,
+        oldDoc,
+        'generalDoc',
+        [ 'property "objectProp.unsupportedProperty" is not supported' ],
+        [ 'replace', 'update' ]);
+    });
+  });
+
   it('cannot specify whitelisted properties below the root level of the document', function() {
     var doc = {
       _id: 'generalDoc',
