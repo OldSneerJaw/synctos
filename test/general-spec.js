@@ -55,7 +55,7 @@ describe('Functionality that is common to all documents:', function() {
         expect(ex.message).to.equal(expectedError.message);
       });
       expect(requireAccess.callCount).to.be(1);
-      expect(requireAccess.calls[0].arg).to.equal('add');
+      expect(requireAccess.calls[0].arg).to.contain('add');
     });
 
     it('rejects document replacement for a user without permission', function() {

@@ -27,15 +27,17 @@ function synctos(doc, oldDoc) {
   // A document definition may define its channels for each operation (view, add, replace, delete) as either a string or an array of
   // strings. In either case, add them to the list if they are not already present.
   function appendToChannelList(allChannels, channelsToAdd) {
-    if (channelsToAdd instanceof Array) {
-      for (var i = 0; i < channelsToAdd.length; i++) {
-        var channel = channelsToAdd[i];
-        if (allChannels.indexOf(channel) < 0) {
-          allChannels.push(channel);
+    if (!isValueNullOrUndefined(channelsToAdd)) {
+      if (channelsToAdd instanceof Array) {
+        for (var i = 0; i < channelsToAdd.length; i++) {
+          var channel = channelsToAdd[i];
+          if (allChannels.indexOf(channel) < 0) {
+            allChannels.push(channel);
+          }
         }
+      } else if (allChannels.indexOf(channelsToAdd) < 0) {
+        allChannels.push(channelsToAdd);
       }
-    } else if (allChannels.indexOf(channelsToAdd) < 0) {
-      allChannels.push(channelsToAdd);
     }
   }
 
@@ -54,6 +56,7 @@ function synctos(doc, oldDoc) {
 
     var allChannels = [ ];
     appendToChannelList(allChannels, docChannelMap.view);
+    appendToChannelList(allChannels, docChannelMap.write);
     appendToChannelList(allChannels, docChannelMap.add);
     appendToChannelList(allChannels, docChannelMap.replace);
     appendToChannelList(allChannels, docChannelMap.remove);
@@ -65,13 +68,14 @@ function synctos(doc, oldDoc) {
   function authorize(doc, oldDoc, docDefinition) {
     var docChannelMap = getDocChannelMap(doc, oldDoc, docDefinition);
 
-    var requiredChannels;
+    var requiredChannels = [ ];
+    appendToChannelList(requiredChannels, docChannelMap.write);
     if (doc._deleted) {
-      requiredChannels = docChannelMap.remove;
+      appendToChannelList(requiredChannels, docChannelMap.remove);
     } else if (oldDoc && !oldDoc._deleted) {
-      requiredChannels = docChannelMap.replace;
+      appendToChannelList(requiredChannels, docChannelMap.replace);
     } else {
-      requiredChannels = docChannelMap.add;
+      appendToChannelList(requiredChannels, docChannelMap.add);
     }
 
     requireAccess(requiredChannels);
