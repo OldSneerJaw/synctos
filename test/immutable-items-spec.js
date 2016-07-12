@@ -58,7 +58,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
     it('can delete a document with an immutable array', function() {
@@ -256,7 +256,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
     it('can delete a document with an immutable object', function() {
@@ -437,7 +437,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc', _deleted: true };
 
-      testHelper.verifyDocumentAccepted(doc, oldDoc, 'add');
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
     it('can delete a document with an immutable hashtable', function() {

@@ -1,11 +1,6 @@
 {
   immutableItemsDoc: {
-    channels: {
-      view: 'view',
-      add: 'add',
-      replace: 'replace',
-      remove: 'remove'
-    },
+    channels: { write: 'write' },
     typeFilter: function(doc) {
       return doc._id === 'immutableItemsDoc';
     },
