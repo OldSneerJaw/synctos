@@ -160,14 +160,29 @@ At the top level, the object contains a property for each document type that is 
 
 Each document type is specified as an object with the following properties:
 
-* `channels`: (required) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. Defined as an object with required `view`, `add`, `replace` and `remove` properties, each of which determines which channel(s) are required to authorize the corresponding action. Each entry may be either an array of channel names or a single channel name as a string. For example:
+* `channels`: (required) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. Includes the following properties, each of which may be either an array of channel names or a single channel name as a string:
+  * `view`: (optional) The channel(s) that confer read-only access to documents of this type.
+  * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access.
+  * `replace`: (required if `write` is undefined) The channel(s) that confer the ability to replace existing documents of this type. Any user with a matching channel also gains implicit read access.
+  * `remove`: (required if `write` is undefined) The channel(s) that confer the ability to delete documents of this type. Any user with a matching channel also gains implicit read access.
+  * `write`: (required if one or more of `add`, `replace` or `remove` are undefined) The channel(s) that confer the ability to add, replace or remove documents of this type. Exists as a convenience in cases where the add, replace and remove operations share the same channel(s). Any user with a matching channel also gains implicit read access.
+
+For example:
 
 ```
     channels: {
-      view: [ 'admin', 'readonly' ],
-      add: 'admin',
-      replace: 'admin',
-      remove: 'admin'
+      add: 'create',
+      replace: 'update',
+      remove: 'delete'
+    }
+```
+
+Or:
+
+```
+    channels: {
+      view: 'readonly',
+      write: [ 'edit', 'admin' ]
     }
 ```
 

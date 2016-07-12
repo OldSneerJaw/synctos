@@ -303,10 +303,7 @@ function() {
     // A summary of the progress of processing and sending a notification via a specific notification transport method
     notificationTransportProcessingSummary: {
       channels: {
-        view: serviceChannel,
-        add: serviceChannel,
-        replace: serviceChannel,
-        remove: serviceChannel
+        write: serviceChannel
       },
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
@@ -348,9 +345,7 @@ function() {
         // Only service users can create, replace or delete payment attempts to prevent regular users from tampering
         return {
           view: [ toSyncChannel(businessId, 'VIEW_INVOICE_PAYMENT_REQUISITIONS'), serviceChannel ],
-          add: serviceChannel,
-          replace: serviceChannel,
-          remove: serviceChannel
+          write: serviceChannel
         };
       },
       typeFilter: function(doc, oldDoc) {
