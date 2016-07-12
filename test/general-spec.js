@@ -44,51 +44,6 @@ describe('Functionality that is common to all documents:', function() {
     });
   });
 
-  describe('access control', function() {
-    it('rejects document creation for a user without permission', function() {
-      var doc = { _id: 'generalDoc', objectProp: { foo: 'bar' } };
-      var expectedError = new Error('access denied');
-
-      requireAccess = simple.stub().throwWith(expectedError);
-
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex.message).to.equal(expectedError.message);
-      });
-      expect(requireAccess.callCount).to.be(1);
-      expect(requireAccess.calls[0].arg).to.contain('add');
-    });
-
-    it('rejects document replacement for a user without permission', function() {
-      var doc = { _id: 'generalDoc', objectProp: { } };
-      var oldDoc = { _id: 'generalDoc' };
-      var expectedError = new Error('access denied');
-
-      requireAccess = simple.stub().throwWith(expectedError);
-
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(ex.message).to.equal(expectedError.message);
-      });
-      expect(requireAccess.callCount).to.be(1);
-      expect(requireAccess.calls[0].arg).to.contain('update');
-      expect(requireAccess.calls[0].arg).to.contain('replace');
-    });
-
-    it('rejects document deletion for a user without permission', function() {
-      var doc = { _id: 'generalDoc', _deleted: true };
-      var expectedError = new Error('access denied');
-
-      requireAccess = simple.stub().throwWith(expectedError);
-
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(ex.message).to.equal(expectedError.message);
-      });
-      expect(requireAccess.callCount).to.be(1);
-      expect(requireAccess.calls[0].arg.length).to.be(2);
-      expect(requireAccess.calls[0].arg).to.contain('delete');
-      expect(requireAccess.calls[0].arg).to.contain('remove');
-    });
-  });
-
   it('cannot specify whitelisted properties below the root level of the document', function() {
     var doc = {
       _id: 'generalDoc',

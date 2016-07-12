@@ -21,16 +21,16 @@ function init(syncFunctionPath) {
 function verifyRequireAccess(expectedChannels) {
   expect(requireAccess.callCount).to.be(1);
 
-  verifyChannels(expectedChannels, requireAccess.calls[0].arg);
+  checkChannels(expectedChannels, requireAccess.calls[0].arg);
 }
 
 function verifyChannelAssignment(expectedChannels) {
   expect(channel.callCount).to.be(1);
 
-  verifyChannels(expectedChannels, channel.calls[0].arg);
+  checkChannels(expectedChannels, channel.calls[0].arg);
 }
 
-function verifyChannels(expectedChannels, actualChannels) {
+function checkChannels(expectedChannels, actualChannels) {
   if (!(expectedChannels instanceof Array)) {
     expectedChannels = [ expectedChannels ];
   }
@@ -118,6 +118,17 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
     var expectedError = expectedErrorMessages[errorIndex];
     expect(actualErrorMessages).to.contain(expectedError);
   }
+}
+
+function verifyAccessDenied(doc, oldDoc, expectedChannels) {
+  var expectedError = new Error('access denied');
+  requireAccess = simple.stub().throwWith(expectedError);
+
+  expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+    expect(ex.message).to.equal(expectedError.message);
+  });
+
+  verifyRequireAccess(expectedChannels);
 }
 
 /**
@@ -228,9 +239,28 @@ exports.verifyDocumentNotDeleted = verifyDocumentNotDeleted;
 exports.verifyValidationErrors = verifyValidationErrors;
 
 /**
- * Verifies that the specified channels were all assigned to a document that was created, replaced or deleted.
+ * Verifies that the specified the document that was created, replaced or deleted required the specified channels for access.
  *
  * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
  *                                    is expected.
  */
+exports.verifyRequireAccess = verifyRequireAccess;
+
+/**
+ * Verifies that the specified channels were all assigned to a document that was created, replaced or deleted.
+ *
+ * @param {string[]} expectedChannels The list of channels that should have been assigned to the document. May be a string if only one
+ *                                    channel is expected.
+ */
 exports.verifyChannelAssignment = verifyChannelAssignment;
+
+/**
+ * Verifies that authorization to write the document was denied.
+ *
+ * @param {Object} doc The document to attempt to write. May include property "_deleted=true" to simulate a delete operation.
+ * @param {Object} oldDoc The document to replace or delete. May be null or undefined or include property "_deleted=true" to simulate a
+ *                        create operation.
+ * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ *                                    is expected.
+ */
+exports.verifyAccessDenied = verifyAccessDenied;

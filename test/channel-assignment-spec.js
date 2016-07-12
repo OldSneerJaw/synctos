@@ -3,7 +3,7 @@ var testHelper = require('../etc/test-helper.js');
 describe('Channel assignment:', function() {
 
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-channel-assignment-sync-function.js');
+    testHelper.init('build/sync-functions/test-channels-sync-function.js');
   });
 
   describe('for a document with explicit channel definitions', function() {
@@ -33,28 +33,28 @@ describe('Channel assignment:', function() {
   });
 
   describe('for a document with only the write channels defined', function() {
-    const allChannels = [ 'edit', 'modify', 'write' ];
+    const writeChannels = [ 'edit', 'modify', 'write' ];
 
     it('includes all configured channels when assigning channels to a new document', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyDocumentCreated(doc, allChannels);
-      testHelper.verifyChannelAssignment(allChannels);
+      testHelper.verifyDocumentCreated(doc, writeChannels);
+      testHelper.verifyChannelAssignment(writeChannels);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobaz' };
       var oldDoc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, allChannels);
-      testHelper.verifyChannelAssignment(allChannels);
+      testHelper.verifyDocumentReplaced(doc, oldDoc, writeChannels);
+      testHelper.verifyChannelAssignment(writeChannels);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', _deleted: true };
 
-      testHelper.verifyDocumentDeleted(doc, allChannels);
-      testHelper.verifyChannelAssignment(allChannels);
+      testHelper.verifyDocumentDeleted(doc, writeChannels);
+      testHelper.verifyChannelAssignment(writeChannels);
     });
   });
 });
