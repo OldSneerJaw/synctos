@@ -28,7 +28,7 @@ describe('Access control:', function() {
   });
 
   describe('for a document with only the write channels defined', function() {
-    const writeChannels = [ 'edit', 'modify', 'write' ];
+    var writeChannels = [ 'edit', 'modify', 'write' ];
 
     it('rejects document creation for a user without permission', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };

@@ -4,7 +4,9 @@ var fs = require('fs');
 var testHelper = require('../etc/test-helper.js');
 
 // Load the contents of the sync function file into a global variable called syncFunction
+/*jslint evil: true */
 eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-general-sync-function.js').toString());
+/*jslint evil: false */
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html

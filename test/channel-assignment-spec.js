@@ -7,7 +7,7 @@ describe('Channel assignment:', function() {
   });
 
   describe('for a document with explicit channel definitions', function() {
-    const allChannels = [ 'add', 'update', 'replace', 'view', 'delete', 'remove' ];
+    var allChannels = [ 'add', 'update', 'replace', 'view', 'delete', 'remove' ];
 
     it('includes all configured channels when assigning channels to a new document', function() {
       var doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
@@ -33,7 +33,7 @@ describe('Channel assignment:', function() {
   });
 
   describe('for a document with only the write channels defined', function() {
-    const writeChannels = [ 'edit', 'modify', 'write' ];
+    var writeChannels = [ 'edit', 'modify', 'write' ];
 
     it('includes all configured channels when assigning channels to a new document', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };

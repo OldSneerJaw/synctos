@@ -1,6 +1,6 @@
-const testHelper = require('../etc/test-helper.js');
+var testHelper = require('../etc/test-helper.js');
 
-const serviceChannel = 'SERVICE';
+var serviceChannel = 'SERVICE';
 
 describe('The sample-sync-doc-definitions sync function', function() {
   beforeEach(function() {
@@ -218,8 +218,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('payment processor definition doc definition', function() {
-    const expectedDocType = 'paymentProcessorDefinition';
-    const expectedBasePrivilege = 'CUSTOMER_PAYMENT_PROCESSORS';
+    var expectedDocType = 'paymentProcessorDefinition';
+    var expectedBasePrivilege = 'CUSTOMER_PAYMENT_PROCESSORS';
 
     it('successfully creates a valid payment processor document', function() {
       var doc = {
@@ -306,8 +306,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('payment requisitions reference doc definition', function() {
-    const expectedDocType = 'paymentRequisitionsReference';
-    const expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
+    var expectedDocType = 'paymentRequisitionsReference';
+    var expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
 
     it('successfully creates a valid payment requisitions reference document', function() {
       var doc = { _id: 'biz.92.invoice.15.paymentRequisitions', paymentProcessorId: 'foo', paymentRequisitionIds: [ 'req1', 'req2' ] };
@@ -375,8 +375,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('invoice payment requisition doc definition', function() {
-    const expectedDocType = 'paymentRequisition';
-    const expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
+    var expectedDocType = 'paymentRequisition';
+    var expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
 
     it('successfully creates a valid payment requisition document', function() {
       var doc = {
@@ -470,8 +470,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('business notification doc definition', function() {
-    const expectedDocType = 'notification';
-    const expectedBasePrivilege = 'NOTIFICATIONS';
+    var expectedDocType = 'notification';
+    var expectedBasePrivilege = 'NOTIFICATIONS';
 
     function verifyNotificationCreated(businessId, doc) {
       testHelper.verifyDocumentCreated(doc, serviceChannel);
@@ -615,8 +615,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('business notifications reference doc definition', function() {
-    const expectedDocType = 'notificationsReference';
-    const expectedBasePrivilege = 'NOTIFICATIONS';
+    var expectedDocType = 'notificationsReference';
+    var expectedBasePrivilege = 'NOTIFICATIONS';
 
     it('successfully creates a valid notifications reference document', function() {
       var doc = {
@@ -691,8 +691,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('business notifications config doc definition', function() {
-    const expectedDocType = 'notificationsConfig';
-    const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
+    var expectedDocType = 'notificationsConfig';
+    var expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
     it('successfully creates a valid notifications config document', function() {
       var doc = {
@@ -820,8 +820,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
   });
 
   describe('business notification transport doc definition', function() {
-    const expectedDocType = 'notificationTransport';
-    const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
+    var expectedDocType = 'notificationTransport';
+    var expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
     it('successfully creates a valid notification transport document', function() {
       var doc = {

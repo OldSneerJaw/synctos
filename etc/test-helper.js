@@ -13,7 +13,10 @@ var defaultWriteChannel = 'write';
 
 function init(syncFunctionPath) {
   // Load the contents of the sync function file into a global variable called syncFunction
+  /*jslint evil: true */
   eval('syncFunction = ' + fs.readFileSync(syncFunctionPath).toString());
+  /*jslint evil: false */
+
   requireAccess = simple.stub();
   channel = simple.stub();
 }
