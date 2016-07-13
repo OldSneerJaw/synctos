@@ -24,6 +24,18 @@ function synctos(doc, oldDoc) {
     return typeof(value) === 'undefined' || value === null;
   }
 
+  function simpleTypeFilter(doc, oldDoc, currentDocType) {
+    if (oldDoc) {
+      if (doc._deleted) {
+        return oldDoc.type === currentDocType;
+      } else {
+        return doc.type === oldDoc.type && oldDoc.type === currentDocType;
+      }
+    } else {
+      return doc.type === currentDocType;
+    }
+  }
+
   // A document definition may define its channels for each operation (view, add, replace, delete) as either a string or an array of
   // strings. In either case, add them to the list if they are not already present.
   function appendToChannelList(allChannels, channelsToAdd) {
@@ -545,9 +557,11 @@ function synctos(doc, oldDoc) {
 
 
   function getDocumentType(doc, oldDoc) {
+    var actualOldDoc = (oldDoc && !(oldDoc._deleted)) ? oldDoc : null;
+
     for (var docType in docDefinitions) {
       var docDefn = docDefinitions[docType];
-      if (docDefn.typeFilter(doc, oldDoc)) {
+      if (docDefn.typeFilter(doc, actualOldDoc, docType)) {
         return docType;
       }
     }

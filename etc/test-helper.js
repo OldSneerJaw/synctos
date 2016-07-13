@@ -134,6 +134,16 @@ function verifyAccessDenied(doc, oldDoc, expectedChannels) {
   verifyRequireAccess(expectedChannels);
 }
 
+function verifyUnknownDocumentType(doc, oldDoc) {
+  expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+    expect(ex.forbidden).to.equal('Unknown document type');
+  });
+
+
+  expect(requireAccess.callCount).to.be(0);
+  expect(channel.callCount).to.be(0);
+}
+
 /**
  * Initializes the module with the sync function at the specified file path.
  *
@@ -267,3 +277,12 @@ exports.verifyChannelAssignment = verifyChannelAssignment;
  *                                    is expected.
  */
 exports.verifyAccessDenied = verifyAccessDenied;
+
+/**
+ * Verifies that the given document's type is unknown/invalid.
+ *
+ * @param {Object} doc The document to attempt to write. May include property "_deleted=true" to simulate a delete operation.
+ * @param {Object} oldDoc The document to replace or delete. May be null or undefined or include property "_deleted=true" to simulate a
+ *                        create operation.
+ */
+exports.verifyUnknownDocumentType = verifyUnknownDocumentType;

@@ -1,0 +1,107 @@
+var testHelper = require('../etc/test-helper.js');
+
+describe('Default type filter', function() {
+  beforeEach(function() {
+    testHelper.init('build/sync-functions/test-simple-type-filter-sync-function.js');
+  });
+
+  it('identifies a brand new document by its type property', function() {
+    var doc = {
+      _id: 'my-doc',
+      type: 'myDoc'
+    };
+
+    testHelper.verifyDocumentCreated(doc);
+  });
+
+  it('identifies a new document that is replacing a deleted document by its type property', function() {
+    var doc = {
+      _id: 'my-doc',
+      type: 'myDoc'
+    };
+    var oldDoc = {
+      _id: 'my-doc',
+      _deleted: true
+    };
+
+    testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
+  });
+
+  it('identifies an updated document by its type property when it matches that of the old document', function() {
+    var doc = {
+      _id: 'my-doc',
+      type: 'myDoc'
+    };
+    var oldDoc = {
+      _id: 'my-doc',
+      type: 'myDoc'
+    };
+
+    testHelper.verifyDocumentReplaced(doc, oldDoc);
+  });
+
+  it('identifies a deleted document by the type property of the old document', function() {
+    var doc = {
+      _id: 'my-doc',
+      _deleted: true
+    };
+    var oldDoc = {
+      _id: 'my-doc',
+      type: 'myDoc'
+    };
+
+    testHelper.verifyDocumentDeleted(oldDoc);
+  });
+
+  it('refuses to identify an updated document by its type property when it differs from that of the old document', function() {
+    var doc = {
+      _id: 'my-doc',
+      type: 'myDoc'
+    };
+    var oldDoc = {
+      _id: 'my-doc',
+      type: 'somethingElse'
+    };
+
+    testHelper.verifyUnknownDocumentType(doc, oldDoc);
+  });
+
+  it('cannot identify a document when the type property is not set', function() {
+    var doc = {
+      _id: 'my-doc'
+    };
+
+    testHelper.verifyUnknownDocumentType(doc);
+  });
+
+  it('cannot identify a document when the type property is set to an unknown type', function() {
+    var doc = {
+      _id: 'my-doc',
+      type: 'somethingElse'
+    };
+
+    testHelper.verifyUnknownDocumentType(doc);
+  });
+
+  it('cannot identify a deleted document when the old document does not exist', function() {
+    var doc = {
+      _id: 'my-doc',
+      _deleted: true
+    };
+
+    testHelper.verifyUnknownDocumentType(doc);
+  });
+
+  it('cannot identify a deleted document when the old document is also deleted', function() {
+    var doc = {
+      _id: 'my-doc',
+      _deleted: true
+    };
+    var oldDoc = {
+      _id: 'my-doc',
+      _deleted: true
+    };
+
+    testHelper.verifyUnknownDocumentType(doc, oldDoc);
+  });
+});
