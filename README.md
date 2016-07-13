@@ -40,16 +40,10 @@ For example, a document definition file implemented as an object:
       myDocType1: {
         channels: {
           view: 'view',
-          add: 'add',
-          replace: 'change',
-          remove: 'delete'
+          write: 'write'
         },
-        typeFilter: function(doc, oldDoc) {
-          if (oldDoc) {
-            return doc.type === oldDoc.type && oldDoc.type === 'myDocType1';
-          } else {
-            return doc.type === 'myDocType1';
-          }
+        typeFilter: function(doc, oldDoc, docType) {
+          return oldDoc ? oldDoc.type === docType : doc.type === docType;
         },
         propertyValidators: {
           type: {
@@ -64,16 +58,10 @@ For example, a document definition file implemented as an object:
       myDocType2: {
         channels: {
           view: 'view',
-          add: 'add',
-          replace: 'change',
-          remove: 'delete'
+          write: 'write'
         },
-        typeFilter: function(doc, oldDoc) {
-          if (oldDoc) {
-            return doc.type === oldDoc.type && oldDoc.type === 'myDocType2';
-          } else {
-            return doc.type === 'myDocType2';
-          }
+        typeFilter: function(doc, oldDoc, docType) {
+          return oldDoc ? oldDoc.type === docType : doc.type === docType;
         },
         propertyValidators: {
           type: {
@@ -92,29 +80,21 @@ Or a functionally equivalent document definition file implemented as a function:
     function() {
       var sharedChannels = {
         view: 'view',
-        add: 'add',
-        replace: 'change',
-        remove: 'delete'
+        write: 'write'
       };
       var typePropertyValidator = {
         type: 'string',
         required: true
       };
 
-      function makeDocTypeFilter(doc, oldDoc, docType) {
-        return function(doc, oldDoc) {
-          if (oldDoc) {
-            return doc.type === oldDoc.type && oldDoc.type === docType;
-          } else {
-            return doc.type === docType;
-          }
-        };
+      function myDocTypeFilter(doc, oldDoc, docType) {
+        return oldDoc ? oldDoc.type === docType : doc.type === docType;
       }
 
       return {
         myDocType1: {
           channels: sharedChannels,
-          typeFilter: makeDocTypeFilter(doc, oldDoc, 'myDocType1'),
+          typeFilter: myDocTypeFilter,
           propertyValidators: {
             type: typePropertyValidator,
             myProp1: {
@@ -124,7 +104,7 @@ Or a functionally equivalent document definition file implemented as a function:
         },
         myDocType2: {
           channels: sharedChannels,
-          typeFilter: makeDocTypeFilter(doc, oldDoc, 'myDocType2'),
+          typeFilter: myDocTypeFilter,
           propertyValidators: {
             type: typePropertyValidator,
             myProp2: {
@@ -186,14 +166,37 @@ Or:
     }
 ```
 
-* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters both (1) the new document and (2) the old document that is being replaced/deleted (if any). For example:
+* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property must be "message" to be considered a document of that type). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be true, so be sure to account for such cases. Also, the second parameter will only be a non-null value if the document is being replaced; it will be null in cases where the old document does not exist or was deleted.
+
+An example of the simple type filter:
 
 ```
-    typeFilter: function(doc, oldDoc) {
+    typeFilter: simpleTypeFilter
+```
+
+And an example of a more complex custom type filter:
+
+```
+    typeFilter: function(doc, oldDoc, currentDocType) {
+      var typePropertyMatches;
       if (oldDoc) {
-        return doc.type === oldDoc.type && oldDoc.type === 'foo';
+        if (doc._deleted) {
+          typePropertyMatches = oldDoc.type === currentDocType;
+        } else {
+          typePropertyMatches = doc.type === oldDoc.type && oldDoc.type === currentDocType;
+        }
       } else {
-        return doc.type === 'foo';
+        // The old document does not exist or was deleted - we can rely on the new document's type
+        typePropertyMatches = doc.type === currentDocType;
+      }
+
+      if (typePropertyMatches) {
+        return true;
+      } else {
+        // The type property did not match - fall back to matching the document ID pattern
+        var docIdRegex = new RegExp('^message\\.[A-Za-z0-9_-]+$');
+
+        return docIdRegex.test(doc._id);
       }
     }
 ```
