@@ -4,7 +4,6 @@ var fs = require('fs');
 var path = require('path');
 
 var errorStatus = 1;
-var successStatus = 0;
 
 var scriptDir = path.dirname(process.argv[1]);
 
@@ -28,7 +27,7 @@ if (process.argv.length !== 4) {
 
   console.log('See the README for more information.');
 
-  return errorStatus;
+  process.exit(errorStatus);
 }
 
 syncDocDefnFilename = process.argv[2];
@@ -44,7 +43,7 @@ try {
 } catch (ex) {
   console.log('Unable to read the sync document definitions file: ' + ex);
 
-  return errorStatus;
+  process.exit(errorStatus);
 }
 
 var syncFuncTemplate;
@@ -53,7 +52,7 @@ try {
 } catch (ex) {
   console.log('Unable to read the sync function template file: ' + ex);
 
-  return errorStatus;
+  process.exit(errorStatus);
 }
 
 var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
@@ -63,9 +62,7 @@ try {
 } catch (ex) {
   console.log('Unable to write the sync function to the output file: ' + ex);
 
-  return errorStatus;
+  process.exit(errorStatus);
 }
 
 console.log('Sync function written to ' + outputFilename);
-
-return successStatus;
