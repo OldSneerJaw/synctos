@@ -41,8 +41,11 @@ try {
   // which it will be injected
   syncDocDefn = syncDocDefn.trim().replace(/(?:\r\n)|(?:\r)|(?:\n)/g, function() { return '\n  '; });
 } catch (ex) {
-  console.log('Unable to read the sync document definitions file: ' + ex);
-
+  if (ex.code === 'ENOENT') {
+    console.log('ERROR: Sync document definitions file does not exist');
+  } else {
+    console.log('ERROR: Unable to read the sync document definitions file: ' + ex);
+  }
   process.exit(errorStatus);
 }
 
@@ -50,7 +53,7 @@ var syncFuncTemplate;
 try {
   syncFuncTemplate = fs.readFileSync(scriptDir + '/etc/sync-function-template.js', 'utf8');
 } catch (ex) {
-  console.log('Unable to read the sync function template file: ' + ex);
+  console.log('ERROR: Unable to read the sync function template file: ' + ex);
 
   process.exit(errorStatus);
 }
@@ -60,7 +63,7 @@ var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function(
 try {
   fs.writeFileSync(outputFilename, syncFunc, 'utf8');
 } catch (ex) {
-  console.log('Unable to write the sync function to the output file: ' + ex);
+  console.log('ERROR: Unable to write the sync function to the output file: ' + ex);
 
   process.exit(errorStatus);
 }
