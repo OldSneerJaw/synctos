@@ -172,7 +172,8 @@ function() {
         },
         firstReadAt: {
           // When the notification was first read
-          type: 'datetime'
+          type: 'datetime',
+          immutableIfSet: true
         },
         siteName: {
           // The name of the white label site/brand for which the notification was generated
