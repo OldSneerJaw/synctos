@@ -417,19 +417,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully replaces a valid payment requisition document', function() {
-      var doc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 90, businessId: 21 };
-      var oldDoc = {
-        _id: 'paymentRequisition.foo-bar',
-        invoiceRecordId: 90,
-        businessId: 21,
-        issuedByUserId: null
-      };
-
-      verifyDocumentReplaced(expectedBasePrivilege, 21, doc, oldDoc);
-    });
-
-    it('cannot replace a payment requisition document when the properties are invalid', function() {
+    it('cannot replace a payment requisition document because it is marked as irreplaceable', function() {
       var doc = {
         _id: 'paymentRequisition.foo-bar',
         invoiceRecordId: '7',
@@ -448,15 +436,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         oldDoc,
         expectedDocType,
         [
+          'documents of this type cannot be replaced',
           'cannot change "businessId" property',
           'item "businessId" must not be less than 1',
-          'value of item "invoiceRecordId" may not be modified',
           'item "invoiceRecordId" must be an integer',
-          'value of item "issuedAt" may not be modified',
           'item "issuedAt" must be an ISO 8601 date string with optional time and time zone components',
-          'value of item "issuedByUserId" may not be modified',
           'item "issuedByUserId" must be an integer',
-          'value of item "invoiceRecipients" may not be modified',
           'item "invoiceRecipients" must be a string',
           'property "unrecognized-property8" is not supported'
         ]);
