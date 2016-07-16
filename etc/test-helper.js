@@ -139,7 +139,6 @@ function verifyUnknownDocumentType(doc, oldDoc) {
     expect(ex.forbidden).to.equal('Unknown document type');
   });
 
-
   expect(requireAccess.callCount).to.be(0);
   expect(channel.callCount).to.be(0);
 }

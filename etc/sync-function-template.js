@@ -566,7 +566,6 @@ function synctos(doc, oldDoc) {
     docDefinitions = rawDocDefinitions;
   }
 
-
   function getDocumentType(doc, oldDoc) {
     var actualOldDoc = (oldDoc && !(oldDoc._deleted)) ? oldDoc : null;
 
