@@ -333,7 +333,8 @@ function() {
         },
         sentAt: {
           // The date/time at which the notification was actually sent. Typically distinct from the date/time at which it was processed.
-          type: 'datetime'
+          type: 'datetime',
+          immutableIfSet: true
         }
       }
     },

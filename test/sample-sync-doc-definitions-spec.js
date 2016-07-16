@@ -965,6 +965,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         _id: 'biz.275.notification.ABC.processedTransport.XYZ',
         processedBy: 'foobar',
         processedAt: '2016-06-03T21:02:19.013Z',
+        sentAt: '2016-07-15'
       };
 
       verifyProcessingSummaryNotWritten(
@@ -975,7 +976,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
           'item "nonce" must be a string',
           'value of item "processedBy" may not be modified',
           'value of item "processedAt" may not be modified',
-          'item "sentAt" must be an ISO 8601 date string with optional time and time zone components'
+          'item "sentAt" must be an ISO 8601 date string with optional time and time zone components',
+          'value of item "sentAt" may not be modified'
         ]);
     });
 
