@@ -2,12 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Added
+- [#30](https://github.com/Kashoo/synctos/issues/30): Parameter to prevent documents from being replaced
+- [#31](https://github.com/Kashoo/synctos/issues/31): Parameter to prevent documents from being deleted
+
 ## [1.1.0] - 2016-07-15
 ### Added
-- Provide default type filter function ([#26](https://github.com/Kashoo/synctos/issues/26))
+- [#26](https://github.com/Kashoo/synctos/issues/26): Provide default type filter function
 
 ### Fixed
-- Does not return a non-zero exit status when sync function generation fails ([#36](https://github.com/Kashoo/synctos/issues/36))
+- [#36](https://github.com/Kashoo/synctos/issues/36): Does not return a non-zero exit status when sync function generation fails
 
-[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.1.0...HEAD
-[1.1.0]: https://github.com/olivierlacan/keep-a-changelog/compare/v1.0.0...v1.1.0
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Kashoo/synctos/compare/v1.0.0...v1.1.0

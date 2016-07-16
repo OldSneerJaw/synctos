@@ -209,7 +209,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('cannot deletes a valid payment processing attempt document because it is immutable', function() {
+    it('cannot delete a valid payment processing attempt document because it is immutable', function() {
       var doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
       var oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
 
@@ -973,7 +973,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully deletes a valid notification transport processing summary document', function() {
+    it('cannot delete a notification transport processing summary document because it is marked as undeletable', function() {
       var doc = { _id: 'biz.317.notification.ABC.processedTransport.XYZ', _deleted: true };
       var oldDoc = {
         _id: 'biz.317.notification.ABC.processedTransport.XYZ',
@@ -981,7 +981,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         processedAt: '2016-06-04T21:02:19.013Z'
       };
 
-      verifyProcessingSummaryWritten(doc, oldDoc);
+      verifyProcessingSummaryNotWritten(doc, oldDoc, 'documents of this type cannot be deleted');
     });
   });
 });

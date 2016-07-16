@@ -267,7 +267,7 @@ exports.verifyRequireAccess = verifyRequireAccess;
 exports.verifyChannelAssignment = verifyChannelAssignment;
 
 /**
- * Verifies that the sync function throws an error when authorization to create/replace/delete a document is denied.
+ * Verifies that the sync function throws an error when authorization is denied to create/replace/delete a document.
  *
  * @param {Object} doc The document to attempt to write. May include property "_deleted=true" to simulate a delete operation.
  * @param {Object} oldDoc The document to replace or delete. May be null or undefined or include property "_deleted=true" to simulate a

@@ -308,6 +308,7 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
+      cannotDelete: true,
       propertyValidators: {
         nonce: {
           // A unique value that results in a unique document revision to prevent the notification's transport from being processed by
