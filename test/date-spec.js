@@ -6,6 +6,44 @@ describe('Date validation type', function() {
     testHelper.init('build/sync-functions/test-date-sync-function.js');
   });
 
+  describe('format validation', function() {
+    it('accepts a valid date', function() {
+      var doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '2016-07-17'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a date with an invalid year', function() {
+      var doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '999-07-17'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date with an invalid month', function() {
+      var doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '2016-13-17'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date with an invalid day', function() {
+      var doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '2016-07-32'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+  });
+
   describe('range validation', function() {
     it('can create a doc with a date that is within the minimum and maximum values', function() {
       var doc = {

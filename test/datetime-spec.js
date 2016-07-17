@@ -6,6 +6,125 @@ describe('Date/time validation type', function() {
     testHelper.init('build/sync-functions/test-datetime-sync-function.js');
   });
 
+  describe('format validation', function() {
+    it('accepts a valid date/time with time and time zone components', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17T15:20:09.348-07:00'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with a time component but no time zone', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17 15:20:09.348'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with a time zone component but no time', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17Z'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with neither time nor time zone components', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a date/time with an invalid year', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '10000-07-17T15:20:09.348-07:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with an invalid month', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-00-17T15:20:09.348-07:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with an invalid day', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-00T15:20:09.348-07:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with an invalid hour', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17T25:20:09.348-07:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with invalid minutes', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17T15:60:09.348-07:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with invalid seconds', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17T15:20:60.348-07:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with invalid milliseconds', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17T15:20:09.1000-07:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with an invalid time zone hour', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17T15:20:09.348-24:00'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with invalid time zone minutes', function() {
+      var doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2016-07-17T15:20:09.348-07:60'
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+  });
+
   describe('range validation for min and max dates with time and time zone components', function() {
     it('can create a doc with a date/time that is within the minimum and maximum values', function() {
       var doc = {
