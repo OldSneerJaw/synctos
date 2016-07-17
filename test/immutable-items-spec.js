@@ -1,4 +1,5 @@
 var testHelper = require('../etc/test-helper.js');
+var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Immutable item validation parameter', function() {
   beforeEach(function() {
@@ -80,7 +81,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9 ]
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableArrayProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableArrayProp'));
     });
 
     it('cannot replace a document with an immutable array when a nested element is not equal', function() {
@@ -93,7 +94,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ], { bar: null } ]
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableArrayProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableArrayProp'));
     });
 
     it('cannot replace a document with an immutable array when one is a subset of the other', function() {
@@ -106,7 +107,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, { }, [ ] ]
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableArrayProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableArrayProp'));
     });
 
     it('cannot replace a document with an immutable array when nested complex type elements are not the same type', function() {
@@ -119,7 +120,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ] ]
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableArrayProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableArrayProp'));
     });
 
     it('cannot replace a document with an immutable array when the element order has changed', function() {
@@ -132,7 +133,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ] ]
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableArrayProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableArrayProp'));
     });
 
     it('cannot replace a document with an immutable array when it is missing in the new document', function() {
@@ -145,7 +146,7 @@ describe('Immutable item validation parameter', function() {
         immutableArrayProp: [ 'foobar', 3, false, 45.9, [ ] ]
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableArrayProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableArrayProp'));
     });
 
     it('cannot replace a document with an immutable array when it is missing in the old document', function() {
@@ -155,7 +156,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc' };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableArrayProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableArrayProp'));
     });
   });
 
@@ -287,7 +288,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableObjectProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableObjectProp'));
     });
 
     it('cannot replace a document with an immutable object when a nested property is missing', function() {
@@ -309,7 +310,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableObjectProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableObjectProp'));
     });
 
     it('cannot replace a document with an immutable object when it is missing in the new document', function() {
@@ -326,7 +327,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableObjectProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableObjectProp'));
     });
 
     it('cannot replace a document with an immutable object when it is missing in the old document', function() {
@@ -336,7 +337,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc' };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableObjectProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableObjectProp'));
     });
   });
 
@@ -468,7 +469,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableHashtableProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableHashtableProp'));
     });
 
     it('cannot replace a document with an immutable hashtable when a property is missing', function() {
@@ -490,7 +491,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableHashtableProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableHashtableProp'));
     });
 
     it('cannot replace a document with an immutable hashtable when it is missing in the new document', function() {
@@ -507,7 +508,7 @@ describe('Immutable item validation parameter', function() {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableHashtableProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableHashtableProp'));
     });
 
     it('cannot replace a document with an immutable hashtable when it is missing in the old document', function() {
@@ -517,7 +518,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = { _id: 'immutableItemsDoc' };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', 'value of item "immutableHashtableProp" may not be modified');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('immutableHashtableProp'));
     });
   });
 });

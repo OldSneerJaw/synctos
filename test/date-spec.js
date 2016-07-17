@@ -1,4 +1,5 @@
 var testHelper = require('../etc/test-helper.js');
+var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Date validation type', function() {
   beforeEach(function() {
@@ -21,7 +22,7 @@ describe('Date validation type', function() {
         rangeValidationProp: '2016-06-22'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'dateDoc', 'item "rangeValidationProp" must not be less than 2016-06-23');
+      testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.minimumValueViolation('rangeValidationProp', '2016-06-23'));
     });
 
     it('cannot create a doc with a date that is after than the maximum value', function() {
@@ -30,7 +31,7 @@ describe('Date validation type', function() {
         rangeValidationProp: '2016-06-24'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'dateDoc', 'item "rangeValidationProp" must not be greater than 2016-06-23');
+      testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.maximumValueViolation('rangeValidationProp', '2016-06-23'));
     });
   });
 });

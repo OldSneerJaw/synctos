@@ -411,7 +411,11 @@ it('cannot create a myDocType doc when required property foo is missing', functi
     bar: 79
   };
 
-  testHelper.verifyDocumentNotCreated(doc, 'myDocType', [ 'required item "foo" is missing' ], [ 'my-add-channel1', 'my-add-channel2' ]);
+  testHelper.verifyDocumentNotCreated(
+    doc,
+    'myDocType',
+    [ errorFormatter.requiredValueViolation('foo') ],
+    [ 'my-add-channel1', 'my-add-channel2' ]);
 });
 
 ```
