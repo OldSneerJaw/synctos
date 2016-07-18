@@ -172,7 +172,8 @@ function() {
         },
         firstReadAt: {
           // When the notification was first read
-          type: 'datetime'
+          type: 'datetime',
+          immutableWhenSet: true
         },
         siteName: {
           // The name of the white label site/brand for which the notification was generated
@@ -333,7 +334,8 @@ function() {
         },
         sentAt: {
           // The date/time at which the notification was actually sent. Typically distinct from the date/time at which it was processed.
-          type: 'datetime'
+          type: 'datetime',
+          immutableWhenSet: true
         }
       }
     },

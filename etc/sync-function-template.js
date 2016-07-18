@@ -219,7 +219,11 @@ function synctos(doc, oldDoc) {
     }
 
     if (validator.immutable) {
-      validateImmutable(doc, oldDoc, itemStack, validationErrors);
+      validateImmutable(doc, oldDoc, itemStack, validationErrors, false);
+    }
+
+    if (validator.immutableWhenSet) {
+      validateImmutable(doc, oldDoc, itemStack, validationErrors, true);
     }
 
     if (!isValueNullOrUndefined(itemValue)) {
@@ -314,18 +318,25 @@ function synctos(doc, oldDoc) {
     }
   }
 
-  function validateImmutable(doc, oldDoc, itemStack, validationErrors) {
+  function validateImmutable(doc, oldDoc, itemStack, validationErrors, onlyEnforceIfHasValue) {
     if (oldDoc && !(oldDoc._deleted)) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var itemValue = currentItemEntry.itemValue;
       var oldItemValue = currentItemEntry.oldItemValue;
 
+      if (onlyEnforceIfHasValue && isValueNullOrUndefined(oldItemValue)) {
+        // No need to continue; the constraint only applies if the old value is neither null nor undefined
+        return;
+      }
+
       // Only compare the item's value to the old item if the item's parent existed in the old document. For example, if the item in
       // question is the value of a property in an object that is itself in an array, but the object did not exist in the array in the old
       // document, then there is nothing to validate.
       var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
-      var constraintSatisfied = true;
-      if (!isValueNullOrUndefined(oldParentItemValue)) {
+      var constraintSatisfied;
+      if (isValueNullOrUndefined(oldParentItemValue)) {
+        constraintSatisfied = true;
+      } else {
         constraintSatisfied = validateImmutableItem(itemValue, oldItemValue);
       }
 
