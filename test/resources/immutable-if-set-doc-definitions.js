@@ -7,7 +7,7 @@
     propertyValidators: {
       myProp: {
         type: 'string',
-        immutableIfSet: true
+        immutableWhenSet: true
       }
     }
   }

@@ -208,7 +208,7 @@ function synctos(doc, oldDoc) {
       validateImmutable(doc, oldDoc, itemStack, validationErrors, false);
     }
 
-    if (validator.immutableIfSet) {
+    if (validator.immutableWhenSet) {
       validateImmutable(doc, oldDoc, itemStack, validationErrors, true);
     }
 
