@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- [#29](https://github.com/Kashoo/synctos/issues/29): Parameter to indicate that an item cannot be modified if it has a value
 - [#39](https://github.com/Kashoo/synctos/issues/39): Test helper convenience functions to build validation error messages
 
 ## [1.1.0] - 2016-07-15

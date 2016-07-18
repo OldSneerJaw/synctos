@@ -520,6 +520,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         subject: '', // missing sender, empty subject
         'whatsthis?': 'something I dont recognize!', // unrecognized property
         createdAt: '2016-02-29T25:13:43.666Z', // invalid hour
+        firstReadAt: '201-07-14T21:21:21.212-08:00', // invalid year
         actions: [ { url: 24 }, null ] // integer url, non-existent label
       };
 
@@ -535,7 +536,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
           errorFormatter.typeConstraintViolation('actions[0].url', 'string'),
           errorFormatter.requiredValueViolation('actions[0].label'),
           errorFormatter.requiredValueViolation('actions[1]'),
-          errorFormatter.unsupportedProperty('whatsthis?')
+          errorFormatter.unsupportedProperty('whatsthis?'),
+          errorFormatter.datetimeFormatInvalid('firstReadAt')
         ]);
     });
 
@@ -547,6 +549,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         subject: 'a different subject',
         message: 'last warning!',
         createdAt: '2016-02-29T17:13:43.666Z',
+        firstReadAt: '2016-07-14T21:21:21.212-08:00',
         actions: [ { url: 'http://foobar.baz/lastwarning', label: 'pay up here'} ]
       };
       var oldDoc = {
@@ -568,6 +571,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         sender: '', // missing type, empty sender
         message: '', // missing subject, empty message
         createdAt: '2016-04-29T17:13:43.666Z', // changed createdAt
+        firstReadAt: '2016-07-14T21:24:16.997-08:00',
         actions: [ { label: ''} ]
       };
       var oldDoc = { // valid oldDoc
@@ -577,6 +581,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         subject: 'a different subject',
         message: 'last warning!',
         createdAt: '2016-02-29T17:13:43.666Z',
+        firstReadAt: '2016-07-14T21:21:21.212-08:00',
         actions: [ { url: 'http://foobar.baz/lastwarning', label: 'pay up here'} ]
       };
 
@@ -596,7 +601,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
           errorFormatter.immutableItemViolation('createdAt'),
           errorFormatter.immutableItemViolation('actions'),
           errorFormatter.requiredValueViolation('actions[0].url'),
-          errorFormatter.mustNotBeEmptyViolation('actions[0].label')
+          errorFormatter.mustNotBeEmptyViolation('actions[0].label'),
+          errorFormatter.immutableItemViolation('firstReadAt')
         ]);
     });
 
@@ -966,6 +972,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         _id: 'biz.275.notification.ABC.processedTransport.XYZ',
         processedBy: 'foobar',
         processedAt: '2016-06-03T21:02:19.013Z',
+        sentAt: '2016-07-15'
       };
 
       verifyProcessingSummaryNotWritten(
@@ -976,7 +983,8 @@ describe('The sample-sync-doc-definitions sync function', function() {
           errorFormatter.typeConstraintViolation('nonce', 'string'),
           errorFormatter.immutableItemViolation('processedBy'),
           errorFormatter.immutableItemViolation('processedAt'),
-          errorFormatter.datetimeFormatInvalid('sentAt')
+          errorFormatter.datetimeFormatInvalid('sentAt'),
+          errorFormatter.immutableItemViolation('sentAt')
         ]);
     });
 
