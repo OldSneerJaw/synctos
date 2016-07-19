@@ -115,9 +115,7 @@ function synctos(doc, oldDoc) {
   function validateDoc(doc, oldDoc, docDefinition, docType) {
     var validationErrors = [ ];
 
-    if (docDefinition.immutable && oldDoc && !(oldDoc._deleted)) {
-      validationErrors.push('documents of this type cannot be replaced or deleted');
-    }
+    validateImmutableDoc(doc, oldDoc, docDefinition, validationErrors);
 
     // Only validate the document's contents if it's being created or replaced. But there's no need if it's being deleted.
     if (!doc._deleted) {
@@ -144,6 +142,22 @@ function synctos(doc, oldDoc) {
 
     if (validationErrors.length > 0) {
       throw { forbidden: 'Invalid ' + docType + ' document: ' + validationErrors.join('; ') };
+    }
+  }
+
+  function validateImmutableDoc(doc, oldDoc, docDefinition, validationErrors) {
+    if (oldDoc && !(oldDoc._deleted)) {
+      if (docDefinition.immutable) {
+        validationErrors.push('documents of this type cannot be replaced or deleted');
+      } else if (doc._deleted) {
+        if (docDefinition.cannotDelete) {
+          validationErrors.push('documents of this type cannot be deleted');
+        }
+      } else {
+        if (docDefinition.cannotReplace) {
+          validationErrors.push('documents of this type cannot be replaced');
+        }
+      }
     }
   }
 
