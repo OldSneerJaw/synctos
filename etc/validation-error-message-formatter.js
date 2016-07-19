@@ -7,10 +7,16 @@ exports.allowAttachmentsViolation = function() {
   return 'document type does not support attachments';
 };
 
+/**
+ * Formats a message for the error that occurs when there is an attempt to delete a document that cannot be deleted.
+ */
 exports.cannotDeleteDocViolation = function() {
   return 'documents of this type cannot be deleted';
 };
 
+/**
+ * Formats a message for the error that occurs when there is an attempt to replace a document that cannot be replaced.
+ */
 exports.cannotReplaceDocViolation = function() {
   return 'documents of this type cannot be replaced';
 };
