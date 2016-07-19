@@ -210,7 +210,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('cannot deletes a valid payment processing attempt document because it is immutable', function() {
+    it('cannot delete a valid payment processing attempt document because it is immutable', function() {
       var doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
       var oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
 
@@ -418,19 +418,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully replaces a valid payment requisition document', function() {
-      var doc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 90, businessId: 21 };
-      var oldDoc = {
-        _id: 'paymentRequisition.foo-bar',
-        invoiceRecordId: 90,
-        businessId: 21,
-        issuedByUserId: null
-      };
-
-      verifyDocumentReplaced(expectedBasePrivilege, 21, doc, oldDoc);
-    });
-
-    it('cannot replace a payment requisition document when the properties are invalid', function() {
+    it('cannot replace a payment requisition document because it is marked as irreplaceable', function() {
       var doc = {
         _id: 'paymentRequisition.foo-bar',
         invoiceRecordId: '7',
@@ -451,15 +439,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         [
           'cannot change "businessId" property',
           errorFormatter.minimumValueViolation('businessId', 1),
-          errorFormatter.immutableItemViolation('invoiceRecordId'),
           errorFormatter.typeConstraintViolation('invoiceRecordId', 'integer'),
-          errorFormatter.immutableItemViolation('issuedAt'),
           errorFormatter.datetimeFormatInvalid('issuedAt'),
-          errorFormatter.immutableItemViolation('issuedByUserId'),
           errorFormatter.typeConstraintViolation('issuedByUserId', 'integer'),
-          errorFormatter.immutableItemViolation('invoiceRecipients'),
           errorFormatter.typeConstraintViolation('invoiceRecipients', 'string'),
-          errorFormatter.unsupportedProperty('unrecognized-property8')
+          errorFormatter.unsupportedProperty('unrecognized-property8'),
+          errorFormatter.cannotReplaceDocViolation()
         ]);
     });
 
@@ -988,7 +973,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         ]);
     });
 
-    it('successfully deletes a valid notification transport processing summary document', function() {
+    it('cannot delete a notification transport processing summary document because it is marked as undeletable', function() {
       var doc = { _id: 'biz.317.notification.ABC.processedTransport.XYZ', _deleted: true };
       var oldDoc = {
         _id: 'biz.317.notification.ABC.processedTransport.XYZ',
@@ -996,7 +981,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         processedAt: '2016-06-04T21:02:19.013Z'
       };
 
-      verifyProcessingSummaryWritten(doc, oldDoc);
+      verifyProcessingSummaryNotWritten(doc, oldDoc, errorFormatter.cannotDeleteDocViolation());
     });
   });
 });

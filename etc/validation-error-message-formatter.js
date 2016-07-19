@@ -7,6 +7,14 @@ exports.allowAttachmentsViolation = function() {
   return 'document type does not support attachments';
 };
 
+exports.cannotDeleteDocViolation = function() {
+  return 'documents of this type cannot be deleted';
+};
+
+exports.cannotReplaceDocViolation = function() {
+  return 'documents of this type cannot be replaced';
+};
+
 /**
  * Formats a message for the error that occurs when the format for a date without time and timezone (i.e. a date) is invalid.
  *
