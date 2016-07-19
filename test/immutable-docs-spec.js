@@ -149,7 +149,7 @@ describe('Immutable document validation:', function() {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'cannotReplaceDoc', 'documents of this type cannot be replaced');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'cannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
     });
 
     it('refuses to allow modification of attachments after the document has been created', function() {
@@ -172,7 +172,7 @@ describe('Immutable document validation:', function() {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'cannotReplaceDoc', 'documents of this type cannot be replaced');
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'cannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
     });
   });
 
@@ -257,7 +257,7 @@ describe('Immutable document validation:', function() {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentNotDeleted(oldDoc, 'cannotDeleteDoc', 'documents of this type cannot be deleted');
+      testHelper.verifyDocumentNotDeleted(oldDoc, 'cannotDeleteDoc', errorFormatter.cannotDeleteDocViolation());
     });
   });
 });

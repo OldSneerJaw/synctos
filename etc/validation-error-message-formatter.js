@@ -4,6 +4,14 @@ exports.allowAttachmentsViolation = function() {
   return 'document type does not support attachments';
 };
 
+exports.cannotDeleteDocViolation = function() {
+  return 'documents of this type cannot be deleted';
+};
+
+exports.cannotReplaceDocViolation = function() {
+  return 'documents of this type cannot be replaced';
+};
+
 exports.dateFormatInvalid = function(itemPath) {
   return 'item "' + itemPath + '" must be an ISO 8601 date string with no time or time zone components';
 };
