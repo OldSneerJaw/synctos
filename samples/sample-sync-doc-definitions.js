@@ -309,6 +309,7 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
+      cannotDelete: true,
       propertyValidators: {
         nonce: {
           // A unique value that results in a unique document revision to prevent the notification's transport from being processed by
@@ -459,6 +460,7 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentRequisition\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
+      cannotReplace: true,
       propertyValidators: {
         businessId: {
           // The ID of the business with which the payment requisition is associated
@@ -470,24 +472,20 @@ function() {
           // The ID of the invoice with which the payment requisition is associated
           type: 'integer',
           required: true,
-          minimumValue: 1,
-          immutable: true
+          minimumValue: 1
         },
         issuedAt: {
           // When the payment requisition was sent/issued
-          type: 'datetime',
-          immutable: true
+          type: 'datetime'
         },
         issuedByUserId: {
           // The ID of the Kashoo user that issued the payment requisition
           type: 'integer',
-          minimumValue: 1,
-          immutable: true
+          minimumValue: 1
         },
         invoiceRecipients: {
           // Who received the payment requisition
-          type: 'string',
-          immutable: true
+          type: 'string'
         }
       }
     },
