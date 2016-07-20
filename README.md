@@ -384,7 +384,7 @@ After that, run the `make-sync-function` script on your document definitions to 
 
 Next, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
-    const testHelper = require('../node_modules/synctos/etc/test-helper.js');
+    var testHelper = require('../node_modules/synctos/etc/test-helper.js');
 
 Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
 
@@ -421,9 +421,14 @@ it('cannot create a myDocType doc when required property foo is missing', functi
     bar: 79
   };
 
-  testHelper.verifyDocumentNotCreated(doc, 'myDocType', [ 'required item "foo" is missing' ], [ 'my-add-channel1', 'my-add-channel2' ]);
+  testHelper.verifyDocumentNotCreated(
+    doc,
+    'myDocType',
+    [ testHelper.validationErrorFormatter.requiredValueViolation('foo') ],
+    [ 'my-add-channel1', 'my-add-channel2' ]);
 });
-
 ```
 
-See this project's `test/` directory for many more examples.
+The `testHelper.validationErrorFormatter` in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `etc/validation-error-message-format.js` module for documentation.
+
+This project's `test/` directory contains many more examples.

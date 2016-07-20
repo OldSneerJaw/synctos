@@ -8,6 +8,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#30](https://github.com/Kashoo/synctos/issues/30): Parameter to prevent documents from being replaced
 - [#31](https://github.com/Kashoo/synctos/issues/31): Parameter to prevent documents from being deleted
 - [#32](https://github.com/Kashoo/synctos/issues/32): Range validation parameters that exclude the minimum/maximum values
+- [#39](https://github.com/Kashoo/synctos/issues/39): Test helper convenience functions to build validation error messages
+
+### Fixed
+- [#42](https://github.com/Kashoo/synctos/issues/42): Arrays can be assigned to items that expect object or hashtable
 
 ## [1.1.0] - 2016-07-15
 ### Added

@@ -1,6 +1,7 @@
 var expect = require('expect.js');
 var simple = require('simple-mock');
 var fs = require('fs');
+var validationErrorFormatter = require('./validation-error-message-formatter.js');
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
@@ -285,3 +286,9 @@ exports.verifyAccessDenied = verifyAccessDenied;
  *                        create operation.
  */
 exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
+
+/**
+ * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
+ * found in the "validation-error-message-formatter" module.
+ */
+exports.validationErrorFormatter = validationErrorFormatter;

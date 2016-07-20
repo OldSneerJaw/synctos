@@ -2,6 +2,7 @@ var expect = require('expect.js');
 var simple = require('simple-mock');
 var fs = require('fs');
 var testHelper = require('../etc/test-helper.js');
+var errorFormatter = testHelper.validationErrorFormatter;
 
 // Load the contents of the sync function file into a global variable called syncFunction
 /*jslint evil: true */
@@ -58,7 +59,7 @@ describe('Functionality that is common to all documents:', function() {
         unsupportedProperty: 'invalid!'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ 'property "unsupportedProperty" is not supported' ], 'add');
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.unsupportedProperty('unsupportedProperty') ], 'add');
     });
 
     it('rejects a property that is not supported at the root level when a document is replaced', function() {
@@ -73,7 +74,7 @@ describe('Functionality that is common to all documents:', function() {
         doc,
         oldDoc,
         'generalDoc',
-        [ 'property "unsupportedProperty" is not supported' ],
+        [ errorFormatter.unsupportedProperty('unsupportedProperty') ],
         [ 'replace', 'update' ]);
     });
 
@@ -86,7 +87,11 @@ describe('Functionality that is common to all documents:', function() {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ 'property "objectProp.unsupportedProperty" is not supported' ], 'add');
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'generalDoc',
+        [ errorFormatter.unsupportedProperty('objectProp.unsupportedProperty') ],
+        'add');
     });
 
     it('rejects an unsupported property that is nested in an object when a document is replaced', function() {
@@ -103,8 +108,108 @@ describe('Functionality that is common to all documents:', function() {
         doc,
         oldDoc,
         'generalDoc',
-        [ 'property "objectProp.unsupportedProperty" is not supported' ],
+        [ errorFormatter.unsupportedProperty('objectProp.unsupportedProperty') ],
         [ 'replace', 'update' ]);
+    });
+  });
+
+  describe('type validation', function() {
+    beforeEach(function() {
+      testHelper.init('build/sync-functions/test-general-sync-function.js');
+    });
+
+    it('rejects an array property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        arrayProp: { }
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('arrayProp', 'array') ], 'add');
+    });
+
+    it('rejects an attachment reference property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        attachmentReferenceProp: { }
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'generalDoc',
+        [ errorFormatter.typeConstraintViolation('attachmentReferenceProp', 'attachmentReference') ],
+        'add');
+    });
+
+    it('rejects a boolean property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        booleanProp: 0
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('booleanProp', 'boolean') ], 'add');
+    });
+
+    it('rejects a date property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        dateProp: 1468713600000
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('dateProp', 'date') ], 'add');
+    });
+
+    it('rejects a date/time property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        datetimeProp: 1468795446123
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('datetimeProp', 'datetime') ], 'add');
+    });
+
+    it('rejects a floating point number property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        floatProp: false
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('floatProp', 'float') ], 'add');
+    });
+
+    it('rejects a hashtable property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        hashtableProp: [ ]
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('hashtableProp', 'hashtable') ], 'add');
+    });
+
+    it('rejects an integer property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        integerProp: -15.9
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('integerProp', 'integer') ], 'add');
+    });
+
+    it('rejects an object property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        objectProp: [ ]
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('objectProp', 'object') ], 'add');
+    });
+
+    it('rejects a string property value that is not the right type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        stringProp: 99
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('stringProp', 'string') ], 'add');
     });
   });
 
@@ -125,11 +230,11 @@ describe('Functionality that is common to all documents:', function() {
       testHelper.verifyValidationErrors(
         'generalDoc',
         [
-          'property "objectProp._id" is not supported',
-          'property "objectProp._rev" is not supported',
-          'property "objectProp._deleted" is not supported',
-          'property "objectProp._revisions" is not supported',
-          'property "objectProp._attachments" is not supported'
+          errorFormatter.unsupportedProperty('objectProp._id'),
+          errorFormatter.unsupportedProperty('objectProp._rev'),
+          errorFormatter.unsupportedProperty('objectProp._deleted'),
+          errorFormatter.unsupportedProperty('objectProp._revisions'),
+          errorFormatter.unsupportedProperty('objectProp._attachments')
         ],
         ex);
     });
@@ -147,7 +252,7 @@ describe('Functionality that is common to all documents:', function() {
     };
 
     expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-      testHelper.verifyValidationErrors('generalDoc', 'document type does not support attachments', ex);
+      testHelper.verifyValidationErrors('generalDoc', errorFormatter.allowAttachmentsViolation(), ex);
     });
   });
 });
