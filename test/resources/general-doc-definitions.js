@@ -10,6 +10,30 @@
       return doc._id === 'generalDoc';
     },
     propertyValidators: {
+      arrayProp: {
+        type: 'array'
+      },
+      attachmentReferenceProp: {
+        type: 'attachmentReference'
+      },
+      booleanProp: {
+        type: 'boolean'
+      },
+      dateProp: {
+        type: 'date'
+      },
+      datetimeProp: {
+        type: 'datetime'
+      },
+      floatProp: {
+        type: 'float'
+      },
+      hashtableProp: {
+        type: 'hashtable'
+      },
+      integerProp: {
+        type: 'integer'
+      },
       objectProp: {
         type: 'object',
         propertyValidators: {
@@ -17,6 +41,9 @@
             type: 'string'
           }
         }
+      },
+      stringProp: {
+        type: 'string'
       }
     }
   }

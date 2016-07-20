@@ -287,7 +287,7 @@ function synctos(doc, oldDoc) {
           }
           break;
         case 'object':
-          if (typeof itemValue !== 'object') {
+          if (typeof itemValue !== 'object' || itemValue instanceof Array) {
             validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object');
           } else if (validator.propertyValidators) {
             validateProperties(doc, oldDoc, validator.propertyValidators, itemStack, validationErrors);
@@ -476,7 +476,7 @@ function synctos(doc, oldDoc) {
     var itemValue = currentItemEntry.itemValue;
     var oldItemValue = currentItemEntry.oldItemValue;
 
-    if (typeof itemValue !== 'object') {
+    if (typeof itemValue !== 'object' || itemValue instanceof Array) {
       validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object/hashtable');
     } else {
       for (var elementKey in itemValue) {

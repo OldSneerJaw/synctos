@@ -14,6 +14,9 @@
         type: 'datetime',
         minimumValue: '2016-06-24',
         maximumValue: '2016-06-24'
+      },
+      formatValidationProp: {
+        type: 'datetime'
       }
     }
   }
