@@ -44,12 +44,32 @@ exports.maximumValueViolation = function(itemPath, maxValue) {
   return 'item "' + itemPath + '" must not be greater than ' + maxValue;
 };
 
+/**
+ * Formats a message for the error that occurs when a value is greater than or equal to the maximum allowed.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.dateProp")
+ * @param {(float|integer|string)} maxValue The maximum value that is allowed
+ */
+exports.maximumValueExclusiveViolation = function(itemPath, maxValue) {
+  return 'item "' + itemPath + '" must not be greater than or equal to ' + maxValue;
+};
+
 exports.minimumLengthViolation = function(itemPath, minLength) {
   return 'length of item "' + itemPath + '" must not be less than ' + minLength;
 };
 
+/**
+ * Formats a message for the error that occurs when a value is less than or equal to the minimum allowed.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[0].datetimeProp")
+ * @param {(float|integer|string)} minValue The minimum value that is allowed
+ */
 exports.minimumValueViolation = function(itemPath, minValue) {
   return 'item "' + itemPath + '" must not be less than ' + minValue;
+};
+
+exports.minimumValueExclusiveViolation = function(itemPath, minValue) {
+  return 'item "' + itemPath + '" must not be less than or equal to ' + minValue;
 };
 
 exports.mustNotBeEmptyViolation = function(itemPath) {
