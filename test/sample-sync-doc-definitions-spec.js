@@ -1,4 +1,5 @@
 var testHelper = require('../etc/test-helper.js');
+var errorFormatter = testHelper.validationErrorFormatter;
 
 var serviceChannel = 'SERVICE';
 
@@ -56,11 +57,11 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         undefined,
         [
-          'item "paymentProcessors" must be an array',
-          'attachment reference "businessLogoAttachment" must be a string',
-          'item "defaultInvoiceTemplate.templateId" must not be empty',
-          'property "defaultInvoiceTemplate.some-unrecognized-property" is not supported',
-          'property "unrecognized-property1" is not supported'
+          errorFormatter.typeConstraintViolation('paymentProcessors', 'array'),
+          errorFormatter.typeConstraintViolation('businessLogoAttachment', 'attachmentReference'),
+          errorFormatter.mustNotBeEmptyViolation('defaultInvoiceTemplate.templateId'),
+          errorFormatter.unsupportedProperty('defaultInvoiceTemplate.some-unrecognized-property'),
+          errorFormatter.unsupportedProperty('unrecognized-property1')
         ]);
     });
 
@@ -92,12 +93,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         oldDoc,
         [
-          'attachment reference "businessLogoAttachment" must have a supported file extension (png,gif,jpg,jpeg)',
-          'attachment reference "businessLogoAttachment" must have a supported content type (image/png,image/gif,image/jpeg)',
-          'attachment reference "businessLogoAttachment" must not be larger than 2097152 bytes',
-          'item "defaultInvoiceTemplate.templateId" must be a string',
-          'item "paymentProcessors[1]" must be a string',
-          'property "unrecognized-property2" is not supported'
+          errorFormatter.supportedExtensionsAttachmentViolation('businessLogoAttachment', [ 'png', 'gif', 'jpg', 'jpeg' ]),
+          errorFormatter.supportedContentTypesAttachmentViolation('businessLogoAttachment', [ 'image/png', 'image/gif', 'image/jpeg' ]),
+          errorFormatter.maximumSizeAttachmentViolation('businessLogoAttachment', 2097152),
+          errorFormatter.typeConstraintViolation('defaultInvoiceTemplate.templateId', 'string'),
+          errorFormatter.typeConstraintViolation('paymentProcessors[1]', 'string'),
+          errorFormatter.unsupportedProperty('unrecognized-property2')
         ]);
     });
 
@@ -156,17 +157,17 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         undefined,
         [
-          'item "businessId" must be an integer',
-          'required item "invoiceRecordId" is missing',
-          'item "paymentRequisitionId" must not be empty',
-          'item "paymentAttemptSpreedlyToken" must not be empty',
-          'item "date" must be an ISO 8601 date string with optional time and time zone components',
-          'item "internalPaymentRecordId" must not be less than 1',
-          'item "gatewayTransactionId" must not be empty',
-          'item "gatewayMessage" must be a string',
-          'item "totalAmountPaid" must be an integer',
-          'item "totalAmountPaidFormatted" must be a string',
-          'property "unsupportedProperty" is not supported'
+          errorFormatter.typeConstraintViolation('businessId', 'integer'),
+          errorFormatter.requiredValueViolation('invoiceRecordId'),
+          errorFormatter.mustNotBeEmptyViolation('paymentRequisitionId'),
+          errorFormatter.mustNotBeEmptyViolation('paymentAttemptSpreedlyToken'),
+          errorFormatter.datetimeFormatInvalid('date'),
+          errorFormatter.minimumValueViolation('internalPaymentRecordId', 1),
+          errorFormatter.mustNotBeEmptyViolation('gatewayTransactionId'),
+          errorFormatter.typeConstraintViolation('gatewayMessage', 'string'),
+          errorFormatter.typeConstraintViolation('totalAmountPaid', 'integer'),
+          errorFormatter.typeConstraintViolation('totalAmountPaidFormatted', 'string'),
+          errorFormatter.unsupportedProperty('unsupportedProperty')
         ]);
     });
 
@@ -195,17 +196,17 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         oldDoc,
         [
-          'documents of this type cannot be replaced or deleted',
-          'item "businessId" must not be less than 1',
-          'item "invoiceRecordId" must not be less than 1',
-          'required item "paymentRequisitionId" is missing',
-          'required item "paymentAttemptSpreedlyToken" is missing',
-          'required item "date" is missing',
-          'item "gatewayTransactionId" must be a string',
-          'item "gatewayMessage" must be a string',
-          'item "totalAmountPaid" must not be less than 1',
-          'item "totalAmountPaidFormatted" must not be empty',
-          'property "unsupportedProperty" is not supported'
+          errorFormatter.immutableDocViolation(),
+          errorFormatter.minimumValueViolation('businessId', 1),
+          errorFormatter.minimumValueViolation('invoiceRecordId', 1),
+          errorFormatter.requiredValueViolation('paymentRequisitionId'),
+          errorFormatter.requiredValueViolation('paymentAttemptSpreedlyToken'),
+          errorFormatter.requiredValueViolation('date'),
+          errorFormatter.typeConstraintViolation('gatewayTransactionId', 'string'),
+          errorFormatter.typeConstraintViolation('gatewayMessage', 'string'),
+          errorFormatter.minimumValueViolation('totalAmountPaid', 1),
+          errorFormatter.mustNotBeEmptyViolation('totalAmountPaidFormatted'),
+          errorFormatter.unsupportedProperty('unsupportedProperty')
         ]);
     });
 
@@ -213,7 +214,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       var doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
       var oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
 
-      verifyPaymentAttemptNotWritten(20, doc, oldDoc, [ 'documents of this type cannot be replaced or deleted' ]);
+      verifyPaymentAttemptNotWritten(20, doc, oldDoc, [ errorFormatter.immutableDocViolation() ]);
     });
   });
 
@@ -251,12 +252,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         expectedDocType,
         [
-          'item "provider" must not be empty',
-          'item "spreedlyGatewayToken" must not be empty',
-          'item "accountId" must not be less than 1',
-          'item "displayName" must be a string',
-          'item "supportedCurrencyCodes" must be an array',
-          'property "unrecognized-property3" is not supported'
+          errorFormatter.mustNotBeEmptyViolation('provider'),
+          errorFormatter.mustNotBeEmptyViolation('spreedlyGatewayToken'),
+          errorFormatter.minimumValueViolation('accountId', 1),
+          errorFormatter.typeConstraintViolation('displayName', 'string'),
+          errorFormatter.typeConstraintViolation('supportedCurrencyCodes', 'array'),
+          errorFormatter.unsupportedProperty('unrecognized-property3')
         ]);
     });
 
@@ -289,12 +290,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         oldDoc,
         expectedDocType,
         [
-          'item "supportedCurrencyCodes[0]" must conform to expected format /^[A-Z]{3}$/',
-          'item "accountId" must be an integer',
-          'item "displayName" must be a string',
-          'required item "provider" is missing',
-          'required item "spreedlyGatewayToken" is missing',
-          'property "unrecognized-property4" is not supported'
+          errorFormatter.regexPatternItemViolation('supportedCurrencyCodes[0]', new RegExp('^[A-Z]{3}$')),
+          errorFormatter.typeConstraintViolation('accountId', 'integer'),
+          errorFormatter.typeConstraintViolation('displayName', 'string'),
+          errorFormatter.requiredValueViolation('provider'),
+          errorFormatter.requiredValueViolation('spreedlyGatewayToken'),
+          errorFormatter.unsupportedProperty('unrecognized-property4')
         ]);
     });
 
@@ -329,10 +330,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         expectedDocType,
         [
-          'required item "paymentProcessorId" is missing',
-          'item "paymentRequisitionIds" must not be empty',
-          'item "paymentAttemptIds" must be an array',
-          'property "unrecognized-property5" is not supported'
+          errorFormatter.requiredValueViolation('paymentProcessorId'),
+          errorFormatter.mustNotBeEmptyViolation('paymentRequisitionIds'),
+          errorFormatter.typeConstraintViolation('paymentAttemptIds', 'array'),
+          errorFormatter.unsupportedProperty('unrecognized-property5')
         ]);
     });
 
@@ -360,10 +361,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         oldDoc,
         expectedDocType,
         [
-          'item "paymentProcessorId" must not be empty',
-          'item "paymentRequisitionIds[1]" must be a string',
-          'item "paymentAttemptIds[0]" must be a string',
-          'property "unrecognized-property6" is not supported'
+          errorFormatter.mustNotBeEmptyViolation('paymentProcessorId'),
+          errorFormatter.typeConstraintViolation('paymentRequisitionIds[1]', 'string'),
+          errorFormatter.typeConstraintViolation('paymentAttemptIds[0]', 'string'),
+          errorFormatter.unsupportedProperty('unrecognized-property6')
         ]);
     });
 
@@ -408,12 +409,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         expectedDocType,
         [
-          'item "businessId" must be an integer',
-          'item "invoiceRecordId" must not be less than 1',
-          'item "issuedAt" must be an ISO 8601 date string with optional time and time zone components',
-          'item "issuedByUserId" must not be less than 1',
-          'item "invoiceRecipients" must be a string',
-          'property "unrecognized-property7" is not supported'
+          errorFormatter.typeConstraintViolation('businessId', 'integer'),
+          errorFormatter.minimumValueViolation('invoiceRecordId', 1),
+          errorFormatter.datetimeFormatInvalid('issuedAt'),
+          errorFormatter.minimumValueViolation('issuedByUserId', 1),
+          errorFormatter.typeConstraintViolation('invoiceRecipients', 'string'),
+          errorFormatter.unsupportedProperty('unrecognized-property7')
         ]);
     });
 
@@ -436,14 +437,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
         oldDoc,
         expectedDocType,
         [
-          'documents of this type cannot be replaced',
           'cannot change "businessId" property',
-          'item "businessId" must not be less than 1',
-          'item "invoiceRecordId" must be an integer',
-          'item "issuedAt" must be an ISO 8601 date string with optional time and time zone components',
-          'item "issuedByUserId" must be an integer',
-          'item "invoiceRecipients" must be a string',
-          'property "unrecognized-property8" is not supported'
+          errorFormatter.minimumValueViolation('businessId', 1),
+          errorFormatter.typeConstraintViolation('invoiceRecordId', 'integer'),
+          errorFormatter.datetimeFormatInvalid('issuedAt'),
+          errorFormatter.typeConstraintViolation('issuedByUserId', 'integer'),
+          errorFormatter.typeConstraintViolation('invoiceRecipients', 'string'),
+          errorFormatter.unsupportedProperty('unrecognized-property8'),
+          errorFormatter.cannotReplaceDocViolation()
         ]);
     });
 
@@ -512,16 +513,16 @@ describe('The sample-sync-doc-definitions sync function', function() {
         13,
         doc,
         [
-          'required item "sender" is missing',
-          'item "type" must be a string',
-          'item "subject" must not be empty',
-          'required item "message" is missing',
-          'item "createdAt" must be an ISO 8601 date string with optional time and time zone components',
-          'item "actions[0].url" must be a string',
-          'required item "actions[0].label" is missing',
-          'required item "actions[1]" is missing',
-          'property "whatsthis?" is not supported',
-          'item "firstReadAt" must be an ISO 8601 date string with optional time and time zone components'
+          errorFormatter.requiredValueViolation('sender'),
+          errorFormatter.typeConstraintViolation('type', 'string'),
+          errorFormatter.mustNotBeEmptyViolation('subject'),
+          errorFormatter.requiredValueViolation('message'),
+          errorFormatter.datetimeFormatInvalid('createdAt'),
+          errorFormatter.typeConstraintViolation('actions[0].url', 'string'),
+          errorFormatter.requiredValueViolation('actions[0].label'),
+          errorFormatter.requiredValueViolation('actions[1]'),
+          errorFormatter.unsupportedProperty('whatsthis?'),
+          errorFormatter.datetimeFormatInvalid('firstReadAt')
         ]);
     });
 
@@ -574,19 +575,19 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         oldDoc,
         [
-          'value of item "sender" may not be modified',
-          'item "sender" must not be empty',
-          'value of item "type" may not be modified',
-          'required item "type" is missing',
-          'value of item "subject" may not be modified',
-          'required item "subject" is missing',
-          'value of item "message" may not be modified',
-          'item "message" must not be empty',
-          'value of item "createdAt" may not be modified',
-          'value of item "actions" may not be modified',
-          'required item "actions[0].url" is missing',
-          'item "actions[0].label" must not be empty',
-          'value of item "firstReadAt" may not be modified'
+          errorFormatter.immutableItemViolation('sender'),
+          errorFormatter.mustNotBeEmptyViolation('sender'),
+          errorFormatter.immutableItemViolation('type'),
+          errorFormatter.requiredValueViolation('type'),
+          errorFormatter.immutableItemViolation('subject'),
+          errorFormatter.requiredValueViolation('subject'),
+          errorFormatter.immutableItemViolation('message'),
+          errorFormatter.mustNotBeEmptyViolation('message'),
+          errorFormatter.immutableItemViolation('createdAt'),
+          errorFormatter.immutableItemViolation('actions'),
+          errorFormatter.requiredValueViolation('actions[0].url'),
+          errorFormatter.mustNotBeEmptyViolation('actions[0].label'),
+          errorFormatter.immutableItemViolation('firstReadAt')
         ]);
     });
 
@@ -631,7 +632,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         123,
         doc,
         expectedDocType,
-        [ 'item "allNotificationIds[0]" must be a string', 'item "unreadNotificationIds[1]" must not be empty' ]);
+        [
+          errorFormatter.typeConstraintViolation('allNotificationIds[0]', 'string'),
+          errorFormatter.mustNotBeEmptyViolation('unreadNotificationIds[1]')
+        ]);
     });
 
     it('successfully replaces a valid notifications reference document', function() {
@@ -667,7 +671,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         oldDoc,
         expectedDocType,
-        [ 'item "allNotificationIds[3]" must not be empty', 'item "unreadNotificationIds[2]" must be a string' ]);
+        [
+          errorFormatter.mustNotBeEmptyViolation('allNotificationIds[3]'),
+          errorFormatter.typeConstraintViolation('unreadNotificationIds[2]', 'string')
+        ]);
     });
 
     it('successfully deletes a notifications reference document', function() {
@@ -725,14 +732,14 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         expectedDocType,
         [
-          'property "notificationTypes[invoicePayments].enabledTransports[0].invalid-property" is not supported',
-          'required item "notificationTypes[invoicePayments].enabledTransports[0].transportId" is missing',
-          'item "notificationTypes[invoicePayments].enabledTransports[1].transportId" must not be empty',
-          'hashtable key "notificationTypes[Invalid-Type]" does not conform to expected format /^[a-zA-Z]+$/',
-          'empty hashtable key in item "notificationTypes" is not allowed',
-          'hashtable key "notificationTypes[]" does not conform to expected format /^[a-zA-Z]+$/',
-          'required item "notificationTypes[]" is missing',
-          'property "unknownprop" is not supported'
+          errorFormatter.unsupportedProperty('notificationTypes[invoicePayments].enabledTransports[0].invalid-property'),
+          errorFormatter.requiredValueViolation('notificationTypes[invoicePayments].enabledTransports[0].transportId'),
+          errorFormatter.mustNotBeEmptyViolation('notificationTypes[invoicePayments].enabledTransports[1].transportId'),
+          errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[Invalid-Type]', new RegExp('^[a-zA-Z]+$')),
+          errorFormatter.hashtableKeyEmpty('notificationTypes'),
+          errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[]', new RegExp('^[a-zA-Z]+$')),
+          errorFormatter.requiredValueViolation('notificationTypes[]'),
+          errorFormatter.unsupportedProperty('unknownprop')
         ]);
     });
 
@@ -788,10 +795,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         oldDoc,
         expectedDocType,
         [
-          'property "notificationTypes[invoicePayments].enabledTransports[1].invalid-property" is not supported',
-          'item "notificationTypes[invoicePayments].enabledTransports[2].transportId" must be a string',
-          'required item "notificationTypes[invoicePayments].enabledTransports[3]" is missing',
-          'required item "notificationTypes[foobar]" is missing'
+          errorFormatter.unsupportedProperty('notificationTypes[invoicePayments].enabledTransports[1].invalid-property'),
+          errorFormatter.typeConstraintViolation('notificationTypes[invoicePayments].enabledTransports[2].transportId', 'string'),
+          errorFormatter.requiredValueViolation('notificationTypes[invoicePayments].enabledTransports[3]'),
+          errorFormatter.requiredValueViolation('notificationTypes[foobar]')
         ]);
     });
 
@@ -835,7 +842,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         75,
         doc,
         expectedDocType,
-        [ 'required item "type" is missing', 'item "recipient" must not be empty' ]);
+        [ errorFormatter.requiredValueViolation('type'), errorFormatter.mustNotBeEmptyViolation('recipient') ]);
     });
 
     it('successfully replaces a valid notification transport document', function() {
@@ -870,7 +877,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         oldDoc,
         expectedDocType,
-        [ 'item "type" must be a string', 'required item "recipient" is missing' ]);
+        [ errorFormatter.typeConstraintViolation('type', 'string'), errorFormatter.requiredValueViolation('recipient') ]);
     });
 
     it('successfully deletes a notification transport document', function() {
@@ -916,10 +923,10 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         undefined,
         [
-          'required item "nonce" is missing',
-          'item "processedBy" must be a string',
-          'required item "processedAt" is missing',
-          'item "sentAt" must be an ISO 8601 date string with optional time and time zone components'
+          errorFormatter.requiredValueViolation('nonce'),
+          errorFormatter.typeConstraintViolation('processedBy', 'string'),
+          errorFormatter.requiredValueViolation('processedAt'),
+          errorFormatter.datetimeFormatInvalid('sentAt')
         ]);
     });
 
@@ -957,12 +964,12 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         oldDoc,
         [
-          'value of item "nonce" may not be modified',
-          'item "nonce" must be a string',
-          'value of item "processedBy" may not be modified',
-          'value of item "processedAt" may not be modified',
-          'item "sentAt" must be an ISO 8601 date string with optional time and time zone components',
-          'value of item "sentAt" may not be modified'
+          errorFormatter.immutableItemViolation('nonce'),
+          errorFormatter.typeConstraintViolation('nonce', 'string'),
+          errorFormatter.immutableItemViolation('processedBy'),
+          errorFormatter.immutableItemViolation('processedAt'),
+          errorFormatter.datetimeFormatInvalid('sentAt'),
+          errorFormatter.immutableItemViolation('sentAt')
         ]);
     });
 
@@ -974,7 +981,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         processedAt: '2016-06-04T21:02:19.013Z'
       };
 
-      verifyProcessingSummaryNotWritten(doc, oldDoc, 'documents of this type cannot be deleted');
+      verifyProcessingSummaryNotWritten(doc, oldDoc, errorFormatter.cannotDeleteDocViolation());
     });
   });
 });

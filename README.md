@@ -429,6 +429,6 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 });
 ```
 
-The `testHelper.validationErrorFormatter` in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `etc/validation-error-message-format.js` module for documentation.
+The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `etc/validation-error-message-format.js` module for documentation.
 
-This project's `test/` directory contains many more examples.
+You will find many more examples in this project's `test/` directory.

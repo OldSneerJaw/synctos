@@ -43,10 +43,17 @@ function checkChannels(expectedChannels, actualChannels) {
     actualChannels = [ actualChannels ];
   }
 
-  expect(actualChannels.length).to.equal(expectedChannels.length);
+  for (var expectedChannelIndex = 0; expectedChannelIndex < expectedChannels.length; expectedChannelIndex++) {
+    expect(actualChannels).to.contain(expectedChannels[expectedChannelIndex]);
+  }
 
-  for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
-    expect(actualChannels).to.contain(expectedChannels[channelIndex]);
+  // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
+  // that neither list of channels contains an element that does not exist in the other
+  for (var actualChannelIndex = 0; actualChannelIndex < actualChannels.length; actualChannelIndex++) {
+    var channel = actualChannels[actualChannelIndex];
+    if (expectedChannels.indexOf(channel) < 0) {
+      expect().fail('Unexpected channel encountered: ' + channel);
+    }
   }
 }
 
@@ -116,11 +123,18 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   expect(invalidDocMessage).to.equal('Invalid ' + docType + ' document');
 
   var actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
-  expect(expectedErrorMessages.length).to.equal(actualErrorMessages.length);
 
-  for (var errorIndex = 0; errorIndex < expectedErrorMessages.length; errorIndex++) {
-    var expectedError = expectedErrorMessages[errorIndex];
-    expect(actualErrorMessages).to.contain(expectedError);
+  for (var expectedErrorIndex = 0; expectedErrorIndex < expectedErrorMessages.length; expectedErrorIndex++) {
+    expect(actualErrorMessages).to.contain(expectedErrorMessages[expectedErrorIndex]);
+  }
+
+  // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
+  // that neither list of validation errors contains an element that does not exist in the other
+  for (var actualErrorIndex = 0; actualErrorIndex < actualErrorMessages.length; actualErrorIndex++) {
+    var errorMessage = actualErrorMessages[actualErrorIndex];
+    if (expectedErrorMessages.indexOf(errorMessage) < 0) {
+      expect().fail('Unexpected validation error: ' + errorMessage);
+    }
   }
 }
 
