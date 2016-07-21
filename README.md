@@ -233,18 +233,26 @@ Validation for simple data types:
   * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. Undefined by default.
   * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. Undefined by default.
 * `integer`: The value is a number with no fractional component. Additional parameters:
-  * `minimumValue`: The smallest (inclusive) value that is allowed. Undefined by default.
-  * `maximumValue`: The largest (inclusive) value that is allowed. Undefined by default.
+  * `minimumValue`: Reject values that are less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject values that are less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject values that are greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject values that are greater than or equal to this. No restriction by default.
 * `float`: The value is a number with an optional fractional component (i.e. it is either an integer or a floating point number). Additional parameters:
-  * `minimumValue`: The smallest (inclusive) value that is allowed. Undefined by default.
-  * `maximumValue`: The largest (inclusive) value that is allowed. Undefined by default.
+  * `minimumValue`: Reject values that are less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject values that are less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject values that are greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject values that are greater than or equal to this. No restriction by default.
 * `boolean`: The value is either `true` or `false`. No additional parameters.
 * `datetime`: The value is an [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date string with optional time and time zone components (e.g. "2016-06-18T18:57:35.328-08:00"). Additional parameters:
-  * `minimumValue`: The earliest (inclusive) date/time that is allowed. If the value of this parameter or the property value to which it is to be applied are missing their time and time zone components, they will default to midnight UTC of the date in question. No restriction by default.
-  * `maximumValue`: The latest (inclusive) date/time that is allowed. If the value of this parameter or the property value to which it is to be applied are missing their time and time zone components, they will default to midnight UTC of the date in question. No restriction by default.
+  * `minimumValue`: Reject date/times that are less than this. If the value of this parameter or the property value to which it is to be applied are missing their time and time zone components, they will default to midnight UTC of the date in question. No restriction by default.
+  * `minimumValueExclusive`: Reject date/times that are less than or equal to this. If the value of this parameter or the property value to which it is to be applied are missing their time and time zone components, they will default to midnight UTC of the date in question. No restriction by default.
+  * `maximumValue`: Reject date/times that are greater than this. If the value of this parameter or the property value to which it is to be applied are missing their time and time zone components, they will default to midnight UTC of the date in question. No restriction by default.
+  * `maximumValueExclusive`: Reject date/times that are greater than or equal to this. If the value of this parameter or the property value to which it is to be applied are missing their time and time zone components, they will default to midnight UTC of the date in question. No restriction by default.
 * `date`: The value is an ISO 8601 date string _without_ time and time zone components (e.g. "2016-06-18"). Additional parameters:
-  * `minimumValue`: The earliest (inclusive) date that is allowed. No restriction by default.
-  * `maximumValue`: The latest (inclusive) date that is allowed. No restriction by default.
+  * `minimumValue`: Reject dates that are less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject dates that are less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject dates that are greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject dates that are greater than or equal to this. No restriction by default.
 * `attachmentReference`: The value is the name of one of the document's file attachments. Note that, because the addition of an attachment is often a separate Sync Gateway API operation from the creation/replacement of the associated document, this validation type is only applied if the attachment is actually present in the document. However, since the sync function is run twice in such situations (i.e. once when the document is created/replaced and once when the attachment is created/replaced), the validation will be performed eventually. Additional parameters:
   * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). No restriction by default.
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). No restriction by default.

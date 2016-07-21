@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#29](https://github.com/Kashoo/synctos/issues/29): Parameter to indicate that an item cannot be modified if it has a value
 - [#30](https://github.com/Kashoo/synctos/issues/30): Parameter to prevent documents from being replaced
 - [#31](https://github.com/Kashoo/synctos/issues/31): Parameter to prevent documents from being deleted
+- [#32](https://github.com/Kashoo/synctos/issues/32): Range validation parameters that exclude the minimum/maximum values
 - [#39](https://github.com/Kashoo/synctos/issues/39): Test helper convenience functions to build validation error messages
 
 ### Fixed

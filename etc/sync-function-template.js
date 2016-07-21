@@ -235,14 +235,40 @@ function synctos(doc, oldDoc) {
         var minComparator = function(left, right) {
           return left < right;
         };
-        validateRangeConstraint(validator.minimumValue, validator.type, itemStack, minComparator, 'less', validationErrors);
+        validateRangeConstraint(validator.minimumValue, validator.type, itemStack, minComparator, 'less than', validationErrors);
+      }
+
+      if (!isValueNullOrUndefined(validator.minimumValueExclusive)) {
+        var minExclusiveComparator = function(left, right) {
+          return left <= right;
+        };
+        validateRangeConstraint(
+          validator.minimumValueExclusive,
+          validator.type,
+          itemStack,
+          minExclusiveComparator,
+          'less than or equal to',
+          validationErrors);
       }
 
       if (!isValueNullOrUndefined(validator.maximumValue)) {
         var maxComparator = function(left, right) {
           return left > right;
         };
-        validateRangeConstraint(validator.maximumValue, validator.type, itemStack, maxComparator, 'greater', validationErrors);
+        validateRangeConstraint(validator.maximumValue, validator.type, itemStack, maxComparator, 'greater than', validationErrors);
+      }
+
+      if (!isValueNullOrUndefined(validator.maximumValueExclusive)) {
+        var maxExclusiveComparator = function(left, right) {
+          return left >= right;
+        };
+        validateRangeConstraint(
+          validator.maximumValueExclusive,
+          validator.type,
+          itemStack,
+          maxExclusiveComparator,
+          'greater than or equal to',
+          validationErrors);
       }
 
       if (!isValueNullOrUndefined(validator.minimumLength) && itemValue.length < validator.minimumLength) {
@@ -415,7 +441,7 @@ function synctos(doc, oldDoc) {
     return true;
   }
 
-  function validateRangeConstraint(rangeLimit, validationType, itemStack, comparator, violationType, validationErrors) {
+  function validateRangeConstraint(rangeLimit, validationType, itemStack, comparator, violationDescription, validationErrors) {
     var itemValue = itemStack[itemStack.length - 1].itemValue;
     var outOfRange;
     if (validationType === 'datetime') {
@@ -431,7 +457,7 @@ function synctos(doc, oldDoc) {
     }
 
     if (outOfRange) {
-      validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationType + ' than ' + rangeLimit);
+      validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationDescription + ' ' + rangeLimit);
     }
   }
 
