@@ -137,7 +137,14 @@ function synctos(doc, oldDoc) {
 
       // Execute each of the document's property validators while ignoring these whitelisted properties at the root level
       var whitelistedProperties = [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ];
-      validateProperties(doc, oldDoc, docDefinition.propertyValidators, itemStack, validationErrors, whitelistedProperties);
+      validateProperties(
+        doc,
+        oldDoc,
+        docDefinition.propertyValidators,
+        itemStack,
+        validationErrors,
+        docDefinition.allowUnknownProperties,
+        whitelistedProperties);
     }
 
     if (validationErrors.length > 0) {
@@ -161,7 +168,7 @@ function synctos(doc, oldDoc) {
     }
   }
 
-  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, whitelistedProperties) {
+  function validateProperties(doc, oldDoc, propertyValidators, itemStack, validationErrors, allowUnknownProperties, whitelistedProperties) {
     var currentItemEntry = itemStack[itemStack.length - 1];
     var objectValue = currentItemEntry.itemValue;
     var oldObjectValue = currentItemEntry.oldItemValue;
@@ -195,16 +202,18 @@ function synctos(doc, oldDoc) {
     }
 
     // Verify there are no unsupported properties in the object
-    for (var propertyName in objectValue) {
-      if (whitelistedProperties && whitelistedProperties.indexOf(propertyName) >= 0) {
-        // These properties are special cases that should always be allowed - generally only applied at the root level of the document
-        continue;
-      }
+    if (!allowUnknownProperties) {
+      for (var propertyName in objectValue) {
+        if (whitelistedProperties && whitelistedProperties.indexOf(propertyName) >= 0) {
+          // These properties are special cases that should always be allowed - generally only applied at the root level of the document
+          continue;
+        }
 
-      if (supportedProperties.indexOf(propertyName) < 0) {
-        var objectPath = buildItemPath(itemStack);
-        var fullPropertyPath = objectPath ? objectPath + '.' + propertyName : propertyName;
-        validationErrors.push('property "' + fullPropertyPath + '" is not supported');
+        if (supportedProperties.indexOf(propertyName) < 0) {
+          var objectPath = buildItemPath(itemStack);
+          var fullPropertyPath = objectPath ? objectPath + '.' + propertyName : propertyName;
+          validationErrors.push('property "' + fullPropertyPath + '" is not supported');
+        }
       }
     }
   }
@@ -316,7 +325,7 @@ function synctos(doc, oldDoc) {
           if (typeof itemValue !== 'object' || itemValue instanceof Array) {
             validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object');
           } else if (validator.propertyValidators) {
-            validateProperties(doc, oldDoc, validator.propertyValidators, itemStack, validationErrors);
+            validateProperties(doc, oldDoc, validator.propertyValidators, itemStack, validationErrors, validator.allowUnknownProperties);
           }
           break;
         case 'array':

@@ -217,6 +217,7 @@ And an example of a more complex custom type filter:
 ```
 
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files.
+* `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. Defaults to `false`.
 * `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 * `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 * `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. Defaults to `false`.
@@ -278,7 +279,8 @@ Validation for complex data types, which allow for nesting of child properties a
 ```
 
 * `object`: An object that is able to declare which properties it supports so that unrecognized properties are rejected. Additional parameters:
-  * `propertyValidators`: An object/hash of validators to be applied to the properties that are supported by the object. Any validation type, including those for complex data types, may be used for each property validator. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function. An example:
+  * `allowUnknownProperties`: Whether to allow the existence of properties that are not explicitly declared in the object definition. Not applied recursively to objects that are nested within this object. Defaults to `false` if the `propertyValidators` parameter is specified; otherwise, it defaults to `true`.
+  * `propertyValidators`: An object/hash of validators to be applied to the properties that are explicitly supported by the object. Any validation type, including those for complex data types, may be used for each property validator. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function unless the `allowUnknownProperties` parameter is `true`. An example:
 
 ```
     myObj1: {

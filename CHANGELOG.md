@@ -3,7 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-Nothing yet
+### Added
+- [#28](https://github.com/Kashoo/synctos/issues/28): Parameter to allow unknown properties in a document or object
 
 ## [1.2.0]
 ### Added
