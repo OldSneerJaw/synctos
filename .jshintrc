@@ -1,0 +1,14 @@
+{
+  "bitwise": true,
+  "curly": true,
+  "eqeqeq": true,
+  "freeze": true,
+  "futurehostile": true,
+  "latedef": "nofunc",
+  "noarg": true,
+  "nonew": true,
+  "shadow": false,
+  "strict": false,
+  "undef": true,
+  "predef": [ "access", "channel", "requireAccess", "requireRole", "requireUser" ]
+}
