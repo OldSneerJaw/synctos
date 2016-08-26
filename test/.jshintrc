@@ -8,5 +8,6 @@
   "noarg": true,
   "nonew": true,
   "shadow": false,
-  "strict": false
+  "strict": false,
+  "undef": false
 }
