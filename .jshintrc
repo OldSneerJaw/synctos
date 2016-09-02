@@ -10,5 +10,11 @@
   "shadow": false,
   "strict": false,
   "undef": true,
-  "predef": [ "access", "channel", "requireAccess", "requireRole", "requireUser" ]
+  "globals": {
+    "access": false,
+    "channel": false,
+    "requireAccess": false,
+    "requireRole": false,
+    "requireUser": false
+  }
 }

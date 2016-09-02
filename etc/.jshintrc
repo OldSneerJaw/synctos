@@ -1,13 +1,11 @@
 {
-  "bitwise": true,
-  "curly": true,
-  "eqeqeq": true,
-  "freeze": true,
-  "futurehostile": true,
-  "latedef": "nofunc",
-  "noarg": true,
-  "nonew": true,
-  "shadow": false,
-  "strict": false,
-  "undef": false
+  "extends": "../.jshintrc",
+  "undef": false,
+  "globals": {
+    "access": true,
+    "channel": true,
+    "requireAccess": true,
+    "requireRole": true,
+    "requireUser": true
+  }
 }
