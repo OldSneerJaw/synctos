@@ -1,0 +1,11 @@
+{
+  "extends": "../.jshintrc",
+  "undef": false,
+  "globals": {
+    "access": true,
+    "channel": true,
+    "requireAccess": true,
+    "requireRole": true,
+    "requireUser": true
+  }
+}

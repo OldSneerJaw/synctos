@@ -1,0 +1,20 @@
+{
+  "bitwise": true,
+  "curly": true,
+  "eqeqeq": true,
+  "freeze": true,
+  "futurehostile": true,
+  "latedef": "nofunc",
+  "noarg": true,
+  "nonew": true,
+  "shadow": false,
+  "strict": false,
+  "undef": true,
+  "globals": {
+    "access": false,
+    "channel": false,
+    "requireAccess": false,
+    "requireRole": false,
+    "requireUser": false
+  }
+}

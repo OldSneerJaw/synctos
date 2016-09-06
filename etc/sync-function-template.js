@@ -221,7 +221,6 @@ function synctos(doc, oldDoc) {
   function validateItemValue(doc, oldDoc, validator, itemStack, validationErrors) {
     var currentItemEntry = itemStack[itemStack.length - 1];
     var itemValue = currentItemEntry.itemValue;
-    var oldItemValue = currentItemEntry.oldItemValue;
 
     if (validator.customValidation) {
       performCustomValidation(doc, oldDoc, validator, itemStack, validationErrors);
