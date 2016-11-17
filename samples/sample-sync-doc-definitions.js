@@ -126,7 +126,7 @@ function() {
 
         // Only service users can create new notifications
         return {
-          view: [ toSyncChannel(businessId, 'VIEW_NOTIFICATIONS'), serviceChannel ],
+          view: [ toSyncChannel(businessId, 'VIEW_NOTIFICATIONS'), doc._id + '-VIEW', serviceChannel ],
           add: serviceChannel,
           replace: [ toSyncChannel(businessId, 'CHANGE_NOTIFICATIONS'), serviceChannel ],
           remove: [ toSyncChannel(businessId, 'REMOVE_NOTIFICATIONS'), serviceChannel ]
@@ -135,6 +135,17 @@ function() {
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
+      accessAssignments: [
+        {
+          users: function(doc, oldDoc) {
+            return doc.users;
+          },
+          roles: function(doc, oldDoc) {
+            return doc.groups;
+          },
+          channels: [ doc._id + '-VIEW' ]
+        }
+      ],
       propertyValidators: {
         sender: {
           // Which Kashoo app/service generated the notification
@@ -142,6 +153,24 @@ function() {
           required: true,
           mustNotBeEmpty: true,
           immutable: true
+        },
+        users: {
+          type: 'array',
+          immutable: true,
+          arrayElementsValidator: {
+            type: 'string',
+            required: true,
+            mustNotBeEmpty: true
+          }
+        },
+        groups: {
+          type: 'array',
+          immutable: true,
+          arrayElementsValidator: {
+            type: 'string',
+            required: true,
+            mustNotBeEmpty: true
+          }
         },
         type: {
           // The type of notification. Corresponds to an entry in the business' notificationsConfig.notificationTypes property.

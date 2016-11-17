@@ -7,6 +7,7 @@ var validationErrorFormatter = require('./validation-error-message-formatter.js'
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 var requireAccess;
 var channel;
+var access;
 
 var syncFunction;
 
@@ -20,6 +21,7 @@ function init(syncFunctionPath) {
 
   requireAccess = simple.stub();
   channel = simple.stub();
+  access = simple.stub();
 }
 
 function verifyRequireAccess(expectedChannels) {

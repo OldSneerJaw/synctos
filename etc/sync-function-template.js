@@ -605,6 +605,65 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  function resolveCollectionItems(originalItems, itemPrefix) {
+    if (isValueNullOrUndefined(originalItems)) {
+      return null;
+    } else if (originalItems instanceof Array) {
+      var resultItems = [ ];
+      for (var i = 0; i < originalItems.length; i++) {
+        var item = originalItems[i];
+
+        if (isValueNullOrUndefined(item)) {
+          continue;
+        }
+
+        var qualifiedItem = itemPrefix ? itemPrefix.toString() + item : item.toString();
+        resultItems.push(qualifiedItem);
+      }
+
+      return resultItems;
+    } else {
+      // Represents a single item
+      return [ originalItems.toString() ];
+    }
+  }
+
+  function resolveCollectionDefinition(doc, oldDoc, collectionDefinition, itemPrefix) {
+    if (isValueNullOrUndefined(collectionDefinition)) {
+      return null;
+    } else {
+      if (typeof(collectionDefinition) === 'function') {
+        var fnResults = collectionDefinition(doc, oldDoc);
+
+        return resolveCollectionItems(fnResults, itemPrefix);
+      } else {
+        return resolveCollectionItems(collectionDefinition, itemPrefix);
+      }
+    }
+  }
+
+  function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
+    for (var i = 0; i < accessAssignmentDefinitions.length; i++) {
+      var definition = accessAssignmentDefinitions[i];
+
+      var users = resolveCollectionDefinition(doc, oldDoc, definition);
+
+      // Role names must begin with the special token "role:" to distinguish them from users
+      var roles = resolveCollectionDefinition(doc, oldDoc, definition, 'role:');
+
+      var channels = resolveCollectionDefinition(doc, oldDoc, definition);
+      if (channels) {
+        if (users) {
+          access(users, channels);
+        }
+
+        if (roles) {
+          access(roles, channels);
+        }
+      }
+    }
+  }
+
   var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
 
   var docDefinitions;
@@ -641,6 +700,10 @@ function synctos(doc, oldDoc) {
   authorize(doc, oldDoc, theDocDefinition);
 
   validateDoc(doc, oldDoc, theDocDefinition, theDocType);
+
+  if (theDocDefinition.accessAssignments) {
+    assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
+  }
 
   // Getting here means the document write is authorized and valid, and the appropriate channel(s) should now be assigned
   channel(getAllDocChannels(doc, oldDoc, theDocDefinition));
