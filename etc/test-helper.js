@@ -81,7 +81,7 @@ function verifyAccessAssignments(expectedAccessAssignments) {
           var roleName = expectedAssignment.expectedRoles[roleIndex];
           // The prefix "role:" must be applied to roles when calling the access function, as specified by
           // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
-          if (roleName.startsWith('role:')) {
+          if (roleName.indexOf('role:') >= 0) {
             expectedUsersAndRoles.push(roleName);
           } else {
             expectedUsersAndRoles.push('role:' + roleName);
