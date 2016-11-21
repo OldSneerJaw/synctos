@@ -459,16 +459,33 @@ describe('The sample-sync-doc-definitions sync function', function() {
     var expectedDocType = 'notification';
     var expectedBasePrivilege = 'NOTIFICATIONS';
 
+    function getExpectedAccessAssignments(doc, docId) {
+      return [
+        {
+          channels: [ docId + '-VIEW' ],
+          users: doc ? doc.users : null,
+          roles: doc ? doc.groups : null
+        }
+      ];
+    }
+
     function verifyNotificationCreated(businessId, doc) {
-      testHelper.verifyDocumentCreated(doc, serviceChannel);
+      testHelper.verifyDocumentCreated(doc, serviceChannel, getExpectedAccessAssignments(doc, doc._id));
     }
 
     function verifyNotificationReplaced(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentReplaced(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ]);
+      testHelper.verifyDocumentReplaced(
+        doc,
+        oldDoc,
+        [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ],
+        getExpectedAccessAssignments(doc, doc._id));
     }
 
     function verifyNotificationDeleted(businessId, oldDoc) {
-      testHelper.verifyDocumentDeleted(oldDoc, [ serviceChannel, businessId + '-REMOVE_' + expectedBasePrivilege ]);
+      testHelper.verifyDocumentDeleted(
+        oldDoc,
+        [ serviceChannel, businessId + '-REMOVE_' + expectedBasePrivilege ],
+        getExpectedAccessAssignments({ }, oldDoc._id));
     }
 
     function verifyNotificationNotCreated(businessId, doc, expectedErrorMessages) {
@@ -493,7 +510,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         message: 'you best pay up now, or else...',
         createdAt: '2016-02-29T17:13:43.666Z',
         actions: [ { url: 'http://foobar.baz', label: 'pay up here'} ],
-        recipients: [ 'foobar', 'baz' ]
+        users: [ 'foobar', 'baz' ]
       };
 
       verifyNotificationCreated(63, doc);

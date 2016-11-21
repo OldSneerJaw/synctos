@@ -607,7 +607,7 @@ function synctos(doc, oldDoc) {
 
   function resolveCollectionItems(originalItems, itemPrefix) {
     if (isValueNullOrUndefined(originalItems)) {
-      return null;
+      return [ ];
     } else if (originalItems instanceof Array) {
       var resultItems = [ ];
       for (var i = 0; i < originalItems.length; i++) {
@@ -630,7 +630,7 @@ function synctos(doc, oldDoc) {
 
   function resolveCollectionDefinition(doc, oldDoc, collectionDefinition, itemPrefix) {
     if (isValueNullOrUndefined(collectionDefinition)) {
-      return null;
+      return [ ];
     } else {
       if (typeof(collectionDefinition) === 'function') {
         var fnResults = collectionDefinition(doc, oldDoc);
@@ -643,24 +643,24 @@ function synctos(doc, oldDoc) {
   }
 
   function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
-    for (var i = 0; i < accessAssignmentDefinitions.length; i++) {
-      var definition = accessAssignmentDefinitions[i];
+    for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
+      var definition = accessAssignmentDefinitions[assignmentIndex];
+      var usersAndRoles = [ ];
 
-      var users = resolveCollectionDefinition(doc, oldDoc, definition);
+      var users = resolveCollectionDefinition(doc, oldDoc, definition.users);
+      for (var userIndex = 0; userIndex < users.length; userIndex++) {
+        usersAndRoles.push(users[userIndex]);
+      }
 
       // Role names must begin with the special token "role:" to distinguish them from users
-      var roles = resolveCollectionDefinition(doc, oldDoc, definition, 'role:');
-
-      var channels = resolveCollectionDefinition(doc, oldDoc, definition);
-      if (channels) {
-        if (users) {
-          access(users, channels);
-        }
-
-        if (roles) {
-          access(roles, channels);
-        }
+      var roles = resolveCollectionDefinition(doc, oldDoc, definition.roles, 'role:');
+      for (var roleIndex = 0; roleIndex < roles.length; roleIndex++) {
+        usersAndRoles.push(roles[roleIndex]);
       }
+
+      var channels = resolveCollectionDefinition(doc, oldDoc, definition.channels);
+
+      access(usersAndRoles, channels);
     }
   }
 
