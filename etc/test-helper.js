@@ -65,26 +65,44 @@ function verifyAccessAssignments(expectedAccessAssignments) {
     var expectedAssignment = expectedAccessAssignments[assignmentIndex];
 
     var expectedUsersAndRoles = [ ];
-    if (expectedAssignment.users) {
-      for (var userIndex = 0; userIndex < expectedAssignment.users.length; userIndex++) {
-        expectedUsersAndRoles.push(expectedAssignment.users[userIndex]);
-      }
-    }
-
-    if (expectedAssignment.roles) {
-      for (var roleIndex = 0; roleIndex < expectedAssignment.roles.length; roleIndex++) {
-        var roleName = expectedAssignment.roles[roleIndex];
-        // The prefix "role:" must be applied to roles when calling the access function, as specified by
-        // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
-        if (roleName.startsWith('role:')) {
-          expectedUsersAndRoles.push(roleName);
-        } else {
-          expectedUsersAndRoles.push('role:' + roleName);
+    if (expectedAssignment.expectedUsers) {
+      if (expectedAssignment.expectedUsers instanceof Array) {
+        for (var userIndex = 0; userIndex < expectedAssignment.expectedUsers.length; userIndex++) {
+          expectedUsersAndRoles.push(expectedAssignment.expectedUsers[userIndex]);
         }
+      } else {
+        expectedUsersAndRoles.push(expectedAssignment.expectedUsers);
       }
     }
 
-    var expectedChannels = expectedAssignment.channels || [ ];
+    if (expectedAssignment.expectedRoles) {
+      if (expectedAssignment.expectedRoles instanceof Array) {
+        for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
+          var roleName = expectedAssignment.expectedRoles[roleIndex];
+          // The prefix "role:" must be applied to roles when calling the access function, as specified by
+          // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
+          if (roleName.startsWith('role:')) {
+            expectedUsersAndRoles.push(roleName);
+          } else {
+            expectedUsersAndRoles.push('role:' + roleName);
+          }
+        }
+      } else {
+        expectedUsersAndRoles.push(expectedAssignment.expectedRoles);
+      }
+    }
+
+    var expectedChannels = [ ];
+    if (expectedAssignment.expectedChannels) {
+      if (expectedAssignment.expectedChannels instanceof Array) {
+        for (var channelIndex = 0; channelIndex < expectedAssignment.expectedChannels.length; channelIndex++) {
+          expectedChannels.push(expectedAssignment.expectedChannels[channelIndex]);
+        }
+      } else {
+        expectedChannels.push(expectedAssignment.expectedChannels);
+      }
+    }
+
     expect(access.calls[expectedAccessCallCount].args[0]).to.eql(expectedUsersAndRoles);
     expect(access.calls[expectedAccessCallCount].args[1]).to.eql(expectedChannels);
 
@@ -123,8 +141,8 @@ function verifyDocumentReplaced(doc, oldDoc, expectedChannels, expectedAccessAss
   verifyDocumentAccepted(doc, oldDoc, expectedChannels || defaultWriteChannel, expectedAccessAssignments);
 }
 
-function verifyDocumentDeleted(oldDoc, expectedChannels) {
-  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedChannels || defaultWriteChannel);
+function verifyDocumentDeleted(oldDoc, expectedChannels, expectedAccessAssignments) {
+  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedChannels || defaultWriteChannel, expectedAccessAssignments);
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedChannels) {

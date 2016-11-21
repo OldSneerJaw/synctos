@@ -462,9 +462,9 @@ describe('The sample-sync-doc-definitions sync function', function() {
     function getExpectedAccessAssignments(doc, docId) {
       return [
         {
-          channels: [ docId + '-VIEW' ],
-          users: doc ? doc.users : null,
-          roles: doc ? doc.groups : null
+          expectedChannels: [ docId + '-VIEW' ],
+          expectedUsers: doc ? doc.users : null,
+          expectedRoles: doc ? doc.groups : null
         }
       ];
     }
