@@ -216,6 +216,29 @@ And an example of a more complex custom type filter:
     }
 ```
 
+* `accessAssignments`: (optional) Defines the channels to dynamically assign to users and/or roles when a document of the corresponding type is successfully created, replaced or deleted. Specified as a list, where each entry is an object that defines `users`, `roles` and `channels` properties. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a list and accepts the following parameters: (1) the new document, (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be true, so be sure to account for such cases. An example:
+
+```
+    accessAssignments: [
+      {
+        users: [ 'user1', 'user2' ],
+        roles: [ 'role1', 'role2' ],
+        channels: [ 'channel1', 'channel2' ]
+      },
+      {
+        users: function(doc, oldDoc) {
+          return doc.users;
+        },
+        roles: function(doc, oldDoc) {
+          return doc.roles;
+        },
+        channels: function(doc, oldDoc) {
+          return [ doc._id + '-channel1', doc._id + '-channel2' ];
+        }
+      },
+    ]
+```
+
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files.
 * `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. Defaults to `false`.
 * `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
@@ -406,10 +429,23 @@ it('can create a myDocType document', function() {
     _id: 'myDocId',
     type: 'myDocType',
     foo: 'bar',
-    bar: -32
+    bar: -32,
+    members: [ 'joe', 'nancy' ]
   }
 
-  testHelper.verifyDocumentCreated(doc, [ 'my-add-channel1', 'my-add-channel2' ]);
+  testHelper.verifyDocumentCreated(
+    doc,
+    [ 'my-add-channel1', 'my-add-channel2' ],
+    [
+      {
+        expectedUsers: function(doc) {
+          return doc.members;
+        },
+        expectedChannels: function(doc) {
+          return 'view-' + doc._id;
+        }
+      }
+    ]);
 });
 ```
 
