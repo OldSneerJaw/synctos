@@ -60,8 +60,8 @@ function checkChannels(expectedChannels, actualChannels) {
 }
 
 function verifyAccessAssignments(expectedAccessAssignments) {
-  var expectedAccessCallCount = 0;
-  for (var assignmentIndex = 0; assignmentIndex < expectedAccessAssignments.length; assignmentIndex++) {
+  var assignmentIndex;
+  for (assignmentIndex = 0; assignmentIndex < expectedAccessAssignments.length; assignmentIndex++) {
     var expectedAssignment = expectedAccessAssignments[assignmentIndex];
 
     var expectedUsersAndRoles = [ ];
@@ -103,13 +103,22 @@ function verifyAccessAssignments(expectedAccessAssignments) {
       }
     }
 
-    expect(access.calls[expectedAccessCallCount].args[0]).to.eql(expectedUsersAndRoles);
-    expect(access.calls[expectedAccessCallCount].args[1]).to.eql(expectedChannels);
-
-    expectedAccessCallCount++;
+    if (access.callCount <= assignmentIndex) {
+      expect().fail(
+        'Missing expected call to assign channel access (' +
+        JSON.stringify(expectedChannels) +
+        ') to users and roles (' +
+        JSON.stringify(expectedUsersAndRoles) +
+        ')');
+    } else {
+      expect(access.calls[assignmentIndex].args[0]).to.eql(expectedUsersAndRoles);
+      expect(access.calls[assignmentIndex].args[1]).to.eql(expectedChannels);
+    }
   }
 
-  expect(access.callCount).to.be(expectedAccessCallCount);
+  if (access.callCount !== assignmentIndex) {
+    expect().fail('Number of calls to assign channel access (' + access.callCount + ') does not match expected (' + assignmentIndex + ')');
+  }
 }
 
 function verifyDocumentAccepted(doc, oldDoc, expectedChannels, expectedAccessAssignments) {

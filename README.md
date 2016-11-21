@@ -438,10 +438,10 @@ it('can create a myDocType document', function() {
     [ 'my-add-channel1', 'my-add-channel2' ],
     [
       {
-        expectedUsers: function(doc) {
+        expectedUsers: function(doc, oldDoc) {
           return doc.members;
         },
-        expectedChannels: function(doc) {
+        expectedChannels: function(doc, oldDoc) {
           return 'view-' + doc._id;
         }
       }
