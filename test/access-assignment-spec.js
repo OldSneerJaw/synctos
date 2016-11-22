@@ -81,16 +81,16 @@ describe('User and role access assignment:', function() {
       var expectedDeleteAssignments = [
         {
           expectedUsers: null,
-          expectedRoles: null,
-          expectedChannels: [ doc._id + '-channel1', doc._id + '-channel2' ]
-        },
-        {
-          expectedUsers: null,
           expectedChannels: [ doc._id + '-channel3' ]
         },
         {
           expectedRoles: null,
           expectedChannels: [ doc._id + '-channel4' ]
+        },
+        {
+          expectedUsers: null,
+          expectedRoles: null,
+          expectedChannels: [ doc._id + '-channel1', doc._id + '-channel2' ]
         }
       ];
 

@@ -59,6 +59,35 @@ function checkChannels(expectedChannels, actualChannels) {
   }
 }
 
+function areSetsEqual(set1, set2) {
+  if (set1.length !== set2.length) {
+    return false;
+  }
+
+  for (var setIndex = 0; setIndex < set1.length; setIndex++) {
+    if (set2.indexOf(set1[setIndex]) < 0) {
+      return false;
+    } else if (set1.indexOf(set2[setIndex]) < 0) {
+      return false;
+    }
+  }
+
+  // If we got here, the two sets are equal
+  return true;
+}
+
+function accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels) {
+  // Try to find an actual access assignment call that matches the expected call
+  for (var accessCallIndex = 0; accessCallIndex < access.callCount; accessCallIndex++) {
+    var accessCall = access.calls[accessCallIndex];
+    if (areSetsEqual(accessCall.args[0], expectedUsersAndRoles) && areSetsEqual(accessCall.args[1], expectedChannels)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 function verifyAccessAssignments(expectedAccessAssignments) {
   var assignmentIndex;
   for (assignmentIndex = 0; assignmentIndex < expectedAccessAssignments.length; assignmentIndex++) {
@@ -103,16 +132,13 @@ function verifyAccessAssignments(expectedAccessAssignments) {
       }
     }
 
-    if (access.callCount <= assignmentIndex) {
+    if (!accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels)) {
       expect().fail(
         'Missing expected call to assign channel access (' +
         JSON.stringify(expectedChannels) +
         ') to users and roles (' +
         JSON.stringify(expectedUsersAndRoles) +
         ')');
-    } else {
-      expect(access.calls[assignmentIndex].args[0]).to.eql(expectedUsersAndRoles);
-      expect(access.calls[assignmentIndex].args[1]).to.eql(expectedChannels);
     }
   }
 
