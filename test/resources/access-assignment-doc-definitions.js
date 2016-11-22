@@ -4,7 +4,6 @@
     typeFilter: function(doc) {
       return doc._id === 'staticAccessDoc';
     },
-    allowUnknownProperties: true,
     accessAssignments: [
       {
         users: 'user3',
@@ -26,7 +25,14 @@
     typeFilter: function(doc) {
       return doc._id === 'dynamicAccessDoc';
     },
-    allowUnknownProperties: true,
+    propertyValidators: {
+      users: {
+        type: 'array'
+      },
+      roles: {
+        type: 'array'
+      }
+    },
     accessAssignments: [
       {
         users: function(doc, oldDoc) {
