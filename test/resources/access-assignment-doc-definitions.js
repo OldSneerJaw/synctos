@@ -14,7 +14,7 @@
         channels: 'channel4'
       },
       {
-        users: [ 'user1', 'user2' ],
+        users: [ 'user1', 'user2', 'user4' ],
         roles: [ 'role1', 'role2' ],
         channels: [ 'channel1', 'channel2' ]
       }

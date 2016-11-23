@@ -107,14 +107,9 @@ function verifyAccessAssignments(expectedAccessAssignments) {
     if (expectedAssignment.expectedRoles) {
       if (expectedAssignment.expectedRoles instanceof Array) {
         for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
-          var roleName = expectedAssignment.expectedRoles[roleIndex];
           // The prefix "role:" must be applied to roles when calling the access function, as specified by
           // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
-          if (roleName.indexOf('role:') >= 0) {
-            expectedUsersAndRoles.push(roleName);
-          } else {
-            expectedUsersAndRoles.push('role:' + roleName);
-          }
+          expectedUsersAndRoles.push('role:' + expectedAssignment.expectedRoles[roleIndex]);
         }
       } else {
         expectedUsersAndRoles.push(expectedAssignment.expectedRoles);
