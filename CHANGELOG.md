@@ -3,12 +3,15 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+Nothing yet
+
+## [1.3.0] - 2016-11-23
 ### Added
 - [#28](https://github.com/Kashoo/synctos/issues/28): Parameter to allow unknown properties in a document or object
 - [#49](https://github.com/Kashoo/synctos/issues/49): Explicitly declare JSHint rules
 - [#24](https://github.com/Kashoo/synctos/issues/24): Support dynamic assignment of channels to roles and users
 
-## [1.2.0]
+## [1.2.0] - 2016-07-21
 ### Added
 - [#29](https://github.com/Kashoo/synctos/issues/29): Parameter to indicate that an item cannot be modified if it has a value
 - [#30](https://github.com/Kashoo/synctos/issues/30): Parameter to prevent documents from being replaced
@@ -26,6 +29,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [#36](https://github.com/Kashoo/synctos/issues/36): Does not return a non-zero exit status when sync function generation fails
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Kashoo/synctos/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Kashoo/synctos/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Kashoo/synctos/compare/v1.0.0...v1.1.0
