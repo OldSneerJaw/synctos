@@ -605,6 +605,10 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  function prefixItem(item, prefix) {
+    return (prefix ? prefix + item : item.toString());
+  }
+
   function resolveCollectionItems(originalItems, itemPrefix) {
     if (isValueNullOrUndefined(originalItems)) {
       return [ ];
@@ -617,14 +621,13 @@ function synctos(doc, oldDoc) {
           continue;
         }
 
-        var qualifiedItem = itemPrefix ? itemPrefix.toString() + item : item.toString();
-        resultItems.push(qualifiedItem);
+        resultItems.push(prefixItem(item, itemPrefix));
       }
 
       return resultItems;
     } else {
       // Represents a single item
-      return [ originalItems.toString() ];
+      return [ prefixItem(originalItems, itemPrefix) ];
     }
   }
 

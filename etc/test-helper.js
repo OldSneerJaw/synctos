@@ -59,7 +59,7 @@ function checkChannels(expectedChannels, actualChannels) {
   }
 }
 
-function areSetsEqual(set1, set2) {
+function areUnorderedListsEqual(set1, set2) {
   if (set1.length !== set2.length) {
     return false;
   }
@@ -80,7 +80,7 @@ function accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels) {
   // Try to find an actual access assignment call that matches the expected call
   for (var accessCallIndex = 0; accessCallIndex < access.callCount; accessCallIndex++) {
     var accessCall = access.calls[accessCallIndex];
-    if (areSetsEqual(accessCall.args[0], expectedUsersAndRoles) && areSetsEqual(accessCall.args[1], expectedChannels)) {
+    if (areUnorderedListsEqual(accessCall.args[0], expectedUsersAndRoles) && areUnorderedListsEqual(accessCall.args[1], expectedChannels)) {
       return true;
     }
   }
@@ -105,14 +105,14 @@ function verifyAccessAssignments(expectedAccessAssignments) {
     }
 
     if (expectedAssignment.expectedRoles) {
+      // The prefix "role:" must be applied to roles when calling the access function, as specified by
+      // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
       if (expectedAssignment.expectedRoles instanceof Array) {
         for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
-          // The prefix "role:" must be applied to roles when calling the access function, as specified by
-          // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
           expectedUsersAndRoles.push('role:' + expectedAssignment.expectedRoles[roleIndex]);
         }
       } else {
-        expectedUsersAndRoles.push(expectedAssignment.expectedRoles);
+        expectedUsersAndRoles.push('role:' + expectedAssignment.expectedRoles);
       }
     }
 
