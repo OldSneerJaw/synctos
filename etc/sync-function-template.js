@@ -605,6 +605,68 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  function prefixItem(item, prefix) {
+    return (prefix ? prefix + item : item.toString());
+  }
+
+  function resolveCollectionItems(originalItems, itemPrefix) {
+    if (isValueNullOrUndefined(originalItems)) {
+      return [ ];
+    } else if (originalItems instanceof Array) {
+      var resultItems = [ ];
+      for (var i = 0; i < originalItems.length; i++) {
+        var item = originalItems[i];
+
+        if (isValueNullOrUndefined(item)) {
+          continue;
+        }
+
+        resultItems.push(prefixItem(item, itemPrefix));
+      }
+
+      return resultItems;
+    } else {
+      // Represents a single item
+      return [ prefixItem(originalItems, itemPrefix) ];
+    }
+  }
+
+  function resolveCollectionDefinition(doc, oldDoc, collectionDefinition, itemPrefix) {
+    if (isValueNullOrUndefined(collectionDefinition)) {
+      return [ ];
+    } else {
+      if (typeof(collectionDefinition) === 'function') {
+        var fnResults = collectionDefinition(doc, oldDoc);
+
+        return resolveCollectionItems(fnResults, itemPrefix);
+      } else {
+        return resolveCollectionItems(collectionDefinition, itemPrefix);
+      }
+    }
+  }
+
+  function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
+    for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
+      var definition = accessAssignmentDefinitions[assignmentIndex];
+      var usersAndRoles = [ ];
+
+      var users = resolveCollectionDefinition(doc, oldDoc, definition.users);
+      for (var userIndex = 0; userIndex < users.length; userIndex++) {
+        usersAndRoles.push(users[userIndex]);
+      }
+
+      // Role names must begin with the special token "role:" to distinguish them from users
+      var roles = resolveCollectionDefinition(doc, oldDoc, definition.roles, 'role:');
+      for (var roleIndex = 0; roleIndex < roles.length; roleIndex++) {
+        usersAndRoles.push(roles[roleIndex]);
+      }
+
+      var channels = resolveCollectionDefinition(doc, oldDoc, definition.channels);
+
+      access(usersAndRoles, channels);
+    }
+  }
+
   var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
 
   var docDefinitions;
@@ -641,6 +703,10 @@ function synctos(doc, oldDoc) {
   authorize(doc, oldDoc, theDocDefinition);
 
   validateDoc(doc, oldDoc, theDocDefinition, theDocType);
+
+  if (theDocDefinition.accessAssignments) {
+    assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
+  }
 
   // Getting here means the document write is authorized and valid, and the appropriate channel(s) should now be assigned
   channel(getAllDocChannels(doc, oldDoc, theDocDefinition));

@@ -7,6 +7,7 @@ var validationErrorFormatter = require('./validation-error-message-formatter.js'
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 var requireAccess;
 var channel;
+var access;
 
 var syncFunction;
 
@@ -20,6 +21,7 @@ function init(syncFunctionPath) {
 
   requireAccess = simple.stub();
   channel = simple.stub();
+  access = simple.stub();
 }
 
 function verifyRequireAccess(expectedChannels) {
@@ -57,10 +59,97 @@ function checkChannels(expectedChannels, actualChannels) {
   }
 }
 
-function verifyDocumentAccepted(doc, oldDoc, expectedChannels) {
+function areUnorderedListsEqual(set1, set2) {
+  if (set1.length !== set2.length) {
+    return false;
+  }
+
+  for (var setIndex = 0; setIndex < set1.length; setIndex++) {
+    if (set2.indexOf(set1[setIndex]) < 0) {
+      return false;
+    } else if (set1.indexOf(set2[setIndex]) < 0) {
+      return false;
+    }
+  }
+
+  // If we got here, the two sets are equal
+  return true;
+}
+
+function accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels) {
+  // Try to find an actual access assignment call that matches the expected call
+  for (var accessCallIndex = 0; accessCallIndex < access.callCount; accessCallIndex++) {
+    var accessCall = access.calls[accessCallIndex];
+    if (areUnorderedListsEqual(accessCall.args[0], expectedUsersAndRoles) && areUnorderedListsEqual(accessCall.args[1], expectedChannels)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function verifyAccessAssignments(expectedAccessAssignments) {
+  var assignmentIndex;
+  for (assignmentIndex = 0; assignmentIndex < expectedAccessAssignments.length; assignmentIndex++) {
+    var expectedAssignment = expectedAccessAssignments[assignmentIndex];
+
+    var expectedUsersAndRoles = [ ];
+    if (expectedAssignment.expectedUsers) {
+      if (expectedAssignment.expectedUsers instanceof Array) {
+        for (var userIndex = 0; userIndex < expectedAssignment.expectedUsers.length; userIndex++) {
+          expectedUsersAndRoles.push(expectedAssignment.expectedUsers[userIndex]);
+        }
+      } else {
+        expectedUsersAndRoles.push(expectedAssignment.expectedUsers);
+      }
+    }
+
+    if (expectedAssignment.expectedRoles) {
+      // The prefix "role:" must be applied to roles when calling the access function, as specified by
+      // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
+      if (expectedAssignment.expectedRoles instanceof Array) {
+        for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
+          expectedUsersAndRoles.push('role:' + expectedAssignment.expectedRoles[roleIndex]);
+        }
+      } else {
+        expectedUsersAndRoles.push('role:' + expectedAssignment.expectedRoles);
+      }
+    }
+
+    var expectedChannels = [ ];
+    if (expectedAssignment.expectedChannels) {
+      if (expectedAssignment.expectedChannels instanceof Array) {
+        for (var channelIndex = 0; channelIndex < expectedAssignment.expectedChannels.length; channelIndex++) {
+          expectedChannels.push(expectedAssignment.expectedChannels[channelIndex]);
+        }
+      } else {
+        expectedChannels.push(expectedAssignment.expectedChannels);
+      }
+    }
+
+    if (!accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels)) {
+      expect().fail(
+        'Missing expected call to assign channel access (' +
+        JSON.stringify(expectedChannels) +
+        ') to users and roles (' +
+        JSON.stringify(expectedUsersAndRoles) +
+        ')');
+    }
+  }
+
+  if (access.callCount !== assignmentIndex) {
+    expect().fail('Number of calls to assign channel access (' + access.callCount + ') does not match expected (' + assignmentIndex + ')');
+  }
+}
+
+function verifyDocumentAccepted(doc, oldDoc, expectedChannels, expectedAccessAssignments) {
   syncFunction(doc, oldDoc);
 
   verifyRequireAccess(expectedChannels);
+
+  if (expectedAccessAssignments) {
+    verifyAccessAssignments(expectedAccessAssignments);
+  }
 
   expect(channel.callCount).to.equal(1);
 
@@ -74,16 +163,16 @@ function verifyDocumentAccepted(doc, oldDoc, expectedChannels) {
   }
 }
 
-function verifyDocumentCreated(doc, expectedChannels) {
-  verifyDocumentAccepted(doc, undefined, expectedChannels || defaultWriteChannel);
+function verifyDocumentCreated(doc, expectedChannels, expectedAccessAssignments) {
+  verifyDocumentAccepted(doc, undefined, expectedChannels || defaultWriteChannel, expectedAccessAssignments);
 }
 
-function verifyDocumentReplaced(doc, oldDoc, expectedChannels) {
-  verifyDocumentAccepted(doc, oldDoc, expectedChannels || defaultWriteChannel);
+function verifyDocumentReplaced(doc, oldDoc, expectedChannels, expectedAccessAssignments) {
+  verifyDocumentAccepted(doc, oldDoc, expectedChannels || defaultWriteChannel, expectedAccessAssignments);
 }
 
-function verifyDocumentDeleted(oldDoc, expectedChannels) {
-  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedChannels || defaultWriteChannel);
+function verifyDocumentDeleted(oldDoc, expectedChannels, expectedAccessAssignments) {
+  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedChannels || defaultWriteChannel, expectedAccessAssignments);
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedChannels) {
@@ -173,6 +262,11 @@ exports.init = init;
  *                        create operation.
  * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
  *                                    is expected.
+ * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
+ *                                               that contains the following fields:
+ *                                               - channels: an optional list of channels to assign to the users and roles
+ *                                               - users: an optional list of users to which to assign the channels
+ *                                               - roles: an optional list of roles to which to assign the channels
  */
 exports.verifyDocumentAccepted = verifyDocumentAccepted;
 
@@ -182,6 +276,11 @@ exports.verifyDocumentAccepted = verifyDocumentAccepted;
  * @param {Object} doc The new document
  * @param {string[]} [expectedChannels] The list of channels that are required to perform the operation. May be a string if only one channel
  *                                      is expected. Set to "write" by default if omitted.
+ * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
+ *                                               that contains the following fields:
+ *                                               - channels: an optional list of channels to assign to the users and roles
+ *                                               - users: an optional list of users to which to assign the channels
+ *                                               - roles: an optional list of roles to which to assign the channels
  */
 exports.verifyDocumentCreated = verifyDocumentCreated;
 
@@ -192,6 +291,11 @@ exports.verifyDocumentCreated = verifyDocumentCreated;
  * @param {Object} oldDoc The document to replace
  * @param {string[]} [expectedChannels] The list of channels that are required to perform the operation. May be a string if only one channel
  *                                      is expected. Set to "write" by default if omitted.
+ * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
+ *                                               that contains the following fields:
+ *                                               - channels: an optional list of channels to assign to the users and roles
+ *                                               - users: an optional list of users to which to assign the channels
+ *                                               - roles: an optional list of roles to which to assign the channels
  */
 exports.verifyDocumentReplaced = verifyDocumentReplaced;
 
@@ -201,6 +305,11 @@ exports.verifyDocumentReplaced = verifyDocumentReplaced;
  * @param {Object} oldDoc The document to delete
  * @param {string[]} [expectedChannels] The list of channels that are required to perform the operation. May be a string if only one channel
  *                                      is expected. Set to "write" by default if omitted.
+ * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
+ *                                               that contains the following fields:
+ *                                               - channels: an optional list of channels to assign to the users and roles
+ *                                               - users: an optional list of users to which to assign the channels
+ *                                               - roles: an optional list of roles to which to assign the channels
  */
 exports.verifyDocumentDeleted = verifyDocumentDeleted;
 

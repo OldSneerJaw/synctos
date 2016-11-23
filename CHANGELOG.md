@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - [#28](https://github.com/Kashoo/synctos/issues/28): Parameter to allow unknown properties in a document or object
 - [#49](https://github.com/Kashoo/synctos/issues/49): Explicitly declare JSHint rules
+- [#24](https://github.com/Kashoo/synctos/issues/24): Support dynamic assignment of channels to roles and users
 
 ## [1.2.0]
 ### Added
