@@ -27,8 +27,8 @@ describe('User and role access assignment:', function() {
   describe('Static assignment of channels to users and roles', function() {
     var expectedStaticAssignments = [
       {
-        expectedUsers: [ 'user1', 'user2' ],
-        expectedRoles: [ 'role1', 'role2' ],
+        expectedUsers: [ 'user2', 'user1' ],
+        expectedRoles: [ 'role2', 'role1' ],
         expectedChannels: [ 'channel1', 'channel2' ]
       },
       {
@@ -131,7 +131,7 @@ describe('User and role access assignment:', function() {
         {
           expectedUsers: null,
           expectedRoles: null,
-          expectedChannels: [ doc._id + '-channel1', doc._id + '-channel2' ]
+          expectedChannels: [ doc._id + '-channel2', doc._id + '-channel1' ]
         }
       ];
 
