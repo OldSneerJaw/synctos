@@ -36,61 +36,96 @@ function synctos(doc, oldDoc) {
     }
   }
 
-  // A document definition may define its channels for each operation (view, add, replace, delete) as either a string or an array of
-  // strings. In either case, add them to the list if they are not already present.
-  function appendToChannelList(allChannels, channelsToAdd) {
-    if (!isValueNullOrUndefined(channelsToAdd)) {
-      if (channelsToAdd instanceof Array) {
-        for (var i = 0; i < channelsToAdd.length; i++) {
-          var channel = channelsToAdd[i];
-          if (allChannels.indexOf(channel) < 0) {
-            allChannels.push(channel);
+  // A document definition may define its authorizations (channels, roles or users) for each operation type (view, add, replace, delete or
+  // write) as either a string or an array of strings. In either case, add them to the list if they are not already present.
+  function appendToAuthorizationList(allAuthorizations, authorizationsToAdd) {
+    if (!isValueNullOrUndefined(authorizationsToAdd)) {
+      if (authorizationsToAdd instanceof Array) {
+        for (var i = 0; i < authorizationsToAdd.length; i++) {
+          var authorization = authorizationsToAdd[i];
+          if (allAuthorizations.indexOf(authorization) < 0) {
+            allAuthorizations.push(authorization);
           }
         }
-      } else if (allChannels.indexOf(channelsToAdd) < 0) {
-        allChannels.push(channelsToAdd);
+      } else if (allAuthorizations.indexOf(authorizationsToAdd) < 0) {
+        allAuthorizations.push(authorizationsToAdd);
       }
     }
   }
 
-  // A document definition may define its channels as either a function or an object/hashtable
-  function getDocChannelMap(doc, oldDoc, docDefinition) {
-    if (typeof(docDefinition.channels) === 'function') {
-      return docDefinition.channels(doc, oldDoc);
+  // A document definition may define its authorized channels, roles or users as either a function or an object/hashtable
+  function getAuthorizationMap(doc, oldDoc, authorizationDefinition) {
+    if (typeof(authorizationDefinition) === 'function') {
+      return authorizationDefinition(doc, oldDoc);
     } else {
-      return docDefinition.channels;
+      return authorizationDefinition;
     }
   }
 
   // Retrieves a list of channels the document belongs to based on its specified type
   function getAllDocChannels(doc, oldDoc, docDefinition) {
-    var docChannelMap = getDocChannelMap(doc, oldDoc, docDefinition);
+    var docChannelMap = getAuthorizationMap(doc, oldDoc, docDefinition.channels);
 
     var allChannels = [ ];
-    appendToChannelList(allChannels, docChannelMap.view);
-    appendToChannelList(allChannels, docChannelMap.write);
-    appendToChannelList(allChannels, docChannelMap.add);
-    appendToChannelList(allChannels, docChannelMap.replace);
-    appendToChannelList(allChannels, docChannelMap.remove);
+    appendToAuthorizationList(allChannels, docChannelMap.view);
+    appendToAuthorizationList(allChannels, docChannelMap.write);
+    appendToAuthorizationList(allChannels, docChannelMap.add);
+    appendToAuthorizationList(allChannels, docChannelMap.replace);
+    appendToAuthorizationList(allChannels, docChannelMap.remove);
 
     return allChannels;
   }
 
-  // Ensures the user is authorized to create/replace/delete this document
-  function authorize(doc, oldDoc, docDefinition) {
-    var docChannelMap = getDocChannelMap(doc, oldDoc, docDefinition);
+  function getRequiredAuthorizations(doc, oldDoc, authorizationDefinition) {
+    var authorizationMap = getAuthorizationMap(doc, oldDoc, authorizationDefinition);
 
-    var requiredChannels = [ ];
-    appendToChannelList(requiredChannels, docChannelMap.write);
-    if (doc._deleted) {
-      appendToChannelList(requiredChannels, docChannelMap.remove);
-    } else if (oldDoc && !oldDoc._deleted) {
-      appendToChannelList(requiredChannels, docChannelMap.replace);
-    } else {
-      appendToChannelList(requiredChannels, docChannelMap.add);
+    if (isValueNullOrUndefined(authorizationMap)) {
+      return [ ];
     }
 
-    requireAccess(requiredChannels);
+    var requiredAuthorizations = [ ];
+    var writeAuthorizationFound = false;
+    if (authorizationMap.write) {
+      writeAuthorizationFound = true;
+      appendToAuthorizationList(requiredAuthorizations, authorizationMap.write);
+    }
+
+    if (doc._deleted && authorizationMap.remove) {
+      writeAuthorizationFound = true;
+      appendToAuthorizationList(requiredAuthorizations, authorizationMap.remove);
+    } else if (oldDoc && !oldDoc._deleted && authorizationMap.replace) {
+      writeAuthorizationFound = true;
+      appendToAuthorizationList(requiredAuthorizations, authorizationMap.replace);
+    } else if (authorizationMap.add) {
+      writeAuthorizationFound = true;
+      appendToAuthorizationList(requiredAuthorizations, authorizationMap.add);
+    }
+
+    if (writeAuthorizationFound) {
+      return requiredAuthorizations;
+    } else {
+      // This document type does not define any authorizations (channels, roles) that apply to this particular write operation type
+      return null;
+    }
+  }
+
+  // Ensures the user is authorized to create/replace/delete this document
+  function authorize(doc, oldDoc, docDefinition) {
+    var requiredChannels = getRequiredAuthorizations(doc, oldDoc, docDefinition.channels);
+    if (requiredChannels) {
+      requireAccess(requiredChannels);
+    }
+
+    var requiredRoles = getRequiredAuthorizations(doc, oldDoc, docDefinition.roles);
+    if (requiredRoles) {
+      requireRole(requiredRoles);
+    }
+
+    if (isValueNullOrUndefined(requiredRoles) && isValueNullOrUndefined(requiredChannels)) {
+      // The document type does not define any channels or roles that apply to this particular write operation type, so fall back to
+      // Sync Gateway's default behaviour for an empty channel list (i.e. 403 Forbidden)
+      requireAccess([ ]);
+    }
   }
 
   function buildItemPath(itemStack) {

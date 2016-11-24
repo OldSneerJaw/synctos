@@ -6,6 +6,7 @@ var validationErrorFormatter = require('./validation-error-message-formatter.js'
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 var requireAccess;
+var requireRole;
 var channel;
 var access;
 
@@ -20,6 +21,7 @@ function init(syncFunctionPath) {
   /*jslint evil: false */
 
   requireAccess = simple.stub();
+  requireRole = simple.stub();
   channel = simple.stub();
   access = simple.stub();
 }
