@@ -6,6 +6,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - [#22](https://github.com/Kashoo/synctos/issues/22): Support document authorization by role
 
+## [1.3.1] - 2016-11-24
+### Changed
+- [#52](https://github.com/Kashoo/synctos/issues/52): Upgrade development dependencies
+
+### Fixed
+- [#54](https://github.com/Kashoo/synctos/issues/54): Access assignments should receive null when old document is deleted
+
 ## [1.3.0] - 2016-11-23
 ### Added
 - [#28](https://github.com/Kashoo/synctos/issues/28): Parameter to allow unknown properties in a document or object
@@ -30,7 +37,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [#36](https://github.com/Kashoo/synctos/issues/36): Does not return a non-zero exit status when sync function generation fails
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.3.1...HEAD
+[1.3.1]: https://github.com/Kashoo/synctos/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/Kashoo/synctos/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Kashoo/synctos/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Kashoo/synctos/compare/v1.0.0...v1.1.0

@@ -28,7 +28,7 @@ This will take the sync document definitions that are defined in `/path/to/my-do
 
 Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
-**NOTE**: Due to a [known issue](https://github.com/couchbase/sync_gateway/issues/1866) in Sync Gateway versions up to and including 1.2.1, when specifying a bucket/database's sync function in a configuration file as a multi-line string, you will have to be sure to escape any literal backslash characters in the sync function body. For example, if your sync function contains a regular expression like `new RegExp('\\w+')`, you will have to escape the backslashes when inserting the sync function into the configuration file so that it becomes `new RegExp('\\\\w+')`.
+**NOTE**: Due to a [known issue](https://github.com/couchbase/sync_gateway/issues/1866) in Sync Gateway versions up to and including 1.2.1, when specifying a bucket/database's sync function in a configuration file as a multi-line string, you will have to be sure to escape any literal backslash characters in the sync function body. For example, if your sync function contains a regular expression like `new RegExp('\\w+')`, you will have to escape the backslashes when inserting the sync function into the configuration file so that it becomes `new RegExp('\\\\w+')`. The issue has been resolved in Sync Gateway version 1.3.0 and later.
 
 ### Definition file
 
@@ -166,7 +166,7 @@ Or:
     }
 ```
 
-* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property must be "message" to be considered a document of that type). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be true, so be sure to account for such cases. Also, the second parameter will only be a non-null value if the document is being replaced; it will be null in cases where the old document does not exist or was deleted.
+* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property must be "message" to be considered a document of that type). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`.
 
 An example of the simple type filter:
 
@@ -201,7 +201,7 @@ And an example of a more complex custom type filter:
     }
 ```
 
-* `propertyValidators`: (required) An object/hash of validators that specify the format of each of the document type's supported properties. Each entry consists of a key that specifies the property name and a value that specifies the validation to perform on that property. Each element must declare a type and, optionally, some number of additional parameters. Any property that is not declared will be rejected by the sync function. An example:
+* `propertyValidators`: (required) An object/hash of validators that specify the format of each of the document type's supported properties. Each entry consists of a key that specifies the property name and a value that specifies the validation to perform on that property. Each element must declare a type and, optionally, some number of additional parameters. Any property that is not declared here will be rejected by the sync function unless the `allowUnknownProperties` field is set to `true`. An example:
 
 ```
     propertyValidators: {
@@ -216,7 +216,7 @@ And an example of a more complex custom type filter:
     }
 ```
 
-* `accessAssignments`: (optional) Defines the channels to dynamically assign to users and/or roles when a document of the corresponding type is successfully created, replaced or deleted. It is specified as a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a list and accepts the following parameters: (1) the new document, (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be true, so be sure to account for such cases. An example:
+* `accessAssignments`: (optional) Defines the channels to dynamically assign to users and/or roles when a document of the corresponding type is successfully created, replaced or deleted. It is specified as a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a dynamically-constructed list and accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`. An example:
 
 ```
     accessAssignments: [
@@ -354,7 +354,7 @@ Validation for complex data types, which allow for nesting of child properties a
 * `required`: The value cannot be null or undefined. Defaults to `false`.
 * `immutable`: The item cannot be changed from its existing value if the document is being replaced. The constraint is applied recursively so that, even if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
 * `immutableWhenSet`: As with the `immutable` property, the item cannot be changed from its existing value if the document is being replaced. However, it differs in that it only prevents modification if the item does not currently have a value (i.e. it is null or undefined). The constraint is applied recursively so that, even if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
-* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
+* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be null or undefined. And, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
 ```
     propertyValidators: {
@@ -396,15 +396,15 @@ Validation for complex data types, which allow for nesting of child properties a
 
 # Testing
 
-The synctos project includes a variety of specifications/test cases to verify the behaviours of its various functions. However, if you include a custom validation function or you would otherwise like to verify a generated sync function, this project includes a test helper module (`etc/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
+The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`etc/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
 
 To include the test helper module in your own sync function test cases, you must first ensure that your project [includes](https://docs.npmjs.com/getting-started/using-a-package.json) the development dependencies it relies upon. Update your project's `devDependencies` to include the following packages:
 
 * [expect.js](https://www.npmjs.com/package/expect.js) for test assertions
-* [simple-mock](https://www.npmjs.com/package/simple-mock) for mocking/stubbing the built-in Sync Gateway functions `requireAccess` and `channel`
+* [simple-mock](https://www.npmjs.com/package/simple-mock) for mocking/stubbing the built-in Sync Gateway functions `requireAccess`, `channel`, `access`, etc.
 * [mocha](https://mochajs.org/) or another JavaScript test runner/framework that supports `expect.js`
 
-The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like. Once your dev dependencies have been set up, run `npm install`, if necessary, to download the extra dependencies.
+The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like. Once your dev dependencies have been set up, run `npm install` to download the extra dependencies.
 
 After that, run the `make-sync-function` script on your document definitions to generate the sync function to test. For example:
 
@@ -470,6 +470,6 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 });
 ```
 
-The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `etc/validation-error-message-format.js` module for documentation.
+The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `etc/validation-error-message-formatter.js` module in this project for documentation.
 
 You will find many more examples in this project's `test/` directory.

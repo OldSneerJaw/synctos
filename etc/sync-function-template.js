@@ -681,22 +681,24 @@ function synctos(doc, oldDoc) {
   }
 
   function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
+    var actualOldDoc = (oldDoc && !(oldDoc._deleted)) ? oldDoc : null;
+
     for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
       var definition = accessAssignmentDefinitions[assignmentIndex];
       var usersAndRoles = [ ];
 
-      var users = resolveCollectionDefinition(doc, oldDoc, definition.users);
+      var users = resolveCollectionDefinition(doc, actualOldDoc, definition.users);
       for (var userIndex = 0; userIndex < users.length; userIndex++) {
         usersAndRoles.push(users[userIndex]);
       }
 
       // Role names must begin with the special token "role:" to distinguish them from users
-      var roles = resolveCollectionDefinition(doc, oldDoc, definition.roles, 'role:');
+      var roles = resolveCollectionDefinition(doc, actualOldDoc, definition.roles, 'role:');
       for (var roleIndex = 0; roleIndex < roles.length; roleIndex++) {
         usersAndRoles.push(roles[roleIndex]);
       }
 
-      var channels = resolveCollectionDefinition(doc, oldDoc, definition.channels);
+      var channels = resolveCollectionDefinition(doc, actualOldDoc, definition.channels);
 
       access(usersAndRoles, channels);
     }
