@@ -110,6 +110,18 @@ describe('User and role access assignment:', function() {
       testHelper.verifyDocumentCreated(doc, 'write', expectedDynamicAssignments);
     });
 
+    it('is applied when replacing a deleted document', function() {
+      var oldDoc = {
+        _id: 'dynamicAccessDoc',
+        _deleted: true
+      };
+
+      // The access assignment functions for this document type are set up to return different values if they receive an oldDoc parameter
+      // that has _deleted set to true. However, that should never happen because the sync function template is supposed to replace such
+      // cases with a null value. This test verifies that replacement occurs as expected.
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'write', expectedDynamicAssignments);
+    });
+
     it('is applied when replacing an existing valid document', function() {
       var oldDoc = { _id: 'dynamicAccessDoc' };
 

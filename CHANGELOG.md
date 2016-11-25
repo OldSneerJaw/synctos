@@ -6,6 +6,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - [#52](https://github.com/Kashoo/synctos/issues/52): Upgrade development dependencies
 
+### Fixed
+- [#54](https://github.com/Kashoo/synctos/issues/54): Access assignments should receive null when old document is deleted
+
 ## [1.3.0] - 2016-11-23
 ### Added
 - [#28](https://github.com/Kashoo/synctos/issues/28): Parameter to allow unknown properties in a document or object

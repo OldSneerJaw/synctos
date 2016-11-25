@@ -36,29 +36,30 @@
     accessAssignments: [
       {
         users: function(doc, oldDoc) {
-          return doc.users;
+          // The sync function template should automatically replace the oldDoc param value with null if its _deleted property is true
+          return (oldDoc && oldDoc._deleted) ? 'this-should-never-happen' : doc.users;
         },
         roles: function(doc, oldDoc) {
-          return doc.roles;
+          return (oldDoc && oldDoc._deleted) ? 'this-should-never-happen' : doc.roles;
         },
         channels: function(doc, oldDoc) {
-          return [ doc._id + '-channel1', doc._id + '-channel2' ];
+          return (oldDoc && oldDoc._deleted) ? 'this-should-never-happen' : [ doc._id + '-channel1', doc._id + '-channel2' ];
         }
       },
       {
         roles: function(doc, oldDoc) {
-          return doc.roles;
+          return (oldDoc && oldDoc._deleted) ? 'this-should-never-happen' : doc.roles;
         },
         channels: function(doc, oldDoc) {
-          return doc._id + '-channel4';
+          return (oldDoc && oldDoc._deleted) ? 'this-should-never-happen' : doc._id + '-channel4';
         }
       },
       {
         users: function(doc, oldDoc) {
-          return doc.users;
+          return (oldDoc && oldDoc._deleted) ? 'this-should-never-happen' : doc.users;
         },
         channels: function(doc, oldDoc) {
-          return doc._id + '-channel3';
+          return (oldDoc && oldDoc._deleted) ? 'this-should-never-happen' : doc._id + '-channel3';
         }
       }
     ]
