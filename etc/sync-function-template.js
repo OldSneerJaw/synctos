@@ -20,10 +20,12 @@ function synctos(doc, oldDoc) {
     return regex.test(value);
   }
 
+  // Whether the given value is either null or undefined
   function isValueNullOrUndefined(value) {
     return typeof(value) === 'undefined' || value === null;
   }
 
+  // A type filter that matches on the document's type property
   function simpleTypeFilter(doc, oldDoc, currentDocType) {
     if (oldDoc) {
       if (doc._deleted) {
@@ -34,6 +36,12 @@ function synctos(doc, oldDoc) {
     } else {
       return doc.type === currentDocType;
     }
+  }
+
+  // Retrieves the old doc's effective value. If it is null, undefined or its "_deleted" property is true, returns null. Otherwise, returns
+  // the value of the "oldDoc" parameter.
+  function getEffectiveOldDoc(oldDoc) {
+    return (oldDoc && !(oldDoc._deleted)) ? oldDoc : null;
   }
 
   // A document definition may define its authorizations (channels, roles or users) for each operation type (view, add, replace, delete or
@@ -56,7 +64,7 @@ function synctos(doc, oldDoc) {
   // A document definition may define its authorized channels, roles or users as either a function or an object/hashtable
   function getAuthorizationMap(doc, oldDoc, authorizationDefinition) {
     if (typeof(authorizationDefinition) === 'function') {
-      return authorizationDefinition(doc, oldDoc);
+      return authorizationDefinition(doc, getEffectiveOldDoc(oldDoc));
     } else {
       return authorizationDefinition;
     }
@@ -78,6 +86,7 @@ function synctos(doc, oldDoc) {
     return allChannels;
   }
 
+  // Retrieves a list of authorizations (e.g. channels, roles, users) for the current document write operation type (add, replace or remove)
   function getRequiredAuthorizations(doc, oldDoc, authorizationDefinition) {
     var authorizationMap = getAuthorizationMap(doc, oldDoc, authorizationDefinition);
 
@@ -148,6 +157,7 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  // Constructs the fully qualified path of the item at the top of the given stack
   function buildItemPath(itemStack) {
     var nameComponents = [ ];
     for (var i = 0; i < itemStack.length; i++) {
@@ -660,10 +670,12 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  // Adds a prefix to the specified item if the prefix is defined
   function prefixItem(item, prefix) {
     return (prefix ? prefix + item : item.toString());
   }
 
+  // Transforms the given item or items into a new list of items with the specified prefix (if any) appended to each element
   function resolveCollectionItems(originalItems, itemPrefix) {
     if (isValueNullOrUndefined(originalItems)) {
       return [ ];
@@ -686,6 +698,8 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  // Transforms the given collection definition, which may have been defined as a single item, a list of items or a function that returns a
+  // list of items into a simple list, where each item has the specified prefix, if any
   function resolveCollectionDefinition(doc, oldDoc, collectionDefinition, itemPrefix) {
     if (isValueNullOrUndefined(collectionDefinition)) {
       return [ ];
@@ -700,25 +714,26 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  // Assigns channels to users and roles according to the given access assignment definitions
   function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
-    var actualOldDoc = (oldDoc && !(oldDoc._deleted)) ? oldDoc : null;
+    var effectiveOldDoc = getEffectiveOldDoc(oldDoc);
 
     for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
       var definition = accessAssignmentDefinitions[assignmentIndex];
       var usersAndRoles = [ ];
 
-      var users = resolveCollectionDefinition(doc, actualOldDoc, definition.users);
+      var users = resolveCollectionDefinition(doc, effectiveOldDoc, definition.users);
       for (var userIndex = 0; userIndex < users.length; userIndex++) {
         usersAndRoles.push(users[userIndex]);
       }
 
       // Role names must begin with the special token "role:" to distinguish them from users
-      var roles = resolveCollectionDefinition(doc, actualOldDoc, definition.roles, 'role:');
+      var roles = resolveCollectionDefinition(doc, effectiveOldDoc, definition.roles, 'role:');
       for (var roleIndex = 0; roleIndex < roles.length; roleIndex++) {
         usersAndRoles.push(roles[roleIndex]);
       }
 
-      var channels = resolveCollectionDefinition(doc, actualOldDoc, definition.channels);
+      var channels = resolveCollectionDefinition(doc, effectiveOldDoc, definition.channels);
 
       access(usersAndRoles, channels);
     }
@@ -734,11 +749,11 @@ function synctos(doc, oldDoc) {
   }
 
   function getDocumentType(doc, oldDoc) {
-    var actualOldDoc = (oldDoc && !(oldDoc._deleted)) ? oldDoc : null;
+    var effectiveOldDoc = getEffectiveOldDoc(oldDoc);
 
     for (var docType in docDefinitions) {
       var docDefn = docDefinitions[docType];
-      if (docDefn.typeFilter(doc, actualOldDoc, docType)) {
+      if (docDefn.typeFilter(doc, effectiveOldDoc, docType)) {
         return docType;
       }
     }
