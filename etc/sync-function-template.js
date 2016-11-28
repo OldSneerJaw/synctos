@@ -67,11 +67,13 @@ function synctos(doc, oldDoc) {
     var docChannelMap = getAuthorizationMap(doc, oldDoc, docDefinition.channels);
 
     var allChannels = [ ];
-    appendToAuthorizationList(allChannels, docChannelMap.view);
-    appendToAuthorizationList(allChannels, docChannelMap.write);
-    appendToAuthorizationList(allChannels, docChannelMap.add);
-    appendToAuthorizationList(allChannels, docChannelMap.replace);
-    appendToAuthorizationList(allChannels, docChannelMap.remove);
+    if (docChannelMap) {
+      appendToAuthorizationList(allChannels, docChannelMap.view);
+      appendToAuthorizationList(allChannels, docChannelMap.write);
+      appendToAuthorizationList(allChannels, docChannelMap.add);
+      appendToAuthorizationList(allChannels, docChannelMap.replace);
+      appendToAuthorizationList(allChannels, docChannelMap.remove);
+    }
 
     return allChannels;
   }
@@ -116,7 +118,7 @@ function synctos(doc, oldDoc) {
       requireAccess(requiredChannels);
     }
 
-    var requiredRoles = getRequiredAuthorizations(doc, oldDoc, docDefinition.roles);
+    var requiredRoles = getRequiredAuthorizations(doc, oldDoc, docDefinition.authorizedRoles);
     if (requiredRoles) {
       requireRole(requiredRoles);
     }

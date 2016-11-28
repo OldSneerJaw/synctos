@@ -187,7 +187,7 @@ function verifyAuthorization(expectedAuthorization) {
 
     if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles)) {
       // If no channels, roles or users are defined, verify that the sync function falls back to the default behaviour
-      verifyRequireAccess(doc, oldDoc, [ ]);
+      verifyRequireAccess([ ]);
     }
   }
 
@@ -270,9 +270,22 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   }
 }
 
-function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
+function verifyAccessDenied(doc, oldDoc, expectedAuthorization, authorizationFailureType) {
   var expectedError = new Error('access denied');
-  requireAccess = simple.stub().throwWith(expectedError);
+
+  var stubbedExceptionFn = simple.stub().throwWith(expectedError);
+  if (authorizationFailureType === 'role') {
+    requireRole = stubbedExceptionFn;
+  } else if (authorizationFailureType === 'channel' || !authorizationFailureType) {
+    // Because requireAccess is called before requireRole and requireAccess will throw an exception, requireRole will not be called at all,
+    // so remove the expectation that it will be called
+    if (typeof(expectedAuthorization) !== 'string' && !(expectedAuthorization instanceof Array)) {
+      expectedAuthorization = { expectedChannels: expectedAuthorization.expectedChannels };
+    }
+    requireAccess = stubbedExceptionFn;
+  } else {
+    expect().fail('Unrecognized authorization type. Expected one of: "channel", "role" or undefined.');
+  }
 
   expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
     expect(ex.message).to.equal(expectedError.message);
@@ -476,6 +489,8 @@ exports.verifyChannelAssignment = verifyChannelAssignment;
  *                                                  available:
  *                                                  - expectedChannels: an optional list of channels that are required
  *                                                  - expectedRoles: an optional list of roles that are required
+ * @param {string} [authorizationFailureType] The type of authorization failure to simulate. Valid values are "channel", "role". Defaults to
+ *                                            "channel" if the parameter is omitted.
  */
 exports.verifyAccessDenied = verifyAccessDenied;
 
