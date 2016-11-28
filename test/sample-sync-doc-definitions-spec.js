@@ -1,8 +1,6 @@
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
-var serviceChannel = 'SERVICE';
-
 describe('The sample-sync-doc-definitions sync function', function() {
   beforeEach(function() {
     testHelper.init('build/sync-functions/test-sample-sync-function.js');
@@ -10,19 +8,19 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
   describe('business config doc definition', function() {
     function verifyBusinessConfigCreated(businessId, doc) {
-      testHelper.verifyDocumentCreated(doc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
+      testHelper.verifyDocumentCreated(doc, [ businessId + '-CHANGE_BUSINESS' ]);
     }
 
     function verifyBusinessConfigReplaced(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentReplaced(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
+      testHelper.verifyDocumentReplaced(doc, oldDoc, [ businessId + '-CHANGE_BUSINESS' ]);
     }
 
     function verifyBusinessConfigDeleted(businessId, oldDoc) {
-      testHelper.verifyDocumentDeleted(oldDoc, [ serviceChannel, businessId + '-REMOVE_BUSINESS' ]);
+      testHelper.verifyDocumentDeleted(oldDoc, [ businessId + '-REMOVE_BUSINESS' ]);
     }
 
     function verifyBusinessConfigRejected(businessId, doc, oldDoc, expectedErrorMessages) {
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'business', expectedErrorMessages, [ serviceChannel, businessId + '-CHANGE_BUSINESS' ]);
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'business', expectedErrorMessages, [ businessId + '-CHANGE_BUSINESS' ]);
     }
 
     it('successfully creates a valid business document', function() {
@@ -111,11 +109,11 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
   describe('invoice payment processing attempt doc definition', function() {
     function verifyPaymentAttemptWritten(businessId, doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, serviceChannel);
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'payment-attempt-write');
     }
 
     function verifyPaymentAttemptNotWritten(businessId, doc, oldDoc, expectedErrorMessages) {
-      testHelper.verifyDocumentRejected(doc, oldDoc, 'paymentAttempt', expectedErrorMessages, serviceChannel);
+      testHelper.verifyDocumentRejected(doc, oldDoc, 'paymentAttempt', expectedErrorMessages, 'payment-attempt-write');
     }
 
     it('successfully creates a valid payment processing attempt document', function() {
@@ -470,26 +468,26 @@ describe('The sample-sync-doc-definitions sync function', function() {
     }
 
     function verifyNotificationCreated(businessId, doc) {
-      testHelper.verifyDocumentCreated(doc, serviceChannel, getExpectedAccessAssignments(doc, doc._id));
+      testHelper.verifyDocumentCreated(doc, 'notification-add', getExpectedAccessAssignments(doc, doc._id));
     }
 
     function verifyNotificationReplaced(businessId, doc, oldDoc) {
       testHelper.verifyDocumentReplaced(
         doc,
         oldDoc,
-        [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ],
+        [ businessId + '-CHANGE_' + expectedBasePrivilege ],
         getExpectedAccessAssignments(doc, doc._id));
     }
 
     function verifyNotificationDeleted(businessId, oldDoc) {
       testHelper.verifyDocumentDeleted(
         oldDoc,
-        [ serviceChannel, businessId + '-REMOVE_' + expectedBasePrivilege ],
+        [ businessId + '-REMOVE_' + expectedBasePrivilege ],
         getExpectedAccessAssignments({ }, oldDoc._id));
     }
 
     function verifyNotificationNotCreated(businessId, doc, expectedErrorMessages) {
-      testHelper.verifyDocumentNotCreated(doc, expectedDocType, expectedErrorMessages, serviceChannel);
+      testHelper.verifyDocumentNotCreated(doc, expectedDocType, expectedErrorMessages, 'notification-add');
     }
 
     function verifyNotificationNotReplaced(businessId, doc, oldDoc, expectedErrorMessages) {
@@ -498,7 +496,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         oldDoc,
         expectedDocType,
         expectedErrorMessages,
-        [ serviceChannel, businessId + '-CHANGE_' + expectedBasePrivilege ]);
+        [ businessId + '-CHANGE_' + expectedBasePrivilege ]);
     }
 
     it('successfully creates a valid notification document', function() {
@@ -913,11 +911,11 @@ describe('The sample-sync-doc-definitions sync function', function() {
 
   describe('notification transport processing summary doc definition', function() {
     function verifyProcessingSummaryWritten(doc, oldDoc) {
-      testHelper.verifyDocumentAccepted(doc, oldDoc, serviceChannel);
+      testHelper.verifyDocumentAccepted(doc, oldDoc, 'notification-transport-write');
     }
 
     function verifyProcessingSummaryNotWritten(doc, oldDoc, expectedErrorMessages) {
-      testHelper.verifyDocumentRejected(doc, oldDoc, 'notificationTransportProcessingSummary', expectedErrorMessages, serviceChannel);
+      testHelper.verifyDocumentRejected(doc, oldDoc, 'notificationTransportProcessingSummary', expectedErrorMessages, 'notification-transport-write');
     }
 
     it('successfully creates a valid notification transport processing summary document', function() {
@@ -1007,15 +1005,15 @@ describe('The sample-sync-doc-definitions sync function', function() {
 });
 
 function verifyDocumentCreated(basePrivilegeName, businessId, doc) {
-  testHelper.verifyDocumentCreated(doc, [ serviceChannel, businessId + '-ADD_' + basePrivilegeName ]);
+  testHelper.verifyDocumentCreated(doc, [ businessId + '-ADD_' + basePrivilegeName ]);
 }
 
 function verifyDocumentReplaced(basePrivilegeName, businessId, doc, oldDoc) {
-  testHelper.verifyDocumentReplaced(doc, oldDoc, [ serviceChannel, businessId + '-CHANGE_' + basePrivilegeName ]);
+  testHelper.verifyDocumentReplaced(doc, oldDoc, [ businessId + '-CHANGE_' + basePrivilegeName ]);
 }
 
 function verifyDocumentDeleted(basePrivilegeName, businessId, oldDoc) {
-  testHelper.verifyDocumentDeleted(oldDoc, [ serviceChannel, businessId + '-REMOVE_' + basePrivilegeName ]);
+  testHelper.verifyDocumentDeleted(oldDoc, [ businessId + '-REMOVE_' + basePrivilegeName ]);
 }
 
 function verifyDocumentNotCreated(basePrivilegeName, businessId, doc, expectedDocType, expectedErrorMessages) {
@@ -1023,7 +1021,7 @@ function verifyDocumentNotCreated(basePrivilegeName, businessId, doc, expectedDo
     doc,
     expectedDocType,
     expectedErrorMessages,
-    [ serviceChannel, businessId + '-ADD_' + basePrivilegeName ]);
+    [ businessId + '-ADD_' + basePrivilegeName ]);
 }
 
 function verifyDocumentNotReplaced(basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) {
@@ -1032,5 +1030,5 @@ function verifyDocumentNotReplaced(basePrivilegeName, businessId, doc, oldDoc, e
     oldDoc,
     expectedDocType,
     expectedErrorMessages,
-    [ serviceChannel, businessId + '-CHANGE_' + basePrivilegeName ]);
+    [ businessId + '-CHANGE_' + basePrivilegeName ]);
 }
