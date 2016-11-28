@@ -137,7 +137,7 @@ describe('Authorization:', function() {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, null, { }, 'channel');
+      testHelper.verifyAccessDenied(doc, null, { });
     });
 
     it('rejects document replacement', function() {
@@ -149,7 +149,7 @@ describe('Authorization:', function() {
         _id: 'noAuthorizationsDefinedDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { }, 'channel');
+      testHelper.verifyAccessDenied(doc, oldDoc, { });
     });
 
     it('rejects document deletion', function() {
@@ -161,7 +161,7 @@ describe('Authorization:', function() {
         _id: 'noAuthorizationsDefinedDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { }, 'channel');
+      testHelper.verifyAccessDenied(doc, oldDoc, { });
     });
   });
 });

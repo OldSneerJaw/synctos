@@ -179,15 +179,14 @@ function verifyAuthorization(expectedAuthorization) {
     if (expectedAuthorization.expectedChannels) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
       verifyRequireAccess(expectedAuthorization.expectedChannels);
+    } else {
+      expect(requireAccess.callCount).to.be(0);
     }
 
     if (expectedAuthorization.expectedRoles) {
       verifyRequireRole(expectedAuthorization.expectedRoles);
-    }
-
-    if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles)) {
-      // If no channels, roles or users are defined, verify that the sync function falls back to the default behaviour
-      verifyRequireAccess([ ]);
+    } else {
+      expect(requireRole.callCount).to.be(0);
     }
   }
 
@@ -271,13 +270,24 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
 }
 
 function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
-  var authError = new Error('Access Denied!');
+  var channelAccessDenied = new Error('Channel access denied!');
+  var roleAccessDenied = new Error('Role access denied!');
 
-  requireAccess = simple.stub().throwWith(authError);
-  requireRole = simple.stub().throwWith(authError);
+  requireAccess = simple.stub().throwWith(channelAccessDenied);
+  requireRole = simple.stub().throwWith(roleAccessDenied);
 
   expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-    expect(ex).to.eql({ forbidden: "missing channel access" });
+    if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
+      expect(ex).to.eql(channelAccessDenied);
+    } else if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles)) {
+      expect(ex.forbidden).to.equal('missing channel access');
+    } else if (expectedAuthorization.expectedChannels && expectedAuthorization.expectedRoles) {
+      expect(ex.forbidden).to.equal('missing channel access');
+    } else if (expectedAuthorization.expectedChannels && !(expectedAuthorization.expectedRoles)) {
+      expect(ex).to.eql(channelAccessDenied);
+    } else if (expectedAuthorization.expectedRoles && !(expectedAuthorization.expectedChannels)) {
+      expect(ex).to.eql(roleAccessDenied);
+    }
   });
 
   verifyAuthorization(expectedAuthorization);
