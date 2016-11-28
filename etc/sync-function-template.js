@@ -113,20 +113,38 @@ function synctos(doc, oldDoc) {
 
   // Ensures the user is authorized to create/replace/delete this document
   function authorize(doc, oldDoc, docDefinition) {
+    var channelMatch = false;
     var requiredChannels = getRequiredAuthorizations(doc, oldDoc, docDefinition.channels);
     if (requiredChannels) {
-      requireAccess(requiredChannels);
+      try {
+        requireAccess(requiredChannels);
+        channelMatch = true;
+      } catch (ex) {
+        // The user has none of the authorized channels, but keep going because maybe they have a matching role or username
+        channelMatch = false;
+      }
     }
 
+    var roleMatch = false;
     var requiredRoles = getRequiredAuthorizations(doc, oldDoc, docDefinition.authorizedRoles);
     if (requiredRoles) {
-      requireRole(requiredRoles);
+      try {
+        requireRole(requiredRoles);
+        roleMatch = true;
+      } catch (ex) {
+        // The user has none of the authorized roles, but keep going because maybe they have a matching channel or username
+        roleMatch = false;
+      }
     }
 
-    if (isValueNullOrUndefined(requiredRoles) && isValueNullOrUndefined(requiredChannels)) {
-      // The document type does not define any channels or roles that apply to this particular write operation type, so fall back to
+    var authorizationFailedMessage = 'missing channel access';
+    if (isValueNullOrUndefined(requiredChannels) && isValueNullOrUndefined(requiredRoles)) {
+      // The document type does not define any channels, roles or users that apply to this particular write operation type, so fall back to
       // Sync Gateway's default behaviour for an empty channel list (i.e. 403 Forbidden)
-      requireAccess([ ]);
+      throw({ forbidden: authorizationFailedMessage });
+    } else if (!channelMatch && !roleMatch) {
+      // None of the authorization methods (e.g. channels, roles, users) succeeded
+      throw({ forbidden: authorizationFailedMessage });
     }
   }
 

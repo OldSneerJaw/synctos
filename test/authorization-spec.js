@@ -58,17 +58,17 @@ describe('Authorization:', function() {
       expectedRoles: expectedWriteRoles
     };
 
-    it('rejects document creation for a user with no matching roles', function() {
+    it('rejects document creation for a user with no matching channels or roles', function() {
       var doc = {
         _id: 'dynamicChannelsAndRolesDoc',
         stringProp: 'foobar',
         roles: expectedWriteRoles
       };
 
-      testHelper.verifyAccessDenied(doc, null, expectedAuthorization, 'role');
+      testHelper.verifyAccessDenied(doc, null, expectedAuthorization);
     });
 
-    it('rejects document replacement for a user with no matching roles', function() {
+    it('rejects document replacement for a user with no matching channels or roles', function() {
       var doc = {
         _id: 'dynamicChannelsAndRolesDoc',
         stringProp: 'foobar'
@@ -78,10 +78,10 @@ describe('Authorization:', function() {
         roles: expectedWriteRoles
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization, 'role');
+      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization);
     });
 
-    it('rejects document deletion for a user with no matching roles', function() {
+    it('rejects document deletion for a user with no matching channels or roles', function() {
       var doc = {
         _id: 'dynamicChannelsAndRolesDoc',
         _deleted: true
@@ -91,43 +91,7 @@ describe('Authorization:', function() {
         roles: expectedWriteRoles
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization, 'role');
-    });
-
-    it('rejects document creation for a user with no matching channels', function() {
-      var doc = {
-        _id: 'dynamicChannelsAndRolesDoc',
-        stringProp: 'foobar',
-        roles: expectedWriteRoles
-      };
-
-      testHelper.verifyAccessDenied(doc, null, expectedAuthorization, 'channel');
-    });
-
-    it('rejects document replacement for a user with no matching channels', function() {
-      var doc = {
-        _id: 'dynamicChannelsAndRolesDoc',
-        stringProp: 'foobar'
-      };
-      var oldDoc = {
-        _id: 'dynamicChannelsAndRolesDoc',
-        roles: expectedWriteRoles
-      };
-
-      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization, 'channel');
-    });
-
-    it('rejects document deletion for a user with no matching channels', function() {
-      var doc = {
-        _id: 'dynamicChannelsAndRolesDoc',
-        _deleted: true
-      };
-      var oldDoc = {
-        _id: 'dynamicChannelsAndRolesDoc',
-        roles: expectedWriteRoles
-      };
-
-      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization, 'channel');
+      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization);
     });
   });
 
@@ -138,7 +102,7 @@ describe('Authorization:', function() {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, null, { expectedRoles: 'add' }, 'role');
+      testHelper.verifyAccessDenied(doc, null, { expectedRoles: [ 'add' ] });
     });
 
     it('rejects document replacement for a user with no matching roles', function() {
@@ -150,7 +114,7 @@ describe('Authorization:', function() {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'replace' ] }, 'role');
+      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'replace' ] });
     });
 
     it('rejects document deletion for a user with no matching roles', function() {
@@ -162,7 +126,7 @@ describe('Authorization:', function() {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'remove' ] }, 'role');
+      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'remove' ] });
     });
   });
 

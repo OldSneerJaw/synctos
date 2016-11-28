@@ -55,7 +55,7 @@
       return doc._id === 'noChannelsAndStaticRolesDoc';
     },
     authorizedRoles: {
-      add: [ 'add' ],
+      add: 'add',
       replace: 'replace',
       remove: 'remove'
     },

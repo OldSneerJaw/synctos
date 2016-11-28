@@ -110,7 +110,7 @@ describe('Channel assignment:', function() {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentCreated(doc, { expectedRoles: [ 'add' ] });
+      testHelper.verifyDocumentCreated(doc, { expectedRoles: 'add' });
       testHelper.verifyChannelAssignment([ ]);
     });
 
