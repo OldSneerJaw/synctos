@@ -28,9 +28,9 @@
       }
     }
   },
-  dynamicChannelsAndRolesDoc: {
+  dynamicChannelsRolesAndUsersDoc: {
     typeFilter: function(doc) {
-      return doc._id === 'dynamicChannelsAndRolesDoc';
+      return doc._id === 'dynamicChannelsRolesAndUsersDoc';
     },
     channels: function(doc, oldDoc) {
       return {
@@ -41,11 +41,17 @@
     authorizedRoles: function(doc, oldDoc) {
       return { write: oldDoc ? oldDoc.roles : doc.roles };
     },
+    authorizedUsers: function(doc, oldDoc) {
+      return { write: oldDoc ? oldDoc.users : doc.users };
+    },
     propertyValidators: {
       stringProp: {
         type: 'string'
       },
       roles: {
+        type: 'array'
+      },
+      users: {
         type: 'array'
       }
     }
@@ -58,6 +64,21 @@
       add: 'add',
       replace: 'replace',
       remove: 'remove'
+    },
+    propertyValidators: {
+      stringProp: {
+        type: 'string'
+      }
+    }
+  },
+  noChannelsAndStaticUsersDoc: {
+    typeFilter: function(doc) {
+      return doc._id === 'noChannelsAndStaticUsersDoc';
+    },
+    authorizedUsers: {
+      add: [ 'add1', 'add2' ],
+      replace: [ 'replace1', 'replace2' ],
+      remove: [ 'remove1', 'remove2' ]
     },
     propertyValidators: {
       stringProp: {
