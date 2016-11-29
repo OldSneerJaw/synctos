@@ -175,6 +175,7 @@ function verifyAuthorization(expectedAuthorization) {
     // for authorization
     expectedOperationChannels = expectedAuthorization;
     verifyRequireAccess(expectedAuthorization);
+    expect(requireRole.callCount).to.be(0);
   } else {
     if (expectedAuthorization.expectedChannels) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
@@ -272,6 +273,7 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
 function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   var channelAccessDenied = new Error('Channel access denied!');
   var roleAccessDenied = new Error('Role access denied!');
+  var generalAuthFailedMessage = 'missing channel access';
 
   requireAccess = simple.stub().throwWith(channelAccessDenied);
   requireRole = simple.stub().throwWith(roleAccessDenied);
@@ -280,9 +282,9 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
     if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
       expect(ex).to.eql(channelAccessDenied);
     } else if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles)) {
-      expect(ex.forbidden).to.equal('missing channel access');
+      expect(ex.forbidden).to.equal(generalAuthFailedMessage);
     } else if (expectedAuthorization.expectedChannels && expectedAuthorization.expectedRoles) {
-      expect(ex.forbidden).to.equal('missing channel access');
+      expect(ex.forbidden).to.equal(generalAuthFailedMessage);
     } else if (expectedAuthorization.expectedChannels && !(expectedAuthorization.expectedRoles)) {
       expect(ex).to.eql(channelAccessDenied);
     } else if (expectedAuthorization.expectedRoles && !(expectedAuthorization.expectedChannels)) {
