@@ -24,7 +24,7 @@ Once synctos is installed, you can run it from your project's directory as follo
 
     node_modules/synctos/make-sync-function /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js
 
-This will take the sync document definitions that are defined in `/path/to/my-document-definitions.js` and build a new sync function that is output to `/path/to/my-generated-sync-function.js`. The generated sync function contents can then be inserted into the definition of a bucket/database in a Sync Gateway [configuration file](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/configuring-sync-gateway/config-properties/index.html#story-h2-3) as a multi-line string surrounded with backquotes ( \` ).
+This will take the sync document definitions that are defined in `/path/to/my-document-definitions.js` and build a new sync function that is output to `/path/to/my-generated-sync-function.js`. The generated sync function contents can then be inserted into the definition of a bucket/database in a Sync Gateway [configuration file](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/config-properties/index.html#configuration-files) as a multi-line string surrounded with backquotes/backticks ( \` ).
 
 Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
@@ -140,32 +140,6 @@ At the top level, the object contains a property for each document type that is 
 
 Each document type is specified as an object with the following properties:
 
-* `channels`: (required) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. Includes the following properties, each of which may be either an array of channel names or a single channel name as a string:
-  * `view`: (optional) The channel(s) that confer read-only access to documents of this type.
-  * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access.
-  * `replace`: (required if `write` is undefined) The channel(s) that confer the ability to replace existing documents of this type. Any user with a matching channel also gains implicit read access.
-  * `remove`: (required if `write` is undefined) The channel(s) that confer the ability to delete documents of this type. Any user with a matching channel also gains implicit read access.
-  * `write`: (required if one or more of `add`, `replace` or `remove` are undefined) The channel(s) that confer the ability to add, replace or remove documents of this type. Exists as a convenience in cases where the add, replace and remove operations share the same channel(s). Any user with a matching channel also gains implicit read access.
-
-For example:
-
-```
-    channels: {
-      add: 'create',
-      replace: 'update',
-      remove: 'delete'
-    }
-```
-
-Or:
-
-```
-    channels: {
-      view: 'readonly',
-      write: [ 'edit', 'admin' ]
-    }
-```
-
 * `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property must be "message" to be considered a document of that type). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`.
 
 An example of the simple type filter:
@@ -198,6 +172,60 @@ And an example of a more complex custom type filter:
 
         return docIdRegex.test(doc._id);
       }
+    }
+```
+
+* `channels`: (required if `authorizedRoles` is undefined) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` property, authorization will be granted if the user making the modification has at least one of the channels and/or one of the authorized roles for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
+  * `view`: (optional) The channel(s) that confer read-only access to documents of this type.
+  * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access.
+  * `replace`: (required if `write` is undefined) The channel(s) that confer the ability to replace existing documents of this type. Any user with a matching channel also gains implicit read access.
+  * `remove`: (required if `write` is undefined) The channel(s) that confer the ability to delete documents of this type. Any user with a matching channel also gains implicit read access.
+  * `write`: (required if one or more of `add`, `replace` or `remove` are undefined) The channel(s) that confer the ability to add, replace or remove documents of this type. Exists as a convenience in cases where the add, replace and remove operations should share the same channel(s). Any user with a matching channel also gains implicit read access.
+
+For example:
+
+```
+    channels: {
+      add: [ 'create', 'new' ],
+      replace: 'update',
+      remove: 'delete'
+    }
+```
+
+Or:
+
+```
+    channels: function(doc, oldDoc) {
+      return {
+        view: doc._id + '-readonly',
+        write: [ doc._id + '-edit', doc._id + '-admin' ]
+      };
+    }
+```
+
+* `authorizedRoles`: (required if `channels` is undefined) The [roles](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/authorizing-users/index.html#roles) that are authorized to add, replace and remove documents of this type. If used in combination with the `channels` property, authorization will be granted if the user making the modification has at least one of the channels and/or one of the authorized roles for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of role names or a single role name as a string:
+  * `add`: (optional) The role(s) that confer the ability to create new documents of this type.
+  * `replace`: (optional) The role(s) that confer the ability to replace existing documents of this type.
+  * `remove`: (optional) The role(s) that confer the ability to delete documents of this type.
+  * `write`: (optional) The role(s) that confer the ability to add, replace or remove documents of this type. Exists as a convenience in cases where the add, replace and remove operations should share the same role(s).
+
+For example:
+
+```
+    authorizedRoles: {
+      add: 'manager',
+      replace: [ 'manager', 'employee' ],
+      remove: 'manager'
+    }
+```
+
+Or:
+
+```
+    authorizedRoles: function(doc, oldDoc) {
+      return {
+        write: [ doc._id + '-collaborator', 'admin' ]
+      };
     }
 ```
 
@@ -424,7 +452,7 @@ Create a new `describe` block to encapsulate the forthcoming test cases and also
       ...
     });
 
-Now you can begin writing specs/test cases inside the `describe` block using the test helper's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a document that passes validation can be created:
+Now you can begin writing specs/test cases inside the `describe` block using the test helper's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a new document passes validation, is authorized with the correct channels and roles for the add operation, and assigns the desired channel access to a list of users:
 
 ```
 it('can create a myDocType document', function() {
@@ -438,7 +466,10 @@ it('can create a myDocType document', function() {
 
   testHelper.verifyDocumentCreated(
     doc,
-    [ 'my-add-channel1', 'my-add-channel2' ],
+    {
+      expectedChannels: [ 'my-add-channel1', 'my-add-channel2' ],
+      expectedRoles: [ 'my-add-role' ]
+    },
     [
       {
         expectedUsers: function(doc, oldDoc) {
@@ -466,7 +497,10 @@ it('cannot create a myDocType doc when required property foo is missing', functi
     doc,
     'myDocType',
     [ testHelper.validationErrorFormatter.requiredValueViolation('foo') ],
-    [ 'my-add-channel1', 'my-add-channel2' ]);
+    {
+      expectedChannels: [ 'my-add-channel1', 'my-add-channel2' ],
+      expectedRoles: [ 'my-add-role' ]
+    },
 });
 ```
 

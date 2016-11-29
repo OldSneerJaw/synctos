@@ -1,6 +1,6 @@
 function() {
-  // The channel that is only applicable to Kashoo services
-  var serviceChannel = 'SERVICE';
+  // The role that confers universal privileges and is only applicable to Kashoo services
+  var serviceRole = 'SERVICE';
 
   // Matches values that look like three-letter ISO 4217 currency codes. It is not comprehensive.
   var iso4217CurrencyCodeRegex = new RegExp('^[A-Z]{3}$');
@@ -55,19 +55,19 @@ function() {
 
     return function(doc, oldDoc) {
       return {
-        view: [ toSyncChannel(businessId, 'VIEW_' + basePrivilegeName), serviceChannel ],
-        add: [ toSyncChannel(businessId, 'ADD_' + basePrivilegeName), serviceChannel ],
-        replace: [ toSyncChannel(businessId, 'CHANGE_' + basePrivilegeName), serviceChannel ],
-        remove: [ toSyncChannel(businessId, 'REMOVE_' + basePrivilegeName), serviceChannel ]
+        view: [ toSyncChannel(businessId, 'VIEW_' + basePrivilegeName) ],
+        add: [ toSyncChannel(businessId, 'ADD_' + basePrivilegeName) ],
+        replace: [ toSyncChannel(businessId, 'CHANGE_' + basePrivilegeName) ],
+        remove: [ toSyncChannel(businessId, 'REMOVE_' + basePrivilegeName) ]
       };
     };
   }
 
+  var defaultAuthorizedRoles = { write: serviceRole };
+
   // The document type definitions. For everyone's sanity, please keep the document types in case-insensitive alphabetical order
   return {
-    // The base business configuration. Should not be expanded with new properties unless they are directly related to the existing
-    // properties so as to keep the document type from becoming even more of a dumping ground for general business configuration, which
-    // makes it more difficult to resolve sync conflicts. Instead, create a new document type.
+    // The general business configuration
     business: {
       channels: function(doc, oldDoc) {
         var businessId = getBusinessId(doc, oldDoc);
@@ -75,12 +75,13 @@ function() {
         // Because creating a business config document is not the same as creating a business, reuse the same permission for both creating
         // and updating
         return {
-          view: [ toSyncChannel(businessId, 'VIEW'), serviceChannel ],
-          add: [ toSyncChannel(businessId, 'CHANGE_BUSINESS'), serviceChannel ],
-          replace: [ toSyncChannel(businessId, 'CHANGE_BUSINESS'), serviceChannel ],
-          remove: [ toSyncChannel(businessId, 'REMOVE_BUSINESS'), serviceChannel ]
+          view: toSyncChannel(businessId, 'VIEW'),
+          add: toSyncChannel(businessId, 'CHANGE_BUSINESS'),
+          replace: toSyncChannel(businessId, 'CHANGE_BUSINESS'),
+          remove: toSyncChannel(businessId, 'REMOVE_BUSINESS')
         };
       },
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^biz\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -126,12 +127,13 @@ function() {
 
         // Only service users can create new notifications
         return {
-          view: [ toSyncChannel(businessId, 'VIEW_NOTIFICATIONS'), doc._id + '-VIEW', serviceChannel ],
-          add: serviceChannel,
-          replace: [ toSyncChannel(businessId, 'CHANGE_NOTIFICATIONS'), serviceChannel ],
-          remove: [ toSyncChannel(businessId, 'REMOVE_NOTIFICATIONS'), serviceChannel ]
+          view: [ toSyncChannel(businessId, 'VIEW_NOTIFICATIONS'), doc._id + '-VIEW' ],
+          add: [ 'notification-add' ],
+          replace: [ toSyncChannel(businessId, 'CHANGE_NOTIFICATIONS') ],
+          remove: [ toSyncChannel(businessId, 'REMOVE_NOTIFICATIONS') ]
         };
       },
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -239,6 +241,7 @@ function() {
     // Configuration of notification transports for the business
     notificationsConfig: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notificationsConfig$').test(doc._id);
       },
@@ -280,6 +283,7 @@ function() {
     // Keeps track of all notifications that have been generated for a business
     notificationsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS'),
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notifications$').test(doc._id);
       },
@@ -310,6 +314,7 @@ function() {
     // Configuration for a notification transport
     notificationTransport: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notificationTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -333,8 +338,9 @@ function() {
     // A summary of the progress of processing and sending a notification via a specific notification transport method
     notificationTransportProcessingSummary: {
       channels: {
-        write: serviceChannel
+        write: 'notification-transport-write'
       },
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -376,10 +382,11 @@ function() {
 
         // Only service users can create, replace or delete payment attempts to prevent regular users from tampering
         return {
-          view: [ toSyncChannel(businessId, 'VIEW_INVOICE_PAYMENT_REQUISITIONS'), serviceChannel ],
-          write: serviceChannel
+          view: toSyncChannel(businessId, 'VIEW_INVOICE_PAYMENT_REQUISITIONS'),
+          write: 'payment-attempt-write'
         };
       },
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentAttempt\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -444,6 +451,7 @@ function() {
     // Configuration for a payment processor
     paymentProcessorDefinition: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'CUSTOMER_PAYMENT_PROCESSORS'),
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('paymentProcessor\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -486,6 +494,7 @@ function() {
     // A request/requisition for payment of an invoice
     paymentRequisition: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentRequisition\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -522,6 +531,7 @@ function() {
     // References the payment requisitions and payment attempts that were created for an invoice
     paymentRequisitionsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
+      authorizedRoles: defaultAuthorizedRoles,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('invoice\\.[A-Za-z0-9_-]+.paymentRequisitions$').test(doc._id);
       },
