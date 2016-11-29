@@ -123,43 +123,58 @@ function synctos(doc, oldDoc) {
 
   // Ensures the user is authorized to create/replace/delete this document
   function authorize(doc, oldDoc, docDefinition) {
-    var requiredChannels = getRequiredAuthorizations(doc, oldDoc, docDefinition.channels);
-    var requiredRoles = getRequiredAuthorizations(doc, oldDoc, docDefinition.authorizedRoles);
+    var authorizedChannels = getRequiredAuthorizations(doc, oldDoc, docDefinition.channels);
+    var authorizedRoles = getRequiredAuthorizations(doc, oldDoc, docDefinition.authorizedRoles);
+    var authorizedUsers = getRequiredAuthorizations(doc, oldDoc, docDefinition.authorizedUsers);
 
     var channelMatch = false;
-    if (requiredChannels) {
+    if (authorizedChannels) {
       try {
-        requireAccess(requiredChannels);
+        requireAccess(authorizedChannels);
         channelMatch = true;
       } catch (ex) {
         // The user has none of the authorized channels
-        if (!requiredRoles) {
-          // ... and the document definition does not specify any authorized roles
+        if (!authorizedRoles && !authorizedUsers) {
+          // ... and the document definition does not specify any authorized roles or users
           throw ex;
         }
       }
     }
 
     var roleMatch = false;
-    if (requiredRoles) {
+    if (authorizedRoles) {
       try {
-        requireRole(requiredRoles);
+        requireRole(authorizedRoles);
         roleMatch = true;
       } catch (ex) {
         // The user belongs to none of the authorized roles
-        if (!requiredChannels) {
-          // ... and the document definition does not specify any authorized channels
+        if (!authorizedChannels && !authorizedUsers) {
+          // ... and the document definition does not specify any authorized channels or users
+          throw ex;
+        }
+      }
+    }
+
+    var userMatch = false;
+    if (authorizedUsers) {
+      try {
+        requireUser(authorizedUsers);
+        userMatch = true;
+      } catch (ex) {
+        // The user does not match any of the authorized usernames
+        if (!authorizedChannels && !authorizedRoles) {
+          // ... and the document definition does not specify any authorized channels or roles
           throw ex;
         }
       }
     }
 
     var authorizationFailedMessage = 'missing channel access';
-    if (!requiredChannels && !requiredRoles) {
+    if (!authorizedChannels && !authorizedRoles && !authorizedUsers) {
       // The document type does not define any channels, roles or users that apply to this particular write operation type, so fall back to
       // Sync Gateway's default behaviour for an empty channel list (i.e. 403 Forbidden)
       throw({ forbidden: authorizationFailedMessage });
-    } else if (!channelMatch && !roleMatch) {
+    } else if (!channelMatch && !roleMatch && !userMatch) {
       // None of the authorization methods (e.g. channels, roles, users) succeeded
       throw({ forbidden: authorizationFailedMessage });
     }

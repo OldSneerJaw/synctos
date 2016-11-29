@@ -13,12 +13,14 @@ eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-general-
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 var requireAccess;
 var requireRole;
+var requireUser;
 var channel;
 
 describe('Functionality that is common to all documents:', function() {
   beforeEach(function() {
     requireAccess = simple.stub();
     requireRole = simple.stub();
+    requireUser = simple.stub();
     channel = simple.stub();
   });
 
