@@ -140,6 +140,41 @@ At the top level, the object contains a property for each document type that is 
 
 Each document type is specified as an object with the following properties:
 
+* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property must be "message" to be considered a document of that type). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`.
+
+An example of the simple type filter:
+
+```
+    typeFilter: simpleTypeFilter
+```
+
+And an example of a more complex custom type filter:
+
+```
+    typeFilter: function(doc, oldDoc, currentDocType) {
+      var typePropertyMatches;
+      if (oldDoc) {
+        if (doc._deleted) {
+          typePropertyMatches = oldDoc.type === currentDocType;
+        } else {
+          typePropertyMatches = doc.type === oldDoc.type && oldDoc.type === currentDocType;
+        }
+      } else {
+        // The old document does not exist or was deleted - we can rely on the new document's type
+        typePropertyMatches = doc.type === currentDocType;
+      }
+
+      if (typePropertyMatches) {
+        return true;
+      } else {
+        // The type property did not match - fall back to matching the document ID pattern
+        var docIdRegex = new RegExp('^message\\.[A-Za-z0-9_-]+$');
+
+        return docIdRegex.test(doc._id);
+      }
+    }
+```
+
 * `channels`: (required if `authorizedRoles` is undefined) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` property, authorization will be granted if the user making the modification has at least one of the channels and/or one of the authorized roles for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
   * `view`: (optional) The channel(s) that confer read-only access to documents of this type.
   * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access.
@@ -191,41 +226,6 @@ Or:
       return {
         write: [ doc._id + '-collaborator', 'admin' ]
       };
-    }
-```
-
-* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property must be "message" to be considered a document of that type). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`.
-
-An example of the simple type filter:
-
-```
-    typeFilter: simpleTypeFilter
-```
-
-And an example of a more complex custom type filter:
-
-```
-    typeFilter: function(doc, oldDoc, currentDocType) {
-      var typePropertyMatches;
-      if (oldDoc) {
-        if (doc._deleted) {
-          typePropertyMatches = oldDoc.type === currentDocType;
-        } else {
-          typePropertyMatches = doc.type === oldDoc.type && oldDoc.type === currentDocType;
-        }
-      } else {
-        // The old document does not exist or was deleted - we can rely on the new document's type
-        typePropertyMatches = doc.type === currentDocType;
-      }
-
-      if (typePropertyMatches) {
-        return true;
-      } else {
-        // The type property did not match - fall back to matching the document ID pattern
-        var docIdRegex = new RegExp('^message\\.[A-Za-z0-9_-]+$');
-
-        return docIdRegex.test(doc._id);
-      }
     }
 ```
 
