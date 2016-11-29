@@ -2,6 +2,9 @@ function() {
   // The role that confers universal privileges and is only applicable to Kashoo services
   var serviceRole = 'SERVICE';
 
+  // A special user that has universal privileges
+  var adminUser = 'ADMIN';
+
   // Matches values that look like three-letter ISO 4217 currency codes. It is not comprehensive.
   var iso4217CurrencyCodeRegex = new RegExp('^[A-Z]{3}$');
 
@@ -65,6 +68,8 @@ function() {
 
   var defaultAuthorizedRoles = { write: serviceRole };
 
+  var defaultAuthorizedUsers = { write: adminUser };
+
   // The document type definitions. For everyone's sanity, please keep the document types in case-insensitive alphabetical order
   return {
     // The general business configuration
@@ -82,6 +87,7 @@ function() {
         };
       },
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^biz\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -134,6 +140,7 @@ function() {
         };
       },
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -242,6 +249,7 @@ function() {
     notificationsConfig: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notificationsConfig$').test(doc._id);
       },
@@ -284,6 +292,7 @@ function() {
     notificationsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS'),
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notifications$').test(doc._id);
       },
@@ -315,6 +324,7 @@ function() {
     notificationTransport: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'NOTIFICATIONS_CONFIG'),
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notificationTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -341,6 +351,7 @@ function() {
         write: 'notification-transport-write'
       },
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -387,6 +398,7 @@ function() {
         };
       },
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentAttempt\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -452,6 +464,7 @@ function() {
     paymentProcessorDefinition: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'CUSTOMER_PAYMENT_PROCESSORS'),
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('paymentProcessor\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -495,6 +508,7 @@ function() {
     paymentRequisition: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return new RegExp('^paymentRequisition\\.[A-Za-z0-9_-]+$').test(doc._id);
       },
@@ -532,6 +546,7 @@ function() {
     paymentRequisitionsReference: {
       channels: toDefaultSyncChannels(doc, oldDoc, 'INVOICE_PAYMENT_REQUISITIONS'),
       authorizedRoles: defaultAuthorizedRoles,
+      authorizedUsers: defaultAuthorizedUsers,
       typeFilter: function(doc, oldDoc) {
         return createBusinessEntityRegex('invoice\\.[A-Za-z0-9_-]+.paymentRequisitions$').test(doc._id);
       },

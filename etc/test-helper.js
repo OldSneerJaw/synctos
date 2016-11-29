@@ -7,6 +7,7 @@ var validationErrorFormatter = require('./validation-error-message-formatter.js'
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
 var requireAccess;
 var requireRole;
+var requireUser;
 var channel;
 var access;
 
@@ -22,20 +23,27 @@ function init(syncFunctionPath) {
 
   requireAccess = simple.stub();
   requireRole = simple.stub();
+  requireUser = simple.stub();
   channel = simple.stub();
   access = simple.stub();
 }
 
 function verifyRequireAccess(expectedChannels) {
-  expect(requireAccess.callCount).to.be(1);
+  expect(requireAccess.callCount).to.be.greaterThan(0);
 
   checkAuthorizations(expectedChannels, requireAccess.calls[0].arg, 'channel');
 }
 
 function verifyRequireRole(expectedRoles) {
-  expect(requireRole.callCount).to.be(1);
+  expect(requireRole.callCount).to.be.greaterThan(0);
 
   checkAuthorizations(expectedRoles, requireRole.calls[0].arg, 'role');
+}
+
+function verifyRequireUser(expectedUsers) {
+  expect(requireUser.callCount).to.be.greaterThan(0);
+
+  checkAuthorizations(expectedUsers, requireUser.calls[0].arg, 'user');
 }
 
 function verifyChannelAssignment(expectedChannels) {
@@ -176,6 +184,7 @@ function verifyAuthorization(expectedAuthorization) {
     expectedOperationChannels = expectedAuthorization;
     verifyRequireAccess(expectedAuthorization);
     expect(requireRole.callCount).to.be(0);
+    expect(requireUser.callCount).to.be(0);
   } else {
     if (expectedAuthorization.expectedChannels) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
@@ -188,6 +197,12 @@ function verifyAuthorization(expectedAuthorization) {
       verifyRequireRole(expectedAuthorization.expectedRoles);
     } else {
       expect(requireRole.callCount).to.be(0);
+    }
+
+    if (expectedAuthorization.expectedUsers) {
+      verifyRequireUser(expectedAuthorization.expectedUsers);
+    } else {
+      expect(requireUser.callCount).to.be(0);
     }
   }
 
@@ -270,25 +285,44 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   }
 }
 
+function countAuthorizationTypes(expectedAuthorization) {
+  var count = 0;
+  if (expectedAuthorization.expectedChannels) {
+    count++;
+  }
+  if (expectedAuthorization.expectedRoles) {
+    count++;
+  }
+  if (expectedAuthorization.expectedUsers) {
+    count++;
+  }
+
+  return count;
+}
+
 function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   var channelAccessDenied = new Error('Channel access denied!');
   var roleAccessDenied = new Error('Role access denied!');
+  var userAccessDenied = new Error('User access denied!');
   var generalAuthFailedMessage = 'missing channel access';
 
   requireAccess = simple.stub().throwWith(channelAccessDenied);
   requireRole = simple.stub().throwWith(roleAccessDenied);
+  requireUser = simple.stub().throwWith(userAccessDenied);
 
   expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
     if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
       expect(ex).to.eql(channelAccessDenied);
-    } else if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles)) {
+    } else if (countAuthorizationTypes(expectedAuthorization) === 0) {
       expect(ex.forbidden).to.equal(generalAuthFailedMessage);
-    } else if (expectedAuthorization.expectedChannels && expectedAuthorization.expectedRoles) {
+    } else if (countAuthorizationTypes(expectedAuthorization) > 1) {
       expect(ex.forbidden).to.equal(generalAuthFailedMessage);
-    } else if (expectedAuthorization.expectedChannels && !(expectedAuthorization.expectedRoles)) {
+    } else if (expectedAuthorization.expectedChannels) {
       expect(ex).to.eql(channelAccessDenied);
-    } else if (expectedAuthorization.expectedRoles && !(expectedAuthorization.expectedChannels)) {
+    } else if (expectedAuthorization.expectedRoles) {
       expect(ex).to.eql(roleAccessDenied);
+    } else if (expectedAuthorization.expectedUsers) {
+      expect(ex).to.eql(userAccessDenied);
     }
   });
 
@@ -318,10 +352,11 @@ exports.init = init;
  * @param {Object} oldDoc The document to replace or delete. May be null or undefined or include property "_deleted=true" to simulate a
  *                        create operation.
  * @param {(Object|string[])} expectedAuthorization Either an object that specifies the separate channels/roles/users or a list of channels
- *                                                  that are required to perform the operation. If it is an object, the following fields are
+ *                                                  that are authorized to perform the operation. If it is an object, the following fields are
  *                                                  available:
- *                                                  - expectedChannels: an optional list of channels that are required
- *                                                  - expectedRoles: an optional list of roles that are required
+ *                                                  - expectedChannels: an optional list of channels that are authorized
+ *                                                  - expectedRoles: an optional list of roles that are authorized
+ *                                                  - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
@@ -335,10 +370,11 @@ exports.verifyDocumentAccepted = verifyDocumentAccepted;
  *
  * @param {Object} doc The new document
  * @param {(Object|string[])} [expectedAuthorization] Either an optional object that specifies the channels/roles/users or an optional list
- *                                                    of channels that are required to perform the operation. If omitted, then the channel
+ *                                                    of channels that are authorized to perform the operation. If omitted, then the channel
  *                                                    "write" is assumed. If it is an object, the following fields are available:
- *                                                    - expectedChannels: an optional list of channels that are required
- *                                                    - expectedRoles: an optional list of roles that are required
+ *                                                    - expectedChannels: an optional list of channels that are authorized
+ *                                                    - expectedRoles: an optional list of roles that are authorized
+ *                                                    - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
@@ -353,10 +389,11 @@ exports.verifyDocumentCreated = verifyDocumentCreated;
  * @param {Object} doc The updated document
  * @param {Object} oldDoc The document to replace
  * @param {(Object|string[])} [expectedAuthorization] Either an optional object that specifies the channels/roles/users or an optional list
- *                                                    of channels that are required to perform the operation. If omitted, then the channel
+ *                                                    of channels that are authorized to perform the operation. If omitted, then the channel
  *                                                    "write" is assumed. If it is an object, the following fields are available:
- *                                                    - expectedChannels: an optional list of channels that are required
- *                                                    - expectedRoles: an optional list of roles that are required
+ *                                                    - expectedChannels: an optional list of channels that are authorized
+ *                                                    - expectedRoles: an optional list of roles that are authorized
+ *                                                    - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
@@ -370,10 +407,11 @@ exports.verifyDocumentReplaced = verifyDocumentReplaced;
  *
  * @param {Object} oldDoc The document to delete
  * @param {(Object|string[])} [expectedAuthorization] Either an optional object that specifies the channels/roles/users or an optional list
- *                                                    of channels that are required to perform the operation. If omitted, then the channel
+ *                                                    of channels that are authorized to perform the operation. If omitted, then the channel
  *                                                    "write" is assumed. If it is an object, the following fields are available:
- *                                                    - expectedChannels: an optional list of channels that are required
- *                                                    - expectedRoles: an optional list of roles that are required
+ *                                                    - expectedChannels: an optional list of channels that are authorized
+ *                                                    - expectedRoles: an optional list of roles that are authorized
+ *                                                    - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
@@ -392,10 +430,11 @@ exports.verifyDocumentDeleted = verifyDocumentDeleted;
  * @param {string[]} expectedErrorMessages The list of validation error messages that should be generated by the operation. May be a string
  *                                         if only one validation error is expected.
  * @param {(Object|string[])} expectedAuthorization Either an object that specifies the separate channels/roles/users or a list of channels
- *                                                  that are required to perform the operation. If it is an object, the following fields are
+ *                                                  that are authorized to perform the operation. If it is an object, the following fields are
  *                                                  available:
- *                                                  - expectedChannels: an optional list of channels that are required
- *                                                  - expectedRoles: an optional list of roles that are required
+ *                                                  - expectedChannels: an optional list of channels that are authorized
+ *                                                  - expectedRoles: an optional list of roles that are authorized
+ *                                                  - expectedUsers: an optional list of users that are authorized
  */
 exports.verifyDocumentRejected = verifyDocumentRejected;
 
@@ -407,10 +446,11 @@ exports.verifyDocumentRejected = verifyDocumentRejected;
  * @param {string[]} expectedErrorMessages The list of validation error messages that should be generated by the operation. May be a string
  *                                         if only one validation error is expected.
  * @param {(Object|string[])} [expectedAuthorization] Either an optional object that specifies the channels/roles/users or an optional list
- *                                                    of channels that are required to perform the operation. If omitted, then the channel
+ *                                                    of channels that are authorized to perform the operation. If omitted, then the channel
  *                                                    "write" is assumed. If it is an object, the following fields are available:
- *                                                    - expectedChannels: an optional list of channels that are required
- *                                                    - expectedRoles: an optional list of roles that are required
+ *                                                    - expectedChannels: an optional list of channels that are authorized
+ *                                                    - expectedRoles: an optional list of roles that are authorized
+ *                                                    - expectedUsers: an optional list of users that are authorized
  */
 exports.verifyDocumentNotCreated = verifyDocumentNotCreated;
 
@@ -423,10 +463,11 @@ exports.verifyDocumentNotCreated = verifyDocumentNotCreated;
  * @param {string[]} expectedErrorMessages The list of validation error messages that should be generated by the operation. May be a string
  *                                         if only one validation error is expected.
  * @param {(Object|string[])} [expectedAuthorization] Either an optional object that specifies the channels/roles/users or an optional list
- *                                                    of channels that are required to perform the operation. If omitted, then the channel
+ *                                                    of channels that are authorized to perform the operation. If omitted, then the channel
  *                                                    "write" is assumed. If it is an object, the following fields are available:
- *                                                    - expectedChannels: an optional list of channels that are required
- *                                                    - expectedRoles: an optional list of roles that are required
+ *                                                    - expectedChannels: an optional list of channels that are authorized
+ *                                                    - expectedRoles: an optional list of roles that are authorized
+ *                                                    - expectedUsers: an optional list of users that are authorized
  */
 exports.verifyDocumentNotReplaced = verifyDocumentNotReplaced;
 
@@ -438,10 +479,11 @@ exports.verifyDocumentNotReplaced = verifyDocumentNotReplaced;
  * @param {string[]} expectedErrorMessages The list of validation error messages that should be generated by the operation. May be a string
  *                                         if only one validation error is expected.
  * @param {(Object|string[])} [expectedAuthorization] Either an optional object that specifies the channels/roles/users or an optional list
- *                                                    of channels that are required to perform the operation. If omitted, then the channel
+ *                                                    of channels that are authorized to perform the operation. If omitted, then the channel
  *                                                    "write" is assumed. If it is an object, the following fields are available:
- *                                                    - expectedChannels: an optional list of channels that are required
- *                                                    - expectedRoles: an optional list of roles that are required
+ *                                                    - expectedChannels: an optional list of channels that are authorized
+ *                                                    - expectedRoles: an optional list of roles that are authorized
+ *                                                    - expectedUsers: an optional list of users that are authorized
  */
 exports.verifyDocumentNotDeleted = verifyDocumentNotDeleted;
 
@@ -458,7 +500,7 @@ exports.verifyValidationErrors = verifyValidationErrors;
 /**
  * Verifies that the specified document that was created, replaced or deleted required the specified channels for access.
  *
- * @param {string[]} expectedChannels The list of channels that are required to perform the operation. May be a string if only one channel
+ * @param {string[]} expectedChannels The list of all channels that are authorized to perform the operation. May be a string if only one channel
  *                                    is expected.
  */
 exports.verifyRequireAccess = verifyRequireAccess;
@@ -466,10 +508,18 @@ exports.verifyRequireAccess = verifyRequireAccess;
 /**
  * Verifies that the specified document that was created, replaced or deleted required the specified roles for access.
  *
- * @param {string[]} expectedRoles The list of roles that are required to perform the operation. May be a string if only one role is
+ * @param {string[]} expectedRoles The list of all roles that are authorized to perform the operation. May be a string if only one role is
  *                                 expected.
  */
 exports.verifyRequireRole = verifyRequireRole;
+
+/**
+ * Verifies that the specified document that was created, replaced or deleted required the specified users for access.
+ *
+ * @param {string[]} expectedUsers The list of all users that are authorized to perform the operation. May be a string if only one user is
+ *                                 expected.
+ */
+exports.verifyRequireUser = verifyRequireUser;
 
 /**
  * Verifies that the specified channels were all assigned to a document that was created, replaced or deleted.
@@ -486,10 +536,11 @@ exports.verifyChannelAssignment = verifyChannelAssignment;
  * @param {Object} oldDoc The document to replace or delete. May be null or undefined or include property "_deleted=true" to simulate a
  *                        create operation.
  * @param {(Object|string[])} expectedAuthorization Either an object that specifies the separate channels/roles/users or a list of channels
- *                                                  that are required to perform the operation. If it is an object, the following fields are
+ *                                                  that are authorized to perform the operation. If it is an object, the following fields are
  *                                                  available:
- *                                                  - expectedChannels: an optional list of channels that are required
- *                                                  - expectedRoles: an optional list of roles that are required
+ *                                                  - expectedChannels: an optional list of channels that are authorized
+ *                                                  - expectedRoles: an optional list of roles that are authorized
+ *                                                  - expectedUsers: an optional list of users that are authorized
  */
 exports.verifyAccessDenied = verifyAccessDenied;
 

@@ -175,7 +175,7 @@ And an example of a more complex custom type filter:
     }
 ```
 
-* `channels`: (required if `authorizedRoles` is undefined) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` property, authorization will be granted if the user making the modification has at least one of the channels and/or one of the authorized roles for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
+* `channels`: (required if `authorizedRoles` and `authorizedUsers` are undefined) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the channels and/or authorized roles/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
   * `view`: (optional) The channel(s) that confer read-only access to documents of this type.
   * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access.
   * `replace`: (required if `write` is undefined) The channel(s) that confer the ability to replace existing documents of this type. Any user with a matching channel also gains implicit read access.
@@ -203,7 +203,7 @@ Or:
     }
 ```
 
-* `authorizedRoles`: (required if `channels` is undefined) The [roles](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/authorizing-users/index.html#roles) that are authorized to add, replace and remove documents of this type. If used in combination with the `channels` property, authorization will be granted if the user making the modification has at least one of the channels and/or one of the authorized roles for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of role names or a single role name as a string:
+* `authorizedRoles`: (required if `channels` and `authorizedUsers` are undefined) The [roles](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/authorizing-users/index.html#roles) that are authorized to add, replace and remove documents of this type. If used in combination with the `channels` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the roles and/or authorized channels/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of role names or a single role name as a string:
   * `add`: (optional) The role(s) that confer the ability to create new documents of this type.
   * `replace`: (optional) The role(s) that confer the ability to replace existing documents of this type.
   * `remove`: (optional) The role(s) that confer the ability to delete documents of this type.
@@ -224,7 +224,33 @@ Or:
 ```
     authorizedRoles: function(doc, oldDoc) {
       return {
-        write: [ doc._id + '-collaborator', 'admin' ]
+        write: oldDoc ? oldDoc.roles : doc.roles
+      };
+    }
+```
+
+* `authorizedUsers`: (required if `channels` and `authorizedRoles` are undefined) The names of [users](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/authorizing-users/index.html#authorizing-users) that are explicitly authorized to add, replace and remove documents of this type. If used in combination with the `channels` and/or `authorizedRoles` properties, authorization will be granted if the user making the modification matches at least one of the usernames and/or authorized channels/roles for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of usernames or a single username as a string:
+  * `add`: (optional) The user(s) that have the ability to create new documents of this type.
+  * `replace`: (optional) The user(s) that have the ability to replace existing documents of this type.
+  * `remove`: (optional) The user(s) that have the ability to delete documents of this type.
+  * `write`: (optional) The user(s) that have the ability to add, replace or remove documents of this type. Exists as a convenience in cases where the add, replace and remove operations should share the same user(s).
+
+For example:
+
+```
+    authorizedUsers: {
+      add: [ 'sally', 'roger', 'samantha' ],
+      replace: [ 'roger', 'samantha' ],
+      remove: 'samantha'
+    }
+```
+
+Or:
+
+```
+    authorizedUsers: function(doc, oldDoc) {
+      return {
+        write: oldDoc ? oldDoc.users : doc.users
       };
     }
 ```
@@ -444,15 +470,17 @@ Next, create a new spec file in your project's `test/` directory (e.g. `test/foo
 
 Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
 
-    describe('My new sync function', function() {
-      beforeEach(function() {
-        testHelper.init('relative/path/to/my-generated-sync-function.js');
-      });
+```
+describe('My new sync function', function() {
+  beforeEach(function() {
+    testHelper.init('relative/path/to/my-generated-sync-function.js');
+  });
 
-      ...
-    });
+  ...
+});
+```
 
-Now you can begin writing specs/test cases inside the `describe` block using the test helper's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a new document passes validation, is authorized with the correct channels and roles for the add operation, and assigns the desired channel access to a list of users:
+Now you can begin writing specs/test cases inside the `describe` block using the test helper's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a new document passes validation, specifies the correct channels, roles and usernames for authorization, and assigns the desired channel access to a list of users:
 
 ```
 it('can create a myDocType document', function() {
@@ -468,7 +496,8 @@ it('can create a myDocType document', function() {
     doc,
     {
       expectedChannels: [ 'my-add-channel1', 'my-add-channel2' ],
-      expectedRoles: [ 'my-add-role' ]
+      expectedRoles: [ 'my-add-role' ],
+      expectedUsers: [ 'my-add-user' ]
     },
     [
       {
@@ -499,8 +528,9 @@ it('cannot create a myDocType doc when required property foo is missing', functi
     [ testHelper.validationErrorFormatter.requiredValueViolation('foo') ],
     {
       expectedChannels: [ 'my-add-channel1', 'my-add-channel2' ],
-      expectedRoles: [ 'my-add-role' ]
-    },
+      expectedRoles: [ 'my-add-role' ],
+      expectedUsers: [ 'my-add-user' ]
+    });
 });
 ```
 

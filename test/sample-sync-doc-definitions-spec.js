@@ -1051,6 +1051,7 @@ function verifyDocumentNotReplaced(basePrivilegeName, businessId, doc, oldDoc, e
 function getExpectedAuthorization(expectedChannels) {
   return {
     expectedRoles: [ 'SERVICE' ],
+    expectedUsers: [ 'ADMIN' ],
     expectedChannels: expectedChannels
   };
 }
