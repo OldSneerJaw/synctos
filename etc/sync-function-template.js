@@ -171,9 +171,9 @@ function synctos(doc, oldDoc) {
 
     if (!authorizedChannels && !authorizedRoles && !authorizedUsers) {
       // The document type does not define any channels, roles or users that apply to this particular write operation type, so fall back to
-      // Sync Gateway's default behaviour for an empty channel list. Note that calling requireAccess with an empty channel list will
-      // result in a 403 Forbidden response if the request was received via the public API, but a 2xx response via the admin API, which is
-      // the desired outcome.
+      // Sync Gateway's default behaviour for an empty channel list: 403 Forbidden for requests via the public API and either 200 OK or 201
+      // Created for requests via the admin API. That way, the admin API will always be able to create, replace or remove documents,
+      // regardless of their authorized channels, roles or users, as intended.
       requireAccess([ ]);
     } else if (!channelMatch && !roleMatch && !userMatch) {
       // None of the authorization methods (e.g. channels, roles, users) succeeded
