@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+Nothing yet
+
 ## [1.4.0] - 2016-11-30
 ### Added
 - [#22](https://github.com/Kashoo/synctos/issues/22): Support document authorization by role
