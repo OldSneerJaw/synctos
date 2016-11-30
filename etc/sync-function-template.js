@@ -169,14 +169,15 @@ function synctos(doc, oldDoc) {
       }
     }
 
-    var authorizationFailedMessage = 'missing channel access';
     if (!authorizedChannels && !authorizedRoles && !authorizedUsers) {
       // The document type does not define any channels, roles or users that apply to this particular write operation type, so fall back to
-      // Sync Gateway's default behaviour for an empty channel list (i.e. 403 Forbidden)
-      throw({ forbidden: authorizationFailedMessage });
+      // Sync Gateway's default behaviour for an empty channel list. Note that calling requireAccess with an empty channel list will
+      // result in a 403 Forbidden response if the request was received via the public API, but a 2xx response via the admin API, which is
+      // the desired outcome.
+      requireAccess([ ]);
     } else if (!channelMatch && !roleMatch && !userMatch) {
       // None of the authorization methods (e.g. channels, roles, users) succeeded
-      throw({ forbidden: authorizationFailedMessage });
+      throw({ forbidden: 'missing channel access' });
     }
   }
 
