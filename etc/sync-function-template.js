@@ -169,14 +169,15 @@ function synctos(doc, oldDoc) {
       }
     }
 
-    var authorizationFailedMessage = 'missing channel access';
     if (!authorizedChannels && !authorizedRoles && !authorizedUsers) {
       // The document type does not define any channels, roles or users that apply to this particular write operation type, so fall back to
-      // Sync Gateway's default behaviour for an empty channel list (i.e. 403 Forbidden)
-      throw({ forbidden: authorizationFailedMessage });
+      // Sync Gateway's default behaviour for an empty channel list: 403 Forbidden for requests via the public API and either 200 OK or 201
+      // Created for requests via the admin API. That way, the admin API will always be able to create, replace or remove documents,
+      // regardless of their authorized channels, roles or users, as intended.
+      requireAccess([ ]);
     } else if (!channelMatch && !roleMatch && !userMatch) {
       // None of the authorization methods (e.g. channels, roles, users) succeeded
-      throw({ forbidden: authorizationFailedMessage });
+      throw({ forbidden: 'missing channel access' });
     }
   }
 

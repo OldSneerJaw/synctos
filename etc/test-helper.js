@@ -189,8 +189,6 @@ function verifyAuthorization(expectedAuthorization) {
     if (expectedAuthorization.expectedChannels) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
       verifyRequireAccess(expectedAuthorization.expectedChannels);
-    } else {
-      expect(requireAccess.callCount).to.be(0);
     }
 
     if (expectedAuthorization.expectedRoles) {
@@ -203,6 +201,10 @@ function verifyAuthorization(expectedAuthorization) {
       verifyRequireUser(expectedAuthorization.expectedUsers);
     } else {
       expect(requireUser.callCount).to.be(0);
+    }
+
+    if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles) && !(expectedAuthorization.expectedUsers)) {
+      verifyRequireAccess([ ]);
     }
   }
 
@@ -314,7 +316,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
     if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
       expect(ex).to.eql(channelAccessDenied);
     } else if (countAuthorizationTypes(expectedAuthorization) === 0) {
-      expect(ex.forbidden).to.equal(generalAuthFailedMessage);
+      verifyRequireAccess([ ]);
     } else if (countAuthorizationTypes(expectedAuthorization) > 1) {
       expect(ex.forbidden).to.equal(generalAuthFailedMessage);
     } else if (expectedAuthorization.expectedChannels) {
