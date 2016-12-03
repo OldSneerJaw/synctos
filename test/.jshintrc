@@ -6,6 +6,7 @@
     "channel": true,
     "requireAccess": true,
     "requireRole": true,
-    "requireUser": true
+    "requireUser": true,
+    "verifyCustomAction": true
   }
 }

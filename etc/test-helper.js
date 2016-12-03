@@ -13,6 +13,8 @@ var access;
 
 var syncFunction;
 
+var verifyCustomAction;
+
 var defaultWriteChannel = 'write';
 
 function init(syncFunctionPath) {
@@ -20,6 +22,8 @@ function init(syncFunctionPath) {
   /*jslint evil: true */
   eval('syncFunction = ' + fs.readFileSync(syncFunctionPath).toString());
   /*jslint evil: false */
+
+  verifyCustomAction = simple.stub();
 
   requireAccess = simple.stub();
   requireRole = simple.stub();
@@ -340,6 +344,15 @@ function verifyUnknownDocumentType(doc, oldDoc) {
   expect(channel.callCount).to.be(0);
 }
 
+function verifyCustomActionExecuted(expectedInput) {
+  expect(verifyCustomAction.callCount).to.be(1);
+  expect(verifyCustomAction.calls[0].arg).to.eql(expectedInput);
+}
+
+function verifyCustomActionNotExecuted() {
+  expect(verifyCustomAction.callCount).to.be(0);
+}
+
 /**
  * Initializes the module with the sync function at the specified file path.
  *
@@ -554,6 +567,12 @@ exports.verifyAccessDenied = verifyAccessDenied;
  *                        create operation.
  */
 exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
+
+// TODO Documentation
+exports.verifyCustomActionExecuted = verifyCustomActionExecuted;
+
+// TODO Documentation
+exports.verifyCustomActionNotExecuted = verifyCustomActionNotExecuted;
 
 /**
  * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be

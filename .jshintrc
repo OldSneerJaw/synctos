@@ -15,6 +15,7 @@
     "channel": false,
     "requireAccess": false,
     "requireRole": false,
-    "requireUser": false
+    "requireUser": false,
+    "verifyCustomAction": false
   }
 }

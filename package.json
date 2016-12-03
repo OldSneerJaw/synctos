@@ -5,7 +5,7 @@
   "devDependencies": {
     "expect.js": "^0.3.1",
     "jshint": "^2.9.4",
-    "mocha": "^3.1.2",
+    "mocha": "^3.2.0",
     "simple-mock": "^0.7.3"
   },
   "scripts": {
