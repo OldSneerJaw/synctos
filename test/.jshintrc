@@ -4,9 +4,9 @@
   "globals": {
     "access": true,
     "channel": true,
+    "customActionStub": true,
     "requireAccess": true,
     "requireRole": true,
-    "requireUser": true,
-    "verifyCustomAction": true
+    "requireUser": true
   }
 }

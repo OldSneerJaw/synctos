@@ -1,6 +1,6 @@
 function() {
   function customAction(doc, oldDoc) {
-    verifyCustomAction(doc._id);
+    customActionStub(doc._id);
   }
 
   return {

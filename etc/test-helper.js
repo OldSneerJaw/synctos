@@ -13,7 +13,8 @@ var access;
 
 var syncFunction;
 
-var verifyCustomAction;
+// A function stub that can be used in document definitions for test cases to verify custom actions
+var customActionStub;
 
 var defaultWriteChannel = 'write';
 
@@ -23,13 +24,15 @@ function init(syncFunctionPath) {
   eval('syncFunction = ' + fs.readFileSync(syncFunctionPath).toString());
   /*jslint evil: false */
 
-  verifyCustomAction = simple.stub();
+  exports.syncFunction = syncFunction;
 
-  requireAccess = simple.stub();
-  requireRole = simple.stub();
-  requireUser = simple.stub();
-  channel = simple.stub();
-  access = simple.stub();
+  exports.requireAccess = requireAccess = simple.stub();
+  exports.requireRole = requireRole = simple.stub();
+  exports.requireUser = requireUser = simple.stub();
+  exports.channel = channel = simple.stub();
+  exports.access = access = simple.stub();
+
+  exports.customActionStub = customActionStub = simple.stub();
 }
 
 function verifyRequireAccess(expectedChannels) {
@@ -270,12 +273,17 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   var validationErrorRegex = /^([^:]+):\s*(.+)$/;
 
   var exceptionMessageMatches = validationErrorRegex.exec(exception.forbidden);
-  expect(exceptionMessageMatches.length).to.be(3);
+  var actualErrorMessages;
+  if (exceptionMessageMatches) {
+    expect(exceptionMessageMatches.length).to.be(3);
 
-  var invalidDocMessage = exceptionMessageMatches[1].trim();
-  expect(invalidDocMessage).to.equal('Invalid ' + docType + ' document');
+    var invalidDocMessage = exceptionMessageMatches[1].trim();
+    expect(invalidDocMessage).to.equal('Invalid ' + docType + ' document');
 
-  var actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
+    actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
+  } else {
+    actualErrorMessages = [ exception.forbidden ];
+  }
 
   for (var expectedErrorIndex = 0; expectedErrorIndex < expectedErrorMessages.length; expectedErrorIndex++) {
     expect(actualErrorMessages).to.contain(expectedErrorMessages[expectedErrorIndex]);
@@ -342,15 +350,6 @@ function verifyUnknownDocumentType(doc, oldDoc) {
 
   expect(requireAccess.callCount).to.be(0);
   expect(channel.callCount).to.be(0);
-}
-
-function verifyCustomActionExecuted(expectedInput) {
-  expect(verifyCustomAction.callCount).to.be(1);
-  expect(verifyCustomAction.calls[0].arg).to.eql(expectedInput);
-}
-
-function verifyCustomActionNotExecuted() {
-  expect(verifyCustomAction.callCount).to.be(0);
 }
 
 /**
@@ -567,12 +566,6 @@ exports.verifyAccessDenied = verifyAccessDenied;
  *                        create operation.
  */
 exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
-
-// TODO Documentation
-exports.verifyCustomActionExecuted = verifyCustomActionExecuted;
-
-// TODO Documentation
-exports.verifyCustomActionNotExecuted = verifyCustomActionNotExecuted;
 
 /**
  * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be

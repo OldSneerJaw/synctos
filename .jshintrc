@@ -13,9 +13,9 @@
   "globals": {
     "access": false,
     "channel": false,
+    "customActionStub": false,
     "requireAccess": false,
     "requireRole": false,
-    "requireUser": false,
-    "verifyCustomAction": false
+    "requireUser": false
   }
 }
