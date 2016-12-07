@@ -323,7 +323,7 @@ An example of an `onAuthorizationSucceeded` custom action:
 * `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 * `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. Defaults to `false`.
 
-##### Validation:
+##### Content validation:
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
 

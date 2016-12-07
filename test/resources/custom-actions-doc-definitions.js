@@ -1,5 +1,6 @@
 function() {
   function customAction(doc, oldDoc) {
+    // This function is defined as a stub by the test-helper module to make it easy to verify whether a custom action has been executed
     customActionStub(doc._id);
   }
 
