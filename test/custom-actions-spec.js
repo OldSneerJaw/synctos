@@ -1,7 +1,6 @@
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 var expect = require('expect.js');
-var simple = require('simple-mock');
 
 describe('Custom actions:', function() {
 

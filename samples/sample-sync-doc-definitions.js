@@ -342,6 +342,19 @@ function() {
           required: true,
           mustNotBeEmpty: true
         }
+      },
+      customActions: {
+        onAuthorizationSucceeded: function(doc, oldDoc) {
+          if (doc._deleted) {
+            // The document is being removed, so ensure the user has the document's "-delete" channel in addition to one of the
+            // channels defined in the document definition's "channels.remove" property
+            requireAccess(doc._id + '-delete');
+          } else if (oldDoc && !oldDoc._deleted) {
+            // The document is being replaced, so ensure the user has the document's "-replace" channel in addition to one of the
+            // channels defined in the document definition's "channels.replace" property
+            requireAccess(doc._id + '-replace');
+          }
+        }
       }
     },
 

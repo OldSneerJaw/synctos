@@ -1,5 +1,6 @@
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
+var expect = require('expect.js');
 
 describe('The sample-sync-doc-definitions sync function', function() {
   beforeEach(function() {
@@ -849,6 +850,15 @@ describe('The sample-sync-doc-definitions sync function', function() {
     var expectedDocType = 'notificationTransport';
     var expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
+    function verifyAuthorizationCustomAction(docId, action) {
+      expect(testHelper.requireAccess.callCount).to.be(2);
+      expect(testHelper.requireAccess.calls[1].arg).to.equal(docId + '-' + action);
+    }
+
+    function verifyNoAuthorizationCustomAction() {
+      expect(testHelper.requireAccess.callCount).to.be(1);
+    }
+
     it('successfully creates a valid notification transport document', function() {
       var doc = {
         _id: 'biz.82.notificationTransport.ABC',
@@ -857,6 +867,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       verifyDocumentCreated(expectedBasePrivilege, 82, doc);
+      verifyNoAuthorizationCustomAction();
     });
 
     it('cannot create a notification transport document when the properties are invalid', function() {
@@ -871,6 +882,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         doc,
         expectedDocType,
         [ errorFormatter.requiredValueViolation('type'), errorFormatter.mustNotBeEmptyViolation('recipient') ]);
+      verifyNoAuthorizationCustomAction();
     });
 
     it('successfully replaces a valid notification transport document', function() {
@@ -886,6 +898,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       verifyDocumentReplaced(expectedBasePrivilege, 38, doc, oldDoc);
+      verifyAuthorizationCustomAction(doc._id, 'replace');
     });
 
     it('cannot replace a notification transport document when the properties are invalid', function() {
@@ -906,6 +919,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
         oldDoc,
         expectedDocType,
         [ errorFormatter.typeConstraintViolation('type', 'string'), errorFormatter.requiredValueViolation('recipient') ]);
+      verifyAuthorizationCustomAction(doc._id, 'replace');
     });
 
     it('successfully deletes a notification transport document', function() {
@@ -916,6 +930,7 @@ describe('The sample-sync-doc-definitions sync function', function() {
       };
 
       verifyDocumentDeleted(expectedBasePrivilege, 14, oldDoc);
+      verifyAuthorizationCustomAction(oldDoc._id, 'delete');
     });
   });
 
