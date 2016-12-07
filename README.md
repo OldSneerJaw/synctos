@@ -2,7 +2,7 @@
 
 Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
 
-With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for [sync functions](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/sync-function-api-guide/index.html) that perform comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation the sync function will return a detailed error message that makes it easy for a client to figure out exactly what went wrong.
+With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for [sync functions](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/sync-function-api-guide/index.html) with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation, sync functions generated with synctos return specific, detailed error messages that make it easy for a client app developer to figure out exactly what went wrong. An included test helper module also provides a simple framework to write unit tests for generated sync functions.
 
 To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/get-started/sync-gateway-overview/index.html).
 
@@ -136,7 +136,7 @@ At the top level, the object contains a property for each document type that is 
       }
     }
 
-##### Document types:
+##### Document type definitions:
 
 Each document type is specified as an object with the following properties:
 
@@ -296,13 +296,34 @@ Or:
     ]
 ```
 
+* `customActions`: (optional) Defines custom actions to be executed at various events during the generated sync function's execution. Specified as an object where each property specifies a JavaScript function to be executed when the corresponding event is completed. In each case, the function accepts as parameters (1) the new document and (2) the old document that is being replaced/deleted (if any). In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be null or undefined and, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. Custom actions may call functions from the [standard sync function API](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html) (e.g. `requireAccess`, `requireRole`, `requireUser`, `access`, `role`, `channel`) and may indicate errors via the `throw` function to prevent the document from being written. The custom action events that are available:
+  * `onTypeIdentificationSucceeded`: Executed immediately after the document's type is determined and before checking authorization.
+  * `onAuthorizationSucceeded`: Executed immediately after the user is authorized to make the modification and before validating document contents. Not executed if user authorization is denied.
+  * `onValidationSucceeded`: Executed immediately after the document's contents are validated and before channels are assigned to users/roles and the document. Not executed if the document's contents are invalid.
+  * `onAccessAssignmentsSucceeded`: Executed immediately after channel access is assigned to users/roles and before channels are assigned to the document. Not executed if the document definition does not include an `accessAssignments` property.
+  * `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document is written.
+
+An example of an `onAuthorizationSucceeded` custom action:
+
+```
+    customActions: {
+      onAuthorizationSucceeded: function(doc, oldDoc) {
+        if (oldDoc && !oldDoc._deleted) {
+          // If the document is being replaced or deleted, ensure the user has the document's "-modify" channel in addition to one of the
+          // channels defined in the document definition's "channels" property
+          requireAccess(doc._id + '-modify');
+        }
+      }
+    }
+```
+
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files.
 * `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. Defaults to `false`.
 * `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 * `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 * `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. Defaults to `false`.
 
-##### Validation:
+##### Content validation:
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
 

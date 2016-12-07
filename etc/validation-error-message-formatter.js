@@ -220,6 +220,13 @@ exports.typeConstraintViolation = function(itemPath, expectedType) {
 };
 
 /**
+ * Formats a message for the error that occurs when the document type is unrecognized.
+ */
+exports.unknownDocumentType = function() {
+  return 'Unknown document type';
+};
+
+/**
  * Formats a message for the error that occurs when an unrecognized property is discovered on at the root level of a document or in an
  * object nested in a document.
  *

@@ -796,14 +796,34 @@ function synctos(doc, oldDoc) {
 
   var theDocDefinition = docDefinitions[theDocType];
 
+  if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onTypeIdentificationSucceeded) === 'function') {
+    theDocDefinition.customActions.onTypeIdentificationSucceeded(doc, oldDoc);
+  }
+
   authorize(doc, oldDoc, theDocDefinition);
+
+  if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onAuthorizationSucceeded) === 'function') {
+    theDocDefinition.customActions.onAuthorizationSucceeded(doc, oldDoc);
+  }
 
   validateDoc(doc, oldDoc, theDocDefinition, theDocType);
 
+  if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onValidationSucceeded) === 'function') {
+    theDocDefinition.customActions.onValidationSucceeded(doc, oldDoc);
+  }
+
   if (theDocDefinition.accessAssignments) {
     assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
+
+    if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onAccessAssignmentsSucceeded) === 'function') {
+      theDocDefinition.customActions.onAccessAssignmentsSucceeded(doc, oldDoc);
+    }
   }
 
   // Getting here means the document write is authorized and valid, and the appropriate channel(s) should now be assigned
   channel(getAllDocChannels(doc, oldDoc, theDocDefinition));
+
+  if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onDocumentChannelAssignmentSucceeded) === 'function') {
+    theDocDefinition.customActions.onDocumentChannelAssignmentSucceeded(doc, oldDoc);
+  }
 }

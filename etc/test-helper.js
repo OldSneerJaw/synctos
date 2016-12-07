@@ -13,6 +13,9 @@ var access;
 
 var syncFunction;
 
+// A function stub that can be used in document definitions for test cases to verify custom actions
+var customActionStub;
+
 var defaultWriteChannel = 'write';
 
 function init(syncFunctionPath) {
@@ -21,11 +24,15 @@ function init(syncFunctionPath) {
   eval('syncFunction = ' + fs.readFileSync(syncFunctionPath).toString());
   /*jslint evil: false */
 
-  requireAccess = simple.stub();
-  requireRole = simple.stub();
-  requireUser = simple.stub();
-  channel = simple.stub();
-  access = simple.stub();
+  exports.syncFunction = syncFunction;
+
+  exports.requireAccess = requireAccess = simple.stub();
+  exports.requireRole = requireRole = simple.stub();
+  exports.requireUser = requireUser = simple.stub();
+  exports.channel = channel = simple.stub();
+  exports.access = access = simple.stub();
+
+  exports.customActionStub = customActionStub = simple.stub();
 }
 
 function verifyRequireAccess(expectedChannels) {
@@ -266,12 +273,17 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   var validationErrorRegex = /^([^:]+):\s*(.+)$/;
 
   var exceptionMessageMatches = validationErrorRegex.exec(exception.forbidden);
-  expect(exceptionMessageMatches.length).to.be(3);
+  var actualErrorMessages;
+  if (exceptionMessageMatches) {
+    expect(exceptionMessageMatches.length).to.be(3);
 
-  var invalidDocMessage = exceptionMessageMatches[1].trim();
-  expect(invalidDocMessage).to.equal('Invalid ' + docType + ' document');
+    var invalidDocMessage = exceptionMessageMatches[1].trim();
+    expect(invalidDocMessage).to.equal('Invalid ' + docType + ' document');
 
-  var actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
+    actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
+  } else {
+    actualErrorMessages = [ exception.forbidden ];
+  }
 
   for (var expectedErrorIndex = 0; expectedErrorIndex < expectedErrorMessages.length; expectedErrorIndex++) {
     expect(actualErrorMessages).to.contain(expectedErrorMessages[expectedErrorIndex]);
