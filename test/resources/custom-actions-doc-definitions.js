@@ -70,6 +70,17 @@ function() {
       propertyValidators: { },
       customActions: { onAccessAssignmentsSucceeded: customAction('onAccessAssignmentsSucceeded') }
     },
+    emptyAccessAssignmentsDoc: {
+      typeFilter: function(doc, oldDoc) {
+        return doc._id === 'emptyAccessAssignmentsDoc';
+      },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
+      propertyValidators: { },
+      accessAssignments: [ ],
+      customActions: { onAccessAssignmentsSucceeded: customAction('onAccessAssignmentsSucceeded') }
+    },
     onDocChannelsAssignedDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'onDocChannelsAssignedDoc';

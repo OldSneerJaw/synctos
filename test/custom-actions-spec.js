@@ -127,6 +127,13 @@ describe('Custom actions:', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
       verifyCustomActionNotExecuted();
     });
+
+    it('does not execute a custom action if the document definition has an empty access assignments definition', function() {
+      var doc = { _id: 'emptyAccessAssignmentsDoc' };
+
+      testHelper.verifyDocumentCreated(doc, expectedAuthorization);
+      verifyCustomActionNotExecuted();
+    });
   });
 
   describe('the onDocumentChannelAssignmentSucceeded event', function() {

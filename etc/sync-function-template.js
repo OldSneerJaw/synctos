@@ -832,7 +832,7 @@ function synctos(doc, oldDoc) {
     theDocDefinition.customActions.onValidationSucceeded(doc, oldDoc, customActionMetadata);
   }
 
-  if (theDocDefinition.accessAssignments) {
+  if (theDocDefinition.accessAssignments && theDocDefinition.accessAssignments.length > 0) {
     customActionMetadata.accessAssignments = assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
 
     if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onAccessAssignmentsSucceeded) === 'function') {
