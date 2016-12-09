@@ -296,32 +296,44 @@ Or:
     ]
 ```
 
-* `customActions`: (optional) Defines custom actions to be executed at various events during the generated sync function's execution. Specified as an object where each property specifies a JavaScript function to be executed when the corresponding event is completed. In each case, the function accepts as parameters (1) the new document and (2) the old document that is being replaced/deleted (if any). In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be null or undefined and, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. Custom actions may call functions from the [standard sync function API](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html) (e.g. `requireAccess`, `requireRole`, `requireUser`, `access`, `role`, `channel`) and may indicate errors via the `throw` function to prevent the document from being written. The custom action events that are available:
-  * `onTypeIdentificationSucceeded`: Executed immediately after the document's type is determined and before checking authorization.
-  * `onAuthorizationSucceeded`: Executed immediately after the user is authorized to make the modification and before validating document contents. Not executed if user authorization is denied.
-  * `onValidationSucceeded`: Executed immediately after the document's contents are validated and before channels are assigned to users/roles and the document. Not executed if the document's contents are invalid.
-  * `onAccessAssignmentsSucceeded`: Executed immediately after channel access is assigned to users/roles and before channels are assigned to the document. Not executed if the document definition does not include an `accessAssignments` property.
-  * `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document is written.
-
-An example of an `onAuthorizationSucceeded` custom action:
-
-```
-    customActions: {
-      onAuthorizationSucceeded: function(doc, oldDoc) {
-        if (oldDoc && !oldDoc._deleted) {
-          // If the document is being replaced or deleted, ensure the user has the document's "-modify" channel in addition to one of the
-          // channels defined in the document definition's "channels" property
-          requireAccess(doc._id + '-modify');
-        }
-      }
-    }
-```
-
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files.
 * `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. Defaults to `false`.
 * `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 * `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
 * `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. Defaults to `false`.
+* `customActions`: (optional) Defines custom actions to be executed at various events during the generated sync function's execution. Specified as an object where each property specifies a JavaScript function to be executed when the corresponding event is completed. In each case, the function accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any) and (3) an object that is populated with metadata generated by each event. In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be null or undefined and, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. At each stage of the generated sync function's execution, the third parameter (the custom action metadata parameter) is augmented with properties that provide additional context to the custom action being executed. Custom actions may call functions from the [standard sync function API](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html) (e.g. `requireAccess`, `requireRole`, `requireUser`, `access`, `role`, `channel`) and may indicate errors via the `throw` statement to prevent the document from being written. The custom actions that are available, in the order their corresponding events occur:
+  1. `onTypeIdentificationSucceeded`: Executed immediately after the document's type is determined and before checking authorization. The custom action metadata object parameter contains the following properties:
+    * `documentTypeId`: The unique ID of the document type.
+    * `documentDefinition`: The full definition of the document type.
+  2. `onAuthorizationSucceeded`: Executed immediately after the user is authorized to make the modification and before validating document contents. Not executed if user authorization is denied. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+    * `authorization`: An object that indicates which channels, roles and users were used to authorize the current operation, as specified by the `channels`, `roles` and `users` list properties.
+  3. `onValidationSucceeded`: Executed immediately after the document's contents are validated and before channels are assigned to users/roles and the document. Not executed if the document's contents are invalid. The custom action metadata object parameter includes properties from all previous events but does not include any additional properties.
+  4. `onAccessAssignmentsSucceeded`: Executed immediately after channel access is assigned to users/roles and before channels are assigned to the document. Not executed if the document definition does not include an `accessAssignments` property. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+    * `accessAssignments`: A list that contains each of the access assignments that were applied, where each element's `usersAndRoles` property is a list of the users and roles and the `channels` property is a list of the channels that were granted to them. Note that, as per the sync function API, each role element's value is prefixed with "role:".
+  5. `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document revision is written. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+    * `documentChannels`: A list of channels that were assigned to the document.
+
+An example of an `onAuthorizationSucceeded` custom action that stores a property in the metadata object parameter for later use by the `onDocumentChannelAssignmentSucceeded` custom action:
+
+```
+    customActions: {
+      onAuthorizationSucceeded: function(doc, oldDoc, customActionMetadata) {
+        var extraChannel = customActionMetadata.documentTypeId + '-modify';
+        if (oldDoc && !oldDoc._deleted) {
+          // If the document is being replaced or deleted, ensure the user has the document type's "-modify" channel in addition to one of
+          // the channels from the document definition's "channels" property that was already authorized
+          requireAccess(extraChannel);
+        }
+
+        // Store the extra modification validation channel name for future use
+        customActionMetadata.extraModifyChannel = extraChannel;
+      },
+      onDocumentChannelAssignmentSucceeded: function(doc, oldDoc, customActionMetadata) {
+        // Ensure the extra modification validation channel is also assigned to the document
+        channel(customActionMetadata.extraModifyChannel);
+      }
+    }
+```
 
 ##### Content validation:
 
