@@ -1,27 +1,9 @@
 var expect = require('expect.js');
-var simple = require('simple-mock');
-var fs = require('fs');
 var testHelper = require('../etc/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
-
-// Load the contents of the sync function file into a global variable called syncFunction
-/*jslint evil: true */
-eval('var syncFunction = ' + fs.readFileSync('build/sync-functions/test-access-assignment-sync-function.js').toString());
-/*jslint evil: false */
-
-// Placeholders for stubbing built-in Sync Gateway support functions.
-// More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
-var requireAccess;
-var channel;
-var access;
 
 describe('User and role access assignment:', function() {
   beforeEach(function() {
     testHelper.init('build/sync-functions/test-access-assignment-sync-function.js');
-
-    requireAccess = simple.stub();
-    channel = simple.stub();
-    access = simple.stub();
   });
 
   describe('Static assignment of channels to users and roles', function() {
@@ -66,8 +48,8 @@ describe('User and role access assignment:', function() {
         invalidProperty: 'foobar'
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(access.callCount).to.be(0);
+      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(testHelper.access.callCount).to.be(0);
       });
     });
 
@@ -78,8 +60,8 @@ describe('User and role access assignment:', function() {
       };
       var oldDoc = { _id: 'staticAccessDoc' };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(access.callCount).to.be(0);
+      expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(testHelper.access.callCount).to.be(0);
       });
     });
   });
@@ -158,8 +140,8 @@ describe('User and role access assignment:', function() {
         invalidProperty: 'foobar'
       };
 
-      expect(syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(access.callCount).to.be(0);
+      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+        expect(testHelper.access.callCount).to.be(0);
       });
     });
 
@@ -172,8 +154,8 @@ describe('User and role access assignment:', function() {
       };
       var oldDoc = { _id: 'dynamicAccessDoc' };
 
-      expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(access.callCount).to.be(0);
+      expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        expect(testHelper.access.callCount).to.be(0);
       });
     });
   });
