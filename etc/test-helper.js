@@ -10,6 +10,7 @@ var requireRole;
 var requireUser;
 var channel;
 var access;
+var role;
 
 var syncFunction;
 
@@ -31,6 +32,7 @@ function init(syncFunctionPath) {
   exports.requireUser = requireUser = simple.stub();
   exports.channel = channel = simple.stub();
   exports.access = access = simple.stub();
+  exports.role = role = simple.stub();
 
   exports.customActionStub = customActionStub = simple.stub();
 }
@@ -102,8 +104,8 @@ function areUnorderedListsEqual(list1, list2) {
   return true;
 }
 
-function accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels) {
-  // Try to find an actual access assignment call that matches the expected call
+function channelAccessAssignmentCallExists(expectedUsersAndRoles, expectedChannels) {
+  // Try to find an actual channel access assignment call that matches the expected call
   for (var accessCallIndex = 0; accessCallIndex < access.callCount; accessCallIndex++) {
     var accessCall = access.calls[accessCallIndex];
     if (areUnorderedListsEqual(accessCall.args[0], expectedUsersAndRoles) && areUnorderedListsEqual(accessCall.args[1], expectedChannels)) {
@@ -114,57 +116,121 @@ function accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels) {
   return false;
 }
 
-function verifyAccessAssignments(expectedAccessAssignments) {
-  var assignmentIndex;
-  for (assignmentIndex = 0; assignmentIndex < expectedAccessAssignments.length; assignmentIndex++) {
-    var expectedAssignment = expectedAccessAssignments[assignmentIndex];
-
-    var expectedUsersAndRoles = [ ];
-    if (expectedAssignment.expectedUsers) {
-      if (expectedAssignment.expectedUsers instanceof Array) {
-        for (var userIndex = 0; userIndex < expectedAssignment.expectedUsers.length; userIndex++) {
-          expectedUsersAndRoles.push(expectedAssignment.expectedUsers[userIndex]);
-        }
-      } else {
-        expectedUsersAndRoles.push(expectedAssignment.expectedUsers);
-      }
-    }
-
-    if (expectedAssignment.expectedRoles) {
-      // The prefix "role:" must be applied to roles when calling the access function, as specified by
-      // http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/developing/index.html#programmatic-authorization
-      if (expectedAssignment.expectedRoles instanceof Array) {
-        for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
-          expectedUsersAndRoles.push('role:' + expectedAssignment.expectedRoles[roleIndex]);
-        }
-      } else {
-        expectedUsersAndRoles.push('role:' + expectedAssignment.expectedRoles);
-      }
-    }
-
-    var expectedChannels = [ ];
-    if (expectedAssignment.expectedChannels) {
-      if (expectedAssignment.expectedChannels instanceof Array) {
-        for (var channelIndex = 0; channelIndex < expectedAssignment.expectedChannels.length; channelIndex++) {
-          expectedChannels.push(expectedAssignment.expectedChannels[channelIndex]);
-        }
-      } else {
-        expectedChannels.push(expectedAssignment.expectedChannels);
-      }
-    }
-
-    if (!accessAssignmentCallExists(expectedUsersAndRoles, expectedChannels)) {
-      expect().fail(
-        'Missing expected call to assign channel access (' +
-        JSON.stringify(expectedChannels) +
-        ') to users and roles (' +
-        JSON.stringify(expectedUsersAndRoles) +
-        ')');
+function roleAccessAssignmentCallExists(expectedUsers, expectedRoles) {
+  // Try to find an actual role access assignment call that matches the expected call
+  for (var accessCallIndex = 0; accessCallIndex < role.callCount; accessCallIndex++) {
+    var accessCall = role.calls[accessCallIndex];
+    if (areUnorderedListsEqual(accessCall.args[0], expectedUsers) && areUnorderedListsEqual(accessCall.args[1], expectedRoles)) {
+      return true;
     }
   }
 
-  if (access.callCount !== assignmentIndex) {
-    expect().fail('Number of calls to assign channel access (' + access.callCount + ') does not match expected (' + assignmentIndex + ')');
+  return false;
+}
+
+function prefixRoleName(role) {
+  return 'role:' + role;
+}
+
+function verifyChannelAccessAssignment(expectedAssignment) {
+  var expectedUsersAndRoles = [ ];
+  if (expectedAssignment.expectedUsers) {
+    if (expectedAssignment.expectedUsers instanceof Array) {
+      for (var userIndex = 0; userIndex < expectedAssignment.expectedUsers.length; userIndex++) {
+        expectedUsersAndRoles.push(expectedAssignment.expectedUsers[userIndex]);
+      }
+    } else {
+      expectedUsersAndRoles.push(expectedAssignment.expectedUsers);
+    }
+  }
+
+  if (expectedAssignment.expectedRoles) {
+    // The prefix "role:" must be applied to roles when calling the access function, as specified by
+    // http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#access-username-channelname
+    if (expectedAssignment.expectedRoles instanceof Array) {
+      for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
+        expectedUsersAndRoles.push(prefixRoleName(expectedAssignment.expectedRoles[roleIndex]));
+      }
+    } else {
+      expectedUsersAndRoles.push(prefixRoleName(expectedAssignment.expectedRoles));
+    }
+  }
+
+  var expectedChannels = [ ];
+  if (expectedAssignment.expectedChannels) {
+    if (expectedAssignment.expectedChannels instanceof Array) {
+      for (var channelIndex = 0; channelIndex < expectedAssignment.expectedChannels.length; channelIndex++) {
+        expectedChannels.push(expectedAssignment.expectedChannels[channelIndex]);
+      }
+    } else {
+      expectedChannels.push(expectedAssignment.expectedChannels);
+    }
+  }
+
+  if (!channelAccessAssignmentCallExists(expectedUsersAndRoles, expectedChannels)) {
+    expect().fail(
+      'Missing expected call to assign channel access (' +
+      JSON.stringify(expectedChannels) +
+      ') to users and roles (' +
+      JSON.stringify(expectedUsersAndRoles) +
+      ')');
+  }
+}
+
+function verifyRoleAccessAssignment(expectedAssignment) {
+  var expectedUsers = [ ];
+  if (expectedAssignment.expectedUsers) {
+    if (expectedAssignment.expectedUsers instanceof Array) {
+      expectedUsers = expectedAssignment.expectedUsers;
+    } else {
+      expectedUsers.push(expectedAssignment.expectedUsers);
+    }
+  }
+
+  var expectedRoles = [ ];
+  if (expectedAssignment.expectedRoles) {
+    // The prefix "role:" must be applied to roles when calling the role function, as specified by
+    // http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#role-username-rolename
+    if (expectedAssignment.expectedRoles instanceof Array) {
+      for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
+        expectedRoles.push(prefixRoleName(expectedAssignment.expectedRoles[roleIndex]));
+      }
+    } else {
+      expectedRoles.push(prefixRoleName(expectedAssignment.expectedRoles));
+    }
+  }
+
+  if (!roleAccessAssignmentCallExists(expectedUsers, expectedRoles)) {
+    expect().fail(
+      'Missing expected call to assign role access (' +
+      JSON.stringify(expectedRoles) +
+      ') to users (' +
+      JSON.stringify(expectedUsers) +
+      ')');
+  }
+}
+
+function verifyAccessAssignments(expectedAccessAssignments) {
+  var expectedAccessCalls = 0;
+  var expectedRoleCalls = 0;
+  for (var assignmentIndex = 0; assignmentIndex < expectedAccessAssignments.length; assignmentIndex++) {
+    var expectedAssignment = expectedAccessAssignments[assignmentIndex];
+
+    if (expectedAssignment.expectedType === 'role') {
+      verifyRoleAccessAssignment(expectedAssignment);
+      expectedRoleCalls++;
+    } else if (expectedAssignment.expectedType === 'channel' || !(expectedAssignment.expectedType)) {
+      verifyChannelAccessAssignment(expectedAssignment);
+      expectedAccessCalls++;
+    }
+  }
+
+  if (access.callCount !== expectedAccessCalls) {
+    expect().fail('Number of calls to assign channel access (' + access.callCount + ') does not match expected (' + expectedAccessCalls + ')');
+  }
+
+  if (role.callCount !== expectedRoleCalls) {
+    expect().fail('Number of calls to assign role access (' + role.callCount + ') does not match expected (' + expectedRoleCalls + ')');
   }
 }
 

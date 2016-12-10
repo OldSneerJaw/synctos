@@ -2,11 +2,12 @@
   "extends": "../.jshintrc",
   "undef": false,
   "globals": {
-    "access": true,
-    "channel": true,
-    "customActionStub": true,
-    "requireAccess": true,
-    "requireRole": true,
-    "requireUser": true
+    "access": false,
+    "channel": false,
+    "customActionStub": false,
+    "requireAccess": false,
+    "requireRole": false,
+    "requireUser": false,
+    "role": false
   }
 }
