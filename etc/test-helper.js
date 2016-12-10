@@ -104,23 +104,11 @@ function areUnorderedListsEqual(list1, list2) {
   return true;
 }
 
-function channelAccessAssignmentCallExists(expectedUsersAndRoles, expectedChannels) {
-  // Try to find an actual channel access assignment call that matches the expected call
-  for (var accessCallIndex = 0; accessCallIndex < access.callCount; accessCallIndex++) {
-    var accessCall = access.calls[accessCallIndex];
-    if (areUnorderedListsEqual(accessCall.args[0], expectedUsersAndRoles) && areUnorderedListsEqual(accessCall.args[1], expectedChannels)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-function roleAccessAssignmentCallExists(expectedUsers, expectedRoles) {
-  // Try to find an actual role access assignment call that matches the expected call
-  for (var accessCallIndex = 0; accessCallIndex < role.callCount; accessCallIndex++) {
-    var accessCall = role.calls[accessCallIndex];
-    if (areUnorderedListsEqual(accessCall.args[0], expectedUsers) && areUnorderedListsEqual(accessCall.args[1], expectedRoles)) {
+function accessAssignmentCallExists(accessFunction, expectedParam1, expectedParam2) {
+  // Try to find an actual channel/role access assignment call that matches the expected call
+  for (var accessCallIndex = 0; accessCallIndex < accessFunction.callCount; accessCallIndex++) {
+    var accessCall = accessFunction.calls[accessCallIndex];
+    if (areUnorderedListsEqual(accessCall.args[0], expectedParam1) && areUnorderedListsEqual(accessCall.args[1], expectedParam2)) {
       return true;
     }
   }
@@ -167,7 +155,7 @@ function verifyChannelAccessAssignment(expectedAssignment) {
     }
   }
 
-  if (!channelAccessAssignmentCallExists(expectedUsersAndRoles, expectedChannels)) {
+  if (!accessAssignmentCallExists(access, expectedUsersAndRoles, expectedChannels)) {
     expect().fail(
       'Missing expected call to assign channel access (' +
       JSON.stringify(expectedChannels) +
@@ -200,7 +188,7 @@ function verifyRoleAccessAssignment(expectedAssignment) {
     }
   }
 
-  if (!roleAccessAssignmentCallExists(expectedUsers, expectedRoles)) {
+  if (!accessAssignmentCallExists(role, expectedUsers, expectedRoles)) {
     expect().fail(
       'Missing expected call to assign role access (' +
       JSON.stringify(expectedRoles) +
