@@ -179,6 +179,12 @@ function synctos(doc, oldDoc) {
       // None of the authorization methods (e.g. channels, roles, users) succeeded
       throw({ forbidden: 'missing channel access' });
     }
+
+    return {
+      channels: authorizedChannels,
+      roles: authorizedRoles,
+      users: authorizedUsers
+    };
   }
 
   // Constructs the fully qualified path of the item at the top of the given stack
@@ -742,6 +748,7 @@ function synctos(doc, oldDoc) {
   function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
     var effectiveOldDoc = getEffectiveOldDoc(oldDoc);
 
+    var effectiveAssignments = [ ];
     for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
       var definition = accessAssignmentDefinitions[assignmentIndex];
       var usersAndRoles = [ ];
@@ -760,7 +767,15 @@ function synctos(doc, oldDoc) {
       var channels = resolveCollectionDefinition(doc, effectiveOldDoc, definition.channels);
 
       access(usersAndRoles, channels);
+
+      effectiveAssignments.push({
+        type: 'channel',
+        usersAndRoles: usersAndRoles,
+        channels: channels
+      });
     }
+
+    return effectiveAssignments;
   }
 
   var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
@@ -796,34 +811,41 @@ function synctos(doc, oldDoc) {
 
   var theDocDefinition = docDefinitions[theDocType];
 
+  var customActionMetadata = {
+    documentTypeId: theDocType,
+    documentDefinition: theDocDefinition
+  };
+
   if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onTypeIdentificationSucceeded) === 'function') {
-    theDocDefinition.customActions.onTypeIdentificationSucceeded(doc, oldDoc);
+    theDocDefinition.customActions.onTypeIdentificationSucceeded(doc, oldDoc, customActionMetadata);
   }
 
-  authorize(doc, oldDoc, theDocDefinition);
+  customActionMetadata.authorization = authorize(doc, oldDoc, theDocDefinition);
 
   if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onAuthorizationSucceeded) === 'function') {
-    theDocDefinition.customActions.onAuthorizationSucceeded(doc, oldDoc);
+    theDocDefinition.customActions.onAuthorizationSucceeded(doc, oldDoc, customActionMetadata);
   }
 
   validateDoc(doc, oldDoc, theDocDefinition, theDocType);
 
   if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onValidationSucceeded) === 'function') {
-    theDocDefinition.customActions.onValidationSucceeded(doc, oldDoc);
+    theDocDefinition.customActions.onValidationSucceeded(doc, oldDoc, customActionMetadata);
   }
 
-  if (theDocDefinition.accessAssignments) {
-    assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
+  if (theDocDefinition.accessAssignments && theDocDefinition.accessAssignments.length > 0) {
+    customActionMetadata.accessAssignments = assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
 
     if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onAccessAssignmentsSucceeded) === 'function') {
-      theDocDefinition.customActions.onAccessAssignmentsSucceeded(doc, oldDoc);
+      theDocDefinition.customActions.onAccessAssignmentsSucceeded(doc, oldDoc, customActionMetadata);
     }
   }
 
   // Getting here means the document write is authorized and valid, and the appropriate channel(s) should now be assigned
-  channel(getAllDocChannels(doc, oldDoc, theDocDefinition));
+  var allDocChannels = getAllDocChannels(doc, oldDoc, theDocDefinition);
+  channel(allDocChannels);
+  customActionMetadata.documentChannels = allDocChannels;
 
   if (theDocDefinition.customActions && typeof(theDocDefinition.customActions.onDocumentChannelAssignmentSucceeded) === 'function') {
-    theDocDefinition.customActions.onDocumentChannelAssignmentSucceeded(doc, oldDoc);
+    theDocDefinition.customActions.onDocumentChannelAssignmentSucceeded(doc, oldDoc, customActionMetadata);
   }
 }

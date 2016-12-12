@@ -1,39 +1,55 @@
 function() {
-  function customAction(doc, oldDoc) {
-    // This function is defined as a stub by the test-helper module to make it easy to verify whether a custom action has been executed
-    customActionStub(doc._id);
+  function customAction(actionType) {
+    return function(doc, oldDoc, customActionMetadata) {
+      customActionMetadata.actionType = actionType;
+
+      // This function is defined as a stub by the test-helper module to make it easy to verify whether a custom action has been executed
+      customActionStub(doc, oldDoc, customActionMetadata);
+    };
   }
+
+  var channels = { write: 'write-channel' };
+  var authorizedRoles = { write: 'write-role' };
+  var authorizedUsers = { write: 'write-user' };
 
   return {
     onTypeIdentifiedDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'onTypeIdentifiedDoc';
       },
-      channels: { write: 'write' },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
       propertyValidators: { },
-      customActions: { onTypeIdentificationSucceeded: customAction }
+      customActions: { onTypeIdentificationSucceeded: customAction('onTypeIdentificationSucceeded') }
     },
     onAuthorizationDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'onAuthorizationDoc';
       },
-      channels: { write: 'write' },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
       propertyValidators: { },
-      customActions: { onAuthorizationSucceeded: customAction }
+      customActions: { onAuthorizationSucceeded: customAction('onAuthorizationSucceeded') }
     },
     onValidationDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'onValidationDoc';
       },
-      channels: { write: 'write' },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
       propertyValidators: { },
-      customActions: { onValidationSucceeded: customAction }
+      customActions: { onValidationSucceeded: customAction('onValidationSucceeded') }
     },
     onAccessAssignmentsDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'onAccessAssignmentsDoc';
       },
-      channels: { write: 'write' },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
       propertyValidators: { },
       accessAssignments: [
         {
@@ -42,23 +58,38 @@ function() {
           channels: 'channel1'
         }
       ],
-      customActions: { onAccessAssignmentsSucceeded: customAction }
+      customActions: { onAccessAssignmentsSucceeded: customAction('onAccessAssignmentsSucceeded') }
     },
     missingAccessAssignmentsDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'missingAccessAssignmentsDoc';
       },
-      channels: { write: 'write' },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
       propertyValidators: { },
-      customActions: { onAccessAssignmentsSucceeded: customAction }
+      customActions: { onAccessAssignmentsSucceeded: customAction('onAccessAssignmentsSucceeded') }
+    },
+    emptyAccessAssignmentsDoc: {
+      typeFilter: function(doc, oldDoc) {
+        return doc._id === 'emptyAccessAssignmentsDoc';
+      },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
+      propertyValidators: { },
+      accessAssignments: [ ],
+      customActions: { onAccessAssignmentsSucceeded: customAction('onAccessAssignmentsSucceeded') }
     },
     onDocChannelsAssignedDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'onDocChannelsAssignedDoc';
       },
-      channels: { write: 'write' },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
       propertyValidators: { },
-      customActions: { onDocumentChannelAssignmentSucceeded: customAction }
+      customActions: { onDocumentChannelAssignmentSucceeded: customAction('onDocumentChannelAssignmentSucceeded') }
     }
   };
 }
