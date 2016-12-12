@@ -270,19 +270,33 @@ Or:
     }
 ```
 
-* `accessAssignments`: (optional) Defines the channels to dynamically assign to users and/or roles when a document of the corresponding type is successfully created, replaced or deleted. It is specified as a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a dynamically-constructed list and accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`. An example:
+* `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created, replaced or deleted. It is specified as a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a dynamically-constructed list and accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`. The assignment types are specified as follows:
+  * Channel access assignments:
+    * `type`: May be either "channel", `null` or `undefined`.
+    * `channels`: The channels to assign to users and/or roles.
+    * `roles`: The roles to which to assign the channels.
+    * `users`: The users to which to assign the channels.
+  * Role access assignments:
+    * `type`: Must be "role".
+    * `roles`: The roles to assign to users.
+    * `users`: The users to which to assign the roles.
+
+An example of a mix of channel and role access assignments:
 
 ```
     accessAssignments: [
       {
+        type: 'role',
+        users: [ 'user3', 'user4' ],
+        roles: [ 'role1', 'role2' ]
+      },
+      {
+        type: 'channel',
         users: [ 'user1', 'user2' ],
         channels: [ 'channel1' ]
       },
       {
-        roles: [ 'role1', 'role2' ],
-        channels: [ 'channel2' ]
-      },
-      {
+        type: 'channel',
         users: function(doc, oldDoc) {
           return doc.users;
         },
@@ -309,7 +323,15 @@ Or:
     * `authorization`: An object that indicates which channels, roles and users were used to authorize the current operation, as specified by the `channels`, `roles` and `users` list properties.
   3. `onValidationSucceeded`: Executed immediately after the document's contents are validated and before channels are assigned to users/roles and the document. Not executed if the document's contents are invalid. The custom action metadata object parameter includes properties from all previous events but does not include any additional properties.
   4. `onAccessAssignmentsSucceeded`: Executed immediately after channel access is assigned to users/roles and before channels are assigned to the document. Not executed if the document definition does not include an `accessAssignments` property. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
-    * `accessAssignments`: A list that contains each of the access assignments that were applied, where each element's `usersAndRoles` property is a list of the users and roles and the `channels` property is a list of the channels that were granted to them. Note that, as per the sync function API, each role element's value is prefixed with "role:".
+    * `accessAssignments`: A list that contains each of the access assignments that were applied. Each element is an object that represents either a channel access assignment or a role access assignment depending on the value of its `type` property. The assignment types are specified as follows:
+      * Channel access assignments:
+        * `type`: Value of "channel".
+        * `channels`: A list of channels that were assigned to the users/roles.
+        * `usersAndRoles`: A list of the combined users and/or roles to which the channels were assigned. Note that, as per the sync function API, each role element's value is prefixed with "role:".
+      * Role access assignments:
+        * `type`: Value of "role".
+        * `roles`: A list of roles that were assigned to the users.
+        * `users`: A list of users to which the roles were assigned. Note that, as per the sync function API, each role element's value is prefixed with "role:".
   5. `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document revision is written. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
     * `documentChannels`: A list of channels that were assigned to the document.
 
