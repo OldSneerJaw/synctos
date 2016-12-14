@@ -796,7 +796,6 @@ function synctos(doc, oldDoc) {
     for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
       var definition = accessAssignmentDefinitions[assignmentIndex];
 
-      var effectiveAssignment = null;
       if (definition.type === 'role') {
         effectiveAssignments.push(assignRolesToUsers(doc, effectiveOldDoc, definition));
       } else if (definition.type === 'channel' || isValueNullOrUndefined(definition.type)) {
