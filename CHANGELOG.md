@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - [#25](https://github.com/Kashoo/synctos/issues/25): Support custom actions to be executed on a document type
+- [#61](https://github.com/Kashoo/synctos/issues/61): Support dynamic assignment of roles to users
 
 ## [1.4.0] - 2016-11-30
 ### Added

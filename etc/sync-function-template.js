@@ -744,35 +744,63 @@ function synctos(doc, oldDoc) {
     }
   }
 
-  // Assigns channels to users and roles according to the given access assignment definitions
+  // Transforms a role collection definition into a simple list and prefixes each element with "role:"
+  function resolveRoleCollectionDefinition(doc, oldDoc, rolesDefinition) {
+    return resolveCollectionDefinition(doc, oldDoc, rolesDefinition, 'role:');
+  }
+
+  // Assigns channel access to users/roles
+  function assignChannelsToUsersAndRoles(doc, oldDoc, accessAssignmentDefinition) {
+    var usersAndRoles = [ ];
+
+    var users = resolveCollectionDefinition(doc, oldDoc, accessAssignmentDefinition.users);
+    for (var userIndex = 0; userIndex < users.length; userIndex++) {
+      usersAndRoles.push(users[userIndex]);
+    }
+
+    var roles = resolveRoleCollectionDefinition(doc, oldDoc, accessAssignmentDefinition.roles);
+    for (var roleIndex = 0; roleIndex < roles.length; roleIndex++) {
+      usersAndRoles.push(roles[roleIndex]);
+    }
+
+    var channels = resolveCollectionDefinition(doc, oldDoc, accessAssignmentDefinition.channels);
+
+    access(usersAndRoles, channels);
+
+    return {
+      type: 'channel',
+      usersAndRoles: usersAndRoles,
+      channels: channels
+    };
+  }
+
+  // Assigns role access to users
+  function assignRolesToUsers(doc, oldDoc, accessAssignmentDefinition) {
+    var users = resolveCollectionDefinition(doc, oldDoc, accessAssignmentDefinition.users);
+    var roles = resolveRoleCollectionDefinition(doc, oldDoc, accessAssignmentDefinition.roles);
+
+    role(users, roles);
+
+    return {
+      type: 'role',
+      users: users,
+      roles: roles
+    };
+  }
+
+  // Assigns role access to users and/or channel access to users/roles according to the given access assignment definitions
   function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
     var effectiveOldDoc = getEffectiveOldDoc(oldDoc);
 
     var effectiveAssignments = [ ];
     for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
       var definition = accessAssignmentDefinitions[assignmentIndex];
-      var usersAndRoles = [ ];
 
-      var users = resolveCollectionDefinition(doc, effectiveOldDoc, definition.users);
-      for (var userIndex = 0; userIndex < users.length; userIndex++) {
-        usersAndRoles.push(users[userIndex]);
+      if (definition.type === 'role') {
+        effectiveAssignments.push(assignRolesToUsers(doc, effectiveOldDoc, definition));
+      } else if (definition.type === 'channel' || isValueNullOrUndefined(definition.type)) {
+        effectiveAssignments.push(assignChannelsToUsersAndRoles(doc, effectiveOldDoc, definition));
       }
-
-      // Role names must begin with the special token "role:" to distinguish them from users
-      var roles = resolveCollectionDefinition(doc, effectiveOldDoc, definition.roles, 'role:');
-      for (var roleIndex = 0; roleIndex < roles.length; roleIndex++) {
-        usersAndRoles.push(roles[roleIndex]);
-      }
-
-      var channels = resolveCollectionDefinition(doc, effectiveOldDoc, definition.channels);
-
-      access(usersAndRoles, channels);
-
-      effectiveAssignments.push({
-        type: 'channel',
-        usersAndRoles: usersAndRoles,
-        channels: channels
-      });
     }
 
     return effectiveAssignments;
@@ -840,7 +868,7 @@ function synctos(doc, oldDoc) {
     }
   }
 
-  // Getting here means the document write is authorized and valid, and the appropriate channel(s) should now be assigned
+  // Getting here means the document revision is authorized and valid, and the appropriate channel(s) should now be assigned
   var allDocChannels = getAllDocChannels(doc, oldDoc, theDocDefinition);
   channel(allDocChannels);
   customActionMetadata.documentChannels = allDocChannels;

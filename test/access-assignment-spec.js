@@ -9,17 +9,25 @@ describe('User and role access assignment:', function() {
   describe('Static assignment of channels to users and roles', function() {
     var expectedStaticAssignments = [
       {
+        expectedType: 'channel',
         expectedUsers: [ 'user2', 'user1', 'user4' ],
         expectedRoles: [ 'role2', 'role1' ],
         expectedChannels: [ 'channel1', 'channel2' ]
       },
       {
+        expectedType: 'channel',
         expectedUsers: 'user3',
         expectedChannels: 'channel3'
       },
       {
+        expectedType: 'channel',
         expectedRoles: 'role3',
         expectedChannels: 'channel4'
+      },
+      {
+        expectedType: 'role',
+        expectedUsers: 'user5',
+        expectedRoles: 'role4'
       }
     ];
 
@@ -74,17 +82,25 @@ describe('User and role access assignment:', function() {
     };
     var expectedDynamicAssignments = [
       {
+        expectedType: 'channel',
         expectedUsers: doc.users,
         expectedRoles: doc.roles,
         expectedChannels: [ doc._id + '-channel1', doc._id + '-channel2' ]
       },
       {
+        expectedType: 'channel',
         expectedUsers: doc.users,
         expectedChannels: [ doc._id + '-channel3' ]
       },
       {
+        expectedType: 'channel',
         expectedRoles: doc.roles,
         expectedChannels: [ doc._id + '-channel4' ]
+      },
+      {
+        expectedType: 'role',
+        expectedUsers: doc.users,
+        expectedRoles: doc.roles
       }
     ];
 
@@ -115,17 +131,25 @@ describe('User and role access assignment:', function() {
 
       var expectedDeleteAssignments = [
         {
+          expectedType: 'channel',
           expectedUsers: null,
           expectedChannels: [ doc._id + '-channel3' ]
         },
         {
+          expectedType: 'channel',
           expectedRoles: null,
           expectedChannels: [ doc._id + '-channel4' ]
         },
         {
+          expectedType: 'channel',
           expectedUsers: null,
           expectedRoles: null,
           expectedChannels: [ doc._id + '-channel2', doc._id + '-channel1' ]
+        },
+        {
+          expectedType: 'role',
+          expectedUsers: null,
+          expectedRoles: null
         }
       ];
 

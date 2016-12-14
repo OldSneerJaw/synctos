@@ -16,6 +16,7 @@
     "customActionStub": false,
     "requireAccess": false,
     "requireRole": false,
-    "requireUser": false
+    "requireUser": false,
+    "role": false
   }
 }
