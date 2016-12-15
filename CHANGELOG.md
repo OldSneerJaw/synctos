@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.5.0] - 2016-12-14
 ### Added
 - [#25](https://github.com/Kashoo/synctos/issues/25): Support custom actions to be executed on a document type
 - [#61](https://github.com/Kashoo/synctos/issues/61): Support dynamic assignment of roles to users
@@ -43,7 +43,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [#36](https://github.com/Kashoo/synctos/issues/36): Does not return a non-zero exit status when sync function generation fails
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/Kashoo/synctos/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Kashoo/synctos/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/Kashoo/synctos/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/Kashoo/synctos/compare/v1.2.0...v1.3.0
