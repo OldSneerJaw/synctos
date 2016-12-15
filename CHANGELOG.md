@@ -43,6 +43,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 - [#36](https://github.com/Kashoo/synctos/issues/36): Does not return a non-zero exit status when sync function generation fails
 
+## [1.0.0] - 2016-07-12
+First public release
+
 [Unreleased]: https://github.com/Kashoo/synctos/compare/v1.5.0...HEAD
 [1.5.0]: https://github.com/Kashoo/synctos/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Kashoo/synctos/compare/v1.3.1...v1.4.0
@@ -50,3 +53,4 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 [1.3.0]: https://github.com/Kashoo/synctos/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Kashoo/synctos/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Kashoo/synctos/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/Kashoo/synctos/compare/57a18bd...v1.0.0
