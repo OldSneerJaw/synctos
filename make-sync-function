@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var indent = require('indent.js');
 
 var errorStatus = 1;
 
@@ -19,13 +20,9 @@ outputFilename = process.argv[3];
 
 syncDocDefnDirectory = path.dirname(syncDocDefnFilename);
 
-var rawSyncDocDefn;
+var syncDocDefn;
 try {
-  rawSyncDocDefn = fs.readFileSync(syncDocDefnFilename, 'utf8');
-
-  // Normalize line endings and indent each line so that it matches the indentation of the sync function template into
-  // which it will be injected
-  rawSyncDocDefn = rawSyncDocDefn.trim().replace(/(?:\r\n)|(?:\r)|(?:\n)/g, function() { return '\n  '; });
+  syncDocDefn = fs.readFileSync(syncDocDefnFilename, 'utf8').trim();
 } catch (ex) {
   if (ex.code === 'ENOENT') {
     console.log('ERROR: Sync document definitions file does not exist');
@@ -37,8 +34,7 @@ try {
 }
 
 // Automatically replace instances of the "importDocumentDefinitionFragment" macro with the contents of the file that is specified by each
-var effectiveSyncDocDefn = rawSyncDocDefn
-  .replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
+var syncDocDefn = syncDocDefn.replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
   .replace(/importDocumentDefinitionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readDocDefinitionFragment);
 
 var syncFuncTemplate;
@@ -50,7 +46,13 @@ try {
   process.exit(errorStatus);
 }
 
-var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return effectiveSyncDocDefn; });
+// Load the document definitions into the sync function template
+var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
+
+// Normalize code block indentation, normalize line endings and replace blank lines with empty lines
+syncFunc = indent.indentJS(syncFunc, '  ')
+  .replace(/(?:\r\n)|(?:\r)/g, function() { return '\n'; })
+  .replace(/^\s+$/gm, function() { return '' });
 
 try {
   fs.writeFileSync(outputFilename, syncFunc, 'utf8');
