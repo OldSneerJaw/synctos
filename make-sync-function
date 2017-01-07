@@ -9,23 +9,7 @@ var scriptDir = path.dirname(process.argv[1]);
 
 // Verify the correct number of commandline params
 if (process.argv.length !== 4) {
-  var nodeBinary = path.basename(process.argv[0]);
-  var scriptName = path.basename(process.argv[1]);
-
-  console.log('A utility for creating structured sync functions for Couchbase Sync Gateway.\n');
-
-  console.log('Usage:  ' + scriptName + ' <sync_document_definitions_file> <output_file>');
-  console.log('   or:  ' + nodeBinary + ' ' + scriptName + ' <sync_document_definitions_file> <output_file>\n');
-
-  console.log('Arguments:');
-  console.log('    sync_document_definitions_file');
-  console.log('        Path to the JavaScript file that defines the document types to use in the sync function');
-  console.log('    output_file');
-  console.log('        Path to the file in which to output the sync function\n');
-
-  console.log('For example:  ' + scriptName + ' /path/to/my-sync-doc-definitions.js /path/to/my-new-sync-function.js\n');
-
-  console.log('See the README for more information.');
+  showUsage();
 
   process.exit(errorStatus);
 }
@@ -48,13 +32,14 @@ try {
   } else {
     console.log('ERROR: Unable to read the sync document definitions file: ' + ex);
   }
+
   process.exit(errorStatus);
 }
 
 // Automatically replace instances of the "importDocumentDefinitionFragment" macro with the contents of the file that is specified by each
 var effectiveSyncDocDefn = rawSyncDocDefn
-  .replace(/importDocumentDefinitionFragment\s*\(\s*"([^"]+)"\s*\)/g, importDocDefnFragment)
-  .replace(/importDocumentDefinitionFragment\s*\(\s*'([^']+)'\s*\)/g, importDocDefnFragment);
+  .replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
+  .replace(/importDocumentDefinitionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readDocDefinitionFragment);
 
 var syncFuncTemplate;
 try {
@@ -77,18 +62,41 @@ try {
 
 console.log('Sync function written to ' + outputFilename);
 
-function importDocDefnFragment(match, fragmentFilename) {
+function readDocDefinitionFragment(fullMatch, fragmentFilename) {
+  // The filename may have been defined with escape sequences (e.g. \\, \', \") in it, so unescape them
+  var sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, function(escapeSequence, escapedChar) { return escapedChar; });
+
   try {
     // Attempt to import the fragment file with a path that is relative to the main document definition file
-    return fs.readFileSync(syncDocDefnDirectory + '/' + fragmentFilename, 'utf8').trim();
+    return fs.readFileSync(syncDocDefnDirectory + '/' + sanitizedFragmentFilename, 'utf8').trim();
   } catch (ex) {
     try {
       // It's possible the fragment file path was not relative so try again as an absolute path
-      return fs.readFileSync(fragmentFilename, 'utf8').trim();
+      return fs.readFileSync(sanitizedFragmentFilename, 'utf8').trim();
     } catch (ex2) {
-      console.log('ERROR: Unable to read document definition fragment file "' + fragmentFilename + '": ' + ex2);
+      console.log('ERROR: Unable to read document definition fragment file "' + sanitizedFragmentFilename + '": ' + ex2);
 
       process.exit(errorStatus);
     }
   }
+}
+
+function showUsage() {
+  var nodeBinary = path.basename(process.argv[0]);
+  var scriptName = path.basename(process.argv[1]);
+
+  console.log('A utility for creating structured sync functions for Couchbase Sync Gateway.\n');
+
+  console.log('Usage:  ' + scriptName + ' <sync_document_definitions_file> <output_file>');
+  console.log('   or:  ' + nodeBinary + ' ' + scriptName + ' <sync_document_definitions_file> <output_file>\n');
+
+  console.log('Arguments:');
+  console.log('    sync_document_definitions_file');
+  console.log('        Path to the JavaScript file that defines the document types to use in the sync function');
+  console.log('    output_file');
+  console.log('        Path to the file in which to output the sync function\n');
+
+  console.log('For example:  ' + scriptName + ' /path/to/my-sync-doc-definitions.js /path/to/my-new-sync-function.js\n');
+
+  console.log('See the README for more information.');
 }
