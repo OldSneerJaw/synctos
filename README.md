@@ -32,9 +32,9 @@ Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
 ### Specifications
 
-In the case of either file format, the document definitions object must conform to the following specification. See the `samples/` directory for some example definitions.
+Document definitions must conform to the following specification. See the `samples/` directory for some example definitions.
 
-At the top level, the object contains a property for each document type that is to be supported by the Sync Gateway bucket. For example:
+At the top level, the document definitions object contains a property for each document type that is to be supported by the Sync Gateway bucket. For example:
 
     {
       myDocType1: {
@@ -418,7 +418,7 @@ Validation for complex data types, which allow for nesting of child properties a
 
 ### Definition file
 
-A document definitions file contains all the document types that belong to a single Sync Gateway bucket/database. Such a file can contain either a plain JavaScript object or a JavaScript function that returns the documents' definitions wrapped in an object.
+A document definitions file specifies all the document types that belong to a single Sync Gateway bucket/database. Such a file can contain either a plain JavaScript object or a JavaScript function that returns the documents' definitions wrapped in an object.
 
 For example, a document definitions file implemented as an object:
 
@@ -505,7 +505,7 @@ function() {
 }
 ```
 
-As demonstrated above, the advantage of defining a function rather than an object is that you may also define variables and functions that can be shared between document types at the cost of some brevity.
+As demonstrated above, the advantage of defining a function rather than an object is that you may also define variables and functions that can be shared between document types but at the cost of some brevity.
 
 ##### Modularity
 
