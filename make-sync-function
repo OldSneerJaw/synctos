@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var indent = require('indent.js');
 
 var errorStatus = 1;
 
@@ -9,6 +10,80 @@ var scriptDir = path.dirname(process.argv[1]);
 
 // Verify the correct number of commandline params
 if (process.argv.length !== 4) {
+  showUsage();
+
+  process.exit(errorStatus);
+}
+
+syncDocDefnFilename = process.argv[2];
+outputFilename = process.argv[3];
+
+syncDocDefnDirectory = path.dirname(syncDocDefnFilename);
+
+var syncDocDefn;
+try {
+  syncDocDefn = fs.readFileSync(syncDocDefnFilename, 'utf8').trim();
+} catch (ex) {
+  if (ex.code === 'ENOENT') {
+    console.log('ERROR: Sync document definitions file does not exist');
+  } else {
+    console.log('ERROR: Unable to read the sync document definitions file: ' + ex);
+  }
+
+  process.exit(errorStatus);
+}
+
+// Automatically replace instances of the "importDocumentDefinitionFragment" macro with the contents of the file that is specified by each
+var syncDocDefn = syncDocDefn.replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
+  .replace(/importDocumentDefinitionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readDocDefinitionFragment);
+
+var syncFuncTemplate;
+try {
+  syncFuncTemplate = fs.readFileSync(scriptDir + '/etc/sync-function-template.js', 'utf8');
+} catch (ex) {
+  console.log('ERROR: Unable to read the sync function template file: ' + ex);
+
+  process.exit(errorStatus);
+}
+
+// Load the document definitions into the sync function template
+var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
+
+// Normalize code block indentation, normalize line endings and replace blank lines with empty lines
+syncFunc = indent.indentJS(syncFunc, '  ')
+  .replace(/(?:\r\n)|(?:\r)/g, function() { return '\n'; })
+  .replace(/^\s+$/gm, function() { return '' });
+
+try {
+  fs.writeFileSync(outputFilename, syncFunc, 'utf8');
+} catch (ex) {
+  console.log('ERROR: Unable to write the sync function to the output file: ' + ex);
+
+  process.exit(errorStatus);
+}
+
+console.log('Sync function written to ' + outputFilename);
+
+function readDocDefinitionFragment(fullMatch, fragmentFilename) {
+  // The filename may have been defined with escape sequences (e.g. \\, \', \") in it, so unescape them
+  var sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, function(escapeSequence, escapedChar) { return escapedChar; });
+
+  try {
+    // Attempt to import the fragment file with a path that is relative to the main document definition file
+    return fs.readFileSync(syncDocDefnDirectory + '/' + sanitizedFragmentFilename, 'utf8').trim();
+  } catch (ex) {
+    try {
+      // It's possible the fragment file path was not relative so try again as an absolute path
+      return fs.readFileSync(sanitizedFragmentFilename, 'utf8').trim();
+    } catch (ex2) {
+      console.log('ERROR: Unable to read document definition fragment file "' + sanitizedFragmentFilename + '": ' + ex2);
+
+      process.exit(errorStatus);
+    }
+  }
+}
+
+function showUsage() {
   var nodeBinary = path.basename(process.argv[0]);
   var scriptName = path.basename(process.argv[1]);
 
@@ -26,46 +101,4 @@ if (process.argv.length !== 4) {
   console.log('For example:  ' + scriptName + ' /path/to/my-sync-doc-definitions.js /path/to/my-new-sync-function.js\n');
 
   console.log('See the README for more information.');
-
-  process.exit(errorStatus);
 }
-
-syncDocDefnFilename = process.argv[2];
-outputFilename = process.argv[3];
-
-var syncDocDefn;
-try {
-  syncDocDefn = fs.readFileSync(syncDocDefnFilename, 'utf8');
-
-  // Normalize line endings and indent each line so that it matches the indentation of the sync function template into
-  // which it will be injected
-  syncDocDefn = syncDocDefn.trim().replace(/(?:\r\n)|(?:\r)|(?:\n)/g, function() { return '\n  '; });
-} catch (ex) {
-  if (ex.code === 'ENOENT') {
-    console.log('ERROR: Sync document definitions file does not exist');
-  } else {
-    console.log('ERROR: Unable to read the sync document definitions file: ' + ex);
-  }
-  process.exit(errorStatus);
-}
-
-var syncFuncTemplate;
-try {
-  syncFuncTemplate = fs.readFileSync(scriptDir + '/etc/sync-function-template.js', 'utf8');
-} catch (ex) {
-  console.log('ERROR: Unable to read the sync function template file: ' + ex);
-
-  process.exit(errorStatus);
-}
-
-var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
-
-try {
-  fs.writeFileSync(outputFilename, syncFunc, 'utf8');
-} catch (ex) {
-  console.log('ERROR: Unable to write the sync function to the output file: ' + ex);
-
-  process.exit(errorStatus);
-}
-
-console.log('Sync function written to ' + outputFilename);

@@ -30,98 +30,11 @@ Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
 **NOTE**: Due to a [known issue](https://github.com/couchbase/sync_gateway/issues/1866) in Sync Gateway versions up to and including 1.2.1, when specifying a bucket/database's sync function in a configuration file as a multi-line string, you will have to be sure to escape any literal backslash characters in the sync function body. For example, if your sync function contains a regular expression like `new RegExp('\\w+')`, you will have to escape the backslashes when inserting the sync function into the configuration file so that it becomes `new RegExp('\\\\w+')`. The issue has been resolved in Sync Gateway version 1.3.0 and later.
 
-### Definition file
-
-A document definition file contains all the document types that belong to a single Sync Gateway bucket/database. A file can contain either a plain JavaScript object or a JavaScript function that returns the documents' definitions wrapped in an object.
-
-For example, a document definition file implemented as an object:
-
-    {
-      myDocType1: {
-        channels: {
-          view: 'view',
-          write: 'write'
-        },
-        typeFilter: function(doc, oldDoc, docType) {
-          return oldDoc ? oldDoc.type === docType : doc.type === docType;
-        },
-        propertyValidators: {
-          type: {
-            type: 'string',
-            required: true
-          },
-          myProp1: {
-            type: 'integer'
-          }
-        }
-      },
-      myDocType2: {
-        channels: {
-          view: 'view',
-          write: 'write'
-        },
-        typeFilter: function(doc, oldDoc, docType) {
-          return oldDoc ? oldDoc.type === docType : doc.type === docType;
-        },
-        propertyValidators: {
-          type: {
-            type: 'string',
-            required: true
-          },
-          myProp2: {
-            type: 'datetime'
-          }
-        }
-      }
-    }
-
-Or a functionally equivalent document definition file implemented as a function:
-
-    function() {
-      var sharedChannels = {
-        view: 'view',
-        write: 'write'
-      };
-      var typePropertyValidator = {
-        type: 'string',
-        required: true
-      };
-
-      function myDocTypeFilter(doc, oldDoc, docType) {
-        return oldDoc ? oldDoc.type === docType : doc.type === docType;
-      }
-
-      return {
-        myDocType1: {
-          channels: sharedChannels,
-          typeFilter: myDocTypeFilter,
-          propertyValidators: {
-            type: typePropertyValidator,
-            myProp1: {
-              type: 'integer'
-            }
-          }
-        },
-        myDocType2: {
-          channels: sharedChannels,
-          typeFilter: myDocTypeFilter,
-          propertyValidators: {
-            type: typePropertyValidator,
-            myProp2: {
-              type: 'datetime'
-            }
-          }
-        }
-      };
-    }
-
-As seen above, the advantage of defining a function rather than an object is that you may define variables and functions that can be shared between document types, but the choice is ultimately yours.
-
 ### Specifications
 
-In the case of either file format, the document definitions object must conform to the following specification. See the `samples/` directory for some example definitions.
+Document definitions must conform to the following specification. See the `samples/` directory for some example definitions.
 
-At the top level, the object contains a property for each document type that is to be supported by the Sync Gateway bucket. For example:
+At the top level, the document definitions object contains a property for each document type that is to be supported by the Sync Gateway bucket. For example:
 
     {
       myDocType1: {
@@ -502,6 +415,157 @@ Validation for complex data types, which allow for nesting of child properties a
       }
     }
 ```
+
+### Definition file
+
+A document definitions file specifies all the document types that belong to a single Sync Gateway bucket/database. Such a file can contain either a plain JavaScript object or a JavaScript function that returns the documents' definitions wrapped in an object.
+
+For example, a document definitions file implemented as an object:
+
+```
+{
+  myDocType1: {
+    channels: {
+      view: 'view',
+      write: 'write'
+    },
+    typeFilter: function(doc, oldDoc, docType) {
+      return oldDoc ? oldDoc.type === docType : doc.type === docType;
+    },
+    propertyValidators: {
+      type: {
+        type: 'string',
+        required: true
+      },
+      myProp1: {
+        type: 'integer'
+      }
+    }
+  },
+  myDocType2: {
+    channels: {
+      view: 'view',
+      write: 'write'
+    },
+    typeFilter: function(doc, oldDoc, docType) {
+      return oldDoc ? oldDoc.type === docType : doc.type === docType;
+    },
+    propertyValidators: {
+      type: {
+        type: 'string',
+        required: true
+      },
+      myProp2: {
+        type: 'datetime'
+      }
+    }
+  }
+}
+```
+
+Or a functionally equivalent document definitions file implemented as a function:
+
+```
+function() {
+  var sharedChannels = {
+    view: 'view',
+    write: 'write'
+  };
+  var typePropertyValidator = {
+    type: 'string',
+    required: true
+  };
+
+  function myDocTypeFilter(doc, oldDoc, docType) {
+    return oldDoc ? oldDoc.type === docType : doc.type === docType;
+  }
+
+  return {
+    myDocType1: {
+      channels: sharedChannels,
+      typeFilter: myDocTypeFilter,
+      propertyValidators: {
+        type: typePropertyValidator,
+        myProp1: {
+          type: 'integer'
+        }
+      }
+    },
+    myDocType2: {
+      channels: sharedChannels,
+      typeFilter: myDocTypeFilter,
+      propertyValidators: {
+        type: typePropertyValidator,
+        myProp2: {
+          type: 'datetime'
+        }
+      }
+    }
+  };
+}
+```
+
+As demonstrated above, the advantage of defining a function rather than an object is that you may also define variables and functions that can be shared between document types but at the cost of some brevity.
+
+##### Modularity
+
+Document definitions are also modular. By invoking the `importDocumentDefinitionFragment` macro, the contents of external files can be imported into the main document definitions file. For example, each individual document definition from the example above can be specified as a fragment in its own separate file:
+
+* `my-doc-type1.js`:
+
+```
+    {
+      channels: sharedChannels,
+      typeFilter: myDocTypeFilter,
+      propertyValidators: {
+        type: typePropertyValidator,
+        myProp1: {
+          type: 'integer'
+        }
+      }
+    }
+```
+
+* `my-doc-type2.js`:
+
+```
+    {
+      channels: sharedChannels,
+      typeFilter: myDocTypeFilter,
+      propertyValidators: {
+        type: typePropertyValidator,
+        myProp2: {
+          type: 'datetime'
+        }
+      }
+    }
+```
+
+And then each fragment can be imported into the main document definitions file:
+
+```
+function() {
+  var sharedChannels = {
+    view: 'view',
+    write: 'write'
+  };
+  var typePropertyValidator = {
+    type: 'string',
+    required: true
+  };
+
+  function myDocTypeFilter(doc, oldDoc, docType) {
+    return oldDoc ? oldDoc.type === docType : doc.type === docType;
+  }
+
+  return {
+    myDocType1: importDocumentDefinitionFragment('my-doc-type1-fragment.js'),
+    myDocType2: importDocumentDefinitionFragment('my-doc-type2-fragment.js')
+  };
+}
+```
+
+As you can see, the fragments can also reference functions (e.g. `myDocTypeFilter`) and variables (e.g. `sharedChannels`) that were defined in the main document definitions file. Organizing document definitions in this manner helps to keep configuration manageable.
 
 # Testing
 
