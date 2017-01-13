@@ -567,6 +567,13 @@ function() {
 
 As you can see, the fragments can also reference functions (e.g. `myDocTypeFilter`) and variables (e.g. `sharedChannels`) that were defined in the main document definitions file. Organizing document definitions in this manner helps to keep configuration manageable.
 
+### Helper functions
+
+Document definitions have access to some useful predefined functions that can help to reduce code duplication for common operations:
+
+* `isDocumentMissingOrDeleted(candidate)`: Determines whether the given `candidate` document is either missing (i.e. `null` or `undefined`) or deleted (i.e. its `_deleted` property is `true`). Useful in cases where, for example, the old document (i.e. `oldDoc` parameter) is non-existant or deleted and you want to treat both cases as equivalent.
+* `isValueNullOrUndefined(value)`: Determines whether the given `value` parameter is either `null` or `undefined`. In many cases, it is useful to treat both states the same.
+
 # Testing
 
 The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`etc/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.

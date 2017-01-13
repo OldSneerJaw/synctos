@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - [#66](https://github.com/Kashoo/synctos/issues/66): Modular document definition files
+- [#69](https://github.com/Kashoo/synctos/issues/69): Helper function to determine whether a document is missing or deleted
 
 ## [1.5.0] - 2016-12-14
 ### Added
