@@ -25,6 +25,11 @@ function synctos(doc, oldDoc) {
     return typeof(value) === 'undefined' || value === null;
   }
 
+  // Whether the given document is missing/nonexistant (i.e. null or undefined) or deleted (its "_deleted" property is true)
+  function isDocumentMissingOrDeleted(candidate) {
+    return isValueNullOrUndefined(candidate) || candidate._deleted;
+  }
+
   // A type filter that matches on the document's type property
   function simpleTypeFilter(doc, oldDoc, currentDocType) {
     if (oldDoc) {
@@ -41,7 +46,7 @@ function synctos(doc, oldDoc) {
   // Retrieves the old doc's effective value. If it is null, undefined or its "_deleted" property is true, returns null. Otherwise, returns
   // the value of the "oldDoc" parameter.
   function getEffectiveOldDoc(oldDoc) {
-    return (oldDoc && !(oldDoc._deleted)) ? oldDoc : null;
+    return !isDocumentMissingOrDeleted(oldDoc) ? oldDoc : null;
   }
 
   // A document definition may define its authorizations (channels, roles or users) for each operation type (view, add, replace, delete or
@@ -105,7 +110,7 @@ function synctos(doc, oldDoc) {
     if (doc._deleted && authorizationMap.remove) {
       writeAuthorizationFound = true;
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.remove);
-    } else if (oldDoc && !oldDoc._deleted && authorizationMap.replace) {
+    } else if (!isDocumentMissingOrDeleted(oldDoc) && authorizationMap.replace) {
       writeAuthorizationFound = true;
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.replace);
     } else if (authorizationMap.add) {
@@ -248,7 +253,7 @@ function synctos(doc, oldDoc) {
   }
 
   function validateImmutableDoc(doc, oldDoc, docDefinition, validationErrors) {
-    if (oldDoc && !(oldDoc._deleted)) {
+    if (!isDocumentMissingOrDeleted(oldDoc)) {
       if (docDefinition.immutable) {
         validationErrors.push('documents of this type cannot be replaced or deleted');
       } else if (doc._deleted) {
@@ -448,7 +453,7 @@ function synctos(doc, oldDoc) {
   }
 
   function validateImmutable(doc, oldDoc, itemStack, validationErrors, onlyEnforceIfHasValue) {
-    if (oldDoc && !(oldDoc._deleted)) {
+    if (!isDocumentMissingOrDeleted(oldDoc)) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var itemValue = currentItemEntry.itemValue;
       var oldItemValue = currentItemEntry.oldItemValue;
