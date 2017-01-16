@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - [#66](https://github.com/Kashoo/synctos/issues/66): Modular document definition files
 - [#69](https://github.com/Kashoo/synctos/issues/69): Helper function to determine whether a document is missing or deleted
+- [#72](https://github.com/Kashoo/synctos/issues/72): New property validation type for type identifier properties
 
 ## [1.5.0] - 2016-12-14
 ### Added

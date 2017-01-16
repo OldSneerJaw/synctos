@@ -416,6 +416,19 @@ Validation for complex data types, which allow for nesting of child properties a
     }
 ```
 
+The following predefined property validators may also be useful:
+
+* `typeIdValidator`: A property validator that is suitable for application to the property that specifies the type of a document. Its constraints include ensuring the value is a string, is neither null nor undefined, is not an empty string and cannot be modified. An example:
+
+```
+propertyValidators: {
+  type: typeIdValidator,
+  foobar: {
+    type: 'string'
+  }
+}
+```
+
 ### Definition file
 
 A document definitions file specifies all the document types that belong to a single Sync Gateway bucket/database. Such a file can contain either a plain JavaScript object or a JavaScript function that returns the documents' definitions wrapped in an object.
@@ -433,10 +446,7 @@ For example, a document definitions file implemented as an object:
       return oldDoc ? oldDoc.type === docType : doc.type === docType;
     },
     propertyValidators: {
-      type: {
-        type: 'string',
-        required: true
-      },
+      type: typeIdValidator,
       myProp1: {
         type: 'integer'
       }
@@ -451,10 +461,7 @@ For example, a document definitions file implemented as an object:
       return oldDoc ? oldDoc.type === docType : doc.type === docType;
     },
     propertyValidators: {
-      type: {
-        type: 'string',
-        required: true
-      },
+      type: typeIdValidator,
       myProp2: {
         type: 'datetime'
       }
@@ -471,10 +478,6 @@ function() {
     view: 'view',
     write: 'write'
   };
-  var typePropertyValidator = {
-    type: 'string',
-    required: true
-  };
 
   function myDocTypeFilter(doc, oldDoc, docType) {
     return oldDoc ? oldDoc.type === docType : doc.type === docType;
@@ -485,7 +488,7 @@ function() {
       channels: sharedChannels,
       typeFilter: myDocTypeFilter,
       propertyValidators: {
-        type: typePropertyValidator,
+        type: typeIdValidator,
         myProp1: {
           type: 'integer'
         }
@@ -495,7 +498,7 @@ function() {
       channels: sharedChannels,
       typeFilter: myDocTypeFilter,
       propertyValidators: {
-        type: typePropertyValidator,
+        type: typeIdValidator,
         myProp2: {
           type: 'datetime'
         }
@@ -518,7 +521,7 @@ Document definitions are also modular. By invoking the `importDocumentDefinition
       channels: sharedChannels,
       typeFilter: myDocTypeFilter,
       propertyValidators: {
-        type: typePropertyValidator,
+        type: typeIdValidator,
         myProp1: {
           type: 'integer'
         }
@@ -533,7 +536,7 @@ Document definitions are also modular. By invoking the `importDocumentDefinition
       channels: sharedChannels,
       typeFilter: myDocTypeFilter,
       propertyValidators: {
-        type: typePropertyValidator,
+        type: typeIdValidator,
         myProp2: {
           type: 'datetime'
         }
@@ -548,10 +551,6 @@ function() {
   var sharedChannels = {
     view: 'view',
     write: 'write'
-  };
-  var typePropertyValidator = {
-    type: 'string',
-    required: true
   };
 
   function myDocTypeFilter(doc, oldDoc, docType) {
@@ -569,7 +568,7 @@ As you can see, the fragments can also reference functions (e.g. `myDocTypeFilte
 
 ### Helper functions
 
-Document definitions have access to some useful predefined functions that can help to reduce code duplication for common operations:
+Custom code (e.g. type filters, custom validation functions, custom actions) within document definitions have access to some useful predefined functions for common operations:
 
 * `isDocumentMissingOrDeleted(candidate)`: Determines whether the given `candidate` document is either missing (i.e. `null` or `undefined`) or deleted (i.e. its `_deleted` property is `true`). Useful in cases where, for example, the old document (i.e. `oldDoc` parameter) is non-existant or deleted and you want to treat both cases as equivalent.
 * `isValueNullOrUndefined(value)`: Determines whether the given `value` parameter is either `null` or `undefined`. In many cases, it is useful to treat both states the same.
