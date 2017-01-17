@@ -853,6 +853,11 @@ function synctos(doc, oldDoc) {
 
   var theDocDefinition = docDefinitions[theDocType];
 
+  // Ensure that, if the document type uses the simple type filter, it supports the "type" property
+  if (theDocDefinition.typeFilter === simpleTypeFilter && isValueNullOrUndefined(theDocDefinition.propertyValidators.type)) {
+    theDocDefinition.propertyValidators.type = typeIdValidator;
+  }
+
   var customActionMetadata = {
     documentTypeId: theDocType,
     documentDefinition: theDocDefinition

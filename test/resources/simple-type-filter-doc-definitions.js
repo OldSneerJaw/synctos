@@ -1,5 +1,5 @@
 {
-  myDoc: {
+  myExplicitTypeValidatorDoc: {
     channels: { write: 'write' },
     typeFilter: simpleTypeFilter,
     propertyValidators: {
@@ -7,5 +7,10 @@
         type: 'string'
       }
     }
+  },
+  myImplicitTypeValidatorDoc: {
+    channels: { write: 'write' },
+    typeFilter: simpleTypeFilter,
+    propertyValidators: { }
   }
 }
