@@ -33,7 +33,7 @@ function synctos(doc, oldDoc) {
   // A property validator that is suitable for use on type identifier properties. Ensures the value is a string, is neither null nor
   // undefined, is not an empty string and cannot be modified.
   var typeIdValidator = {
-    type: "string",
+    type: 'string',
     required: true,
     mustNotBeEmpty: true,
     immutable: true
