@@ -30,16 +30,25 @@ function synctos(doc, oldDoc) {
     return isValueNullOrUndefined(candidate) || candidate._deleted;
   }
 
+  // A property validator that is suitable for use on type identifier properties. Ensures the value is a string, is neither null nor
+  // undefined, is not an empty string and cannot be modified.
+  var typeIdValidator = {
+    type: 'string',
+    required: true,
+    mustNotBeEmpty: true,
+    immutable: true
+  };
+
   // A type filter that matches on the document's type property
-  function simpleTypeFilter(doc, oldDoc, currentDocType) {
+  function simpleTypeFilter(doc, oldDoc, candidateDocType) {
     if (oldDoc) {
       if (doc._deleted) {
-        return oldDoc.type === currentDocType;
+        return oldDoc.type === candidateDocType;
       } else {
-        return doc.type === oldDoc.type && oldDoc.type === currentDocType;
+        return doc.type === oldDoc.type && oldDoc.type === candidateDocType;
       }
     } else {
-      return doc.type === currentDocType;
+      return doc.type === candidateDocType;
     }
   }
 
