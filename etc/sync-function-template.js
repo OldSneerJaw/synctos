@@ -429,6 +429,13 @@ function synctos(doc, oldDoc) {
             validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with no time or time zone components');
           }
           break;
+        case 'enum':
+          if (!(validator.predefinedValues instanceof Array)) {
+            validationErrors.push('item "' + buildItemPath(itemStack) + '" belongs to an enum that has no predefined values');
+          } else if (validator.predefinedValues.indexOf(itemValue) < 0) {
+            validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + validator.predefinedValues.toString());
+          }
+          break;
         case 'object':
           if (typeof itemValue !== 'object' || itemValue instanceof Array) {
             validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object');
