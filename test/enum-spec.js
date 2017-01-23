@@ -33,7 +33,7 @@ describe('Enum validation type', function() {
     testHelper.verifyDocumentNotCreated(
       doc,
       'enumDoc',
-      errorFormatter.enumPredefinedValueConstraint('enumProp', [ 'value1', 2 ]));
+      errorFormatter.enumPredefinedValueViolation('enumProp', [ 'value1', 2 ]));
   });
 
   it('rejects an integer value that is not in the list of predefined values', function() {
@@ -45,7 +45,7 @@ describe('Enum validation type', function() {
     testHelper.verifyDocumentNotCreated(
       doc,
       'enumDoc',
-      errorFormatter.enumPredefinedValueConstraint('enumProp', [ 'value1', 2 ]));
+      errorFormatter.enumPredefinedValueViolation('enumProp', [ 'value1', 2 ]));
   });
 
   it('rejects a value when the property does not declare a list of predefined values', function() {

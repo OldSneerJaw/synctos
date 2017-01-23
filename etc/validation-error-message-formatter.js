@@ -45,7 +45,7 @@ exports.datetimeFormatInvalid = function(itemPath) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[3].enumProp")
  * @param {(string[]|integer[])} expectedPredefinedValues A list of predefined values that are allowed for the item in question
  */
-exports.enumPredefinedValueConstraint = function(itemPath, expectedPredefinedValues) {
+exports.enumPredefinedValueViolation = function(itemPath, expectedPredefinedValues) {
   return 'item "' + itemPath + '" must be one of the predefined values: ' + expectedPredefinedValues.toString();
 };
 
