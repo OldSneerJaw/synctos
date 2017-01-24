@@ -46,9 +46,9 @@ try {
   process.exit(errorStatus);
 }
 
-// Automatically replace each instance of the "includeSyncFunctionFragment" macro with the contents of the file that is specified
-syncFuncTemplate = syncFuncTemplate.replace(/includeSyncFunctionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readSyncFunctionFragment)
-  .replace(/includeSyncFunctionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readSyncFunctionFragment);
+// Automatically replace each instance of the "importSyncFunctionFragment" macro with the contents of the file that is specified
+syncFuncTemplate = syncFuncTemplate.replace(/importSyncFunctionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readSyncFunctionFragment)
+  .replace(/importSyncFunctionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readSyncFunctionFragment);
 
 // Load the document definitions into the sync function template
 var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });

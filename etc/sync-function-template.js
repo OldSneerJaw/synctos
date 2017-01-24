@@ -40,13 +40,13 @@ function synctos(doc, oldDoc) {
   }
 
   // Load the document authorization module
-  var authorizationModule = includeSyncFunctionFragment('sync-function-authorization-module.js')();
+  var authorizationModule = importSyncFunctionFragment('sync-function-authorization-module.js')();
 
   // Load the document validation module
-  var validationModule = includeSyncFunctionFragment('sync-function-validation-module.js')();
+  var validationModule = importSyncFunctionFragment('sync-function-validation-module.js')();
 
   // Load the access assignment module
-  var accessAssignmentModule = includeSyncFunctionFragment('sync-function-access-assignment-module.js')();
+  var accessAssignmentModule = importSyncFunctionFragment('sync-function-access-assignment-module.js')();
 
   var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
 
