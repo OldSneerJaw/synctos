@@ -246,6 +246,13 @@ function() {
             validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with no time or time zone components');
           }
           break;
+        case 'enum':
+          if (!(validator.predefinedValues instanceof Array)) {
+            validationErrors.push('item "' + buildItemPath(itemStack) + '" belongs to an enum that has no predefined values');
+          } else if (validator.predefinedValues.indexOf(itemValue) < 0) {
+            validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + validator.predefinedValues.toString());
+          }
+          break;
         case 'object':
           if (typeof itemValue !== 'object' || itemValue instanceof Array) {
             validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object');
@@ -257,13 +264,7 @@ function() {
           validateArray(doc, oldDoc, validator.arrayElementsValidator, itemStack, validationErrors);
           break;
         case 'hashtable':
-          validateHashtable(
-            doc,
-            oldDoc,
-            validator.hashtableKeysValidator,
-            validator.hashtableValuesValidator,
-            itemStack,
-            validationErrors);
+          validateHashtable(doc, oldDoc, validator, itemStack, validationErrors);
           break;
         case 'attachmentReference':
           validateAttachmentRef(doc, oldDoc, validator, itemStack, validationErrors);
@@ -431,20 +432,24 @@ function() {
     }
   }
 
-  function validateHashtable(doc, oldDoc, keyValidator, valueValidator, itemStack, validationErrors) {
+  function validateHashtable(doc, oldDoc, validator, itemStack, validationErrors) {
+    var keyValidator = validator.hashtableKeysValidator;
+    var valueValidator = validator.hashtableValuesValidator;
     var currentItemEntry = itemStack[itemStack.length - 1];
     var itemValue = currentItemEntry.itemValue;
     var oldItemValue = currentItemEntry.oldItemValue;
+    var hashtablePath = buildItemPath(itemStack);
 
     if (typeof itemValue !== 'object' || itemValue instanceof Array) {
       validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object/hashtable');
     } else {
+      var size = 0;
       for (var elementKey in itemValue) {
+        size++;
         var elementValue = itemValue[elementKey];
 
         var elementName = '[' + elementKey + ']';
         if (keyValidator) {
-          var hashtablePath = buildItemPath(itemStack);
           var fullKeyPath = hashtablePath ? hashtablePath + elementName : elementName;
           if (typeof elementKey !== 'string') {
             validationErrors.push('hashtable key "' + fullKeyPath + '" is not a string');
@@ -479,6 +484,14 @@ function() {
 
           itemStack.pop();
         }
+      }
+
+      if (!isValueNullOrUndefined(validator.maximumSize) && size > validator.maximumSize) {
+        validationErrors.push('hashtable "' + hashtablePath + '" must not be larger than ' + validator.maximumSize + ' elements');
+      }
+
+      if (!isValueNullOrUndefined(validator.minimumSize) && size < validator.minimumSize) {
+        validationErrors.push('hashtable "' + hashtablePath + '" must not be smaller than ' + validator.minimumSize + ' elements');
       }
     }
   }

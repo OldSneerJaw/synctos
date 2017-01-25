@@ -302,6 +302,8 @@ Validation for simple data types:
   * `minimumValueExclusive`: Reject dates that are less than or equal to this. No restriction by default.
   * `maximumValue`: Reject dates that are greater than this. No restriction by default.
   * `maximumValueExclusive`: Reject dates that are greater than or equal to this. No restriction by default.
+* `enum`: The value must be one of the specified predefined string and/or integer values. Additional parameters:
+  * `predefinedValues`: A list of strings and/or integers that are to be accepted. If this parameter is omitted from an `enum` property's configuration, that property will not accept a value of any kind.
 * `attachmentReference`: The value is the name of one of the document's file attachments. Note that, because the addition of an attachment is often a separate Sync Gateway API operation from the creation/replacement of the associated document, this validation type is only applied if the attachment is actually present in the document. However, since the sync function is run twice in such situations (i.e. once when the document is created/replaced and once when the attachment is created/replaced), the validation will be performed eventually. Additional parameters:
   * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). No restriction by default.
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). No restriction by default.
@@ -347,6 +349,8 @@ Validation for complex data types, which allow for nesting of child properties a
 ```
 
 * `hashtable`: An object/hash that, unlike the `object` type, does not declare the names of the properties it supports and may optionally define a single validator that is applied to all of its element values. Additional parameters:
+  * `minimumSize`: The minimum number of elements allowed in the hashtable. Unconstrained by default.
+  * `maximumSize`: The maximum number of elements allowed in the hashtable. Unconstrained by default.
   * `hashtableKeysValidator`: The validation that is applied to each of the keys in the object/hash. Undefined by default. Additional parameters:
     * `mustNotBeEmpty`: If `true`, empty key strings are not allowed. Defaults to `false`.
     * `regexPattern`: A regular expression pattern that must be satisfied for key strings to be accepted. Undefined by default.
