@@ -349,6 +349,8 @@ Validation for complex data types, which allow for nesting of child properties a
 ```
 
 * `hashtable`: An object/hash that, unlike the `object` type, does not declare the names of the properties it supports and may optionally define a single validator that is applied to all of its element values. Additional parameters:
+  * `minimumSize`: The minimum number of elements allowed in the hashtable. Unconstrained by default.
+  * `maximumSize`: The maximum number of elements allowed in the hashtable. Unconstrained by default.
   * `hashtableKeysValidator`: The validation that is applied to each of the keys in the object/hash. Undefined by default. Additional parameters:
     * `mustNotBeEmpty`: If `true`, empty key strings are not allowed. Defaults to `false`.
     * `regexPattern`: A regular expression pattern that must be satisfied for key strings to be accepted. Undefined by default.

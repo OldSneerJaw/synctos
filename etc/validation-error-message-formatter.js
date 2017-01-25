@@ -59,6 +59,26 @@ exports.hashtableKeyEmpty = function(hashtablePath) {
 };
 
 /**
+ * Formats a message for the error that occurs when a hashtable has more than the maximum number of elements.
+ *
+ * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
+ * @param {integer} expectedMaximumSize The maximum number of elements
+ */
+exports.hashtableMaximumSizeViolation = function(hashtablePath, expectedMaximumSize) {
+  return 'hashtable "' + hashtablePath + '" must not be larger than ' + expectedMaximumSize + ' elements';
+};
+
+/**
+ * Formats a message for the error that occurs when a hashtable has less than the minimum number of elements.
+ *
+ * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
+ * @param {integer} expectedMinimumSize The minimum number of elements
+ */
+exports.hashtableMinimumSizeViolation = function(hashtablePath, expectedMinimumSize) {
+  return 'hashtable "' + hashtablePath + '" must not be smaller than ' + expectedMinimumSize + ' elements';
+};
+
+/**
  * Formats a message for the error that occurs when there is an attempt to replace or delete an immutable document.
  */
 exports.immutableDocViolation = function() {
