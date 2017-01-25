@@ -40,6 +40,16 @@ exports.datetimeFormatInvalid = function(itemPath) {
 };
 
 /**
+ * Formats a message for the error that occurs when the value of an enum field is not one of the predefined values.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[3].enumProp")
+ * @param {(string[]|integer[])} expectedPredefinedValues A list of predefined values that are allowed for the item in question
+ */
+exports.enumPredefinedValueViolation = function(itemPath, expectedPredefinedValues) {
+  return 'item "' + itemPath + '" must be one of the predefined values: ' + expectedPredefinedValues.toString();
+};
+
+/**
  * Formats a message for the error that occurs when a hashtable key is an empty string.
  *
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
