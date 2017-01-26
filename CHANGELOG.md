@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.7.0] - 2017-01-26
 ### Added
 - [#73](https://github.com/Kashoo/synctos/issues/73): Include an implicit type property when a simple type filter is used
 - [#78](https://github.com/Kashoo/synctos/issues/78): Enum property validation type
@@ -59,7 +59,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/Kashoo/synctos/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Kashoo/synctos/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Kashoo/synctos/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/Kashoo/synctos/compare/v1.3.1...v1.4.0
