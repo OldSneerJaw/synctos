@@ -34,7 +34,7 @@ try {
 }
 
 // Automatically replace instances of the "importDocumentDefinitionFragment" macro with the contents of the file that is specified by each
-var syncDocDefn = syncDocDefn.replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
+syncDocDefn = syncDocDefn.replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
   .replace(/importDocumentDefinitionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readDocDefinitionFragment);
 
 var syncFuncTemplate;
@@ -45,6 +45,10 @@ try {
 
   process.exit(errorStatus);
 }
+
+// Automatically replace each instance of the "importSyncFunctionFragment" macro with the contents of the file that is specified
+syncFuncTemplate = syncFuncTemplate.replace(/importSyncFunctionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readSyncFunctionFragment)
+  .replace(/importSyncFunctionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readSyncFunctionFragment);
 
 // Load the document definitions into the sync function template
 var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
@@ -65,18 +69,26 @@ try {
 console.log('Sync function written to ' + outputFilename);
 
 function readDocDefinitionFragment(fullMatch, fragmentFilename) {
+  return readFileFragment(fullMatch, fragmentFilename, syncDocDefnDirectory);
+}
+
+function readSyncFunctionFragment(fullMatch, fragmentFilename) {
+  return readFileFragment(fullMatch, fragmentFilename, scriptDir + '/etc');
+}
+
+function readFileFragment(fullMatch, fragmentFilename, relativePath) {
   // The filename may have been defined with escape sequences (e.g. \\, \', \") in it, so unescape them
   var sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, function(escapeSequence, escapedChar) { return escapedChar; });
 
   try {
     // Attempt to import the fragment file with a path that is relative to the main document definition file
-    return fs.readFileSync(syncDocDefnDirectory + '/' + sanitizedFragmentFilename, 'utf8').trim();
+    return fs.readFileSync(relativePath + '/' + sanitizedFragmentFilename, 'utf8').trim();
   } catch (ex) {
     try {
       // It's possible the fragment file path was not relative so try again as an absolute path
       return fs.readFileSync(sanitizedFragmentFilename, 'utf8').trim();
     } catch (ex2) {
-      console.log('ERROR: Unable to read document definition fragment file "' + sanitizedFragmentFilename + '": ' + ex2);
+      console.log('ERROR: Unable to read fragment file "' + sanitizedFragmentFilename + '": ' + ex2);
 
       process.exit(errorStatus);
     }
