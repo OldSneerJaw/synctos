@@ -2,6 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+Nothing yet
+
 ## [1.7.0] - 2017-01-26
 ### Added
 - [#73](https://github.com/Kashoo/synctos/issues/73): Include an implicit type property when a simple type filter is used
