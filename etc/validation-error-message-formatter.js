@@ -117,6 +117,15 @@ exports.maximumSizeAttachmentViolation = function(itemPath, maxSize) {
 };
 
 /**
+ * Formats a message for the error that occurs when a document's attachments exceed the maximum total attachment size.
+ *
+ * @param {integer} maxSize The maximum size, in bytes, that is allowed
+ */
+exports.maximumTotalAttachmentSizeViolation = function(maxSize) {
+  return 'the total size of all attachments must not exceed ' + maxSize + ' bytes';
+};
+
+/**
  * Formats a message for the error that occurs when a value is greater than the maximum allowed.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].integerProp")

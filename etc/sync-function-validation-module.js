@@ -40,16 +40,27 @@ function() {
   // Ensures the document structure and content are valid
   function validateDoc(doc, oldDoc, docDefinition, docType) {
     var validationErrors = [ ];
+    var maximumTotalAttachmentSize =
+      docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumTotalSize : null;
 
     validateDocImmutability(doc, oldDoc, docDefinition, validationErrors);
 
     // Only validate the document's contents if it's being created or replaced. But there's no need if it's being deleted.
     if (!doc._deleted) {
-      if (!(docDefinition.allowAttachments) && doc._attachments) {
-        for (var docAttachmentEntry in doc._attachments) {
-          validationErrors.push('document type does not support attachments');
+      if (doc._attachments) {
+        var totalSize = 0;
+        var alreadyAddedAttachmentError = false;
+        for (var attachmentName in doc._attachments) {
+          if (docDefinition.allowAttachments) {
+            totalSize += doc._attachments[attachmentName].length;
+          } else if (!alreadyAddedAttachmentError) {
+            validationErrors.push('document type does not support attachments');
+            alreadyAddedAttachmentError = true;
+          }
+        }
 
-          break;
+        if (isInteger(maximumTotalAttachmentSize) && totalSize > maximumTotalAttachmentSize) {
+          validationErrors.push('the total size of all attachments must not exceed ' + maximumTotalAttachmentSize + ' bytes');
         }
       }
 
