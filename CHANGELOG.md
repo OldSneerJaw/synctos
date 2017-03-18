@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+- [#90](https://github.com/Kashoo/synctos/issues/90): Document-wide constraints on file attachments
+
 ### Changed
 - [#80](https://github.com/Kashoo/synctos/issues/80): Decompose specifications file for sample document definitions
 - [#88](https://github.com/Kashoo/synctos/issues/88): Move test-helper module documentation to the top of the file
