@@ -226,6 +226,16 @@ exports.regexPatternItemViolation = function(itemPath, expectedRegex) {
 };
 
 /**
+ * Formats a message for the error that occurs when a file attachment violates the constraint that all of that document type's file
+ * attachments must have a corresponding attachment reference property.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ */
+exports.requireAttachmentReferencesViolation = function(attachmentName) {
+  return 'attachment ' + attachmentName + ' must have a corresponding attachment reference property';
+};
+
+/**
  * Formats a message for the error that occurs when a required property or element value is null or undefined.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")

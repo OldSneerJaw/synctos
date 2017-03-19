@@ -527,6 +527,8 @@ function() {
 
       var supportedContentTypes = attachmentConstraints ? attachmentConstraints.supportedContentTypes : null;
 
+      var requireAttachmentReferences = attachmentConstraints ? attachmentConstraints.requireAttachmentReferences : false;
+
       var totalSize = 0;
       var attachmentCount = 0;
       for (var attachmentName in doc._attachments) {
@@ -538,6 +540,10 @@ function() {
         totalSize += attachmentSize;
 
         var attachmentRefValidator = attachmentReferenceValidators[attachmentName];
+
+        if (requireAttachmentReferences && isValueNullOrUndefined(attachmentRefValidator)) {
+          validationErrors.push('attachment ' + attachmentName + ' must have a corresponding attachment reference property');
+        }
 
         if (isInteger(maximumIndividualAttachmentSize) && attachmentSize > maximumIndividualAttachmentSize) {
           // If this attachment is owned by an attachment reference property, that property's size constraint (if any) takes precedence
