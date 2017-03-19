@@ -248,16 +248,38 @@ exports.supportedContentTypesAttachmentViolation = function(itemPath, expectedCo
 };
 
 /**
- * Formats a message for the error that occurs when a file attachment does not have one of the supported file extensions.
+ * Formats a message for the error that occurs when a file attachment reference does not have one of the supported file extensions.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[0].attachmentRefProp")
  * @param {string[]} expectedFileExtensions An array of file extensions that are expected (e.g. [ 'png', 'gif', 'jpg', 'jpeg' ]).
  *                                          Element order must match that set in the validator in the document definition.
  */
+exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, expectedFileExtensions) {
+  var extensionsString = expectedFileExtensions.join(',');
+
+  return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
+};
+
+/**
+ * DEPRECATED. Use supportedExtensionsAttachmentReferenceViolation instead.
+ */
 exports.supportedExtensionsAttachmentViolation = function(itemPath, expectedFileExtensions) {
   var extensionsString = expectedFileExtensions.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
+};
+
+/**
+ * Formats a message for the error that occurs when a file attachment does not have one of the supported file extensions.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ * @param {string[]} expectedFileExtensions An array of file extensions that are expected (e.g. [ 'png', 'gif', 'jpg', 'jpeg' ]).
+ *                                          Element order must match that set in the validator in the document definition.
+ */
+exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, expectedFileExtensions) {
+  var extensionsString = expectedFileExtensions.join(',');
+
+  return 'attachment "' + attachmentName + '" must have a supported file extension (' + extensionsString + ')';
 };
 
 /**

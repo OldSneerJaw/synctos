@@ -96,7 +96,7 @@ describe('Sample Business config doc definition', function() {
       doc,
       oldDoc,
       [
-        errorFormatter.supportedExtensionsAttachmentViolation('businessLogoAttachment', [ 'png', 'gif', 'jpg', 'jpeg' ]),
+        errorFormatter.supportedExtensionsAttachmentReferenceViolation('businessLogoAttachment', [ 'png', 'gif', 'jpg', 'jpeg' ]),
         errorFormatter.supportedContentTypesAttachmentViolation('businessLogoAttachment', [ 'image/png', 'image/gif', 'image/jpeg' ]),
         errorFormatter.maximumSizeAttachmentViolation('businessLogoAttachment', 2097152),
         errorFormatter.typeConstraintViolation('defaultInvoiceTemplate.templateId', 'string'),
