@@ -96,6 +96,15 @@ exports.immutableItemViolation = function(itemPath) {
 };
 
 /**
+ * Formats a message for the error that occurs when a document has more than the maximum number of attachments.
+ *
+ * @param {integer} maxCount The maximum number of attachments that are allowed
+ */
+exports.maximumAttachmentCountViolation = function(maxCount) {
+  return 'the total number of attachments must not exceed ' + maxCount;
+};
+
+/**
  * Formats a message for the error that occurs when a string or array's length is greater than the maximum allowed.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].stringProp")

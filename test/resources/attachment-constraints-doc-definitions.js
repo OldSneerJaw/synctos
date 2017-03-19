@@ -6,7 +6,8 @@
     propertyValidators: { },
     allowAttachments: true,
     attachmentConstraints: {
-      maximumTotalSize: 40
+      maximumTotalSize: 40,
+      maximumAttachmentCount: 3
     }
   }
 }

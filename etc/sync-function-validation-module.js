@@ -42,6 +42,7 @@ function() {
     var validationErrors = [ ];
     var maximumTotalAttachmentSize =
       docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumTotalSize : null;
+    var maximumAttachmentCount = docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumAttachmentCount : null;
 
     validateDocImmutability(doc, oldDoc, docDefinition, validationErrors);
 
@@ -49,18 +50,22 @@ function() {
     if (!doc._deleted) {
       if (doc._attachments) {
         var totalSize = 0;
-        var alreadyAddedAttachmentError = false;
+        var attachmentCount = 0;
         for (var attachmentName in doc._attachments) {
-          if (docDefinition.allowAttachments) {
-            totalSize += doc._attachments[attachmentName].length;
-          } else if (!alreadyAddedAttachmentError) {
-            validationErrors.push('document type does not support attachments');
-            alreadyAddedAttachmentError = true;
-          }
+          attachmentCount++;
+          totalSize += doc._attachments[attachmentName].length;
         }
 
         if (isInteger(maximumTotalAttachmentSize) && totalSize > maximumTotalAttachmentSize) {
           validationErrors.push('the total size of all attachments must not exceed ' + maximumTotalAttachmentSize + ' bytes');
+        }
+
+        if (isInteger(maximumAttachmentCount) && attachmentCount > maximumAttachmentCount) {
+          validationErrors.push('the total number of attachments must not exceed ' + maximumAttachmentCount);
+        }
+
+        if (!docDefinition.allowAttachments && attachmentCount > 0) {
+          validationErrors.push('document type does not support attachments');
         }
       }
 
