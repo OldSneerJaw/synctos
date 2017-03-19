@@ -82,6 +82,10 @@ describe('Sample Business config doc definition', function() {
         'bogus.mp3': {
           content_type: 'text/plain',
           length: 2097153
+        },
+        'invalid.xml': {
+          content_type: 'application/xml',
+          length: 773
         }
       },
       businessLogoAttachment: 'bogus.mp3',
@@ -99,6 +103,12 @@ describe('Sample Business config doc definition', function() {
         errorFormatter.supportedExtensionsAttachmentReferenceViolation('businessLogoAttachment', [ 'png', 'gif', 'jpg', 'jpeg' ]),
         errorFormatter.supportedContentTypesAttachmentReferenceViolation('businessLogoAttachment', [ 'image/png', 'image/gif', 'image/jpeg' ]),
         errorFormatter.maximumSizeAttachmentViolation('businessLogoAttachment', 2097152),
+        errorFormatter.maximumTotalAttachmentSizeViolation(2097664),
+        errorFormatter.maximumIndividualAttachmentSizeViolation('invalid.xml', 512),
+        errorFormatter.maximumAttachmentCountViolation(1),
+        errorFormatter.supportedExtensionsRawAttachmentViolation('invalid.xml', [ 'txt' ]),
+        errorFormatter.supportedContentTypesRawAttachmentViolation('invalid.xml', [ 'text/plain' ]),
+        errorFormatter.requireAttachmentReferencesViolation('invalid.xml'),
         errorFormatter.typeConstraintViolation('defaultInvoiceTemplate.templateId', 'string'),
         errorFormatter.typeConstraintViolation('paymentProcessors[1]', 'string'),
         errorFormatter.unsupportedProperty('unrecognized-property2')
