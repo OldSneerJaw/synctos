@@ -525,12 +525,16 @@ function() {
       var supportedExtensions = attachmentConstraints ? attachmentConstraints.supportedExtensions : null;
       var supportedExtensionsRegex = supportedExtensions ? buildSupportedExtensionsRegex(supportedExtensions) : null;
 
+      var supportedContentTypes = attachmentConstraints ? attachmentConstraints.supportedContentTypes : null;
+
       var totalSize = 0;
       var attachmentCount = 0;
       for (var attachmentName in doc._attachments) {
         attachmentCount++;
 
-        var attachmentSize = doc._attachments[attachmentName].length;
+        var attachment = doc._attachments[attachmentName];
+
+        var attachmentSize = attachment.length;
         totalSize += attachmentSize;
 
         var attachmentRefValidator = attachmentReferenceValidators[attachmentName];
@@ -543,9 +547,18 @@ function() {
         }
 
         if (supportedExtensionsRegex && !supportedExtensionsRegex.test(attachmentName)) {
-          // If this attachment is owned by an attachment reference property, that property's extensions constraint (if any) takes precedence
+          // If this attachment is owned by an attachment reference property, that property's extensions constraint (if any) takes
+          // precedence
           if (isValueNullOrUndefined(attachmentRefValidator) || isValueNullOrUndefined(attachmentRefValidator.supportedExtensions)) {
             validationErrors.push('attachment "' + attachmentName + '" must have a supported file extension (' + supportedExtensions.join(',') + ')');
+          }
+        }
+
+        if (supportedContentTypes && supportedContentTypes.indexOf(attachment.content_type) < 0) {
+          // If this attachment is owned by an attachment reference property, that property's content types constraint (if any) takes
+          // precedence
+          if (isValueNullOrUndefined(attachmentRefValidator) || isValueNullOrUndefined(attachmentRefValidator.supportedContentTypes)) {
+            validationErrors.push('attachment "' + attachmentName + '" must have a supported content type (' + supportedContentTypes.join(',') + ')');
           }
         }
       }

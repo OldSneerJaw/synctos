@@ -235,16 +235,36 @@ exports.requiredValueViolation = function(itemPath) {
 };
 
 /**
- * Formats a message for the error that occurs when a file attachment is not one of the supported content types.
+ * Formats a message for the error that occurs when a file attachment reference is not one of the supported content types.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.attachmentRefProp")
  * @param {string[]} expectedContentTypes An array of content types that are expected (e.g. [ 'image/png', 'image/gif', 'image/jpeg' ]).
  *                                        Element order must match that set in the validator in the document definition.
  */
-exports.supportedContentTypesAttachmentViolation = function(itemPath, expectedContentTypes) {
+exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, expectedContentTypes) {
   var contentTypesString = expectedContentTypes.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported content type (' + contentTypesString + ')';
+};
+
+/**
+ * DEPRECATED. Use supportedContentTypesAttachmentReferenceViolation instead.
+ */
+exports.supportedContentTypesAttachmentViolation = function(itemPath, expectedContentTypes) {
+  return exports.supportedContentTypesAttachmentReferenceViolation(itemPath, expectedContentTypes);
+};
+
+/**
+ * Formats a message for the error that occurs when a file attachment is not one of the supported content types.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ * @param {string[]} expectedContentTypes An array of content types that are expected (e.g. [ 'image/png', 'image/gif', 'image/jpeg' ]).
+ *                                        Element order must match that set in the validator in the document definition.
+ */
+exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, expectedContentTypes) {
+  var contentTypesString = expectedContentTypes.join(',');
+
+  return 'attachment "' + attachmentName + '" must have a supported content type (' + contentTypesString + ')';
 };
 
 /**
@@ -264,9 +284,7 @@ exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, exp
  * DEPRECATED. Use supportedExtensionsAttachmentReferenceViolation instead.
  */
 exports.supportedExtensionsAttachmentViolation = function(itemPath, expectedFileExtensions) {
-  var extensionsString = expectedFileExtensions.join(',');
-
-  return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
+  return exports.supportedExtensionsAttachmentReferenceViolation(itemPath, expectedFileExtensions);
 };
 
 /**

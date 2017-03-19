@@ -11,12 +11,21 @@ describe('File attachment constraints:', function() {
     var doc = {
       _id: 'myDoc',
       _attachments: {
-        'foo.pdf': { length: 20 },
-        'bar.html': { length: 15 },
-        'baz.foo': { length: 5 }
+        'foo.pdf': {
+          length: 20,
+          content_type: 'application/pdf'
+        },
+        'bar.html': {
+          length: 15,
+          content_type: 'text/html'
+        },
+        'baz.foo': {
+          length: 5,
+          content_type: 'text/bar'
+        }
       },
       type: 'attachmentDoc',
-      attachmentRefProp: 'baz.foo' // The attachmentReference's supported extensions override the document's supported extensions
+      attachmentRefProp: 'baz.foo' // The attachmentReference overrides the document's supported extensions and content types
     };
 
     testHelper.verifyDocumentCreated(doc);
@@ -26,7 +35,10 @@ describe('File attachment constraints:', function() {
     var doc = {
       _id: 'myDoc',
       _attachments: {
-        'foo.xml': { length: 40 }
+        'foo.xml': {
+          length: 40,
+          content_type: 'application/xml'
+        }
       },
       type: 'attachmentDoc',
       attachmentRefProp: 'foo.xml' // The attachmentReference's maximum size of 40 overrides the document's maximum individual size of 25
@@ -44,9 +56,18 @@ describe('File attachment constraints:', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.pdf': { length: 5 },
-          'bar.html': { length: 35 },
-          'baz.txt': { length: 1 }
+          'foo.pdf': {
+            length: 5,
+            content_type: 'application/pdf'
+          },
+          'bar.html': {
+            length: 35,
+            content_type: 'text/html'
+          },
+          'baz.txt': {
+            length: 1,
+            content_type: 'text/plain'
+          }
         },
         type: 'attachmentDoc',
         attachmentRefProp: 'bar.html' // The attachmentReference's maximum size of 40 overrides the document's maximum individual size of 25
@@ -61,7 +82,10 @@ describe('File attachment constraints:', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.xml': { length: 41 }
+          'foo.xml': {
+            length: 41,
+            content_type: 'application/xml'
+          }
         },
         type: 'attachmentDoc'
       };
@@ -84,10 +108,22 @@ describe('File attachment constraints:', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.pdf': { length: 10 },
-          'bar.html': { length: 10 },
-          'baz.txt': { length: 10 },
-          'qux.jpg': { length: 10 }
+          'foo.pdf': {
+            length: 10,
+            content_type: 'application/pdf',
+          },
+          'bar.html': {
+            length: 10,
+            content_type: 'text/html'
+          },
+          'baz.txt': {
+            length: 10,
+            content_type: 'text/plain'
+          },
+          'qux.jpg': {
+            length: 10,
+            content_type: 'image/jpeg'
+          }
         },
         type: 'attachmentDoc'
       };
@@ -101,10 +137,22 @@ describe('File attachment constraints:', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.xml': { length: 5 },
-          'bar.html': { length: 5 },
-          'baz.txt': { length: 5 },
-          'qux.jpg': { length: 5 }
+          'foo.xml': {
+            length: 10,
+            content_type: 'application/xml',
+          },
+          'bar.html': {
+            length: 10,
+            content_type: 'text/html'
+          },
+          'baz.txt': {
+            length: 10,
+            content_type: 'text/plain'
+          },
+          'qux.jpg': {
+            length: 10,
+            content_type: 'image/jpeg'
+          }
         },
         type: 'attachmentDoc'
       };
@@ -120,14 +168,24 @@ describe('File attachment constraints:', function() {
   });
 
   describe('supported file extensions constraint', function() {
-    var supportedExtensions = [ 'html', 'jpg', 'pdf', 'txt', 'xml' ];
+    var expectedExtensions = [ 'html', 'jpg', 'pdf', 'txt', 'xml' ];
+
     it('should block creation of a document whose attachments have unsupported extensions', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.invalid': { length: 10 },
-          'bar.html': { length: 10 },
-          'baz.unknown': { length: 20 }
+          'foo.invalid': {
+            length: 10,
+            content_type: 'text/plain'
+          },
+          'bar.html': {
+            length: 10,
+            content_type: 'text/html'
+          },
+          'baz.unknown': {
+            length: 20,
+            content_type: 'application/xml'
+          }
         },
         type: 'attachmentDoc'
       };
@@ -136,19 +194,25 @@ describe('File attachment constraints:', function() {
         testHelper.verifyValidationErrors(
           'attachmentDoc',
           [
-            errorFormatter.supportedExtensionsRawAttachmentViolation('baz.unknown', supportedExtensions),
-            errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', supportedExtensions)
+            errorFormatter.supportedExtensionsRawAttachmentViolation('baz.unknown', expectedExtensions),
+            errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions)
           ],
           ex);
       });
     });
 
-    it('should block replacement when document attachments exceed the limit', function() {
+    it('should block replacement when document attachments have unsupported extensions', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.invalid': { length: 5 },
-          'bar.foo': { length: 5 }
+          'foo.invalid': {
+            length: 5,
+            content_type: 'image/jpeg'
+          },
+          'bar.foo': {
+            length: 5,
+            content_type: 'text/plain'
+          }
         },
         type: 'attachmentDoc',
         attachmentRefProp: 'bar.foo' // The attachmentReference's supported extensions override the document's supported extensions
@@ -161,7 +225,71 @@ describe('File attachment constraints:', function() {
       expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
         testHelper.verifyValidationErrors(
           'attachmentDoc',
-          errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', supportedExtensions),
+          errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions),
+          ex);
+      });
+    });
+  });
+
+  describe('supported content types constraint', function() {
+    var expectedContentTypes = [ 'text/html', 'image/jpeg', 'application/pdf', 'text/plain', 'application/xml' ];
+
+    it('should block creation of a document whose attachments have unsupported content types', function() {
+      var doc = {
+        _id: 'myDoc',
+        _attachments: {
+          'foo.txt': {
+            length: 10,
+            content_type: 'text/invalid'
+          },
+          'bar.html': {
+            length: 10,
+            content_type: 'text/html'
+          },
+          'baz.xml': {
+            length: 20,
+            content_type: 'application/unknown'
+          }
+        },
+        type: 'attachmentDoc'
+      };
+
+      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+        testHelper.verifyValidationErrors(
+          'attachmentDoc',
+          [
+            errorFormatter.supportedContentTypesRawAttachmentViolation('baz.xml', expectedContentTypes),
+            errorFormatter.supportedContentTypesRawAttachmentViolation('foo.txt', expectedContentTypes)
+          ],
+          ex);
+      });
+    });
+
+    it('should block replacement when document attachments have unsupported content types', function() {
+      var doc = {
+        _id: 'myDoc',
+        _attachments: {
+          'foo.jpg': {
+            length: 5,
+            content_type: 'completely-invalid'
+          },
+          'bar.txt': {
+            length: 5,
+            content_type: 'text/bar'
+          }
+        },
+        type: 'attachmentDoc',
+        attachmentRefProp: 'bar.txt' // The attachmentReference's supported content types override the document's supported content types
+      };
+      var oldDoc = {
+        _id: 'myDoc',
+        type: 'attachmentDoc'
+      };
+
+      expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+        testHelper.verifyValidationErrors(
+          'attachmentDoc',
+          errorFormatter.supportedContentTypesRawAttachmentViolation('foo.jpg', expectedContentTypes),
           ex);
       });
     });

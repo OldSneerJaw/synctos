@@ -97,7 +97,7 @@ describe('Sample Business config doc definition', function() {
       oldDoc,
       [
         errorFormatter.supportedExtensionsAttachmentReferenceViolation('businessLogoAttachment', [ 'png', 'gif', 'jpg', 'jpeg' ]),
-        errorFormatter.supportedContentTypesAttachmentViolation('businessLogoAttachment', [ 'image/png', 'image/gif', 'image/jpeg' ]),
+        errorFormatter.supportedContentTypesAttachmentReferenceViolation('businessLogoAttachment', [ 'image/png', 'image/gif', 'image/jpeg' ]),
         errorFormatter.maximumSizeAttachmentViolation('businessLogoAttachment', 2097152),
         errorFormatter.typeConstraintViolation('defaultInvoiceTemplate.templateId', 'string'),
         errorFormatter.typeConstraintViolation('paymentProcessors[1]', 'string'),
