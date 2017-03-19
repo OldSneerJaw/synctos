@@ -7,13 +7,13 @@ describe('File attachment constraints:', function() {
     testHelper.init('build/sync-functions/test-attachment-constraints-sync-function.js');
   });
 
-  describe('maximum total attachment size constraint', function() {
-    it('should allow creation of a document whose attachments do not exceed the limit', function() {
+  describe('maximum attachment size constraints', function() {
+    it('should allow creation of a document whose attachments do not exceed the limits', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.pdf': { length: 20 },
-          'bar.html': { length: 20 }
+          'foo.pdf': { length: 25 },
+          'bar.html': { length: 15 }
         },
         type: 'attachmentDoc'
       };
@@ -21,19 +21,22 @@ describe('File attachment constraints:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('should block creation of a document whose attachments exceed the limit', function() {
+    it('should block creation of a document whose attachments exceed the limits', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.pdf': { length: 20 },
-          'bar.html': { length: 20 },
+          'foo.pdf': { length: 14 },
+          'bar.html': { length: 26 },
           'baz.txt': { length: 1 }
         },
         type: 'attachmentDoc'
       };
 
       expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
-        testHelper.verifyValidationErrors('attachmentDoc', errorFormatter.maximumTotalAttachmentSizeViolation(40), ex);
+        testHelper.verifyValidationErrors(
+          'attachmentDoc',
+          [ errorFormatter.maximumTotalAttachmentSizeViolation(40), errorFormatter.maximumIndividualAttachmentSizeViolation('bar.html', 25)],
+          ex);
       });
     });
 
@@ -43,7 +46,8 @@ describe('File attachment constraints:', function() {
         _attachments: {
           'foo.xml': { length: 40 }
         },
-        type: 'attachmentDoc'
+        type: 'attachmentDoc',
+        attachmentRefProp: 'foo.xml' // The attachmentReference's maximumSize of 40 overrides the document's maximum individual size of 25
       };
       var oldDoc = {
         _id: 'myDoc',
@@ -67,7 +71,10 @@ describe('File attachment constraints:', function() {
       };
 
       expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        testHelper.verifyValidationErrors('attachmentDoc', errorFormatter.maximumTotalAttachmentSizeViolation(40), ex);
+        testHelper.verifyValidationErrors(
+          'attachmentDoc',
+          [ errorFormatter.maximumTotalAttachmentSizeViolation(40), errorFormatter.maximumIndividualAttachmentSizeViolation('foo.xml', 25)],
+          ex);
       });
     });
   });
@@ -108,7 +115,7 @@ describe('File attachment constraints:', function() {
       var doc = {
         _id: 'myDoc',
         _attachments: {
-          'foo.xml': { length: 40 }
+          'foo.xml': { length: 25 }
         },
         type: 'attachmentDoc'
       };

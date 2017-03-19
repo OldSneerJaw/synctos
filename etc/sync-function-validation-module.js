@@ -40,35 +40,11 @@ function() {
   // Ensures the document structure and content are valid
   function validateDoc(doc, oldDoc, docDefinition, docType) {
     var validationErrors = [ ];
-    var maximumTotalAttachmentSize =
-      docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumTotalSize : null;
-    var maximumAttachmentCount = docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumAttachmentCount : null;
 
     validateDocImmutability(doc, oldDoc, docDefinition, validationErrors);
 
     // Only validate the document's contents if it's being created or replaced. But there's no need if it's being deleted.
     if (!doc._deleted) {
-      if (doc._attachments) {
-        var totalSize = 0;
-        var attachmentCount = 0;
-        for (var attachmentName in doc._attachments) {
-          attachmentCount++;
-          totalSize += doc._attachments[attachmentName].length;
-        }
-
-        if (isInteger(maximumTotalAttachmentSize) && totalSize > maximumTotalAttachmentSize) {
-          validationErrors.push('the total size of all attachments must not exceed ' + maximumTotalAttachmentSize + ' bytes');
-        }
-
-        if (isInteger(maximumAttachmentCount) && attachmentCount > maximumAttachmentCount) {
-          validationErrors.push('the total number of attachments must not exceed ' + maximumAttachmentCount);
-        }
-
-        if (!docDefinition.allowAttachments && attachmentCount > 0) {
-          validationErrors.push('document type does not support attachments');
-        }
-      }
-
       validateDocContents(
         doc,
         oldDoc,
@@ -98,6 +74,7 @@ function() {
   }
 
   function validateDocContents(doc, oldDoc, docDefinition, validationErrors) {
+    var attachmentReferenceValidators = { };
     var itemStack = [
       {
         itemValue: doc,
@@ -112,7 +89,13 @@ function() {
       docDefinition.allowUnknownProperties,
       [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ]);
 
-    // The following functions are nested within this function so they can share access to the doc, oldDoc and validationErrors params
+    if (doc._attachments) {
+      validateAttachments();
+    }
+
+    // The following functions are nested within this function so they can share access to the doc, oldDoc and validationErrors params and
+    // the attachmentReferenceValidators and itemStack variables
+
     function validateProperties(propertyValidators, allowUnknownProperties, whitelistedProperties) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var objectValue = currentItemEntry.itemValue;
@@ -500,6 +483,8 @@ function() {
       if (typeof itemValue !== 'string') {
         validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must be a string');
       } else {
+        attachmentReferenceValidators[itemValue] = validator;
+
         if (validator.supportedExtensions) {
           var extRegex = new RegExp('\\.(' + validator.supportedExtensions.join('|') + ')$', 'i');
           if (!extRegex.test(itemValue)) {
@@ -523,6 +508,42 @@ function() {
             validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must not be larger than ' + validator.maximumSize + ' bytes');
           }
         }
+      }
+    }
+
+    function validateAttachments() {
+      var maximumIndividualAttachmentSize =
+        docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumIndividualSize : null;
+      var maximumTotalAttachmentSize = docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumTotalSize : null;
+      var maximumAttachmentCount = docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumAttachmentCount : null;
+
+      var totalSize = 0;
+      var attachmentCount = 0;
+      for (var attachmentName in doc._attachments) {
+        attachmentCount++;
+
+        var attachmentSize = doc._attachments[attachmentName].length;
+        totalSize += attachmentSize;
+
+        if (isInteger(maximumIndividualAttachmentSize) && attachmentSize > maximumIndividualAttachmentSize) {
+          // If this attachment is owned by an attachment reference property, that property's size constraint (if any) takes precedence
+          var attachmentRefValidator = attachmentReferenceValidators[attachmentName];
+          if (isValueNullOrUndefined(attachmentRefValidator) || !isInteger(attachmentRefValidator.maximumSize)) {
+            validationErrors.push('attachment ' + attachmentName + ' must not exceed ' + maximumIndividualAttachmentSize + ' bytes');
+          }
+        }
+      }
+
+      if (isInteger(maximumTotalAttachmentSize) && totalSize > maximumTotalAttachmentSize) {
+        validationErrors.push('the total size of all attachments must not exceed ' + maximumTotalAttachmentSize + ' bytes');
+      }
+
+      if (isInteger(maximumAttachmentCount) && attachmentCount > maximumAttachmentCount) {
+        validationErrors.push('the total number of attachments must not exceed ' + maximumAttachmentCount);
+      }
+
+      if (!docDefinition.allowAttachments && attachmentCount > 0) {
+        validationErrors.push('document type does not support attachments');
       }
     }
   }
