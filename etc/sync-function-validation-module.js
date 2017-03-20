@@ -155,7 +155,7 @@ function() {
       var itemValue = currentItemEntry.itemValue;
 
       if (validator.customValidation) {
-        performCustomValidation(doc, oldDoc, validator, itemStack, validationErrors);
+        performCustomValidation(validator);
       }
 
       if (validator.immutable) {
@@ -581,19 +581,19 @@ function() {
         validationErrors.push('document type does not support attachments');
       }
     }
-  }
 
-  function performCustomValidation(doc, oldDoc, validator, itemStack, validationErrors) {
-    var currentItemEntry = itemStack[itemStack.length - 1];
+    function performCustomValidation(validator) {
+      var currentItemEntry = itemStack[itemStack.length - 1];
 
-    // Copy all but the last/top element so that the item's parent is at the top of the stack for the custom validation function
-    var customValidationItemStack = itemStack.slice(-1);
+      // Copy all but the last/top element so that the item's parent is at the top of the stack for the custom validation function
+      var customValidationItemStack = itemStack.slice(-1);
 
-    var customValidationErrors = validator.customValidation(doc, oldDoc, currentItemEntry, customValidationItemStack);
+      var customValidationErrors = validator.customValidation(doc, oldDoc, currentItemEntry, customValidationItemStack);
 
-    if (customValidationErrors instanceof Array) {
-      for (var errorIndex = 0; errorIndex < customValidationErrors.length; errorIndex++) {
-        validationErrors.push(customValidationErrors[errorIndex]);
+      if (customValidationErrors instanceof Array) {
+        for (var errorIndex = 0; errorIndex < customValidationErrors.length; errorIndex++) {
+          validationErrors.push(customValidationErrors[errorIndex]);
+        }
       }
     }
   }
