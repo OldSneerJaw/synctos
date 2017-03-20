@@ -96,6 +96,25 @@ exports.immutableItemViolation = function(itemPath) {
 };
 
 /**
+ * Formats a message for the error that occurs when a document has more than the maximum number of attachments.
+ *
+ * @param {integer} maxCount The maximum number of attachments that are allowed
+ */
+exports.maximumAttachmentCountViolation = function(maxCount) {
+  return 'the total number of attachments must not exceed ' + maxCount;
+};
+
+/**
+ * Formats a message for the error that occurs when a document's attachment exceeds the maximum individual attachment size.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ * @param {integer} maxSize The maximum size, in bytes, that is allowed
+ */
+exports.maximumIndividualAttachmentSizeViolation = function(attachmentName, maxSize) {
+  return 'attachment ' + attachmentName + ' must not exceed ' + maxSize + ' bytes';
+};
+
+/**
  * Formats a message for the error that occurs when a string or array's length is greater than the maximum allowed.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].stringProp")
@@ -114,6 +133,15 @@ exports.maximumLengthViolation = function(itemPath, maxLength) {
  */
 exports.maximumSizeAttachmentViolation = function(itemPath, maxSize) {
   return 'attachment reference "' + itemPath + '" must not be larger than ' + maxSize + ' bytes';
+};
+
+/**
+ * Formats a message for the error that occurs when a document's attachments exceed the maximum total attachment size.
+ *
+ * @param {integer} maxSize The maximum size, in bytes, that is allowed
+ */
+exports.maximumTotalAttachmentSizeViolation = function(maxSize) {
+  return 'the total size of all attachments must not exceed ' + maxSize + ' bytes';
 };
 
 /**
