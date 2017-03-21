@@ -17,6 +17,14 @@
     return new RegExp('^biz\\.[A-Za-z0-9_-]+$').test(doc._id);
   },
   allowAttachments: true,
+  attachmentConstraints: {
+    maximumAttachmentCount: 1,
+    maximumTotalSize: 2097664,
+    maximumIndividualSize: 512,
+    supportedExtensions: [ 'txt' ],
+    supportedContentTypes: [ 'text/plain' ],
+    requireAttachmentReferences: true
+  },
   propertyValidators: {
     businessLogoAttachment: {
       // The name of the Sync Gateway file attachment that is to be used as the business/invoice logo image

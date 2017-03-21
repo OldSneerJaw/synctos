@@ -226,6 +226,16 @@ exports.regexPatternItemViolation = function(itemPath, expectedRegex) {
 };
 
 /**
+ * Formats a message for the error that occurs when a file attachment violates the constraint that all of that document type's file
+ * attachments must have a corresponding attachment reference property.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ */
+exports.requireAttachmentReferencesViolation = function(attachmentName) {
+  return 'attachment ' + attachmentName + ' must have a corresponding attachment reference property';
+};
+
+/**
  * Formats a message for the error that occurs when a required property or element value is null or undefined.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
@@ -235,29 +245,69 @@ exports.requiredValueViolation = function(itemPath) {
 };
 
 /**
- * Formats a message for the error that occurs when a file attachment is not one of the supported content types.
+ * Formats a message for the error that occurs when a file attachment reference is not one of the supported content types.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.attachmentRefProp")
  * @param {string[]} expectedContentTypes An array of content types that are expected (e.g. [ 'image/png', 'image/gif', 'image/jpeg' ]).
  *                                        Element order must match that set in the validator in the document definition.
  */
-exports.supportedContentTypesAttachmentViolation = function(itemPath, expectedContentTypes) {
+exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, expectedContentTypes) {
   var contentTypesString = expectedContentTypes.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported content type (' + contentTypesString + ')';
 };
 
 /**
- * Formats a message for the error that occurs when a file attachment does not have one of the supported file extensions.
+ * DEPRECATED. Use supportedContentTypesAttachmentReferenceViolation instead.
+ */
+exports.supportedContentTypesAttachmentViolation = function(itemPath, expectedContentTypes) {
+  return exports.supportedContentTypesAttachmentReferenceViolation(itemPath, expectedContentTypes);
+};
+
+/**
+ * Formats a message for the error that occurs when a file attachment is not one of the supported content types.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ * @param {string[]} expectedContentTypes An array of content types that are expected (e.g. [ 'image/png', 'image/gif', 'image/jpeg' ]).
+ *                                        Element order must match that set in the validator in the document definition.
+ */
+exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, expectedContentTypes) {
+  var contentTypesString = expectedContentTypes.join(',');
+
+  return 'attachment "' + attachmentName + '" must have a supported content type (' + contentTypesString + ')';
+};
+
+/**
+ * Formats a message for the error that occurs when a file attachment reference does not have one of the supported file extensions.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[0].attachmentRefProp")
  * @param {string[]} expectedFileExtensions An array of file extensions that are expected (e.g. [ 'png', 'gif', 'jpg', 'jpeg' ]).
  *                                          Element order must match that set in the validator in the document definition.
  */
-exports.supportedExtensionsAttachmentViolation = function(itemPath, expectedFileExtensions) {
+exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, expectedFileExtensions) {
   var extensionsString = expectedFileExtensions.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
+};
+
+/**
+ * DEPRECATED. Use supportedExtensionsAttachmentReferenceViolation instead.
+ */
+exports.supportedExtensionsAttachmentViolation = function(itemPath, expectedFileExtensions) {
+  return exports.supportedExtensionsAttachmentReferenceViolation(itemPath, expectedFileExtensions);
+};
+
+/**
+ * Formats a message for the error that occurs when a file attachment does not have one of the supported file extensions.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ * @param {string[]} expectedFileExtensions An array of file extensions that are expected (e.g. [ 'png', 'gif', 'jpg', 'jpeg' ]).
+ *                                          Element order must match that set in the validator in the document definition.
+ */
+exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, expectedFileExtensions) {
+  var extensionsString = expectedFileExtensions.join(',');
+
+  return 'attachment "' + attachmentName + '" must have a supported file extension (' + extensionsString + ')';
 };
 
 /**

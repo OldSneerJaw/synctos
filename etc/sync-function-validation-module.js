@@ -18,6 +18,10 @@ function() {
     return regex.test(value);
   }
 
+  function buildSupportedExtensionsRegex(extensions) {
+    return new RegExp('\\.(' + extensions.join('|') + ')$', 'i');
+  }
+
   // Constructs the fully qualified path of the item at the top of the given stack
   function buildItemPath(itemStack) {
     var nameComponents = [ ];
@@ -43,7 +47,7 @@ function() {
 
     validateDocImmutability(doc, oldDoc, docDefinition, validationErrors);
 
-    // Only validate the document's contents if it's being created or replaced. But there's no need if it's being deleted.
+    // Only validate the document's contents if it's being created or replaced. There's no need if it's being deleted.
     if (!doc._deleted) {
       validateDocContents(
         doc,
@@ -486,7 +490,7 @@ function() {
         attachmentReferenceValidators[itemValue] = validator;
 
         if (validator.supportedExtensions) {
-          var extRegex = new RegExp('\\.(' + validator.supportedExtensions.join('|') + ')$', 'i');
+          var extRegex = buildSupportedExtensionsRegex(validator.supportedExtensions);
           if (!extRegex.test(itemValue)) {
             validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported file extension (' + validator.supportedExtensions.join(',') + ')');
           }
@@ -512,24 +516,55 @@ function() {
     }
 
     function validateAttachments() {
-      var maximumIndividualAttachmentSize =
-        docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumIndividualSize : null;
-      var maximumTotalAttachmentSize = docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumTotalSize : null;
-      var maximumAttachmentCount = docDefinition.attachmentConstraints ? docDefinition.attachmentConstraints.maximumAttachmentCount : null;
+      var attachmentConstraints = docDefinition.attachmentConstraints;
+
+      var maximumAttachmentCount = attachmentConstraints ? attachmentConstraints.maximumAttachmentCount : null;
+      var maximumIndividualAttachmentSize = attachmentConstraints ? attachmentConstraints.maximumIndividualSize : null;
+      var maximumTotalAttachmentSize = attachmentConstraints ? attachmentConstraints.maximumTotalSize : null;
+
+      var supportedExtensions = attachmentConstraints ? attachmentConstraints.supportedExtensions : null;
+      var supportedExtensionsRegex = supportedExtensions ? buildSupportedExtensionsRegex(supportedExtensions) : null;
+
+      var supportedContentTypes = attachmentConstraints ? attachmentConstraints.supportedContentTypes : null;
+
+      var requireAttachmentReferences = attachmentConstraints ? attachmentConstraints.requireAttachmentReferences : false;
 
       var totalSize = 0;
       var attachmentCount = 0;
       for (var attachmentName in doc._attachments) {
         attachmentCount++;
 
-        var attachmentSize = doc._attachments[attachmentName].length;
+        var attachment = doc._attachments[attachmentName];
+
+        var attachmentSize = attachment.length;
         totalSize += attachmentSize;
+
+        var attachmentRefValidator = attachmentReferenceValidators[attachmentName];
+
+        if (requireAttachmentReferences && isValueNullOrUndefined(attachmentRefValidator)) {
+          validationErrors.push('attachment ' + attachmentName + ' must have a corresponding attachment reference property');
+        }
 
         if (isInteger(maximumIndividualAttachmentSize) && attachmentSize > maximumIndividualAttachmentSize) {
           // If this attachment is owned by an attachment reference property, that property's size constraint (if any) takes precedence
-          var attachmentRefValidator = attachmentReferenceValidators[attachmentName];
           if (isValueNullOrUndefined(attachmentRefValidator) || !isInteger(attachmentRefValidator.maximumSize)) {
             validationErrors.push('attachment ' + attachmentName + ' must not exceed ' + maximumIndividualAttachmentSize + ' bytes');
+          }
+        }
+
+        if (supportedExtensionsRegex && !supportedExtensionsRegex.test(attachmentName)) {
+          // If this attachment is owned by an attachment reference property, that property's extensions constraint (if any) takes
+          // precedence
+          if (isValueNullOrUndefined(attachmentRefValidator) || isValueNullOrUndefined(attachmentRefValidator.supportedExtensions)) {
+            validationErrors.push('attachment "' + attachmentName + '" must have a supported file extension (' + supportedExtensions.join(',') + ')');
+          }
+        }
+
+        if (supportedContentTypes && supportedContentTypes.indexOf(attachment.content_type) < 0) {
+          // If this attachment is owned by an attachment reference property, that property's content types constraint (if any) takes
+          // precedence
+          if (isValueNullOrUndefined(attachmentRefValidator) || isValueNullOrUndefined(attachmentRefValidator.supportedContentTypes)) {
+            validationErrors.push('attachment "' + attachmentName + '" must have a supported content type (' + supportedContentTypes.join(',') + ')');
           }
         }
       }
