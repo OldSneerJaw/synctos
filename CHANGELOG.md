@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.8.0] - 2017-03-21
 ### Added
 - [#90](https://github.com/Kashoo/synctos/issues/90): Document-wide constraints on file attachments
 
@@ -67,7 +67,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/Kashoo/synctos/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/Kashoo/synctos/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Kashoo/synctos/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/Kashoo/synctos/compare/v1.4.0...v1.5.0
