@@ -99,6 +99,15 @@ function() {
 
     // The following functions are nested within this function so they can share access to the doc, oldDoc and validationErrors params and
     // the attachmentReferenceValidators and itemStack variables
+    function resolveValidationConstraint(constraint) {
+      if (typeof(constraint) === 'function') {
+        var currentItemEntry = itemStack[itemStack.length - 1];
+
+        return constraint(currentItemEntry.itemValue, currentItemEntry.oldItemValue, doc, oldDoc);
+      } else {
+        return constraint;
+      }
+    }
 
     function validateProperties(propertyValidators, allowUnknownProperties, whitelistedProperties) {
       var currentItemEntry = itemStack[itemStack.length - 1];
@@ -158,61 +167,68 @@ function() {
         performCustomValidation(validator);
       }
 
-      if (validator.immutable) {
+      if (resolveValidationConstraint(validator.immutable)) {
         validateImmutable(false);
       }
 
-      if (validator.immutableWhenSet) {
+      if (resolveValidationConstraint(validator.immutableWhenSet)) {
         validateImmutable(true);
       }
 
       if (!isValueNullOrUndefined(itemValue)) {
-        if (validator.mustNotBeEmpty && itemValue.length < 1) {
+        if (resolveValidationConstraint(validator.mustNotBeEmpty) && itemValue.length < 1) {
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be empty');
         }
 
-        if (!isValueNullOrUndefined(validator.minimumValue)) {
+        var minimumValue = resolveValidationConstraint(validator.minimumValue);
+        if (!isValueNullOrUndefined(minimumValue)) {
           var minComparator = function(left, right) {
             return left < right;
           };
-          validateRangeConstraint(validator.minimumValue, validator.type, minComparator, 'less than');
+          validateRangeConstraint(minimumValue, validator.type, minComparator, 'less than');
         }
 
-        if (!isValueNullOrUndefined(validator.minimumValueExclusive)) {
+        var minimumValueExclusive = resolveValidationConstraint(validator.minimumValueExclusive);
+        if (!isValueNullOrUndefined(minimumValueExclusive)) {
           var minExclusiveComparator = function(left, right) {
             return left <= right;
           };
-          validateRangeConstraint(validator.minimumValueExclusive, validator.type, minExclusiveComparator, 'less than or equal to');
+          validateRangeConstraint(minimumValueExclusive, validator.type, minExclusiveComparator, 'less than or equal to');
         }
 
-        if (!isValueNullOrUndefined(validator.maximumValue)) {
+        var maximumValue = resolveValidationConstraint(validator.maximumValue);
+        if (!isValueNullOrUndefined(maximumValue)) {
           var maxComparator = function(left, right) {
             return left > right;
           };
-          validateRangeConstraint(validator.maximumValue, validator.type, maxComparator, 'greater than');
+          validateRangeConstraint(maximumValue, validator.type, maxComparator, 'greater than');
         }
 
-        if (!isValueNullOrUndefined(validator.maximumValueExclusive)) {
+        var maximumValueExclusive = resolveValidationConstraint(validator.maximumValueExclusive);
+        if (!isValueNullOrUndefined(maximumValueExclusive)) {
           var maxExclusiveComparator = function(left, right) {
             return left >= right;
           };
-          validateRangeConstraint(validator.maximumValueExclusive, validator.type, maxExclusiveComparator, 'greater than or equal to');
+          validateRangeConstraint(maximumValueExclusive, validator.type, maxExclusiveComparator, 'greater than or equal to');
         }
 
-        if (!isValueNullOrUndefined(validator.minimumLength) && itemValue.length < validator.minimumLength) {
-          validationErrors.push('length of item "' + buildItemPath(itemStack) + '" must not be less than ' + validator.minimumLength);
+        var minimumLength = resolveValidationConstraint(validator.minimumLength);
+        if (!isValueNullOrUndefined(minimumLength) && itemValue.length < minimumLength) {
+          validationErrors.push('length of item "' + buildItemPath(itemStack) + '" must not be less than ' + minimumLength);
         }
 
-        if (!isValueNullOrUndefined(validator.maximumLength) && itemValue.length > validator.maximumLength) {
-          validationErrors.push('length of item "' + buildItemPath(itemStack) + '" must not be greater than ' + validator.maximumLength);
+        var maximumLength = resolveValidationConstraint(validator.maximumLength);
+        if (!isValueNullOrUndefined(maximumLength) && itemValue.length > maximumLength) {
+          validationErrors.push('length of item "' + buildItemPath(itemStack) + '" must not be greater than ' + maximumLength);
         }
 
         switch (validator.type) {
           case 'string':
+            var regexPattern = resolveValidationConstraint(validator.regexPattern);
             if (typeof itemValue !== 'string') {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be a string');
-            } else if (validator.regexPattern && !(validator.regexPattern.test(itemValue))) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must conform to expected format ' + validator.regexPattern);
+            } else if (regexPattern && !(regexPattern.test(itemValue))) {
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must conform to expected format ' + regexPattern);
             }
             break;
           case 'integer':
@@ -241,21 +257,23 @@ function() {
             }
             break;
           case 'enum':
-            if (!(validator.predefinedValues instanceof Array)) {
+            var enumPredefinedValues = resolveValidationConstraint(validator.predefinedValues);
+            if (!(enumPredefinedValues instanceof Array)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" belongs to an enum that has no predefined values');
-            } else if (validator.predefinedValues.indexOf(itemValue) < 0) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + validator.predefinedValues.toString());
+            } else if (enumPredefinedValues.indexOf(itemValue) < 0) {
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + enumPredefinedValues.toString());
             }
             break;
           case 'object':
+            var childPropertyValidators = resolveValidationConstraint(validator.propertyValidators);
             if (typeof itemValue !== 'object' || itemValue instanceof Array) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object');
-            } else if (validator.propertyValidators) {
-              validateProperties(validator.propertyValidators, validator.allowUnknownProperties);
+            } else if (childPropertyValidators) {
+              validateProperties(childPropertyValidators, resolveValidationConstraint(validator.allowUnknownProperties));
             }
             break;
           case 'array':
-            validateArray(validator.arrayElementsValidator);
+            validateArray(resolveValidationConstraint(validator.arrayElementsValidator));
             break;
           case 'hashtable':
             validateHashtable(validator);
@@ -267,7 +285,7 @@ function() {
             // This is not a document validation error; the item validator is configured incorrectly and must be fixed
             throw({ forbidden: 'No data type defined for validator of item "' + buildItemPath(itemStack) + '"' });
         }
-      } else if (validator.required) {
+      } else if (resolveValidationConstraint(validator.required)) {
         // The item has no value (either it's null or undefined), but the validator indicates it is required
         validationErrors.push('required item "' + buildItemPath(itemStack) + '" is missing');
       }
@@ -422,8 +440,8 @@ function() {
     }
 
     function validateHashtable(validator) {
-      var keyValidator = validator.hashtableKeysValidator;
-      var valueValidator = validator.hashtableValuesValidator;
+      var keyValidator = resolveValidationConstraint(validator.hashtableKeysValidator);
+      var valueValidator = resolveValidationConstraint(validator.hashtableValuesValidator);
       var currentItemEntry = itemStack[itemStack.length - 1];
       var itemValue = currentItemEntry.itemValue;
       var oldItemValue = currentItemEntry.oldItemValue;
@@ -443,11 +461,12 @@ function() {
             if (typeof elementKey !== 'string') {
               validationErrors.push('hashtable key "' + fullKeyPath + '" is not a string');
             } else {
-              if (keyValidator.mustNotBeEmpty && elementKey.length < 1) {
+              if (resolveValidationConstraint(keyValidator.mustNotBeEmpty) && elementKey.length < 1) {
                 validationErrors.push('empty hashtable key in item "' + buildItemPath(itemStack) + '" is not allowed');
               }
-              if (keyValidator.regexPattern && !(keyValidator.regexPattern.test(elementKey))) {
-                validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format ' + keyValidator.regexPattern);
+              var regexPattern = resolveValidationConstraint(keyValidator.regexPattern);
+              if (regexPattern && !(regexPattern.test(elementKey))) {
+                validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format ' + regexPattern);
               }
             }
           }
@@ -470,12 +489,14 @@ function() {
           }
         }
 
-        if (!isValueNullOrUndefined(validator.maximumSize) && size > validator.maximumSize) {
-          validationErrors.push('hashtable "' + hashtablePath + '" must not be larger than ' + validator.maximumSize + ' elements');
+        var maximumSize = resolveValidationConstraint(validator.maximumSize);
+        if (!isValueNullOrUndefined(maximumSize) && size > maximumSize) {
+          validationErrors.push('hashtable "' + hashtablePath + '" must not be larger than ' + maximumSize + ' elements');
         }
 
-        if (!isValueNullOrUndefined(validator.minimumSize) && size < validator.minimumSize) {
-          validationErrors.push('hashtable "' + hashtablePath + '" must not be smaller than ' + validator.minimumSize + ' elements');
+        var minimumSize = resolveValidationConstraint(validator.minimumSize);
+        if (!isValueNullOrUndefined(minimumSize) && size < minimumSize) {
+          validationErrors.push('hashtable "' + hashtablePath + '" must not be smaller than ' + minimumSize + ' elements');
         }
       }
     }
@@ -489,10 +510,11 @@ function() {
       } else {
         attachmentReferenceValidators[itemValue] = validator;
 
-        if (validator.supportedExtensions) {
-          var extRegex = buildSupportedExtensionsRegex(validator.supportedExtensions);
+        var supportedExtensions = resolveValidationConstraint(validator.supportedExtensions);
+        if (supportedExtensions) {
+          var extRegex = buildSupportedExtensionsRegex(supportedExtensions);
           if (!extRegex.test(itemValue)) {
-            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported file extension (' + validator.supportedExtensions.join(',') + ')');
+            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported file extension (' + supportedExtensions.join(',') + ')');
           }
         }
 
@@ -504,12 +526,14 @@ function() {
         if (doc._attachments && doc._attachments[itemValue]) {
           var attachment = doc._attachments[itemValue];
 
-          if (validator.supportedContentTypes && validator.supportedContentTypes.indexOf(attachment.content_type) < 0) {
-              validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported content type (' + validator.supportedContentTypes.join(',') + ')');
+          var supportedContentTypes = resolveValidationConstraint(validator.supportedContentTypes);
+          if (supportedContentTypes && supportedContentTypes.indexOf(attachment.content_type) < 0) {
+            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported content type (' + supportedContentTypes.join(',') + ')');
           }
 
-          if (!isValueNullOrUndefined(validator.maximumSize) && attachment.length > validator.maximumSize) {
-            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must not be larger than ' + validator.maximumSize + ' bytes');
+          var maximumSize = resolveValidationConstraint(validator.maximumSize);
+          if (!isValueNullOrUndefined(maximumSize) && attachment.length > maximumSize) {
+            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must not be larger than ' + maximumSize + ' bytes');
           }
         }
       }
