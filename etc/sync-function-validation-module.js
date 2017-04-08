@@ -99,13 +99,13 @@ function() {
 
     // The following functions are nested within this function so they can share access to the doc, oldDoc and validationErrors params and
     // the attachmentReferenceValidators and itemStack variables
-    function resolveValidationConstraint(constraint) {
-      if (typeof(constraint) === 'function') {
+    function resolveValidationConstraint(constraintDefinition) {
+      if (typeof(constraintDefinition) === 'function') {
         var currentItemEntry = itemStack[itemStack.length - 1];
 
-        return constraint(currentItemEntry.itemValue, currentItemEntry.oldItemValue, doc, oldDoc);
+        return constraintDefinition(currentItemEntry.itemValue, currentItemEntry.oldItemValue, doc, oldDoc);
       } else {
-        return constraint;
+        return constraintDefinition;
       }
     }
 
