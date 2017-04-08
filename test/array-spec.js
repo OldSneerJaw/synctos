@@ -34,4 +34,58 @@ describe('Array validation type', function() {
       testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.maximumLengthViolation('lengthValidationProp', 2));
     });
   });
+
+  describe('non-empty constraint', function() {
+    describe('with static validation', function() {
+      it('allows a doc with an array that is not empty', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          staticNonEmptyProp: [ 'foo' ]
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc with an empty array', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          staticNonEmptyProp: [ ]
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyProp'));
+      });
+    });
+
+    describe('with dynamic validation', function() {
+      it('allows a doc with an array that is not empty', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          dynamicNonEmptyProp: [ 'foo' ],
+          dynamicPropertiesMustNotBeEmpty: true
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('allows a doc with an array that is empty if the constraint is disabled', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          dynamicNonEmptyProp: [ ],
+          dynamicPropertiesMustNotBeEmpty: false
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc with an empty array if the constraint is enabled', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          dynamicNonEmptyProp: [ ],
+          dynamicPropertiesMustNotBeEmpty: true
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyProp'));
+      });
+    });
+  });
 });
