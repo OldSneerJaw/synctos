@@ -18,15 +18,9 @@ describe('Required value constraint', function() {
         dateProp: '1970-01-01',
         enumProp: 0,
         attachmentReferenceProp: '',
-        arrayProp: [
-          ''
-        ],
-        objectProp: {
-          subProp: 0
-        },
-        hashtableProp: {
-          'key': 0.0
-        }
+        arrayProp: [ '' ],
+        objectProp: { subProp: 0 },
+        hashtableProp: { 'key': 0.0 }
       };
 
       testHelper.verifyDocumentCreated(doc);

@@ -5,12 +5,21 @@
     },
     channels: { write: 'write' },
     propertyValidators: {
-      enumProp: {
+      staticEnumProp: {
         type: 'enum',
         predefinedValues: [ 'value1', 2 ]
       },
       invalidEnumProp: {
         type: 'enum'
+      },
+      dynamicPredefinedValues: {
+        type: 'array'
+      },
+      dynamicEnumProp: {
+        type: 'enum',
+        predefinedValues: function(value, oldValue, doc, oldDoc) {
+          return doc.dynamicPredefinedValues;
+        }
       }
     }
   }
