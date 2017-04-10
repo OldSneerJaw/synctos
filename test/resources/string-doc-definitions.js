@@ -11,6 +11,10 @@ function() {
     return doc.dynamicLengthPropertyIsValid ? value.length : value.length - 1;
   }
 
+  function dynamicRegexPattern(value, oldValue, doc, oldDoc) {
+    return oldDoc ? new RegExp(oldDoc.dynamicRegex) : new RegExp(doc.dynamicRegex);
+  }
+
   return {
     stringDoc: {
       channels: { write: 'write' },
@@ -43,6 +47,18 @@ function() {
         dynamicNonEmptyProp: {
           type: 'string',
           mustNotBeEmpty: isNonEmpty
+        },
+        staticRegexPatternProp: {
+          type: 'string',
+          regexPattern: /^\d+$/
+        },
+        dynamicRegex: {
+          type: 'string',
+          immutable: true
+        },
+        dynamicRegexPatternProp: {
+          type: 'string',
+          regexPattern: dynamicRegexPattern
         }
       }
     }

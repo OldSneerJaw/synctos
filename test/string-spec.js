@@ -118,4 +118,53 @@ describe('String validation type', function() {
       });
     });
   });
+
+  describe('regular expression pattern constraint', function() {
+    describe('with static validation', function() {
+      it('allows a doc with a string that matches the expected pattern', function() {
+        var doc = {
+          _id: 'stringDoc',
+          staticRegexPatternProp: '0472'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc with a string that does not match the expected pattern', function() {
+        var doc = {
+          _id: 'stringDoc',
+          staticRegexPatternProp: 'foobar'
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.regexPatternItemViolation('staticRegexPatternProp', /^\d+$/));
+      });
+    });
+
+    describe('with dynamic validation', function() {
+      var testRegexPattern = '^[a-zA-Z]+$';
+
+      it('allows a doc with a string that matches the expected pattern', function() {
+        var doc = {
+          _id: 'stringDoc',
+          dynamicRegexPatternProp: 'fooBAR',
+          dynamicRegex: testRegexPattern
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc with a string that does not match the expected pattern', function() {
+        var doc = {
+          _id: 'stringDoc',
+          dynamicRegexPatternProp: 'foobar2',
+          dynamicRegex: testRegexPattern
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          errorFormatter.regexPatternItemViolation('dynamicRegexPatternProp', new RegExp(testRegexPattern)));
+      });
+    });
+  });
 });

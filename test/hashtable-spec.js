@@ -97,4 +97,68 @@ describe('Hashtable validation type', function() {
       });
     });
   });
+
+  describe('key regular expression pattern constraint', function() {
+    describe('with static validation', function() {
+      it('allows a doc when all keys match the expected pattern', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticKeyRegexPatternValidationProp: {
+            'Foobar': 'baz',
+            'Baz': 'qux'
+          }
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc when a key does not match the expected pattern', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticKeyRegexPatternValidationProp: {
+            '123': 'foo',
+            'bar': 'baz'
+          }
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'hashtableDoc',
+          errorFormatter.regexPatternHashtableKeyViolation('staticKeyRegexPatternValidationProp[123]', /^[a-zA-Z]+$/));
+      });
+    });
+
+    describe('with dynamic validation', function() {
+      var testRegexPattern = '^\\d+$';
+
+      it('allows a doc with a string that matches the expected pattern', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicKeyRegexPatternValidationProp: {
+            '1': 'foo',
+            '2': 'bar'
+          },
+          dynamicKeyRegex: testRegexPattern
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc with a string that does not match the expected pattern', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicKeyRegexPatternValidationProp: {
+            '1': 'foo',
+            'bar': 'baz'
+          },
+          dynamicKeyRegex: testRegexPattern
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'hashtableDoc',
+          errorFormatter.regexPatternHashtableKeyViolation('dynamicKeyRegexPatternValidationProp[bar]', new RegExp(testRegexPattern)));
+      });
+    });
+  });
 });
