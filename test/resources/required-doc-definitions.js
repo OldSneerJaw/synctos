@@ -47,15 +47,29 @@ function() {
         },
         arrayProp: {
           type: 'array',
-          required: true
+          required: true,
+          arrayElementsValidator: {
+            type: 'string',
+            required: true
+          }
         },
         objectProp: {
           type: 'object',
-          required: true
+          required: true,
+          propertyValidators: {
+            subProp: {
+              type: 'integer',
+              required: true
+            }
+          }
         },
         hashtableProp: {
           type: 'hashtable',
-          required: true
+          required: true,
+          hashtableValuesValidator: {
+            type: 'float',
+            required: true
+          }
         }
       }
     },
@@ -101,15 +115,29 @@ function() {
         },
         arrayProp: {
           type: 'array',
-          required: isRequired
+          required: isRequired,
+          arrayElementsValidator: {
+            type: 'string',
+            required: isRequired
+          }
         },
         objectProp: {
           type: 'object',
-          required: isRequired
+          required: isRequired,
+          propertyValidators: {
+            subProp: {
+              type: 'integer',
+              required: isRequired
+            }
+          }
         },
         hashtableProp: {
           type: 'hashtable',
-          required: isRequired
+          required: isRequired,
+          hashtableValuesValidator: {
+            type: 'float',
+            required: isRequired
+          }
         }
       }
     }
