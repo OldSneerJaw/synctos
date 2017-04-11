@@ -1,5 +1,5 @@
 function() {
-  function isImmutable(value, oldValue, doc, oldDoc) {
+  function isImmutable(doc, oldDoc, value, oldValue) {
     return oldDoc ? oldDoc.dynamicPropertiesAreImmutable : doc.dynamicPropertiesAreImmutable;
   }
 

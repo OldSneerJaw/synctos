@@ -1,5 +1,5 @@
 function() {
-  function dynamicType(value, oldValue, doc, oldDoc) {
+  function dynamicType(doc, oldDoc, value, oldValue) {
     return doc.expectedDynamicType;
   }
 
@@ -67,16 +67,16 @@ function() {
         },
         dynamicTypeProp: {
           type: dynamicType,
-          minimumValue: function(value, oldValue, doc, oldDoc) {
+          minimumValue: function(doc, oldDoc, value, oldValue) {
             return doc.expectedDynamicMinimumValue;
           },
-          minimumValueExclusive: function(value, oldValue, doc, oldDoc) {
+          minimumValueExclusive: function(doc, oldDoc, value, oldValue) {
             return doc.expectedDynamicMinimumExclusiveValue;
           },
-          maximumValue: function(value, oldValue, doc, oldDoc) {
+          maximumValue: function(doc, oldDoc, value, oldValue) {
             return doc.expectedDynamicMaximumValue;
           },
-          maximumValueExclusive: function(value, oldValue, doc, oldDoc) {
+          maximumValueExclusive: function(doc, oldDoc, value, oldValue) {
             return doc.expectedDynamicMaximumExclusiveValue;
           }
         }

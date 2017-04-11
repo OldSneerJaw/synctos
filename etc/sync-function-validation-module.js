@@ -103,7 +103,7 @@ function() {
       if (typeof(constraintDefinition) === 'function') {
         var currentItemEntry = itemStack[itemStack.length - 1];
 
-        return constraintDefinition(currentItemEntry.itemValue, currentItemEntry.oldItemValue, doc, oldDoc);
+        return constraintDefinition(doc, oldDoc, currentItemEntry.itemValue, currentItemEntry.oldItemValue);
       } else {
         return constraintDefinition;
       }

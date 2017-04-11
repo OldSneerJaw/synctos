@@ -1,17 +1,17 @@
 function () {
-  function minimumNumericValue(value, oldValue, doc, oldDoc) {
+  function minimumNumericValue(doc, oldDoc, value, oldValue) {
     return doc.dynamicPropertyValuesAllowed ? value - 1 : value + 1;
   }
 
-  function maximumNumericValue(value, oldValue, doc, oldDoc) {
+  function maximumNumericValue(doc, oldDoc, value, oldValue) {
     return doc.dynamicPropertyValuesAllowed ? value + 1 : value - 1;
   }
 
-  function minimumDateValue(value, oldValue, doc, oldDoc) {
+  function minimumDateValue(doc, oldDoc, value, oldValue) {
     return doc.dynamicPropertyValuesAllowed ? '0000-01-01' : '9999-12-31';
   }
 
-  function maximumDateValue(value, oldValue, doc, oldDoc) {
+  function maximumDateValue(doc, oldDoc, value, oldValue) {
     return doc.dynamicPropertyValuesAllowed ? '9999-12-31' : '0000-01-01';
   }
 

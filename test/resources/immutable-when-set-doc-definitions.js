@@ -15,7 +15,7 @@
       },
       dynamicValidationProp: {
         type: 'integer',
-        immutableWhenSet: function(value, oldValue, doc, oldDoc) {
+        immutableWhenSet: function(doc, oldDoc, value, oldValue) {
           return oldDoc ? oldDoc.dynamicPropertiesAreImmutable : doc.dynamicPropertiesAreImmutable;
         }
       }

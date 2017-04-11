@@ -17,7 +17,7 @@
       },
       dynamicEnumProp: {
         type: 'enum',
-        predefinedValues: function(value, oldValue, doc, oldDoc) {
+        predefinedValues: function(doc, oldDoc, value, oldValue) {
           return doc.dynamicPredefinedValues;
         }
       }
