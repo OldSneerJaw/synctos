@@ -10,8 +10,7 @@ function() {
       channels: { write: 'write' },
       propertyValidators: {
         dynamicReferenceId: {
-          type: 'integer',
-          immutable: true
+          type: 'integer'
         },
         validationByDocProperty: {
           // This property's regex is defined by another property on the document. It is used to verify that the correct values are passed

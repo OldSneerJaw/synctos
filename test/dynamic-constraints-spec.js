@@ -22,9 +22,9 @@ describe('Dynamic constraints', function() {
     var doc = {
       _id: 'my-doc',
       type: 'myDoc',
-      dynamicReferenceId: 0,
-      validationByDocProperty: 'foo-0-bar',
-      validationByValueProperty: -34
+      dynamicReferenceId: 5,
+      validationByDocProperty: 'foo-0-bar', // Note that the new value must be constructed from the old doc's dynamicReferenceId
+      validationByValueProperty: -34 // Note that the new value must equal the old value + 1
     };
     var oldDoc = {
       _id: 'my-doc',
@@ -80,9 +80,9 @@ describe('Dynamic constraints', function() {
     var doc = {
       _id: 'my-doc',
       type: 'myDoc',
-      dynamicReferenceId: 1,
-      validationByDocProperty: 'foo-0-bar',
-      validationByValueProperty: 20
+      dynamicReferenceId: 2,
+      validationByDocProperty: 'foo-2-bar', // Note that the new value must be constructed from the old doc's dynamicReferenceId
+      validationByValueProperty: 20 // Note that the new value must equal the old value + 1
     };
     var oldDoc = {
       _id: 'my-doc',
