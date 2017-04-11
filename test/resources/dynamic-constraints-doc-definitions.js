@@ -1,7 +1,7 @@
 function() {
   function sequenceValue(doc, oldDoc, value, oldValue) {
     var effectiveCurrentValue = (value >= 0) ? value : 0;
-    return isValueNullOrUndefined(oldValue) ? effectiveCurrentValue : oldValue + 1;
+    return oldDoc ? oldValue + 1 : effectiveCurrentValue;
   }
 
   return {

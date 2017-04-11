@@ -6,7 +6,7 @@ describe('Dynamic constraints', function() {
     testHelper.init('build/sync-functions/test-dynamic-constraints-sync-function.js');
   });
 
-  it('allows a doc to be created when the property constraints are satisfied', function() {
+  it('allows a new doc to be created when the property constraints are satisfied', function() {
     var doc = {
       _id: 'my-doc',
       type: 'myDoc',
@@ -18,7 +18,7 @@ describe('Dynamic constraints', function() {
     testHelper.verifyDocumentCreated(doc);
   });
 
-  it('allows a doc to be replaced when the property constraints are satisfied', function() {
+  it('allows an existing doc to be replaced when the property constraints are satisfied', function() {
     var doc = {
       _id: 'my-doc',
       type: 'myDoc',
@@ -32,6 +32,26 @@ describe('Dynamic constraints', function() {
       dynamicReferenceId: 0,
       validationByDocProperty: 'foo-0-bar',
       validationByValueProperty: -35
+    };
+
+    testHelper.verifyDocumentReplaced(doc, oldDoc);
+  });
+
+  it('allows a deleted doc to be replaced when the property constraints are satisfied', function() {
+    var doc = {
+      _id: 'my-doc',
+      type: 'myDoc',
+      dynamicReferenceId: 34,
+      validationByDocProperty: 'foo-34-bar',
+      validationByValueProperty: 7
+    };
+    var oldDoc = {
+      _id: 'my-doc',
+      _deleted: true,
+      type: 'myDoc',
+      dynamicReferenceId: 9,
+      validationByDocProperty: 'foo-9-bar',
+      validationByValueProperty: 500
     };
 
     testHelper.verifyDocumentReplaced(doc, oldDoc);
