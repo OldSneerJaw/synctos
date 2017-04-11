@@ -132,6 +132,57 @@ describe('Functionality that is common to all documents:', function() {
 
       testHelper.verifyDocumentNotCreated(doc, 'generalDoc', [ errorFormatter.typeConstraintViolation('stringProp', 'string') ], 'add');
     });
+
+    it('allows a value of the right type for a dynamic property type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        dynamicTypeProp: -56,
+        expectedDynamicType: 'integer',
+        expectedDynamicMinimumValue: -56,
+        expectedDynamicMinimumExclusiveValue: -57,
+        expectedDynamicMaximumValue: -56,
+        expectedDynamicMaximumExclusiveValue: -55
+      };
+
+      testHelper.verifyDocumentCreated(doc, 'add');
+    });
+
+    it('rejects a value that falls outside the minimum and maximum values for a dynamic property type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        dynamicTypeProp: 0,
+        expectedDynamicType: 'integer',
+        expectedDynamicMinimumValue: 1,
+        expectedDynamicMinimumExclusiveValue: 0,
+        expectedDynamicMaximumValue: -1,
+        expectedDynamicMaximumExclusiveValue: 0
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'generalDoc',
+        [
+          errorFormatter.minimumValueViolation('dynamicTypeProp', 1),
+          errorFormatter.minimumValueExclusiveViolation('dynamicTypeProp', 0),
+          errorFormatter.maximumValueViolation('dynamicTypeProp', -1),
+          errorFormatter.maximumValueExclusiveViolation('dynamicTypeProp', 0)
+        ],
+        'add');
+    });
+
+    it('rejects a value of the wrong type for a dynamic property type', function() {
+      var doc = {
+        _id: 'generalDoc',
+        dynamicTypeProp: 9.5,
+        expectedDynamicType: 'string'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'generalDoc',
+        [ errorFormatter.typeConstraintViolation('dynamicTypeProp', 'string') ],
+        'add');
+    });
   });
 
   it('cannot specify whitelisted properties below the root level of the document', function() {

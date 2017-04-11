@@ -117,7 +117,7 @@ function() {
       var supportedProperties = [ ];
       for (var propertyValidatorName in propertyValidators) {
         var validator = propertyValidators[propertyValidatorName];
-        if (isValueNullOrUndefined(validator) || isValueNullOrUndefined(validator.type)) {
+        if (isValueNullOrUndefined(validator) || isValueNullOrUndefined(resolveValidationConstraint(validator.type))) {
           // Skip over non-validator fields/properties
           continue;
         }
@@ -162,6 +162,7 @@ function() {
     function validateItemValue(validator) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var itemValue = currentItemEntry.itemValue;
+      var validatorType = resolveValidationConstraint(validator.type);
 
       if (validator.customValidation) {
         performCustomValidation(validator);
@@ -185,7 +186,7 @@ function() {
           var minComparator = function(left, right) {
             return left < right;
           };
-          validateRangeConstraint(minimumValue, validator.type, minComparator, 'less than');
+          validateRangeConstraint(minimumValue, validatorType, minComparator, 'less than');
         }
 
         var minimumValueExclusive = resolveValidationConstraint(validator.minimumValueExclusive);
@@ -193,7 +194,7 @@ function() {
           var minExclusiveComparator = function(left, right) {
             return left <= right;
           };
-          validateRangeConstraint(minimumValueExclusive, validator.type, minExclusiveComparator, 'less than or equal to');
+          validateRangeConstraint(minimumValueExclusive, validatorType, minExclusiveComparator, 'less than or equal to');
         }
 
         var maximumValue = resolveValidationConstraint(validator.maximumValue);
@@ -201,7 +202,7 @@ function() {
           var maxComparator = function(left, right) {
             return left > right;
           };
-          validateRangeConstraint(maximumValue, validator.type, maxComparator, 'greater than');
+          validateRangeConstraint(maximumValue, validatorType, maxComparator, 'greater than');
         }
 
         var maximumValueExclusive = resolveValidationConstraint(validator.maximumValueExclusive);
@@ -209,7 +210,7 @@ function() {
           var maxExclusiveComparator = function(left, right) {
             return left >= right;
           };
-          validateRangeConstraint(maximumValueExclusive, validator.type, maxExclusiveComparator, 'greater than or equal to');
+          validateRangeConstraint(maximumValueExclusive, validatorType, maxExclusiveComparator, 'greater than or equal to');
         }
 
         var minimumLength = resolveValidationConstraint(validator.minimumLength);
@@ -222,7 +223,7 @@ function() {
           validationErrors.push('length of item "' + buildItemPath(itemStack) + '" must not be greater than ' + maximumLength);
         }
 
-        switch (validator.type) {
+        switch (validatorType) {
           case 'string':
             var regexPattern = resolveValidationConstraint(validator.regexPattern);
             if (typeof itemValue !== 'string') {
