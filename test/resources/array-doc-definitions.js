@@ -1,6 +1,6 @@
 function() {
   function isNonEmpty(doc, oldDoc, value, oldValue) {
-    return oldDoc ? oldDoc.dynamicMustNotBeEmptyPropertiesEnforced : doc.dynamicMustNotBeEmptyPropertiesEnforced;
+    return doc.dynamicMustNotBeEmptyPropertiesEnforced;
   }
 
   function minimumDynamicLength(doc, oldDoc, value, oldValue) {
@@ -24,8 +24,7 @@ function() {
           maximumLength: 2
         },
         dynamicLengthPropertyIsValid: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
         dynamicLengthValidationProp: {
           type: 'array',
@@ -37,8 +36,7 @@ function() {
           mustNotBeEmpty: true
         },
         dynamicMustNotBeEmptyPropertiesEnforced: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
         dynamicNonEmptyValidationProp: {
           type: 'array',

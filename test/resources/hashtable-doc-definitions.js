@@ -1,10 +1,14 @@
 function() {
   function isNonEmpty(doc, oldDoc, value, oldValue) {
-    return oldDoc ? oldDoc.dynamicKeysMustNotBeEmpty : doc.dynamicKeysMustNotBeEmpty;
+    return doc.dynamicKeysMustNotBeEmpty;
   }
 
   function dynamicRegexPattern(doc, oldDoc, value, oldValue) {
-    return oldDoc ? new RegExp(oldDoc.dynamicKeyRegex) : new RegExp(doc.dynamicKeyRegex);
+    return new RegExp(doc.dynamicKeyRegex);
+  }
+
+  function dynamicSizeConstraint(doc, oldDoc, value, oldValue) {
+    return doc.dynamicSize;
   }
 
   return {
@@ -14,22 +18,29 @@ function() {
         return doc._id === 'hashtableDoc';
       },
       propertyValidators: {
-        sizeValidationProp: {
+        staticSizeValidationProp: {
           type: 'hashtable',
           minimumSize: 2,
           maximumSize: 2
         },
-        staticNonEmptyKeyProp: {
+        dynamicSize: {
+          type: 'integer'
+        },
+        dynamicSizeValidationProp: {
+          type: 'hashtable',
+          minimumSize: dynamicSizeConstraint,
+          maximumSize: dynamicSizeConstraint
+        },
+        staticNonEmptyKeyValidationProp: {
           type: 'hashtable',
           hashtableKeysValidator: {
             mustNotBeEmpty: true
           }
         },
         dynamicKeysMustNotBeEmpty: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
-        dynamicNonEmptyKeyProp: {
+        dynamicNonEmptyKeyValidationProp: {
           type: 'hashtable',
           hashtableKeysValidator: {
             mustNotBeEmpty: isNonEmpty
@@ -42,8 +53,7 @@ function() {
           }
         },
         dynamicKeyRegex: {
-          type: 'string',
-          immutable: true
+          type: 'string'
         },
         dynamicKeyRegexPatternValidationProp: {
           type: 'hashtable',
