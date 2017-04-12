@@ -70,7 +70,7 @@ describe('String validation type', function() {
       it('allows a doc with a string that is not empty', function() {
         var doc = {
           _id: 'stringDoc',
-          staticNonEmptyProp: 'foo'
+          staticNonEmptyValidationProp: 'foo'
         };
 
         testHelper.verifyDocumentCreated(doc);
@@ -79,10 +79,10 @@ describe('String validation type', function() {
       it('blocks a doc with an empty string', function() {
         var doc = {
           _id: 'stringDoc',
-          staticNonEmptyProp: ''
+          staticNonEmptyValidationProp: ''
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyProp'));
+        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyValidationProp'));
       });
     });
 
@@ -90,7 +90,7 @@ describe('String validation type', function() {
       it('allows a doc with a string that is not empty', function() {
         var doc = {
           _id: 'stringDoc',
-          dynamicNonEmptyProp: 'bar',
+          dynamicNonEmptyValidationProp: 'bar',
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
@@ -100,7 +100,7 @@ describe('String validation type', function() {
       it('allows a doc with a string that is empty if the constraint is disabled', function() {
         var doc = {
           _id: 'stringDoc',
-          dynamicNonEmptyProp: '',
+          dynamicNonEmptyValidationProp: '',
           dynamicMustNotBeEmptyPropertiesEnforced: false
         };
 
@@ -110,11 +110,11 @@ describe('String validation type', function() {
       it('blocks a doc with an empty string if the constraint is enabled', function() {
         var doc = {
           _id: 'stringDoc',
-          dynamicNonEmptyProp: '',
+          dynamicNonEmptyValidationProp: '',
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyProp'));
+        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyValidationProp'));
       });
     });
   });
@@ -124,7 +124,7 @@ describe('String validation type', function() {
       it('allows a doc with a string that matches the expected pattern', function() {
         var doc = {
           _id: 'stringDoc',
-          staticRegexPatternProp: '0472'
+          staticRegexPatternValidationProp: '0472'
         };
 
         testHelper.verifyDocumentCreated(doc);
@@ -133,10 +133,10 @@ describe('String validation type', function() {
       it('blocks a doc with a string that does not match the expected pattern', function() {
         var doc = {
           _id: 'stringDoc',
-          staticRegexPatternProp: 'foobar'
+          staticRegexPatternValidationProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.regexPatternItemViolation('staticRegexPatternProp', /^\d+$/));
+        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.regexPatternItemViolation('staticRegexPatternValidationProp', /^\d+$/));
       });
     });
 
@@ -146,7 +146,7 @@ describe('String validation type', function() {
       it('allows a doc with a string that matches the expected pattern', function() {
         var doc = {
           _id: 'stringDoc',
-          dynamicRegexPatternProp: 'fooBAR',
+          dynamicRegexPatternValidationProp: 'fooBAR',
           dynamicRegex: testRegexPattern
         };
 
@@ -156,14 +156,14 @@ describe('String validation type', function() {
       it('blocks a doc with a string that does not match the expected pattern', function() {
         var doc = {
           _id: 'stringDoc',
-          dynamicRegexPatternProp: 'foobar2',
+          dynamicRegexPatternValidationProp: 'foobar2',
           dynamicRegex: testRegexPattern
         };
 
         testHelper.verifyDocumentNotCreated(
           doc,
           'stringDoc',
-          errorFormatter.regexPatternItemViolation('dynamicRegexPatternProp', new RegExp(testRegexPattern)));
+          errorFormatter.regexPatternItemViolation('dynamicRegexPatternValidationProp', new RegExp(testRegexPattern)));
       });
     });
   });

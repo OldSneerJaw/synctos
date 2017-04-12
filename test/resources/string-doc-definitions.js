@@ -36,7 +36,7 @@ function() {
           minimumLength: minimumDynamicLength,
           maximumLength: maximumDynamicLength
         },
-        staticNonEmptyProp: {
+        staticNonEmptyValidationProp: {
           type: 'string',
           mustNotBeEmpty: true
         },
@@ -44,11 +44,11 @@ function() {
           type: 'boolean',
           immutable: true
         },
-        dynamicNonEmptyProp: {
+        dynamicNonEmptyValidationProp: {
           type: 'string',
           mustNotBeEmpty: isNonEmpty
         },
-        staticRegexPatternProp: {
+        staticRegexPatternValidationProp: {
           type: 'string',
           regexPattern: /^\d+$/
         },
@@ -56,7 +56,7 @@ function() {
           type: 'string',
           immutable: true
         },
-        dynamicRegexPatternProp: {
+        dynamicRegexPatternValidationProp: {
           type: 'string',
           regexPattern: dynamicRegexPattern
         }

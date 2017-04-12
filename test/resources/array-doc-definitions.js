@@ -32,7 +32,7 @@ function() {
           minimumLength: minimumDynamicLength,
           maximumLength: maximumDynamicLength
         },
-        staticNonEmptyProp: {
+        staticNonEmptyValidationProp: {
           type: 'array',
           mustNotBeEmpty: true
         },
@@ -40,9 +40,33 @@ function() {
           type: 'boolean',
           immutable: true
         },
-        dynamicNonEmptyProp: {
+        dynamicNonEmptyValidationProp: {
           type: 'array',
           mustNotBeEmpty: isNonEmpty
+        },
+        staticArrayElementsValidatorProp: {
+          type: 'array',
+          arrayElementsValidator: {
+            type: 'integer',
+            required: true,
+            minimumValue: 0,
+            maximumValue: 2
+          }
+        },
+        dynamicArrayElementsType: {
+          type: 'string'
+        },
+        dynamicArrayElementsRequired: {
+          type: 'boolean'
+        },
+        dynamicArrayElementsValidatorProp: {
+          type: 'array',
+          arrayElementsValidator: function(doc, oldDoc, value, oldValue) {
+            return {
+              type: doc.dynamicArrayElementsType,
+              required: doc.dynamicArrayElementsRequired
+            };
+          }
         }
       }
     }
