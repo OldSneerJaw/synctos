@@ -243,4 +243,76 @@ describe('Hashtable validation type', function() {
       testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicKeysValidatorProp'));
     });
   });
+
+  describe('hashtable values validator', function() {
+    describe('with static validation', function() {
+      it('allows a hashtable with valid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticValuesValidatorProp: {
+            '1': 'foo',
+            '2': 'bar',
+            '3': 'baz'
+          }
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a hashtable with invalid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticValuesValidatorProp: {
+            '1': 'foo',
+            '2': '',
+            '3': null,
+            '4': undefined,
+            '5': 13
+          }
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'hashtableDoc',
+          [
+            errorFormatter.mustNotBeEmptyViolation('staticValuesValidatorProp[2]'),
+            errorFormatter.requiredValueViolation('staticValuesValidatorProp[3]'),
+            errorFormatter.requiredValueViolation('staticValuesValidatorProp[4]'),
+            errorFormatter.typeConstraintViolation('staticValuesValidatorProp[5]', 'string')
+          ]);
+      });
+    });
+
+    describe('with dynamic validation', function() {
+      it('allows a hashtable with valid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicValuesValidatorProp: {
+            '1': 'foo',
+            '2': 'bar',
+            '3': 'baz'
+          },
+          dynamicValuesType: 'string'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a hashtable with invalid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicValuesValidatorProp: {
+            '1': 1.93,
+            '2': 'foo'
+          },
+          dynamicValuesType: 'float'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'hashtableDoc',
+          [ errorFormatter.typeConstraintViolation('dynamicValuesValidatorProp[2]', 'float') ]);
+      });
+    });
+  });
 });

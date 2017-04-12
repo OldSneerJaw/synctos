@@ -73,6 +73,23 @@ function() {
               mustNotBeEmpty: itemCount > 1 ? true : false
             };
           }
+        },
+        staticValuesValidatorProp: {
+          type: 'hashtable',
+          hashtableValuesValidator: {
+            type: 'string',
+            required: true,
+            mustNotBeEmpty: true
+          }
+        },
+        dynamicValuesType: {
+          type: 'string'
+        },
+        dynamicValuesValidatorProp: {
+          type: 'hashtable',
+          hashtableValuesValidator: function(doc, oldDoc, value, oldValue) {
+            return { type: doc.dynamicValuesType };
+          }
         }
       }
     }
