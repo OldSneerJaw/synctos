@@ -60,6 +60,19 @@ function() {
           hashtableKeysValidator: {
             regexPattern: dynamicRegexPattern
           }
+        },
+        dynamicKeysValidatorProp: {
+          type: 'hashtable',
+          hashtableKeysValidator: function(doc, oldDoc, value, oldValue) {
+            var itemCount = 0;
+            for (var itemKey in value) {
+              itemCount++;
+            }
+
+            return {
+              mustNotBeEmpty: itemCount > 1 ? true : false
+            };
+          }
         }
       }
     }

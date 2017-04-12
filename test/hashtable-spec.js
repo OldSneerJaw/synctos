@@ -202,4 +202,45 @@ describe('Hashtable validation type', function() {
       });
     });
   });
+
+  describe('dynamic keys validator', function() {
+    it('allows a hashtable with only non-empty keys', function() {
+      var doc = {
+        _id: 'hashtableDoc',
+
+        // Keys need must be non-empty strings when there is more than one item in the hashtable
+        dynamicKeysValidatorProp: {
+          'a': 'foo',
+          'b': 'bar'
+        }
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a hashtable with an empty key when that option is enabled', function() {
+      var doc = {
+        _id: 'hashtableDoc',
+
+        // Keys need may be empty strings when there is only a single item in the hashtable
+        dynamicKeysValidatorProp: { '': 'foo' }
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('blocks a hashtable with an empty key when that option is disabled', function() {
+      var doc = {
+        _id: 'hashtableDoc',
+
+        // Keys need must be non-empty strings when there is more than one item in the hashtable
+        dynamicKeysValidatorProp: {
+          'a': 'foo',
+          '': 'bar'
+        }
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicKeysValidatorProp'));
+    });
+  });
 });
