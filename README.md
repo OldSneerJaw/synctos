@@ -435,7 +435,7 @@ Validation for all simple and complex data types support the following additiona
 
 ##### Predefined validators:
 
-The following predefined validators may also be useful:
+The following predefined item validators may also be useful:
 
 * `typeIdValidator`: A property validator that is suitable for application to the property that specifies the type of a document. Its constraints include ensuring the value is a string, is neither null nor undefined, is not an empty string and cannot be modified. NOTE: If a document type specifies `simpleTypeFilter` as its type filter, it is not necessary to explicitly include a `type` property validator; it will be supported implicitly as a `typeIdValidator`. An example usage:
 
@@ -444,6 +444,46 @@ propertyValidators: {
   type: typeIdValidator,
   foobar: {
     type: 'string'
+  }
+}
+```
+
+##### Dynamic constraint validation:
+
+In addition to defining any of the item validation constraints above, including `type`, as static values (e.g. `maximumValue: 99`, `mustNotBeEmpty: true`), it is possible to specify them dynamically via function (e.g. `regexPattern: function(doc, oldDoc, value, oldValue) { ... }`). This is useful if, for example, the constraint should be based on the value of another property/element in the document or computed based on the previous stored value of the current property/element. The function should expect to receive the following parameters:
+
+1. The current document.
+2. The document that is being replaced (if any). Note that, if the document is missing (e.g. it doesn't exist yet) or it has been deleted, this parameter will be `null`.
+3. The current value of the property/element/key.
+4. The previous value of the property/element/key as stored in the revision of the document that is being replaced (if any).
+
+For example:
+
+```
+propertyValidators: {
+  sequence: {
+    type: 'integer',
+    required: true,
+    // The value must always increase by at least one with each revision
+    minimumValue: function(doc, oldDoc, value, oldValue) {
+      return !isValueNullOrUndefined(oldValue) ? oldValue + 1 : 0;
+    }
+  },
+  category: {
+    type: 'enum',
+    required: true,
+    // The list of valid categories depends on the beginning of the document's ID
+    predefinedValues: function(doc, oldDoc, value, oldValue) {
+      return (doc._id.indexOf('integerDoc-') === 0) ? [ 1, 2, 3 ] : [ 'a', 'b', 'c' ];
+    }
+  },
+  referenceId: {
+    type: 'string',
+    required: true,
+    // The reference ID must be constructed from the value of the category field
+    regexPattern: function(doc, oldDoc, value, oldValue) {
+      return new RegExp('^foobar-' + doc.category + '-[a-zA-Z_-]+$');
+    }
   }
 }
 ```
