@@ -10,7 +10,7 @@ function() {
 
   // Creates a RegExp to match the ID of an entity that belongs to a business
   function createBusinessEntityRegex(suffixPattern) {
-    return new RegExp('^biz\\.[A-Za-z0-9_-]+\\.' + suffixPattern + '$');
+    return new RegExp('^biz\\.\\d+\\.' + suffixPattern + '$');
   }
 
   // Checks that a business ID is valid (an integer greater than 0) and is not changed from the old version of the document
@@ -94,6 +94,9 @@ function() {
 
     // Configuration for a payment processor
     paymentProcessorDefinition: importDocumentDefinitionFragment('fragment-payment-processor-definition.js'),
+
+    // Describes a processed settlement from a payment processor
+    paymentProcessorSettlement: importDocumentDefinitionFragment('fragment-payment-processor-settlement.js')(),
 
     // A request/requisition for payment of an invoice
     paymentRequisition: importDocumentDefinitionFragment('fragment-payment-requisition.js'),
