@@ -43,8 +43,7 @@ function () {
           maximumValue: '2016-07-19'
         },
         dynamicPropertyValuesAllowed: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
         dynamicIntegerProp: {
           type: 'integer',
@@ -95,8 +94,7 @@ function () {
           maximumValueExclusive: '2016-07-20'
         },
         dynamicPropertyValuesAllowed: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
         dynamicIntegerProp: {
           type: 'integer',
