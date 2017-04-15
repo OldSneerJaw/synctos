@@ -38,7 +38,27 @@ function() {
         }
       }
     },
-    dynamicValidationDoc: {
+    dynamicPropertiesValidationDoc: {
+      typeFilter: simpleTypeFilter,
+      channels: docChannels,
+      allowUnknownProperties: function(doc, oldDoc, value, oldValue) {
+        return doc.unknownPropertiesAllowed;
+      },
+      propertyValidators: function(doc, oldDoc, value, oldValue) {
+        var props = {
+          unknownPropertiesAllowed: { type: 'boolean' }
+        };
+
+        if (doc._id === 'foobar') {
+          props.extraProperty = { type: 'float' };
+        } else {
+          props.extraProperty = { type: 'string' };
+        }
+
+        return props;
+      }
+    },
+    dynamicObjectValidationDoc: {
       typeFilter: simpleTypeFilter,
       channels: docChannels,
       propertyValidators: {

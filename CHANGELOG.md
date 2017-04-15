@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 - [#94](https://github.com/Kashoo/synctos/issues/94): Support dynamic item validation constraints
+- [#97](https://github.com/Kashoo/synctos/issues/97): Support dynamic document constraints
 
 ## [1.8.0] - 2017-03-21
 ### Added
