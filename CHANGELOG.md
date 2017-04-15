@@ -3,7 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-Nothing yet
+### Added
+- [#95](https://github.com/Kashoo/synctos/issues/95): Accept Date object for date/time constraint parameters
 
 ## [1.8.0] - 2017-03-21
 ### Added
