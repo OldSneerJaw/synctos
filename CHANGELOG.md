@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-Nothing yet
+- [#94](https://github.com/Kashoo/synctos/issues/94): Support dynamic validation constraint definitions
 
 ## [1.8.0] - 2017-03-21
 ### Added
