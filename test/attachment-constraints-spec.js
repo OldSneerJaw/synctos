@@ -4,7 +4,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('File attachment constraints:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-attachment-constraints-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-attachment-constraints-sync-function.js');
   });
 
   describe('a document type that does not require an attachment reference for each file attachment', function() {

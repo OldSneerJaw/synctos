@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Unknown property handling:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-unknown-properties-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-unknown-properties-sync-function.js');
   });
 
   describe('when unknown properties are specified at the document level', function() {

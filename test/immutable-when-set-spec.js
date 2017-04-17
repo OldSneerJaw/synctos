@@ -2,7 +2,7 @@ var testHelper = require('../etc/test-helper.js');
 
 describe('An item protected by the immutable-if-set constraint', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-immutable-when-set-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-immutable-when-set-sync-function.js');
   });
 
   it('can be set to a value in a new document', function() {

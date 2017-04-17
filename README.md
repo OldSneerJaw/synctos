@@ -617,7 +617,7 @@ Create a new `describe` block to encapsulate the forthcoming test cases and also
 ```
 describe('My new sync function', function() {
   beforeEach(function() {
-    testHelper.init('relative/path/to/my-generated-sync-function.js');
+    testHelper.initSyncFunction('relative/path/to/my-generated-sync-function.js');
   });
 
   ...
