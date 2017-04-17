@@ -49,7 +49,7 @@ At the top level, the document definitions object contains a property for each d
       }
     }
 
-##### Document type definitions:
+#### Document type definitions
 
 Each document type is specified as an object with the following properties:
 
@@ -277,11 +277,13 @@ An example of an `onAuthorizationSucceeded` custom action that stores a property
     }
 ```
 
-##### Content validation:
+#### Content validation
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
 
-Validation for simple data types:
+##### Simple type validation:
+
+Validation for simple data types (e.g. integers, floating point numbers, strings, dates/times, etc.):
 
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
@@ -310,13 +312,15 @@ Validation for simple data types:
   * `maximumValue`: Reject dates that are greater than this. May be either an ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
   * `maximumValueExclusive`: Reject dates that are greater than or equal to this. May be either an ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
 * `enum`: The value must be one of the specified predefined string and/or integer values. Additional parameters:
-  * `predefinedValues`: A list of strings and/or integers that are to be accepted. If this parameter is omitted from an `enum` property's configuration, that property will not accept a value of any kind.
+  * `predefinedValues`: A list of strings and/or integers that are to be accepted. If this parameter is omitted from an `enum` property's configuration, that property will not accept a value of any kind. For example: `[ 1, 2, 3, 'a', 'b', 'c' ]`
 * `attachmentReference`: The value is the name of one of the document's file attachments. Note that, because the addition of an attachment is often a separate Sync Gateway API operation from the creation/replacement of the associated document, this validation type is only applied if the attachment is actually present in the document. However, since the sync function is run twice in such situations (i.e. once when the _document_ is created/replaced and once when the _attachment_ is created/replaced), the validation will be performed eventually. The top-level `allowAttachments` property should be `true` so that documents of this type can actually store attachments. Additional parameters:
-  * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). Takes precedence over the document-level `supportedExtensions` constraint for the referenced attachment. No restriction by default.
-  * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-level `supportedContentTypes` constraint for the referenced attachment. No restriction by default.
-  * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Takes precedence over the document-level `maximumIndividualSize` constraint for the referenced attachment. Unlimited by default.
+  * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). Takes precedence over the document-wide `supportedExtensions` constraint for the referenced attachment. No restriction by default.
+  * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-wide `supportedContentTypes` constraint for the referenced attachment. No restriction by default.
+  * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Takes precedence over the document-wide `maximumIndividualSize` constraint for the referenced attachment. Unlimited by default.
 
-Validation for complex data types, which allow for nesting of child properties and elements:
+##### Complex type validation:
+
+Validation for complex data types (e.g. objects, arrays, hashtables):
 
 * `array`: An array/list of elements. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an array with no elements is not allowed. Defaults to `false`.
@@ -382,7 +386,9 @@ Validation for complex data types, which allow for nesting of child properties a
     }
 ```
 
-**NOTE**: Validation for all simple and complex data types support the following additional parameters:
+##### Universal constraint validation:
+
+Validation for all simple and complex data types support the following additional parameters:
 
 * `required`: The value cannot be null or undefined. Defaults to `false`.
 * `immutable`: The item cannot be changed from its existing value if the document is being replaced. The constraint is applied recursively so that, even if a value that is nested an arbitrary number of levels deep within an immutable complex type is modified, the document change will be rejected. Does not apply when creating a new document or deleting an existing document. Defaults to `false`.
@@ -427,7 +433,9 @@ Validation for complex data types, which allow for nesting of child properties a
     }
 ```
 
-The following predefined property validators may also be useful:
+##### Predefined validators:
+
+The following predefined validators may also be useful:
 
 * `typeIdValidator`: A property validator that is suitable for application to the property that specifies the type of a document. Its constraints include ensuring the value is a string, is neither null nor undefined, is not an empty string and cannot be modified. NOTE: If a document type specifies `simpleTypeFilter` as its type filter, it is not necessary to explicitly include a `type` property validator; it will be supported implicitly as a `typeIdValidator`. An example usage:
 
@@ -521,7 +529,7 @@ function() {
 
 As demonstrated above, the advantage of defining a function rather than an object is that you may also define variables and functions that can be shared between document types but at the cost of some brevity.
 
-##### Modularity
+#### Modularity
 
 Document definitions are also modular. By invoking the `importDocumentDefinitionFragment` macro, the contents of external files can be imported into the main document definitions file. For example, each individual document definition from the example above can be specified as a fragment in its own separate file:
 
