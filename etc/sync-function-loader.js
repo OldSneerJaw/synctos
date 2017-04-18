@@ -2,15 +2,15 @@ var fs = require('fs');
 var path = require('path');
 var indent = require('indent.js');
 
-exports.load = function(syncDocDefnFilename, templateDir) {
-  var docDefinitionDir = path.dirname(syncDocDefnFilename);
-  function readDocDefinitionFragment(fullMatch, fragmentFilename) {
-    return readFileFragment(fullMatch, fragmentFilename, docDefinitionDir);
-  }
-
-  var syncFuncTemplateDir = templateDir ? templateDir + '/etc' : 'etc';
+exports.load = function(docDefinitionFilename, baseDir) {
+  var syncFuncTemplateDir = baseDir ? baseDir + '/etc' : 'etc';
   function readSyncFunctionFragment(fullMatch, fragmentFilename) {
     return readFileFragment(fullMatch, fragmentFilename, syncFuncTemplateDir);
+  }
+
+  var docDefinitionDir = path.dirname(docDefinitionFilename);
+  function readDocDefinitionFragment(fullMatch, fragmentFilename) {
+    return readFileFragment(fullMatch, fragmentFilename, docDefinitionDir);
   }
 
   var syncFuncTemplatePath = syncFuncTemplateDir + '/sync-function-template.js';
@@ -29,7 +29,7 @@ exports.load = function(syncDocDefnFilename, templateDir) {
 
   var syncDocDefn;
   try {
-    syncDocDefn = fs.readFileSync(syncDocDefnFilename, 'utf8').trim();
+    syncDocDefn = fs.readFileSync(docDefinitionFilename, 'utf8').trim();
   } catch (ex) {
     if (ex.code === 'ENOENT') {
       console.log('ERROR: Sync document definitions file does not exist');
