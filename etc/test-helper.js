@@ -14,6 +14,13 @@ exports.validationErrorFormatter = validationErrorFormatter;
 exports.initSyncFunction = initSyncFunction;
 
 /**
+ * Initializes the test helper module with the document definitions at the specified file path.
+ *
+ * @param {string} filePath The path to the document definitions to load
+ */
+exports.initDocumentDefinitions = initDocumentDefinitions;
+
+/**
  * DEPRECATED. Use initSyncFunction instead.
  */
 exports.init = initSyncFunction;
@@ -230,6 +237,7 @@ exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 var expect = require('expect.js');
 var simple = require('simple-mock');
 var fs = require('fs');
+var syncFunctionLoader = require('./sync-function-loader.js');
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
@@ -253,6 +261,19 @@ function initSyncFunction(filePath) {
   eval('syncFunction = ' + fs.readFileSync(filePath).toString());
   /*jslint evil: false */
 
+  init();
+}
+
+function initDocumentDefinitions(filePath) {
+  // Generate a sync function from the document definitions and load its contents into a global variable called syncFunction
+  /*jslint evil: true */
+  eval('syncFunction = ' + syncFunctionLoader.load(filePath));
+  /*jslint evil: false */
+
+  init();
+}
+
+function init() {
   exports.syncFunction = syncFunction;
 
   exports.requireAccess = requireAccess = simple.stub();
