@@ -5,9 +5,19 @@
       return doc._id === 'myDoc';
     },
     propertyValidators: {
-      myProp: {
+      staticValidationProp: {
         type: 'string',
         immutableWhenSet: true
+      },
+      dynamicPropertiesAreImmutable: {
+        type: 'boolean',
+        immutable: true
+      },
+      dynamicValidationProp: {
+        type: 'integer',
+        immutableWhenSet: function(value, oldValue, doc, oldDoc) {
+          return oldDoc ? oldDoc.dynamicPropertiesAreImmutable : doc.dynamicPropertiesAreImmutable;
+        }
       }
     }
   }
