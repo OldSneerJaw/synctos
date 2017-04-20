@@ -604,11 +604,7 @@ To include the test helper module in your own sync function test cases, you must
 
 The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like. Once your dev dependencies have been set up, run `npm install` to download the extra dependencies.
 
-After that, run the `make-sync-function` script on your document definitions to generate the sync function to test. For example:
-
-    node_modules/synctos/make-sync-function /path/to/my-doc-definitions.js /path/to/my-generated-sync-function.js
-
-Next, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
+After that, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
     var testHelper = require('../node_modules/synctos/etc/test-helper.js');
 
@@ -617,7 +613,7 @@ Create a new `describe` block to encapsulate the forthcoming test cases and also
 ```
 describe('My new sync function', function() {
   beforeEach(function() {
-    testHelper.init('relative/path/to/my-generated-sync-function.js');
+    testHelper.initDocumentDefinitions('/path/to/my-doc-definitions.js');
   });
 
   ...

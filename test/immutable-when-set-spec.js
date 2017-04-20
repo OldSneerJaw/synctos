@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Immutable when set constraint:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-immutable-when-set-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-immutable-when-set-sync-function.js');
   });
 
   describe('a property with static validation', function() {

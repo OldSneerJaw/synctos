@@ -4,7 +4,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Sample invoice payment processing attempt doc definition', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-sample-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
   function verifyPaymentAttemptWritten(businessId, doc, oldDoc) {
