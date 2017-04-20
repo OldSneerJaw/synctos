@@ -1,6 +1,18 @@
 function() {
   function isNonEmpty(value, oldValue, doc, oldDoc) {
-    return oldDoc ? oldDoc.dynamicPropertiesMustNotBeEmpty : doc.dynamicPropertiesMustNotBeEmpty;
+    return oldDoc ? oldDoc.dynamicMustNotBeEmptyPropertiesEnforced : doc.dynamicMustNotBeEmptyPropertiesEnforced;
+  }
+
+  function minimumDynamicLength(value, oldValue, doc, oldDoc) {
+    return doc.dynamicLengthPropertyIsValid ? value.length : value.length + 1;
+  }
+
+  function maximumDynamicLength(value, oldValue, doc, oldDoc) {
+    return doc.dynamicLengthPropertyIsValid ? value.length : value.length - 1;
+  }
+
+  function dynamicRegexPattern(value, oldValue, doc, oldDoc) {
+    return oldDoc ? new RegExp(oldDoc.dynamicRegex) : new RegExp(doc.dynamicRegex);
   }
 
   return {
@@ -10,22 +22,43 @@ function() {
         return doc._id === 'stringDoc';
       },
       propertyValidators: {
-        lengthValidationProp: {
+        staticLengthValidationProp: {
           type: 'string',
           minimumLength: 3,
           maximumLength: 3
+        },
+        dynamicLengthPropertyIsValid: {
+          type: 'boolean',
+          immutable: true
+        },
+        dynamicLengthValidationProp: {
+          type: 'string',
+          minimumLength: minimumDynamicLength,
+          maximumLength: maximumDynamicLength
         },
         staticNonEmptyProp: {
           type: 'string',
           mustNotBeEmpty: true
         },
-        dynamicPropertiesMustNotBeEmpty: {
+        dynamicMustNotBeEmptyPropertiesEnforced: {
           type: 'boolean',
           immutable: true
         },
         dynamicNonEmptyProp: {
           type: 'string',
           mustNotBeEmpty: isNonEmpty
+        },
+        staticRegexPatternProp: {
+          type: 'string',
+          regexPattern: /^\d+$/
+        },
+        dynamicRegex: {
+          type: 'string',
+          immutable: true
+        },
+        dynamicRegexPatternProp: {
+          type: 'string',
+          regexPattern: dynamicRegexPattern
         }
       }
     }

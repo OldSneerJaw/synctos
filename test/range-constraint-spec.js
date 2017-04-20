@@ -6,11 +6,11 @@ describe('Range constraints:', function() {
     testHelper.init('build/sync-functions/test-range-constraint-sync-function.js');
   });
 
-  describe('inclusive ranges', function() {
+  describe('static inclusive ranges', function() {
     it('allow an integer that matches the minimum and maximum constraints', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        integerProp: -5
+        staticIntegerProp: -5
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -19,7 +19,7 @@ describe('Range constraints:', function() {
     it('allow a floating point number that matches the minimum and maximum constraints', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        floatProp: 7.5
+        staticFloatProp: 7.5
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -28,7 +28,7 @@ describe('Range constraints:', function() {
     it('allow a datetime that matches the minimum and maximum constraints', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.920-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.920-0700'
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -37,7 +37,7 @@ describe('Range constraints:', function() {
     it('allow a date that matches the minimum and maximum constraints', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        dateProp: '2016-07-19'
+        staticDateProp: '2016-07-19',
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -46,81 +46,181 @@ describe('Range constraints:', function() {
     it('reject an integer that is below the minimum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        integerProp: -6
+        staticIntegerProp: -6
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('integerProp', -5));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('staticIntegerProp', -5));
     });
 
     it('reject an integer that is above the maximum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        integerProp: -4
+        staticIntegerProp: -4
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('integerProp', -5));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('staticIntegerProp', -5));
     });
 
     it('reject a floating point number that is below the minimum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        floatProp: 7.499
+        staticFloatProp: 7.499
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('floatProp', 7.5));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('staticFloatProp', 7.5));
     });
 
     it('reject a floating point number that is above the maximum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        floatProp: 7.501
+        staticFloatProp: 7.501
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('floatProp', 7.5));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('staticFloatProp', 7.5));
     });
 
     it('reject a datetime that is below the minimum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.919-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.919-0700'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('datetimeProp', '2016-07-19T19:24:38.920-0700'));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('staticDatetimeProp', '2016-07-19T19:24:38.920-0700'));
     });
 
     it('reject a datetime that is above the maximum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.921-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.921-0700'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('datetimeProp', '2016-07-19T19:24:38.920-0700'));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('staticDatetimeProp', '2016-07-19T19:24:38.920-0700'));
     });
 
     it('reject a date that is below the minimum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        dateProp: '2016-07-18'
+        staticDateProp: '2016-07-18'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('dateProp', '2016-07-19'));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('staticDateProp', '2016-07-19'));
     });
 
     it('reject a date that is above the maximum constraint', function() {
       var doc = {
         _id: 'inclusiveRangeDocType',
-        dateProp: '2016-07-20'
+        staticDateProp: '2016-07-20'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('dateProp', '2016-07-19'));
+      testHelper.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('staticDateProp', '2016-07-19'));
     });
   });
 
-  describe('exclusive ranges', function() {
+  describe('dynamic inclusive ranges', function() {
+    it('allow an integer that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicIntegerProp: 95,
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allow a floating point number that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicFloatProp: -867.1,
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allow a datetime that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicDatetimeProp: '2017-04-07T18:24:38.920-0700',
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allow a date that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicDateProp: '2017-04-07',
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('reject an integer that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicIntegerProp: 11,
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'inclusiveRangeDocType',
+        [ errorFormatter.minimumValueViolation('dynamicIntegerProp', 12), errorFormatter.maximumValueViolation('dynamicIntegerProp', 10) ]);
+    });
+
+    it('reject a floating point number that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicFloatProp: 89.98,
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'inclusiveRangeDocType',
+        [ errorFormatter.minimumValueViolation('dynamicFloatProp', 90.98), errorFormatter.maximumValueViolation('dynamicFloatProp', 88.98) ]);
+    });
+
+    it('reject a datetime that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicDatetimeProp: '2016-07-19T19:24:38.919-0700',
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'inclusiveRangeDocType',
+        [
+          errorFormatter.minimumValueViolation('dynamicDatetimeProp', '9999-12-31'),
+          errorFormatter.maximumValueViolation('dynamicDatetimeProp', '0000-01-01')
+        ]);
+    });
+
+    it('reject a date that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'inclusiveRangeDocType',
+        dynamicDateProp: '2016-07-18',
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'inclusiveRangeDocType',
+        [
+          errorFormatter.minimumValueViolation('dynamicDateProp', '9999-12-31'),
+          errorFormatter.maximumValueViolation('dynamicDateProp', '0000-01-01')
+        ]);
+    });
+  });
+
+  describe('static exclusive ranges', function() {
     it('allow an integer that is within the minimum and maximum constraints', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        integerProp: 52
+        staticIntegerProp: 52
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -129,7 +229,7 @@ describe('Range constraints:', function() {
     it('allow a floating point number that is within the minimum and maximum constraints', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        floatProp: -14
+        staticFloatProp: -14
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -138,7 +238,7 @@ describe('Range constraints:', function() {
     it('allow a datetime that is within the minimum and maximum constraints', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.920-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.920-0700'
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -147,7 +247,7 @@ describe('Range constraints:', function() {
     it('allow a date that is within the minimum and maximum constraints', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        dateProp: '2016-07-19'
+        staticDateProp: '2016-07-19'
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -156,169 +256,275 @@ describe('Range constraints:', function() {
     it('reject an integer that is equal to the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        integerProp: 51
+        staticIntegerProp: 51
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('integerProp', 51));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('staticIntegerProp', 51));
     });
 
     it('reject an integer that is less than the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        integerProp: 50
+        staticIntegerProp: 50
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('integerProp', 51));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('staticIntegerProp', 51));
     });
 
     it('reject an integer that is equal to the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        integerProp: 53
+        staticIntegerProp: 53
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('integerProp', 53));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('staticIntegerProp', 53));
     });
 
     it('reject an integer that is greater than the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        integerProp: 54
+        staticIntegerProp: 54
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('integerProp', 53));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('staticIntegerProp', 53));
     });
 
     it('reject a floating point number that is equal to the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        floatProp: -14.001
+        staticFloatProp: -14.001
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('floatProp', -14.001));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('staticFloatProp', -14.001));
     });
 
     it('reject a floating point number that is less than the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        floatProp: -15
+        staticFloatProp: -15
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('floatProp', -14.001));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.minimumValueExclusiveViolation('staticFloatProp', -14.001));
     });
 
     it('reject a floating point number that is equal to the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        floatProp: -13.999
+        staticFloatProp: -13.999
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('floatProp', -13.999));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('staticFloatProp', -13.999));
     });
 
     it('reject a floating point number that is greater than the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        floatProp: -13
+        staticFloatProp: -13
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('floatProp', -13.999));
+      testHelper.verifyDocumentNotCreated(doc, 'exclusiveRangeDocType', errorFormatter.maximumValueExclusiveViolation('staticFloatProp', -13.999));
     });
 
     it('reject a datetime that is equal to the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.919-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.919-0700'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.minimumValueExclusiveViolation('datetimeProp', '2016-07-19T19:24:38.919-0700'));
+        errorFormatter.minimumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.919-0700'));
     });
 
     it('reject a datetime that is less than the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.918-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.918-0700'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.minimumValueExclusiveViolation('datetimeProp', '2016-07-19T19:24:38.919-0700'));
+        errorFormatter.minimumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.919-0700'));
     });
 
     it('reject a datetime that is equal to the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.921-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.921-0700'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.maximumValueExclusiveViolation('datetimeProp', '2016-07-19T19:24:38.921-0700'));
+        errorFormatter.maximumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.921-0700'));
     });
 
     it('reject a datetime that is greater than the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        datetimeProp: '2016-07-19T19:24:38.922-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.922-0700'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.maximumValueExclusiveViolation('datetimeProp', '2016-07-19T19:24:38.921-0700'));
+        errorFormatter.maximumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.921-0700'));
     });
 
     it('reject a date that is equal to the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        dateProp: '2016-07-18'
+        staticDateProp: '2016-07-18'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.minimumValueExclusiveViolation('dateProp', '2016-07-18'));
+        errorFormatter.minimumValueExclusiveViolation('staticDateProp', '2016-07-18'));
     });
 
     it('reject a date that is less than the minimum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        dateProp: '2016-07-17'
+        staticDateProp: '2016-07-17'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.minimumValueExclusiveViolation('dateProp', '2016-07-18'));
+        errorFormatter.minimumValueExclusiveViolation('staticDateProp', '2016-07-18'));
     });
 
     it('reject a date that is equal to the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        dateProp: '2016-07-20'
+        staticDateProp: '2016-07-20'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.maximumValueExclusiveViolation('dateProp', '2016-07-20'));
+        errorFormatter.maximumValueExclusiveViolation('staticDateProp', '2016-07-20'));
     });
 
     it('reject a date that is greater than the maximum constraint', function() {
       var doc = {
         _id: 'exclusiveRangeDocType',
-        dateProp: '2016-07-21'
+        staticDateProp: '2016-07-21'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.maximumValueExclusiveViolation('dateProp', '2016-07-20'));
+        errorFormatter.maximumValueExclusiveViolation('staticDateProp', '2016-07-20'));
+    });
+  });
+
+  describe('dynamic exclusive ranges', function() {
+    it('allow an integer that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicIntegerProp: 95,
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allow a floating point number that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicFloatProp: -867.1,
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allow a datetime that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicDatetimeProp: '2017-04-07T18:24:38.920-0700',
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allow a date that matches the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicDateProp: '2017-04-07',
+        dynamicPropertyValuesAllowed: true
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('reject an integer that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicIntegerProp: 11,
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'exclusiveRangeDocType',
+        [
+          errorFormatter.minimumValueExclusiveViolation('dynamicIntegerProp', 12),
+          errorFormatter.maximumValueExclusiveViolation('dynamicIntegerProp', 10)
+        ]);
+    });
+
+    it('reject a floating point number that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicFloatProp: 89.98,
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'exclusiveRangeDocType',
+        [
+          errorFormatter.minimumValueExclusiveViolation('dynamicFloatProp', 90.98),
+          errorFormatter.maximumValueExclusiveViolation('dynamicFloatProp', 88.98)
+        ]);
+    });
+
+    it('reject a datetime that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicDatetimeProp: '2016-07-19T19:24:38.919-0700',
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'exclusiveRangeDocType',
+        [
+          errorFormatter.minimumValueExclusiveViolation('dynamicDatetimeProp', '9999-12-31'),
+          errorFormatter.maximumValueExclusiveViolation('dynamicDatetimeProp', '0000-01-01')
+        ]);
+    });
+
+    it('reject a date that is outside the minimum and maximum constraints', function() {
+      var doc = {
+        _id: 'exclusiveRangeDocType',
+        dynamicDateProp: '2016-07-18',
+        dynamicPropertyValuesAllowed: false
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'exclusiveRangeDocType',
+        [
+          errorFormatter.minimumValueExclusiveViolation('dynamicDateProp', '9999-12-31'),
+          errorFormatter.maximumValueExclusiveViolation('dynamicDateProp', '0000-01-01')
+        ]);
     });
   });
 });

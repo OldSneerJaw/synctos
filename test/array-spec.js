@@ -6,32 +6,62 @@ describe('Array validation type', function() {
     testHelper.init('build/sync-functions/test-array-sync-function.js');
   });
 
-  describe('length validation', function() {
-    it('can create a doc with an array that is within the minimum and maximum lengths', function() {
-      var doc = {
-        _id: 'arrayDoc',
-        lengthValidationProp: [ 'foo', 'bar' ]
-      };
+  describe('length constraints', function() {
+    describe('with static validation', function() {
+      it('can create a doc with an array that is within the minimum and maximum lengths', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          staticLengthValidationProp: [ 'foo', 'bar' ]
+        };
 
-      testHelper.verifyDocumentCreated(doc);
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('cannot create a doc with an array that is shorter than the minimum length', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          staticLengthValidationProp: [ 'foo' ]
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.minimumLengthViolation('staticLengthValidationProp', 2));
+      });
+
+      it('cannot create a doc with an array that is longer than the maximum length', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          staticLengthValidationProp: [ 'foo', 'bar', 'baz' ]
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.maximumLengthViolation('staticLengthValidationProp', 2));
+      });
     });
 
-    it('cannot create a doc with an array that is shorter than the minimum length', function() {
-      var doc = {
-        _id: 'arrayDoc',
-        lengthValidationProp: [ 'foo' ]
-      };
+    describe('with dynamic validation', function() {
+      it('allows a doc with an array that is within the minimum and maximum lengths', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          dynamicLengthValidationProp: [ 'foo', 'bar' ],
+          dynamicLengthPropertyIsValid: true
+        };
 
-      testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.minimumLengthViolation('lengthValidationProp', 2));
-    });
+        testHelper.verifyDocumentCreated(doc);
+      });
 
-    it('cannot create a doc with an array that is longer than the maximum length', function() {
-      var doc = {
-        _id: 'arrayDoc',
-        lengthValidationProp: [ 'foo', 'bar', 'baz' ]
-      };
+      it('blocks a doc with an array whose length is outside the allowed bounds', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          dynamicLengthValidationProp: [ 'foo' ],
+          dynamicLengthPropertyIsValid: false
+        };
 
-      testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.maximumLengthViolation('lengthValidationProp', 2));
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'arrayDoc',
+          [
+            errorFormatter.minimumLengthViolation('dynamicLengthValidationProp', 2),
+            errorFormatter.maximumLengthViolation('dynamicLengthValidationProp', 0)
+          ]);
+      });
     });
   });
 
@@ -61,7 +91,7 @@ describe('Array validation type', function() {
         var doc = {
           _id: 'arrayDoc',
           dynamicNonEmptyProp: [ 'foo' ],
-          dynamicPropertiesMustNotBeEmpty: true
+          dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
         testHelper.verifyDocumentCreated(doc);
@@ -71,7 +101,7 @@ describe('Array validation type', function() {
         var doc = {
           _id: 'arrayDoc',
           dynamicNonEmptyProp: [ ],
-          dynamicPropertiesMustNotBeEmpty: false
+          dynamicMustNotBeEmptyPropertiesEnforced: false
         };
 
         testHelper.verifyDocumentCreated(doc);
@@ -81,7 +111,7 @@ describe('Array validation type', function() {
         var doc = {
           _id: 'arrayDoc',
           dynamicNonEmptyProp: [ ],
-          dynamicPropertiesMustNotBeEmpty: true
+          dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
         testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyProp'));

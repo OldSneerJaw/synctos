@@ -1,6 +1,14 @@
 function() {
   function isNonEmpty(value, oldValue, doc, oldDoc) {
-    return oldDoc ? oldDoc.dynamicPropertiesMustNotBeEmpty : doc.dynamicPropertiesMustNotBeEmpty;
+    return oldDoc ? oldDoc.dynamicMustNotBeEmptyPropertiesEnforced : doc.dynamicMustNotBeEmptyPropertiesEnforced;
+  }
+
+  function minimumDynamicLength(value, oldValue, doc, oldDoc) {
+    return doc.dynamicLengthPropertyIsValid ? value.length : value.length + 1;
+  }
+
+  function maximumDynamicLength(value, oldValue, doc, oldDoc) {
+    return doc.dynamicLengthPropertyIsValid ? value.length : value.length - 1;
   }
 
   return {
@@ -10,19 +18,25 @@ function() {
         return doc._id === 'arrayDoc';
       },
       propertyValidators: {
-        lengthValidationProp: {
+        staticLengthValidationProp: {
           type: 'array',
           minimumLength: 2,
-          maximumLength: 2,
-          arrayElementsValidator: {
-            type: 'string'
-          }
+          maximumLength: 2
+        },
+        dynamicLengthPropertyIsValid: {
+          type: 'boolean',
+          immutable: true
+        },
+        dynamicLengthValidationProp: {
+          type: 'array',
+          minimumLength: minimumDynamicLength,
+          maximumLength: maximumDynamicLength
         },
         staticNonEmptyProp: {
           type: 'array',
           mustNotBeEmpty: true
         },
-        dynamicPropertiesMustNotBeEmpty: {
+        dynamicMustNotBeEmptyPropertiesEnforced: {
           type: 'boolean',
           immutable: true
         },
