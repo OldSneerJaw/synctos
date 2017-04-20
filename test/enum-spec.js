@@ -6,57 +6,94 @@ describe('Enum validation type', function() {
     testHelper.init('build/sync-functions/test-enum-sync-function.js');
   });
 
-  it('accepts an allowed string', function() {
-    var doc = {
-      _id: 'enumDoc',
-      enumProp: 'value1'
-    };
+  describe('static validation', function() {
+    it('accepts an allowed string', function() {
+      var doc = {
+        _id: 'enumDoc',
+        staticEnumProp: 'value1'
+      };
 
-    testHelper.verifyDocumentCreated(doc);
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('accepts an allowed integer', function() {
+      var doc = {
+        _id: 'enumDoc',
+        staticEnumProp: 2
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a string value that is not in the list of predefined values', function() {
+      var doc = {
+        _id: 'enumDoc',
+        staticEnumProp: 'value2'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'enumDoc',
+        errorFormatter.enumPredefinedValueViolation('staticEnumProp', [ 'value1', 2 ]));
+    });
+
+    it('rejects an integer value that is not in the list of predefined values', function() {
+      var doc = {
+        _id: 'enumDoc',
+        staticEnumProp: 1
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'enumDoc',
+        errorFormatter.enumPredefinedValueViolation('staticEnumProp', [ 'value1', 2 ]));
+    });
+
+    it('rejects a value when the property does not declare a list of predefined values', function() {
+      var doc = {
+        _id: 'enumDoc',
+        invalidEnumProp: 2
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'enumDoc',
+        'item "invalidEnumProp" belongs to an enum that has no predefined values');
+    });
   });
 
-  it('accepts an allowed integer', function() {
-    var doc = {
-      _id: 'enumDoc',
-      enumProp: 2
-    };
+  describe('dynamic validation', function() {
+    it('accepts an allowed string', function() {
+      var doc = {
+        _id: 'enumDoc',
+        dynamicEnumProp: 'value1',
+        dynamicPredefinedValues: [ 'value1', 'value2' ]
+      };
 
-    testHelper.verifyDocumentCreated(doc);
-  });
+      testHelper.verifyDocumentCreated(doc);
+    });
 
-  it('rejects a string value that is not in the list of predefined values', function() {
-    var doc = {
-      _id: 'enumDoc',
-      enumProp: 'value2'
-    };
+    it('accepts an allowed integer', function() {
+      var doc = {
+        _id: 'enumDoc',
+        dynamicEnumProp: 2,
+        dynamicPredefinedValues: [ 1, 2 ]
+      };
 
-    testHelper.verifyDocumentNotCreated(
-      doc,
-      'enumDoc',
-      errorFormatter.enumPredefinedValueViolation('enumProp', [ 'value1', 2 ]));
-  });
+      testHelper.verifyDocumentCreated(doc);
+    });
 
-  it('rejects an integer value that is not in the list of predefined values', function() {
-    var doc = {
-      _id: 'enumDoc',
-      enumProp: 1
-    };
+    it('rejects a value that is not in the list of predefined values', function() {
+      var doc = {
+        _id: 'enumDoc',
+        dynamicEnumProp: 'value3',
+        dynamicPredefinedValues: [ 'value1', 2 ]
+      };
 
-    testHelper.verifyDocumentNotCreated(
-      doc,
-      'enumDoc',
-      errorFormatter.enumPredefinedValueViolation('enumProp', [ 'value1', 2 ]));
-  });
-
-  it('rejects a value when the property does not declare a list of predefined values', function() {
-    var doc = {
-      _id: 'enumDoc',
-      invalidEnumProp: 2
-    };
-
-    testHelper.verifyDocumentNotCreated(
-      doc,
-      'enumDoc',
-      'item "invalidEnumProp" belongs to an enum that has no predefined values');
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'enumDoc',
+        errorFormatter.enumPredefinedValueViolation('dynamicEnumProp', [ 'value1', 2 ]));
+    });
   });
 });
