@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('String validation type', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-string-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-string-sync-function.js');
   });
 
   describe('length constraints', function() {

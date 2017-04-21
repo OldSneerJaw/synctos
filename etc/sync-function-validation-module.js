@@ -391,22 +391,25 @@ function() {
 
     function validateRangeConstraint(rangeLimit, validationType, comparator, violationDescription) {
       var itemValue = itemStack[itemStack.length - 1].itemValue;
-      var outOfRange;
-      if (validationType === 'datetime') {
+      if (validationType === 'datetime' || rangeLimit instanceof Date) {
         // Date/times require special handling because their time and time zone components are optional and time zones may differ
         try {
-          outOfRange = comparator(new Date(itemValue).getTime(), new Date(rangeLimit).getTime());
+          var itemDate = new Date(itemValue);
+          var constraintDate = (rangeLimit instanceof Date) ? rangeLimit : new Date(rangeLimit);
+          if (comparator(itemDate.getTime(), constraintDate.getTime())) {
+            var formattedRangeLimit = (rangeLimit instanceof Date) ? rangeLimit.toISOString() : rangeLimit;
+            addOutOfRangeValidationError(formattedRangeLimit, violationDescription);
+          }
         } catch (ex) {
           // The date/time's format may be invalid but it isn't technically in violation of the range constraint
-          outOfRange = false;
         }
       } else if (comparator(itemValue, rangeLimit)) {
-        outOfRange = true;
+        addOutOfRangeValidationError(rangeLimit, violationDescription);
       }
+    }
 
-      if (outOfRange) {
-        validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationDescription + ' ' + rangeLimit);
-      }
+    function addOutOfRangeValidationError(rangeLimit, violationDescription) {
+      validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationDescription + ' ' + rangeLimit);
     }
 
     function validateArray(elementValidator) {

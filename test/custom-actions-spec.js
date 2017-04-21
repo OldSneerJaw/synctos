@@ -10,7 +10,7 @@ describe('Custom actions:', function() {
   };
 
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-custom-actions-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-custom-actions-sync-function.js');
   });
 
   describe('the onTypeIdentificationSucceeded event', function() {
