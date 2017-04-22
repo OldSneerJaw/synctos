@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Hashtable validation type', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-hashtable-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-hashtable-sync-function.js');
   });
 
   describe('size constraints', function() {

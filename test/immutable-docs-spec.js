@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Immutable document validation:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-immutable-docs-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-immutable-docs-sync-function.js');
   });
 
   describe('full document immutability constraint', function() {

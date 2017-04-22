@@ -3,7 +3,7 @@ var testHelper = require('../etc/test-helper.js');
 
 describe('User and role access assignment:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-access-assignment-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-access-assignment-sync-function.js');
   });
 
   describe('Static assignment of channels to users and roles', function() {
