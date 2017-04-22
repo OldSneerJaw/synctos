@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Date/time validation type', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-datetime-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-datetime-sync-function.js');
   });
 
   describe('format validation', function() {
@@ -144,7 +144,7 @@ describe('Date/time validation type', function() {
       testHelper.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueViolation('rangeValidationAsDatetimesProp', '2016-06-23T21:52:17.123-08:00'));
+        errorFormatter.minimumValueViolation('rangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
     });
 
     it('cannot create a doc with a date without time and time zone components that is less than the minimum value', function() {
@@ -156,7 +156,7 @@ describe('Date/time validation type', function() {
       testHelper.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueViolation('rangeValidationAsDatetimesProp', '2016-06-23T21:52:17.123-08:00'));
+        errorFormatter.minimumValueViolation('rangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
     });
 
     it('cannot create a doc with a date/time that is greater than the maximum value', function() {
@@ -222,7 +222,7 @@ describe('Date/time validation type', function() {
       testHelper.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueViolation('rangeValidationAsDatesOnlyProp', '2016-06-24'));
+        errorFormatter.minimumValueViolation('rangeValidationAsDatesOnlyProp', '2016-06-24T00:00:00.000Z'));
     });
 
     it('cannot create a doc with a date without time and time zone components that is less than the minimum value', function() {
@@ -234,7 +234,7 @@ describe('Date/time validation type', function() {
       testHelper.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueViolation('rangeValidationAsDatesOnlyProp', '2016-06-24'));
+        errorFormatter.minimumValueViolation('rangeValidationAsDatesOnlyProp', '2016-06-24T00:00:00.000Z'));
     });
 
     it('cannot create a doc with a date/time that is greater than the maximum value', function() {

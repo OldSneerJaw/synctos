@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Property validators:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-property-validators-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-property-validators-sync-function.js');
   });
 
   describe('static validation at the document level', function() {

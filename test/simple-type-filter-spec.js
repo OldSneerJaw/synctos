@@ -2,7 +2,7 @@ var testHelper = require('../etc/test-helper.js');
 
 describe('Simple type filter', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-simple-type-filter-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-simple-type-filter-sync-function.js');
   });
 
   function testSimpleTypeFilter(docTypeId) {

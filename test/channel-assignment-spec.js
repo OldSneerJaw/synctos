@@ -3,7 +3,7 @@ var testHelper = require('../etc/test-helper.js');
 describe('Channel assignment:', function() {
 
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-authorization-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-authorization-sync-function.js');
   });
 
   describe('for a document with explicit channel definitions', function() {

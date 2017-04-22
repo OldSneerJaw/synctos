@@ -4,7 +4,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Functionality that is common to all documents:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-general-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-general-sync-function.js');
   });
 
   describe('the document type identifier', function() {
@@ -36,7 +36,7 @@ describe('Functionality that is common to all documents:', function() {
 
   describe('type validation', function() {
     beforeEach(function() {
-      testHelper.init('build/sync-functions/test-general-sync-function.js');
+      testHelper.initSyncFunction('build/sync-functions/test-general-sync-function.js');
     });
 
     it('rejects an array property value that is not the right type', function() {

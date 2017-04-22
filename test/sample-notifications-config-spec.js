@@ -4,7 +4,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Sample business notifications config doc definition', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-sample-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
   var expectedDocType = 'notificationsConfig';
