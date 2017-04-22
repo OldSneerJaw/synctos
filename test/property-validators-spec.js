@@ -9,7 +9,7 @@ describe('Property validators:', function() {
   describe('static validation at the document level', function() {
     it('allow unknown properties when a document is created and the option is enabled', function() {
       var doc = {
-        _id: 'allowUnknownDoc',
+        _id: 'staticAllowUnknownDoc',
         unknownProperty1: 15
       };
 
@@ -18,11 +18,11 @@ describe('Property validators:', function() {
 
     it('allow unknown properties when a document is replaced and the option is enabled', function() {
       var doc = {
-        _id: 'allowUnknownDoc',
+        _id: 'staticAllowUnknownDoc',
         unknownProperty1: 'foo'
       };
       var oldDoc = {
-        _id: 'allowUnknownDoc',
+        _id: 'staticAllowUnknownDoc',
         unknownProperty2: true
       };
 
@@ -31,21 +31,21 @@ describe('Property validators:', function() {
 
     it('reject unknown properties when a document is created and the option is disabled', function() {
       var doc = {
-        _id: 'preventUnknownDoc',
+        _id: 'staticPreventUnknownDoc',
         unknownProperty1: 15
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'preventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
+      testHelper.verifyDocumentNotCreated(doc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
     });
 
     it('reject unknown properties when a document is replaced and the option is disabled', function() {
       var doc = {
-        _id: 'preventUnknownDoc',
+        _id: 'staticPreventUnknownDoc',
         unknownProperty1: 73.7
       };
-      var oldDoc = { _id: 'preventUnknownDoc' };
+      var oldDoc = { _id: 'staticPreventUnknownDoc' };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'preventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
     });
   });
 
@@ -94,7 +94,7 @@ describe('Property validators:', function() {
   describe('static validation in a nested object', function() {
     it('allow unknown properties when a document is created and the option is enabled', function() {
       var doc = {
-        _id: 'preventUnknownDoc',
+        _id: 'staticPreventUnknownDoc',
         allowUnknownProp: {
           myStringProp: 'foo',
           myUnknownProp: 'bar'
@@ -106,20 +106,20 @@ describe('Property validators:', function() {
 
     it('allow unknown properties when a document is replaced and the option is enabled', function() {
       var doc = {
-        _id: 'preventUnknownDoc',
+        _id: 'staticPreventUnknownDoc',
         allowUnknownProp: {
           myStringProp: 'foo',
           myUnknownProp: 'bar'
         }
       };
-      var oldDoc = { _id: 'preventUnknownDoc' };
+      var oldDoc = { _id: 'staticPreventUnknownDoc' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('reject unknown properties when a document is created and the option is disabled', function() {
       var doc = {
-        _id: 'allowUnknownDoc',
+        _id: 'staticAllowUnknownDoc',
         preventUnknownProp: {
           myStringProp: 'foo',
           myUnknownProp: 'bar'
@@ -128,24 +128,24 @@ describe('Property validators:', function() {
 
       testHelper.verifyDocumentNotCreated(
         doc,
-        'allowUnknownDoc',
+        'staticAllowUnknownDoc',
         [ errorFormatter.unsupportedProperty('preventUnknownProp.myUnknownProp') ]);
     });
 
     it('reject unknown properties when a document is replaced and the option is disabled', function() {
       var doc = {
-        _id: 'allowUnknownDoc',
+        _id: 'staticAllowUnknownDoc',
         preventUnknownProp: {
           myStringProp: 'foo',
           myUnknownProp: 'bar'
         }
       };
-      var oldDoc = { _id: 'allowUnknownDoc' };
+      var oldDoc = { _id: 'staticAllowUnknownDoc' };
 
       testHelper.verifyDocumentNotReplaced(
         doc,
         oldDoc,
-        'allowUnknownDoc',
+        'staticAllowUnknownDoc',
         [ errorFormatter.unsupportedProperty('preventUnknownProp.myUnknownProp') ]);
     });
   });

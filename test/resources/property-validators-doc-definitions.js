@@ -6,7 +6,7 @@ function() {
   var docChannels = { write: 'write' };
 
   return {
-    allowUnknownDoc: {
+    staticAllowUnknownDoc: {
       typeFilter: docTypeFilter,
       channels: docChannels,
       allowUnknownProperties: true,
@@ -22,7 +22,7 @@ function() {
         }
       }
     },
-    preventUnknownDoc: {
+    staticPreventUnknownDoc: {
       typeFilter: docTypeFilter,
       channels: docChannels,
       allowUnknownProperties: false,
