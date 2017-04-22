@@ -1,9 +1,9 @@
 function() {
-  function isNonEmpty(value, oldValue, doc, oldDoc) {
+  function isNonEmpty(doc, oldDoc, value, oldValue) {
     return oldDoc ? oldDoc.dynamicKeysMustNotBeEmpty : doc.dynamicKeysMustNotBeEmpty;
   }
 
-  function dynamicRegexPattern(value, oldValue, doc, oldDoc) {
+  function dynamicRegexPattern(doc, oldDoc, value, oldValue) {
     return oldDoc ? new RegExp(oldDoc.dynamicKeyRegex) : new RegExp(doc.dynamicKeyRegex);
   }
 

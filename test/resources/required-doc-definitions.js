@@ -3,7 +3,7 @@ function() {
     return doc._id === docType;
   }
 
-  function isRequired(value, oldValue, doc, oldDoc) {
+  function isRequired(doc, oldDoc, value, oldValue) {
     return oldDoc ? oldDoc.dynamicPropsRequired : doc.dynamicPropsRequired;
   }
 

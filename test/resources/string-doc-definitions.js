@@ -1,17 +1,17 @@
 function() {
-  function isNonEmpty(value, oldValue, doc, oldDoc) {
+  function isNonEmpty(doc, oldDoc, value, oldValue) {
     return oldDoc ? oldDoc.dynamicMustNotBeEmptyPropertiesEnforced : doc.dynamicMustNotBeEmptyPropertiesEnforced;
   }
 
-  function minimumDynamicLength(value, oldValue, doc, oldDoc) {
+  function minimumDynamicLength(doc, oldDoc, value, oldValue) {
     return doc.dynamicLengthPropertyIsValid ? value.length : value.length + 1;
   }
 
-  function maximumDynamicLength(value, oldValue, doc, oldDoc) {
+  function maximumDynamicLength(doc, oldDoc, value, oldValue) {
     return doc.dynamicLengthPropertyIsValid ? value.length : value.length - 1;
   }
 
-  function dynamicRegexPattern(value, oldValue, doc, oldDoc) {
+  function dynamicRegexPattern(doc, oldDoc, value, oldValue) {
     return oldDoc ? new RegExp(oldDoc.dynamicRegex) : new RegExp(doc.dynamicRegex);
   }
 
