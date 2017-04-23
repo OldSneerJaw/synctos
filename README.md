@@ -57,39 +57,39 @@ Each document type is defined as an object with a number of properties that cont
 
 The following properties include the basics necessary to build a document definition:
 
-* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property value to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property value must be "message" to be considered a document of that type); if the document definition does not include an explicit `type` property validator, then, for convenience, the `type` property will be implicitly validated with the built in `typeIdValidator` (see the validator's description for more info). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`.
+* `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property value to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property value must be "message" to be considered a document of that type); if the document definition does not include an explicit `type` property validator, then, for convenience, the `type` property will be implicitly included in the document definition and validated with the built in `typeIdValidator` (see the validator's description for more info). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`.
 
 An example of the simple type filter:
 
 ```
-    typeFilter: simpleTypeFilter
+typeFilter: simpleTypeFilter
 ```
 
 And an example of a more complex custom type filter:
 
 ```
-    typeFilter: function(doc, oldDoc, currentDocType) {
-      var typePropertyMatches;
-      if (oldDoc) {
-        if (doc._deleted) {
-          typePropertyMatches = oldDoc.type === currentDocType;
-        } else {
-          typePropertyMatches = doc.type === oldDoc.type && oldDoc.type === currentDocType;
-        }
-      } else {
-        // The old document does not exist or was deleted - we can rely on the new document's type
-        typePropertyMatches = doc.type === currentDocType;
-      }
-
-      if (typePropertyMatches) {
-        return true;
-      } else {
-        // The type property did not match - fall back to matching the document ID pattern
-        var docIdRegex = new RegExp('^message\\.[A-Za-z0-9_-]+$');
-
-        return docIdRegex.test(doc._id);
-      }
+typeFilter: function(doc, oldDoc, currentDocType) {
+  var typePropertyMatches;
+  if (oldDoc) {
+    if (doc._deleted) {
+      typePropertyMatches = oldDoc.type === currentDocType;
+    } else {
+      typePropertyMatches = doc.type === oldDoc.type && oldDoc.type === currentDocType;
     }
+  } else {
+    // The old document does not exist or was deleted - we can rely on the new document's type
+    typePropertyMatches = doc.type === currentDocType;
+  }
+
+  if (typePropertyMatches) {
+    return true;
+  } else {
+    // The type property did not match - fall back to matching the document ID pattern
+    var docIdRegex = new RegExp('^message\\.[A-Za-z0-9_-]+$');
+
+    return docIdRegex.test(doc._id);
+  }
+}
 ```
 
 * `channels`: (required if `authorizedRoles` and `authorizedUsers` are undefined - see the [Advanced document properties](#advanced-document-properties) section for more info) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the channels and/or authorized roles/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
@@ -102,47 +102,61 @@ And an example of a more complex custom type filter:
 For example:
 
 ```
-    channels: {
-      add: [ 'create', 'new' ],
-      replace: 'update',
-      remove: 'delete'
-    }
+channels: {
+  add: [ 'create', 'new' ],
+  replace: 'update',
+  remove: 'delete'
+}
 ```
 
 Or:
 
 ```
-    channels: function(doc, oldDoc) {
-      return {
-        view: doc._id + '-readonly',
-        write: [ doc._id + '-edit', doc._id + '-admin' ]
-      };
-    }
+channels: function(doc, oldDoc) {
+  return {
+    view: doc._id + '-readonly',
+    write: [ doc._id + '-edit', doc._id + '-admin' ]
+  };
+}
 ```
 
-* `propertyValidators`: (required) An object/hash of validators that specify the format of each of the document type's supported properties. Each entry consists of a key that specifies the property name and a value that specifies the validation to perform on that property. Each element must declare a type and, optionally, some number of additional parameters. Any property that is not declared here will be rejected by the sync function unless the `allowUnknownProperties` field is set to `true`. An example:
+* `propertyValidators`: (required) An object/hash of validators that specify the format of each of the document type's supported properties. Each entry consists of a key that specifies the property name and a value that specifies the validation to perform on that property. Each property element must declare a type and, optionally, some number of additional parameters. Any property that is not declared here will be rejected by the sync function unless the `allowUnknownProperties` field is set to `true`. In addition to a static value (e.g. `propertyValidators: { ... }`), this property may also be assigned a value dynamically via a function (e.g. `propertyValidators: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist).
+
+An example static definition:
 
 ```
-    propertyValidators: {
-      myProp1: {
-        type: 'boolean',
-        required: true
-      },
-      myProp2: {
-        type: 'array',
-        mustNotBeEmpty: true
-      }
-    }
+propertyValidators: {
+  myProp1: {
+    type: 'boolean',
+    required: true
+  },
+  myProp2: {
+    type: 'array',
+    mustNotBeEmpty: true
+  }
+}
+```
+
+And a dynamic definition:
+
+```
+propertyValidators: function(doc, oldDoc) {
+  var dynamicProp = (doc._id.indexOf('foobar') >= 0) ? { type: 'string' } : { type: 'float' }
+
+  return {
+    myDynamicProp: dynamicProp
+  };
+}
 ```
 
 ##### Advanced document properties:
 
 Additional properties that provide finer grained control over documents:
 
-* `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. Defaults to `false`.
-* `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
-* `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
-* `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. Defaults to `false`.
+* `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. In addition to a static value (e.g. `allowUnknownProperties: true`), this property may also be assigned a value dynamically via a function (e.g. `allowUnknownProperties: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false`.
+* `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, when this property is enabled, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. In addition to a static value (e.g. `immutable: true`), this property may also be assigned a value dynamically via a function (e.g. `immutable: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false`.
+* `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. In addition to a static value (e.g. `cannotReplace: true`), this property may also be assigned a value dynamically via a function (e.g. `cannotReplace: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false`.
+* `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. In addition to a static value (e.g. `cannotDelete: true`), this property may also be assigned a value dynamically via a function (e.g. `cannotDelete: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false`.
 * `authorizedRoles`: (required if `channels` and `authorizedUsers` are undefined) The [roles](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/authorizing-users/index.html#roles) that are authorized to add, replace and remove documents of this type. If used in combination with the `channels` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the roles and/or authorized channels/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of role names or a single role name as a string:
   * `add`: (optional) The role(s) that confer the ability to create new documents of this type.
   * `replace`: (optional) The role(s) that confer the ability to replace existing documents of this type.
@@ -235,14 +249,14 @@ An example of a mix of channel and role access assignments:
     ]
 ```
 
-* `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files. See the `attachmentConstraints` property and the `attachmentReference` validation type for more options.
-* `attachmentConstraints`: (optional) Various constraints to apply to file attachments associated with a document type. Its settings only apply if the document definition's `allowAttachments` property is `true`. Additional parameters:
-  * `maximumAttachmentCount`: (optional) The maximum number of attachments that may be assigned to a single document of this type. Unlimited by default.
-  * `maximumIndividualSize`: (optional) The maximum file size, in bytes, allowed for any single attachment assigned to a document of this type. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Unlimited by default.
-  * `maximumTotalSize`: (optional) The maximum total size, in bytes, of _all_ attachments assigned to a single document of this type. In other words, when the sizes of all of a document's attachments are added together, it must not exceed this value. Unlimited by default.
-  * `supportedExtensions`: (optional) An array of case-insensitive file extensions that are allowed for an attachment's filename (e.g. "txt", "jpg", "pdf"). No restriction by default.
-  * `supportedContentTypes`: (optional) An array of content/MIME types that are allowed for an attachment's contents (e.g. "image/png", "text/html", "application/xml"). No restriction by default.
-  * `requireAttachmentReferences`: (optional) Whether every one of a document's attachments must have a corresponding `attachmentReference`-type property referencing it. Defaults to `false`.
+* `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/develop/references/sync-gateway/rest-api/document-public/put-db-doc-attachment/index.html) for the document type. In addition to a static value (e.g. `allowAttachments: true`), this property may also be assigned a value dynamically via a function (e.g. `allowAttachments: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files. See the `attachmentConstraints` property and the `attachmentReference` validation type for more options.
+* `attachmentConstraints`: (optional) Various constraints to apply to file attachments associated with a document type. Its settings only apply if the document definition's `allowAttachments` property is `true`. In addition to a static value (e.g. `attachmentConstraints: { }`), this property may also be assigned a value dynamically via a function (e.g. `attachmentConstraints: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Additional parameters:
+  * `maximumAttachmentCount`: (optional) The maximum number of attachments that may be assigned to a single document of this type. In addition to a static value (e.g. `maximumAttachmentCount: 2`), this property may also be assigned a value dynamically via a function (e.g. `maximumAttachmentCount: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Unlimited by default.
+  * `maximumIndividualSize`: (optional) The maximum file size, in bytes, allowed for any single attachment assigned to a document of this type. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. In addition to a static value (e.g. `maximumIndividualSize: 256`), this property may also be assigned a value dynamically via a function (e.g. `maximumIndividualSize: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Unlimited by default.
+  * `maximumTotalSize`: (optional) The maximum total size, in bytes, of _all_ attachments assigned to a single document of this type. In other words, when the sizes of all of a document's attachments are added together, it must not exceed this value. In addition to a static value (e.g. `maximumTotalSize: 1024`), this property may also be assigned a value dynamically via a function (e.g. `maximumTotalSize: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Unlimited by default.
+  * `supportedExtensions`: (optional) An array of case-insensitive file extensions that are allowed for an attachment's filename (e.g. "txt", "jpg", "pdf"). In addition to a static value (e.g. `supportedExtensions: [ 'png', 'gif', 'jpg' ]`), this property may also be assigned a value dynamically via a function (e.g. `supportedExtensions: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). No restriction by default.
+  * `supportedContentTypes`: (optional) An array of content/MIME types that are allowed for an attachment's contents (e.g. "image/png", "text/html", "application/xml"). In addition to a static value (e.g. `supportedContentTypes: [ 'image/png', 'image/gif', 'image/jpeg' ]`), this property may also be assigned a value dynamically via a function (e.g. `supportedContentTypes: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). No restriction by default.
+  * `requireAttachmentReferences`: (optional) Whether every one of a document's attachments must have a corresponding `attachmentReference`-type property referencing it. In addition to a static value (e.g. `requireAttachmentReferences: true`), this property may also be assigned a value dynamically via a function (e.g. `requireAttachmentReferences: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false`.
 * `customActions`: (optional) Defines custom actions to be executed at various events during the generated sync function's execution. Specified as an object where each property specifies a JavaScript function to be executed when the corresponding event is completed. In each case, the function accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any) and (3) an object that is populated with metadata generated by each event. In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be null or undefined and, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. At each stage of the generated sync function's execution, the third parameter (the custom action metadata parameter) is augmented with properties that provide additional context to the custom action being executed. Custom actions may call functions from the [standard sync function API](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html) (e.g. `requireAccess`, `requireRole`, `requireUser`, `access`, `role`, `channel`) and may indicate errors via the `throw` statement to prevent the document from being written. The custom actions that are available, in the order their corresponding events occur:
   1. `onTypeIdentificationSucceeded`: Executed immediately after the document's type is determined and before checking authorization. The custom action metadata object parameter contains the following properties:
     * `documentTypeId`: The unique ID of the document type.
