@@ -1,6 +1,6 @@
 function() {
   function isNonEmpty(doc, oldDoc, value, oldValue) {
-    return oldDoc ? oldDoc.dynamicMustNotBeEmptyPropertiesEnforced : doc.dynamicMustNotBeEmptyPropertiesEnforced;
+    return doc.dynamicMustNotBeEmptyPropertiesEnforced;
   }
 
   function minimumDynamicLength(doc, oldDoc, value, oldValue) {
@@ -12,7 +12,7 @@ function() {
   }
 
   function dynamicRegexPattern(doc, oldDoc, value, oldValue) {
-    return oldDoc ? new RegExp(oldDoc.dynamicRegex) : new RegExp(doc.dynamicRegex);
+    return new RegExp(doc.dynamicRegex);
   }
 
   return {
@@ -28,35 +28,32 @@ function() {
           maximumLength: 3
         },
         dynamicLengthPropertyIsValid: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
         dynamicLengthValidationProp: {
           type: 'string',
           minimumLength: minimumDynamicLength,
           maximumLength: maximumDynamicLength
         },
-        staticNonEmptyProp: {
+        staticNonEmptyValidationProp: {
           type: 'string',
           mustNotBeEmpty: true
         },
         dynamicMustNotBeEmptyPropertiesEnforced: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
-        dynamicNonEmptyProp: {
+        dynamicNonEmptyValidationProp: {
           type: 'string',
           mustNotBeEmpty: isNonEmpty
         },
-        staticRegexPatternProp: {
+        staticRegexPatternValidationProp: {
           type: 'string',
           regexPattern: /^\d+$/
         },
         dynamicRegex: {
-          type: 'string',
-          immutable: true
+          type: 'string'
         },
-        dynamicRegexPatternProp: {
+        dynamicRegexPatternValidationProp: {
           type: 'string',
           regexPattern: dynamicRegexPattern
         }

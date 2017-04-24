@@ -70,7 +70,7 @@ describe('Array validation type', function() {
       it('allows a doc with an array that is not empty', function() {
         var doc = {
           _id: 'arrayDoc',
-          staticNonEmptyProp: [ 'foo' ]
+          staticNonEmptyValidationProp: [ 'foo' ]
         };
 
         testHelper.verifyDocumentCreated(doc);
@@ -79,10 +79,10 @@ describe('Array validation type', function() {
       it('blocks a doc with an empty array', function() {
         var doc = {
           _id: 'arrayDoc',
-          staticNonEmptyProp: [ ]
+          staticNonEmptyValidationProp: [ ]
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyProp'));
+        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyValidationProp'));
       });
     });
 
@@ -90,7 +90,7 @@ describe('Array validation type', function() {
       it('allows a doc with an array that is not empty', function() {
         var doc = {
           _id: 'arrayDoc',
-          dynamicNonEmptyProp: [ 'foo' ],
+          dynamicNonEmptyValidationProp: [ 'foo' ],
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
@@ -100,7 +100,7 @@ describe('Array validation type', function() {
       it('allows a doc with an array that is empty if the constraint is disabled', function() {
         var doc = {
           _id: 'arrayDoc',
-          dynamicNonEmptyProp: [ ],
+          dynamicNonEmptyValidationProp: [ ],
           dynamicMustNotBeEmptyPropertiesEnforced: false
         };
 
@@ -110,11 +110,74 @@ describe('Array validation type', function() {
       it('blocks a doc with an empty array if the constraint is enabled', function() {
         var doc = {
           _id: 'arrayDoc',
-          dynamicNonEmptyProp: [ ],
+          dynamicNonEmptyValidationProp: [ ],
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyProp'));
+        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyValidationProp'));
+      });
+    });
+  });
+
+  describe('array elements validator', function() {
+    describe('with static validation', function() {
+      it('allows a doc when the array elements are valid', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          staticArrayElementsValidatorProp: [ 0, 1, 2 ]
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc when the array elements fail validation', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          staticArrayElementsValidatorProp: [ 0, null, undefined, 'foo', -1, 3 ]
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'arrayDoc',
+          [
+            errorFormatter.requiredValueViolation('staticArrayElementsValidatorProp[1]'),
+            errorFormatter.requiredValueViolation('staticArrayElementsValidatorProp[2]'),
+            errorFormatter.typeConstraintViolation('staticArrayElementsValidatorProp[3]', 'integer'),
+            errorFormatter.minimumValueViolation('staticArrayElementsValidatorProp[4]', 0),
+            errorFormatter.maximumValueViolation('staticArrayElementsValidatorProp[5]', 2)
+          ]);
+      });
+    });
+
+    describe('with dynamic validation', function() {
+      it('allows a doc when the array elements are valid', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          dynamicArrayElementsValidatorProp: [ 0, 1, 2, null ],
+          dynamicArrayElementsType: 'integer',
+          dynamicArrayElementsRequired: false
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a doc when the array elements fail validation', function() {
+        var doc = {
+          _id: 'arrayDoc',
+          dynamicArrayElementsValidatorProp: [ '2017-04-11', null, undefined, 'foo', 47 ],
+          dynamicArrayElementsType: 'date',
+          dynamicArrayElementsRequired: true
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'arrayDoc',
+          [
+            errorFormatter.requiredValueViolation('dynamicArrayElementsValidatorProp[1]'),
+            errorFormatter.requiredValueViolation('dynamicArrayElementsValidatorProp[2]'),
+            errorFormatter.typeConstraintViolation('dynamicArrayElementsValidatorProp[3]', 'date'),
+            errorFormatter.typeConstraintViolation('dynamicArrayElementsValidatorProp[4]', 'date')
+          ]);
       });
     });
   });

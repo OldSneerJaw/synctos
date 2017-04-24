@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Dynamic constraints', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-dynamic-constraints-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-dynamic-constraints-sync-function.js');
   });
 
   it('allows a new doc to be created when the property constraints are satisfied', function() {

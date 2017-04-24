@@ -6,41 +6,82 @@ describe('Hashtable validation type', function() {
     testHelper.initSyncFunction('build/sync-functions/test-hashtable-sync-function.js');
   });
 
-  describe('size validation', function() {
-    it('allows a hashtable that is within the minimum and maximum sizes', function() {
-      var doc = {
-        _id: 'hashtableDoc',
-        sizeValidationProp: {
-          foo: 1,
-          bar: 2
-        }
-      };
+  describe('size constraints', function() {
+    describe('with static validation', function() {
+      it('allows a hashtable that is within the minimum and maximum sizes', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticSizeValidationProp: {
+            foo: 1,
+            bar: 2
+          }
+        };
 
-      testHelper.verifyDocumentCreated(doc);
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a hashtable that is smaller than the minimum size', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticSizeValidationProp: {
+            foo: 1
+          }
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMinimumSizeViolation('staticSizeValidationProp', 2));
+      });
+
+      it('rejects a hashtable that is larger than the maximum size', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticSizeValidationProp: {
+            foo: 1,
+            bar: 2,
+            baz: 3
+          }
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMaximumSizeViolation('staticSizeValidationProp', 2));
+      });
     });
 
-    it('rejects a hashtable that is smaller than the minimum size', function() {
-      var doc = {
-        _id: 'hashtableDoc',
-        sizeValidationProp: {
-          foo: 1
-        }
-      };
+    describe('with dynamic validation', function() {
+      it('allows a hashtable that is within the minimum and maximum sizes', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicSizeValidationProp: {
+            foo: 1
+          },
+          dynamicSize: 1
+        };
 
-      testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMinimumSizeViolation('sizeValidationProp', 2));
-    });
+        testHelper.verifyDocumentCreated(doc);
+      });
 
-    it('rejects a hashtable that is larger than the maximum size', function() {
-      var doc = {
-        _id: 'hashtableDoc',
-        sizeValidationProp: {
-          foo: 1,
-          bar: 2,
-          baz: 3
-        }
-      };
+      it('rejects a hashtable that is smaller than the minimum size', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicSizeValidationProp: {
+            foo: 1
+          },
+          dynamicSize: 2
+        };
 
-      testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMaximumSizeViolation('sizeValidationProp', 2));
+        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMinimumSizeViolation('dynamicSizeValidationProp', 2));
+      });
+
+      it('rejects a hashtable that is larger than the maximum size', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicSizeValidationProp: {
+            foo: 1,
+            bar: 2
+          },
+          dynamicSize: 1
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMaximumSizeViolation('dynamicSizeValidationProp', 1));
+      });
     });
   });
 
@@ -49,7 +90,7 @@ describe('Hashtable validation type', function() {
       it('allows a doc with a key that is not empty', function() {
         var doc = {
           _id: 'hashtableDoc',
-          staticNonEmptyKeyProp: { 'foo': 'bar' }
+          staticNonEmptyKeyValidationProp: { 'foo': 'bar' }
         };
 
         testHelper.verifyDocumentCreated(doc);
@@ -58,10 +99,10 @@ describe('Hashtable validation type', function() {
       it('blocks a doc with an empty key', function() {
         var doc = {
           _id: 'hashtableDoc',
-          staticNonEmptyKeyProp: { '': 'bar' }
+          staticNonEmptyKeyValidationProp: { '': 'bar' }
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('staticNonEmptyKeyProp'));
+        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('staticNonEmptyKeyValidationProp'));
       });
     });
 
@@ -69,7 +110,7 @@ describe('Hashtable validation type', function() {
       it('allows a doc with a key that is not empty', function() {
         var doc = {
           _id: 'hashtableDoc',
-          dynamicNonEmptyKeyProp: { 'foo': 'bar' },
+          dynamicNonEmptyKeyValidationProp: { 'foo': 'bar' },
           dynamicKeysMustNotBeEmpty: true
         };
 
@@ -79,7 +120,7 @@ describe('Hashtable validation type', function() {
       it('allows a doc with an empty key when the constraint is disabled', function() {
         var doc = {
           _id: 'hashtableDoc',
-          dynamicNonEmptyKeyProp: { '': 'bar' },
+          dynamicNonEmptyKeyValidationProp: { '': 'bar' },
           dynamicKeysMustNotBeEmpty: false
         };
 
@@ -89,11 +130,11 @@ describe('Hashtable validation type', function() {
       it('blocks a doc with an empty key when the constraint is enabled', function() {
         var doc = {
           _id: 'hashtableDoc',
-          dynamicNonEmptyKeyProp: { '': 'bar' },
+          dynamicNonEmptyKeyValidationProp: { '': 'bar' },
           dynamicKeysMustNotBeEmpty: true
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicNonEmptyKeyProp'));
+        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicNonEmptyKeyValidationProp'));
       });
     });
   });
@@ -158,6 +199,119 @@ describe('Hashtable validation type', function() {
           doc,
           'hashtableDoc',
           errorFormatter.regexPatternHashtableKeyViolation('dynamicKeyRegexPatternValidationProp[bar]', new RegExp(testRegexPattern)));
+      });
+    });
+  });
+
+  describe('dynamic keys validator', function() {
+    it('allows a hashtable with only non-empty keys', function() {
+      var doc = {
+        _id: 'hashtableDoc',
+
+        // Keys need must be non-empty strings when there is more than one item in the hashtable
+        dynamicKeysValidatorProp: {
+          'a': 'foo',
+          'b': 'bar'
+        }
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a hashtable with an empty key when that option is enabled', function() {
+      var doc = {
+        _id: 'hashtableDoc',
+
+        // Keys need may be empty strings when there is only a single item in the hashtable
+        dynamicKeysValidatorProp: { '': 'foo' }
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('blocks a hashtable with an empty key when that option is disabled', function() {
+      var doc = {
+        _id: 'hashtableDoc',
+
+        // Keys need must be non-empty strings when there is more than one item in the hashtable
+        dynamicKeysValidatorProp: {
+          'a': 'foo',
+          '': 'bar'
+        }
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicKeysValidatorProp'));
+    });
+  });
+
+  describe('hashtable values validator', function() {
+    describe('with static validation', function() {
+      it('allows a hashtable with valid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticValuesValidatorProp: {
+            '1': 'foo',
+            '2': 'bar',
+            '3': 'baz'
+          }
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a hashtable with invalid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          staticValuesValidatorProp: {
+            '1': 'foo',
+            '2': '',
+            '3': null,
+            '4': undefined,
+            '5': 13
+          }
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'hashtableDoc',
+          [
+            errorFormatter.mustNotBeEmptyViolation('staticValuesValidatorProp[2]'),
+            errorFormatter.requiredValueViolation('staticValuesValidatorProp[3]'),
+            errorFormatter.requiredValueViolation('staticValuesValidatorProp[4]'),
+            errorFormatter.typeConstraintViolation('staticValuesValidatorProp[5]', 'string')
+          ]);
+      });
+    });
+
+    describe('with dynamic validation', function() {
+      it('allows a hashtable with valid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicValuesValidatorProp: {
+            '1': 'foo',
+            '2': 'bar',
+            '3': 'baz'
+          },
+          dynamicValuesType: 'string'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a hashtable with invalid element values', function() {
+        var doc = {
+          _id: 'hashtableDoc',
+          dynamicValuesValidatorProp: {
+            '1': 1.93,
+            '2': 'foo'
+          },
+          dynamicValuesType: 'float'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'hashtableDoc',
+          [ errorFormatter.typeConstraintViolation('dynamicValuesValidatorProp[2]', 'float') ]);
       });
     });
   });

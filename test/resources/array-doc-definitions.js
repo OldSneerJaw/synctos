@@ -1,6 +1,6 @@
 function() {
   function isNonEmpty(doc, oldDoc, value, oldValue) {
-    return oldDoc ? oldDoc.dynamicMustNotBeEmptyPropertiesEnforced : doc.dynamicMustNotBeEmptyPropertiesEnforced;
+    return doc.dynamicMustNotBeEmptyPropertiesEnforced;
   }
 
   function minimumDynamicLength(doc, oldDoc, value, oldValue) {
@@ -24,25 +24,47 @@ function() {
           maximumLength: 2
         },
         dynamicLengthPropertyIsValid: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
         dynamicLengthValidationProp: {
           type: 'array',
           minimumLength: minimumDynamicLength,
           maximumLength: maximumDynamicLength
         },
-        staticNonEmptyProp: {
+        staticNonEmptyValidationProp: {
           type: 'array',
           mustNotBeEmpty: true
         },
         dynamicMustNotBeEmptyPropertiesEnforced: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
-        dynamicNonEmptyProp: {
+        dynamicNonEmptyValidationProp: {
           type: 'array',
           mustNotBeEmpty: isNonEmpty
+        },
+        staticArrayElementsValidatorProp: {
+          type: 'array',
+          arrayElementsValidator: {
+            type: 'integer',
+            required: true,
+            minimumValue: 0,
+            maximumValue: 2
+          }
+        },
+        dynamicArrayElementsType: {
+          type: 'string'
+        },
+        dynamicArrayElementsRequired: {
+          type: 'boolean'
+        },
+        dynamicArrayElementsValidatorProp: {
+          type: 'array',
+          arrayElementsValidator: function(doc, oldDoc, value, oldValue) {
+            return {
+              type: doc.dynamicArrayElementsType,
+              required: doc.dynamicArrayElementsRequired
+            };
+          }
         }
       }
     }
