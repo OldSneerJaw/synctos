@@ -4,7 +4,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Type identifier validator', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-type-id-validator-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-type-id-validator-sync-function.js');
   });
 
   it('allows a valid string value', function() {

@@ -5,7 +5,7 @@ var expect = require('expect.js');
 
 describe('Sample business notification transport doc definition', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-sample-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
   var expectedDocType = 'notificationTransport';

@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Range constraints:', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-range-constraint-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-range-constraint-sync-function.js');
   });
 
   describe('static inclusive ranges', function() {

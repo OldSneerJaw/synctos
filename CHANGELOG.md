@@ -3,7 +3,10 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
 - [#94](https://github.com/Kashoo/synctos/issues/94): Support dynamic item validation constraints
+- [#95](https://github.com/Kashoo/synctos/issues/95): Accept Date object for date/time constraint parameters
+- [#100](https://github.com/Kashoo/synctos/issues/100): Option to initialize test helper module with document definition file
 
 ## [1.8.0] - 2017-03-21
 ### Added
