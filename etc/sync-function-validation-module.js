@@ -18,6 +18,7 @@ function() {
     return regex.test(value);
   }
 
+  // A regular expression that matches one of the given file extensions
   function buildSupportedExtensionsRegex(extensions) {
     return new RegExp('\\.(' + extensions.join('|') + ')$', 'i');
   }
@@ -39,6 +40,11 @@ function() {
     }
 
     return nameComponents.join('');
+  }
+
+  // Resolves a constraint defined (e.g. `propertyValidators`, `allowUnknownProperties`, `immutable`) at the document level.
+  function resolveDocConstraint(doc, oldDoc, constraint) {
+    return (typeof(constraint) === 'function') ? constraint(doc, oldDoc) : constraint;
   }
 
   // Ensures the document structure and content are valid
@@ -63,14 +69,14 @@ function() {
 
   function validateDocImmutability(doc, oldDoc, docDefinition, validationErrors) {
     if (!isDocumentMissingOrDeleted(oldDoc)) {
-      if (docDefinition.immutable) {
+      if (resolveDocConstraint(doc, oldDoc, docDefinition.immutable)) {
         validationErrors.push('documents of this type cannot be replaced or deleted');
       } else if (doc._deleted) {
-        if (docDefinition.cannotDelete) {
+        if (resolveDocConstraint(doc, oldDoc, docDefinition.cannotDelete)) {
           validationErrors.push('documents of this type cannot be deleted');
         }
       } else {
-        if (docDefinition.cannotReplace) {
+        if (resolveDocConstraint(doc, oldDoc, docDefinition.cannotReplace)) {
           validationErrors.push('documents of this type cannot be replaced');
         }
       }
@@ -87,10 +93,17 @@ function() {
       }
     ];
 
+    var resolvedPropertyValidators = resolveTopLevelConstraint(docDefinition.propertyValidators);
+
+    // Ensure that, if the document type uses the simple type filter, it supports the "type" property
+    if (docDefinition.typeFilter === simpleTypeFilter && isValueNullOrUndefined(resolvedPropertyValidators.type)) {
+      resolvedPropertyValidators.type = typeIdValidator;
+    }
+
     // Execute each of the document's property validators while ignoring the specified whitelisted properties at the root level
     validateProperties(
-      docDefinition.propertyValidators,
-      docDefinition.allowUnknownProperties,
+      resolvedPropertyValidators,
+      resolveTopLevelConstraint(docDefinition.allowUnknownProperties),
       [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ]);
 
     if (doc._attachments) {
@@ -107,6 +120,10 @@ function() {
       } else {
         return constraintDefinition;
       }
+    }
+
+    function resolveTopLevelConstraint(constraint) {
+      return resolveDocConstraint(doc, oldDoc, constraint);
     }
 
     function validateProperties(propertyValidators, allowUnknownProperties, whitelistedProperties) {
@@ -544,18 +561,20 @@ function() {
     }
 
     function validateAttachments() {
-      var attachmentConstraints = docDefinition.attachmentConstraints;
+      var attachmentConstraints = resolveTopLevelConstraint(docDefinition.attachmentConstraints);
 
-      var maximumAttachmentCount = attachmentConstraints ? attachmentConstraints.maximumAttachmentCount : null;
-      var maximumIndividualAttachmentSize = attachmentConstraints ? attachmentConstraints.maximumIndividualSize : null;
-      var maximumTotalAttachmentSize = attachmentConstraints ? attachmentConstraints.maximumTotalSize : null;
+      var maximumAttachmentCount = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.maximumAttachmentCount) : null;
+      var maximumIndividualAttachmentSize =
+        attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.maximumIndividualSize) : null;
+      var maximumTotalAttachmentSize = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.maximumTotalSize) : null;
 
-      var supportedExtensions = attachmentConstraints ? attachmentConstraints.supportedExtensions : null;
+      var supportedExtensions = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.supportedExtensions) : null;
       var supportedExtensionsRegex = supportedExtensions ? buildSupportedExtensionsRegex(supportedExtensions) : null;
 
-      var supportedContentTypes = attachmentConstraints ? attachmentConstraints.supportedContentTypes : null;
+      var supportedContentTypes = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.supportedContentTypes) : null;
 
-      var requireAttachmentReferences = attachmentConstraints ? attachmentConstraints.requireAttachmentReferences : false;
+      var requireAttachmentReferences =
+        attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.requireAttachmentReferences) : false;
 
       var totalSize = 0;
       var attachmentCount = 0;
@@ -605,7 +624,7 @@ function() {
         validationErrors.push('the total number of attachments must not exceed ' + maximumAttachmentCount);
       }
 
-      if (!docDefinition.allowAttachments && attachmentCount > 0) {
+      if (!resolveTopLevelConstraint(docDefinition.allowAttachments) && attachmentCount > 0) {
         validationErrors.push('document type does not support attachments');
       }
     }
