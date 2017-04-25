@@ -55,9 +55,9 @@ function() {
         mustNotBeEmpty: true,
         immutable: true,
         regexPattern: function(doc, oldDoc, value, oldValue) {
-          var expectedSettlementId = typeRegexMatchGroups[PROCESSOR_ID_MATCH_GROUP];
+          var expectedProcessorId = typeRegexMatchGroups[PROCESSOR_ID_MATCH_GROUP];
 
-          return new RegExp('^' + expectedSettlementId + '$');
+          return new RegExp('^' + expectedProcessorId + '$');
         }
       },
       capturedAt: {
