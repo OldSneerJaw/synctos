@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Required value constraint', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-required-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-required-sync-function.js');
   });
 
   describe('with static validation', function() {
