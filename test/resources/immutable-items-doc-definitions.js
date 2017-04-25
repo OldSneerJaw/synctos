@@ -1,6 +1,6 @@
 function() {
   function isImmutable(doc, oldDoc, value, oldValue) {
-    return oldDoc ? oldDoc.dynamicPropertiesAreImmutable : doc.dynamicPropertiesAreImmutable;
+    return doc.dynamicPropertiesAreImmutable;
   }
 
   return {
@@ -23,8 +23,7 @@ function() {
           immutable: true
         },
         dynamicPropertiesAreImmutable: {
-          type: 'boolean',
-          immutable: true
+          type: 'boolean'
         },
         dynamicImmutableArrayProp: {
           type: 'array',

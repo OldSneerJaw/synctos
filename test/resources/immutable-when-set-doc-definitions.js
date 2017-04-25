@@ -10,13 +10,12 @@
         immutableWhenSet: true
       },
       dynamicPropertiesAreImmutable: {
-        type: 'boolean',
-        immutable: true
+        type: 'boolean'
       },
       dynamicValidationProp: {
         type: 'integer',
         immutableWhenSet: function(doc, oldDoc, value, oldValue) {
-          return oldDoc ? oldDoc.dynamicPropertiesAreImmutable : doc.dynamicPropertiesAreImmutable;
+          return doc.dynamicPropertiesAreImmutable;
         }
       }
     }

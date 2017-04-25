@@ -51,7 +51,11 @@ At the top level, the document definitions object contains a property for each d
 
 #### Document type definitions
 
-Each document type is specified as an object with the following properties:
+Each document type is defined as an object with a number of properties that control authorization, content validation and access control.
+
+##### Essential document properties:
+
+The following properties include the basics necessary to build a document definition:
 
 * `typeFilter`: (required) A function that is used to identify documents of this type. It accepts as function parameters (1) the new document, (2) the old document that is being replaced (if any) and (3) the name of the current document type. For the sake of convenience, a simple type filter function (`simpleTypeFilter`) is available that attempts to match the document's `type` property value to the document type's name (e.g. if a document definition is named "message", then a candidate document's `type` property value must be "message" to be considered a document of that type); if the document definition does not include an explicit `type` property validator, then, for convenience, the `type` property will be implicitly validated with the built in `typeIdValidator` (see the validator's description for more info). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`.
 
@@ -88,7 +92,7 @@ And an example of a more complex custom type filter:
     }
 ```
 
-* `channels`: (required if `authorizedRoles` and `authorizedUsers` are undefined) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the channels and/or authorized roles/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
+* `channels`: (required if `authorizedRoles` and `authorizedUsers` are undefined - see the [Advanced document properties](#advanced-document-properties) section for more info) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the channels and/or authorized roles/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
   * `view`: (optional) The channel(s) that confer read-only access to documents of this type.
   * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access.
   * `replace`: (required if `write` is undefined) The channel(s) that confer the ability to replace existing documents of this type. Any user with a matching channel also gains implicit read access.
@@ -116,6 +120,29 @@ Or:
     }
 ```
 
+* `propertyValidators`: (required) An object/hash of validators that specify the format of each of the document type's supported properties. Each entry consists of a key that specifies the property name and a value that specifies the validation to perform on that property. Each element must declare a type and, optionally, some number of additional parameters. Any property that is not declared here will be rejected by the sync function unless the `allowUnknownProperties` field is set to `true`. An example:
+
+```
+    propertyValidators: {
+      myProp1: {
+        type: 'boolean',
+        required: true
+      },
+      myProp2: {
+        type: 'array',
+        mustNotBeEmpty: true
+      }
+    }
+```
+
+##### Advanced document properties:
+
+Additional properties that provide finer grained control over documents:
+
+* `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. Defaults to `false`.
+* `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
+* `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
+* `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. Defaults to `false`.
 * `authorizedRoles`: (required if `channels` and `authorizedUsers` are undefined) The [roles](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/authorizing-users/index.html#roles) that are authorized to add, replace and remove documents of this type. If used in combination with the `channels` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the roles and/or authorized channels/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of role names or a single role name as a string:
   * `add`: (optional) The role(s) that confer the ability to create new documents of this type.
   * `replace`: (optional) The role(s) that confer the ability to replace existing documents of this type.
@@ -168,21 +195,6 @@ Or:
     }
 ```
 
-* `propertyValidators`: (required) An object/hash of validators that specify the format of each of the document type's supported properties. Each entry consists of a key that specifies the property name and a value that specifies the validation to perform on that property. Each element must declare a type and, optionally, some number of additional parameters. Any property that is not declared here will be rejected by the sync function unless the `allowUnknownProperties` field is set to `true`. An example:
-
-```
-    propertyValidators: {
-      myProp1: {
-        type: 'boolean',
-        required: true
-      },
-      myProp2: {
-        type: 'array',
-        mustNotBeEmpty: true
-      }
-    }
-```
-
 * `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created, replaced or deleted. It is specified as a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a dynamically-constructed list and accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`. The assignment types are specified as follows:
   * Channel access assignments:
     * `type`: May be either "channel", `null` or `undefined`.
@@ -231,10 +243,6 @@ An example of a mix of channel and role access assignments:
   * `supportedExtensions`: (optional) An array of case-insensitive file extensions that are allowed for an attachment's filename (e.g. "txt", "jpg", "pdf"). No restriction by default.
   * `supportedContentTypes`: (optional) An array of content/MIME types that are allowed for an attachment's contents (e.g. "image/png", "text/html", "application/xml"). No restriction by default.
   * `requireAttachmentReferences`: (optional) Whether every one of a document's attachments must have a corresponding `attachmentReference`-type property referencing it. Defaults to `false`.
-* `allowUnknownProperties`: (optional) Whether to allow the existence of properties that are not explicitly declared in the document type definition. Not applied recursively to objects that are nested within documents of this type. Defaults to `false`.
-* `immutable`: (optional) The document cannot be replaced or deleted after it is created. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
-* `cannotReplace`: (optional) As with the `immutable` constraint, the document cannot be replaced after it is created. However, this constraint does not prevent the document from being deleted. Note that, even if attachments are allowed for this document type (see the `allowAttachments` parameter for more info), it will not be possible to create, modify or delete attachments in a document that already exists, which means that they must be created inline in the document's `_attachments` property when the document is first created. Defaults to `false`.
-* `cannotDelete`: (optional) As with the `immutable` constraint, the document cannot be deleted after it is created. However, this constraint does not prevent the document from being replaced. Defaults to `false`.
 * `customActions`: (optional) Defines custom actions to be executed at various events during the generated sync function's execution. Specified as an object where each property specifies a JavaScript function to be executed when the corresponding event is completed. In each case, the function accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any) and (3) an object that is populated with metadata generated by each event. In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be null or undefined and, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. At each stage of the generated sync function's execution, the third parameter (the custom action metadata parameter) is augmented with properties that provide additional context to the custom action being executed. Custom actions may call functions from the [standard sync function API](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html) (e.g. `requireAccess`, `requireRole`, `requireUser`, `access`, `role`, `channel`) and may indicate errors via the `throw` statement to prevent the document from being written. The custom actions that are available, in the order their corresponding events occur:
   1. `onTypeIdentificationSucceeded`: Executed immediately after the document's type is determined and before checking authorization. The custom action metadata object parameter contains the following properties:
     * `documentTypeId`: The unique ID of the document type.
@@ -435,7 +443,7 @@ Validation for all simple and complex data types support the following additiona
 
 ##### Predefined validators:
 
-The following predefined validators may also be useful:
+The following predefined item validators may also be useful:
 
 * `typeIdValidator`: A property validator that is suitable for application to the property that specifies the type of a document. Its constraints include ensuring the value is a string, is neither null nor undefined, is not an empty string and cannot be modified. NOTE: If a document type specifies `simpleTypeFilter` as its type filter, it is not necessary to explicitly include a `type` property validator; it will be supported implicitly as a `typeIdValidator`. An example usage:
 
@@ -444,6 +452,46 @@ propertyValidators: {
   type: typeIdValidator,
   foobar: {
     type: 'string'
+  }
+}
+```
+
+##### Dynamic constraint validation:
+
+In addition to defining any of the item validation constraints above, including `type`, as static values (e.g. `maximumValue: 99`, `mustNotBeEmpty: true`), it is possible to specify them dynamically via function (e.g. `regexPattern: function(doc, oldDoc, value, oldValue) { ... }`). This is useful if, for example, the constraint should be based on the value of another property/element in the document or computed based on the previous stored value of the current property/element. The function should expect to receive the following parameters:
+
+1. The current document.
+2. The document that is being replaced (if any). Note that, if the document is missing (e.g. it doesn't exist yet) or it has been deleted, this parameter will be `null`.
+3. The current value of the property/element/key.
+4. The previous value of the property/element/key as stored in the revision of the document that is being replaced (if any).
+
+For example:
+
+```
+propertyValidators: {
+  sequence: {
+    type: 'integer',
+    required: true,
+    // The value must always increase by at least one with each revision
+    minimumValue: function(doc, oldDoc, value, oldValue) {
+      return !isValueNullOrUndefined(oldValue) ? oldValue + 1 : 0;
+    }
+  },
+  category: {
+    type: 'enum',
+    required: true,
+    // The list of valid categories depends on the beginning of the document's ID
+    predefinedValues: function(doc, oldDoc, value, oldValue) {
+      return (doc._id.indexOf('integerDoc-') === 0) ? [ 1, 2, 3 ] : [ 'a', 'b', 'c' ];
+    }
+  },
+  referenceId: {
+    type: 'string',
+    required: true,
+    // The reference ID must be constructed from the value of the category field
+    regexPattern: function(doc, oldDoc, value, oldValue) {
+      return new RegExp('^foobar-' + doc.category + '-[a-zA-Z_-]+$');
+    }
   }
 }
 ```
@@ -595,6 +643,8 @@ Custom code (e.g. type filters, custom validation functions, custom actions) wit
 # Testing
 
 The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`etc/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
+
+The post [Testing your Sync Gateway functions with synctos](https://blog.couchbase.com/testing-sync-gateway-functions-synctos/) on the official Couchbase blog provides a detailed walkthrough, with examples, for setting up and running tests. The following section also provides a brief overview of the process.
 
 To include the test helper module in your own sync function test cases, you must first ensure that your project [includes](https://docs.npmjs.com/getting-started/using-a-package.json) the development dependencies it relies upon. Update your project's `devDependencies` to include the following packages:
 
