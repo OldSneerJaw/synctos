@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.9.0] - 2017-04-26
 ### Added
 - [#94](https://github.com/Kashoo/synctos/issues/94): Support dynamic item validation constraints
 - [#95](https://github.com/Kashoo/synctos/issues/95): Accept Date object for date/time constraint parameters
@@ -77,7 +77,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/Kashoo/synctos/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Kashoo/synctos/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/Kashoo/synctos/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/Kashoo/synctos/compare/v1.5.0...v1.6.0
