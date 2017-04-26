@@ -42,9 +42,9 @@ function() {
     return nameComponents.join('');
   }
 
-  // Resolves a constraint defined (e.g. `propertyValidators`, `allowUnknownProperties`, `immutable`) at the document level.
-  function resolveDocConstraint(doc, oldDoc, constraint) {
-    return (typeof(constraint) === 'function') ? constraint(doc, oldDoc) : constraint;
+  // Resolves a constraint defined at the document level (e.g. `propertyValidators`, `allowUnknownProperties`, `immutable`).
+  function resolveDocConstraint(doc, oldDoc, constraintDefinition) {
+    return (typeof(constraintDefinition) === 'function') ? constraintDefinition(doc, getEffectiveOldDoc(oldDoc)) : constraintDefinition;
   }
 
   // Ensures the document structure and content are valid
@@ -93,7 +93,7 @@ function() {
       }
     ];
 
-    var resolvedPropertyValidators = resolveTopLevelConstraint(docDefinition.propertyValidators);
+    var resolvedPropertyValidators = resolveDocConstraint(doc, oldDoc, docDefinition.propertyValidators);
 
     // Ensure that, if the document type uses the simple type filter, it supports the "type" property
     if (docDefinition.typeFilter === simpleTypeFilter && isValueNullOrUndefined(resolvedPropertyValidators.type)) {
@@ -103,7 +103,7 @@ function() {
     // Execute each of the document's property validators while ignoring the specified whitelisted properties at the root level
     validateProperties(
       resolvedPropertyValidators,
-      resolveTopLevelConstraint(docDefinition.allowUnknownProperties),
+      resolveDocConstraint(doc, oldDoc, docDefinition.allowUnknownProperties),
       [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ]);
 
     if (doc._attachments) {
@@ -120,10 +120,6 @@ function() {
       } else {
         return constraintDefinition;
       }
-    }
-
-    function resolveTopLevelConstraint(constraint) {
-      return resolveDocConstraint(doc, oldDoc, constraint);
     }
 
     function validateProperties(propertyValidators, allowUnknownProperties, whitelistedProperties) {
@@ -561,20 +557,23 @@ function() {
     }
 
     function validateAttachments() {
-      var attachmentConstraints = resolveTopLevelConstraint(docDefinition.attachmentConstraints);
+      var attachmentConstraints = resolveDocConstraint(doc, oldDoc, docDefinition.attachmentConstraints);
 
-      var maximumAttachmentCount = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.maximumAttachmentCount) : null;
+      var maximumAttachmentCount =
+        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumAttachmentCount) : null;
       var maximumIndividualAttachmentSize =
-        attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.maximumIndividualSize) : null;
-      var maximumTotalAttachmentSize = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.maximumTotalSize) : null;
+        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumIndividualSize) : null;
+      var maximumTotalAttachmentSize =
+        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumTotalSize) : null;
 
-      var supportedExtensions = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.supportedExtensions) : null;
+      var supportedExtensions = attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.supportedExtensions) : null;
       var supportedExtensionsRegex = supportedExtensions ? buildSupportedExtensionsRegex(supportedExtensions) : null;
 
-      var supportedContentTypes = attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.supportedContentTypes) : null;
+      var supportedContentTypes =
+        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.supportedContentTypes) : null;
 
       var requireAttachmentReferences =
-        attachmentConstraints ? resolveTopLevelConstraint(attachmentConstraints.requireAttachmentReferences) : false;
+        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.requireAttachmentReferences) : false;
 
       var totalSize = 0;
       var attachmentCount = 0;
@@ -624,7 +623,7 @@ function() {
         validationErrors.push('the total number of attachments must not exceed ' + maximumAttachmentCount);
       }
 
-      if (!resolveTopLevelConstraint(docDefinition.allowAttachments) && attachmentCount > 0) {
+      if (!resolveDocConstraint(doc, oldDoc, docDefinition.allowAttachments) && attachmentCount > 0) {
         validationErrors.push('document type does not support attachments');
       }
     }
