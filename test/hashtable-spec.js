@@ -208,7 +208,7 @@ describe('Hashtable validation type', function() {
       var doc = {
         _id: 'hashtableDoc',
 
-        // Keys need must be non-empty strings when there is more than one item in the hashtable
+        // Each key must be a non-empty string when there is more than one item in the hashtable
         dynamicKeysValidatorProp: {
           'a': 'foo',
           'b': 'bar'
@@ -222,7 +222,7 @@ describe('Hashtable validation type', function() {
       var doc = {
         _id: 'hashtableDoc',
 
-        // Keys need may be empty strings when there is only a single item in the hashtable
+        // A key may be an empty string when there is only a single item in the hashtable
         dynamicKeysValidatorProp: { '': 'foo' }
       };
 
@@ -233,7 +233,7 @@ describe('Hashtable validation type', function() {
       var doc = {
         _id: 'hashtableDoc',
 
-        // Keys need must be non-empty strings when there is more than one item in the hashtable
+        // Each key must be a non-empty string when there is more than one item in the hashtable
         dynamicKeysValidatorProp: {
           'a': 'foo',
           '': 'bar'
