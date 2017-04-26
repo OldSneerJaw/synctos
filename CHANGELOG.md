@@ -9,6 +9,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#97](https://github.com/Kashoo/synctos/issues/97): Support dynamic document constraints
 - [#100](https://github.com/Kashoo/synctos/issues/100): Option to initialize test helper module with document definition file
 
+### Fixed
+- [#113](https://github.com/Kashoo/synctos/issues/113): Backticks in document definitions cause syntax errors
+
 ## [1.8.0] - 2017-03-21
 ### Added
 - [#90](https://github.com/Kashoo/synctos/issues/90): Document-wide constraints on file attachments

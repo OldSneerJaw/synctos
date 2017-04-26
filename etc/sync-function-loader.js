@@ -44,8 +44,10 @@ exports.load = function(docDefinitionFilename, baseDir) {
   syncDocDefn = syncDocDefn.replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
     .replace(/importDocumentDefinitionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readDocDefinitionFragment);
 
-  // Load the document definitions into the sync function template
-  var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
+  // Load the document definitions into the sync function template and then escape any occurrence of the backtick character so the sync
+  // function can be used in a Sync Gateway configuration file multiline string
+  var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; })
+    .replace(/`/g, function() { return '\\`'; });
 
   // Normalize code block indentation, normalize line endings and replace blank lines with empty lines
   syncFunc = indent.indentJS(syncFunc, '  ')

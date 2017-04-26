@@ -124,7 +124,7 @@ describe('String validation type', function() {
       it('allows a doc with a string that matches the expected pattern', function() {
         var doc = {
           _id: 'stringDoc',
-          staticRegexPatternValidationProp: '0472'
+          staticRegexPatternValidationProp: '0472`foo'
         };
 
         testHelper.verifyDocumentCreated(doc);
@@ -136,7 +136,10 @@ describe('String validation type', function() {
           staticRegexPatternValidationProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.regexPatternItemViolation('staticRegexPatternValidationProp', /^\d+$/));
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          errorFormatter.regexPatternItemViolation('staticRegexPatternValidationProp', /^\d+`[a-z]+$/));
       });
     });
 
