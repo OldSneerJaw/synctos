@@ -145,7 +145,7 @@ describe('Hashtable validation type', function() {
         var doc = {
           _id: 'hashtableDoc',
           staticKeyRegexPatternValidationProp: {
-            'Foobar': 'baz',
+            'Foo`bar': 'baz',
             'Baz': 'qux'
           }
         };
@@ -165,7 +165,7 @@ describe('Hashtable validation type', function() {
         testHelper.verifyDocumentNotCreated(
           doc,
           'hashtableDoc',
-          errorFormatter.regexPatternHashtableKeyViolation('staticKeyRegexPatternValidationProp[123]', /^[a-zA-Z]+$/));
+          errorFormatter.regexPatternHashtableKeyViolation('staticKeyRegexPatternValidationProp[123]', /^[a-zA-Z]+(`[a-zA-Z]+)?$/));
       });
     });
 

@@ -48,7 +48,7 @@ function() {
         },
         staticRegexPatternValidationProp: {
           type: 'string',
-          regexPattern: /^\d+$/
+          regexPattern: /^\d+`[a-z]+$/
         },
         dynamicRegex: {
           type: 'string'

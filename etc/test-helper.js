@@ -257,8 +257,10 @@ var defaultWriteChannel = 'write';
 
 function initSyncFunction(filePath) {
   // Load the contents of the sync function file into a global variable called syncFunction
+  var rawSyncFunction = fs.readFileSync(filePath).toString();
+
   /*jslint evil: true */
-  eval('syncFunction = ' + fs.readFileSync(filePath).toString());
+  eval('syncFunction = ' + unescapeBackticks(rawSyncFunction));
   /*jslint evil: false */
 
   init();
@@ -266,8 +268,10 @@ function initSyncFunction(filePath) {
 
 function initDocumentDefinitions(filePath) {
   // Generate a sync function from the document definitions and load its contents into a global variable called syncFunction
+  var rawDocDefinitions = syncFunctionLoader.load(filePath);
+
   /*jslint evil: true */
-  eval('syncFunction = ' + syncFunctionLoader.load(filePath));
+  eval('syncFunction = ' + unescapeBackticks(rawDocDefinitions));
   /*jslint evil: false */
 
   init();
@@ -653,4 +657,12 @@ function verifyUnknownDocumentType(doc, oldDoc) {
 
   expect(requireAccess.callCount).to.be(0);
   expect(channel.callCount).to.be(0);
+}
+
+// Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function
+// generator script automatically escapes backtick characters with the sequence "\`" so that it produces a valid multiline string.
+// However, when loaded by the test helper, a sync function is not inserted into a Sync Gateway configuration file so we must "unescape"
+// backtick characters to preserve the original intention.
+function unescapeBackticks(originalString) {
+  return originalString.replace(/\\`/g, function() { return '`'; });
 }

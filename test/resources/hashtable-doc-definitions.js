@@ -49,7 +49,7 @@ function() {
         staticKeyRegexPatternValidationProp: {
           type: 'hashtable',
           hashtableKeysValidator: {
-            regexPattern: /^[a-zA-Z]+$/
+            regexPattern: /^[a-zA-Z]+(`[a-zA-Z]+)?$/
           }
         },
         dynamicKeyRegex: {
