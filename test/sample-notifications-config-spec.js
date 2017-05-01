@@ -53,9 +53,9 @@ describe('Sample business notifications config doc definition', function() {
         errorFormatter.unsupportedProperty('notificationTypes[invoicePayments].enabledTransports[0].invalid-property'),
         errorFormatter.requiredValueViolation('notificationTypes[invoicePayments].enabledTransports[0].transportId'),
         errorFormatter.mustNotBeEmptyViolation('notificationTypes[invoicePayments].enabledTransports[1].transportId'),
-        errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[Invalid-Type]', new RegExp('^[a-zA-Z]+$')),
+        errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[Invalid-Type]', /^[a-zA-Z]+$/),
         errorFormatter.hashtableKeyEmpty('notificationTypes'),
-        errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[]', new RegExp('^[a-zA-Z]+$')),
+        errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[]', /^[a-zA-Z]+$/),
         errorFormatter.requiredValueViolation('notificationTypes[]'),
         errorFormatter.unsupportedProperty('unknownprop')
       ]);

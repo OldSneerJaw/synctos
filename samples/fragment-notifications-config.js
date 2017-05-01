@@ -3,7 +3,8 @@
   authorizedRoles: defaultAuthorizedRoles,
   authorizedUsers: defaultAuthorizedUsers,
   typeFilter: function(doc, oldDoc) {
-    return createBusinessEntityRegex('notificationsConfig$').test(doc._id);
+    // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
+    return createBusinessEntityRegex("notificationsConfig$").test(doc._id);
   },
   propertyValidators: {
     notificationTypes: {
@@ -12,7 +13,7 @@
       hashtableKeysValidator: {
         type: 'string',
         mustNotBeEmpty: true,
-        regexPattern: new RegExp('^[a-zA-Z]+$')
+        regexPattern: /^[a-zA-Z]+$/
       },
       hashtableValuesValidator: {
         type: 'object',

@@ -45,7 +45,8 @@ function() {
         regexPattern: function(doc, oldDoc, value, oldValue) {
           var expectedSettlementId = typeRegexMatchGroups[SETTLEMENT_ID_MATCH_GROUP];
 
-          return new RegExp('^' + expectedSettlementId + '$');
+          // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
+          return new RegExp("^" + expectedSettlementId + "$");
         }
       },
       processorId: {
@@ -57,7 +58,8 @@ function() {
         regexPattern: function(doc, oldDoc, value, oldValue) {
           var expectedProcessorId = typeRegexMatchGroups[PROCESSOR_ID_MATCH_GROUP];
 
-          return new RegExp('^' + expectedProcessorId + '$');
+          // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
+          return new RegExp("^" + expectedProcessorId + "$");
         }
       },
       capturedAt: {

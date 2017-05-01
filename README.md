@@ -85,7 +85,7 @@ typeFilter: function(doc, oldDoc, currentDocType) {
     return true;
   } else {
     // The type property did not match - fall back to matching the document ID pattern
-    var docIdRegex = new RegExp('^message\\.[A-Za-z0-9_-]+$');
+    var docIdRegex = /^message\.[A-Za-z0-9_-]+$/;
 
     return docIdRegex.test(doc._id);
   }
