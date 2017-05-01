@@ -5,7 +5,8 @@
   authorizedRoles: defaultAuthorizedRoles,
   authorizedUsers: defaultAuthorizedUsers,
   typeFilter: function(doc, oldDoc) {
-    return createBusinessEntityRegex('notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$').test(doc._id);
+    // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
+    return createBusinessEntityRegex("notification\\.[A-Za-z0-9_-]+\\.processedTransport\\.[A-Za-z0-9_-]+$").test(doc._id);
   },
   cannotDelete: true,
   propertyValidators: {

@@ -3,7 +3,7 @@
   authorizedRoles: defaultAuthorizedRoles,
   authorizedUsers: defaultAuthorizedUsers,
   typeFilter: function(doc, oldDoc) {
-    return new RegExp('^paymentRequisition\\.[A-Za-z0-9_-]+$').test(doc._id);
+    return /^paymentRequisition\.[A-Za-z0-9_-]+$/.test(doc._id);
   },
   cannotReplace: true,
   propertyValidators: {

@@ -14,7 +14,7 @@
   authorizedRoles: defaultAuthorizedRoles,
   authorizedUsers: defaultAuthorizedUsers,
   typeFilter: function(doc, oldDoc) {
-    return new RegExp('^biz\\.[A-Za-z0-9_-]+$').test(doc._id);
+    return /^biz\.[A-Za-z0-9_-]+$/.test(doc._id);
   },
   allowAttachments: true,
   attachmentConstraints: {

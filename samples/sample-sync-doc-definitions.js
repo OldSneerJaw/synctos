@@ -6,11 +6,12 @@ function() {
   var adminUser = 'ADMIN';
 
   // Matches values that look like three-letter ISO 4217 currency codes. It is not comprehensive.
-  var iso4217CurrencyCodeRegex = new RegExp('^[A-Z]{3}$');
+  var iso4217CurrencyCodeRegex = /^[A-Z]{3}$/;
 
   // Creates a RegExp to match the ID of an entity that belongs to a business
   function createBusinessEntityRegex(suffixPattern) {
-    return new RegExp('^biz\\.\\d+\\.' + suffixPattern + '$');
+    // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
+    return new RegExp("^biz\\.\\d+\\." + suffixPattern + "$");
   }
 
   // Checks that a business ID is valid (an integer greater than 0) and is not changed from the old version of the document
@@ -31,7 +32,7 @@ function() {
 
   // Retrieves the ID of the business to which the document belongs
   function getBusinessId(doc, oldDoc) {
-    var regex = new RegExp('^biz\\.([A-Za-z0-9_-]+)(?:\\..+)?$');
+    var regex = /^biz\.([A-Za-z0-9_-]+)(?:\..+)?$/;
     var matchGroups = regex.exec(doc._id);
     if (matchGroups) {
       return matchGroups[1];

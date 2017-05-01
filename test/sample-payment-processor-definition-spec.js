@@ -78,7 +78,7 @@ describe('Sample payment processor definition doc definition', function() {
       oldDoc,
       expectedDocType,
       [
-        errorFormatter.regexPatternItemViolation('supportedCurrencyCodes[0]', new RegExp('^[A-Z]{3}$')),
+        errorFormatter.regexPatternItemViolation('supportedCurrencyCodes[0]', /^[A-Z]{3}$/),
         errorFormatter.typeConstraintViolation('accountId', 'integer'),
         errorFormatter.typeConstraintViolation('displayName', 'string'),
         errorFormatter.requiredValueViolation('provider'),

@@ -3,7 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-Nothing yet
+### Fixed
+- [#116](https://github.com/Kashoo/synctos/issues/116): Syntax error when the Sync Gateway admin UI loads a generated sync function
 
 ## [1.9.0] - 2017-04-26
 ### Added

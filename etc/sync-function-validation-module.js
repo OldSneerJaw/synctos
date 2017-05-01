@@ -6,21 +6,22 @@ function() {
 
   // Check that a given value is a valid ISO 8601 format date string with optional time and time zone components
   function isIso8601DateTimeString(value) {
-    var regex = new RegExp('^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))([T ]([01][0-9]|2[0-4])(:[0-5][0-9])?(:[0-5][0-9])?([\\.,][0-9]{1,3})?)?([zZ]|([\\+-])([01][0-9]|2[0-3]):?([0-5][0-9])?)?$');
+    var regex = /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))([T ]([01][0-9]|2[0-4])(:[0-5][0-9])?(:[0-5][0-9])?([\.,][0-9]{1,3})?)?([zZ]|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9])?)?$/;
 
     return regex.test(value);
   }
 
   // Check that a given value is a valid ISO 8601 date string without time and time zone components
   function isIso8601DateString(value) {
-    var regex = new RegExp('^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$');
+    var regex = /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/;
 
     return regex.test(value);
   }
 
   // A regular expression that matches one of the given file extensions
   function buildSupportedExtensionsRegex(extensions) {
-    return new RegExp('\\.(' + extensions.join('|') + ')$', 'i');
+    // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
+    return new RegExp("\\.(" + extensions.join("|") + ")$", "i");
   }
 
   // Constructs the fully qualified path of the item at the top of the given stack

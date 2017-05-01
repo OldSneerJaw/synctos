@@ -11,7 +11,7 @@
   authorizedRoles: defaultAuthorizedRoles,
   authorizedUsers: defaultAuthorizedUsers,
   typeFilter: function(doc, oldDoc) {
-    return new RegExp('^paymentAttempt\\.[A-Za-z0-9_-]+$').test(doc._id);
+    return /^paymentAttempt\.[A-Za-z0-9_-]+$/.test(doc._id);
   },
   immutable: true,
   propertyValidators: {
