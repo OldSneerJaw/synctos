@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.9.1] - 2017-05-01
 ### Fixed
 - [#116](https://github.com/Kashoo/synctos/issues/116): Syntax error when the Sync Gateway admin UI loads a generated sync function
 
@@ -81,7 +81,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.1...HEAD
+[1.9.1]: https://github.com/Kashoo/synctos/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Kashoo/synctos/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/Kashoo/synctos/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/Kashoo/synctos/compare/v1.6.0...v1.7.0
