@@ -1,9 +1,7 @@
 {
   "name": "synctos",
   "version": "1.9.1",
-  "dependencies": {
-    "indent.js": "^0.1.4"
-  },
+  "dependencies": { },
   "devDependencies": {
     "expect.js": "^0.3.1",
     "jshint": "^2.9.4",
