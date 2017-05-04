@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var indent = require('indent.js');
+var indent = require('../lib/indent.js/indent.min.js');
 
 exports.load = function(docDefinitionFilename, baseDir) {
   var syncFuncTemplateDir = baseDir ? baseDir + '/etc' : 'etc';
@@ -44,15 +44,15 @@ exports.load = function(docDefinitionFilename, baseDir) {
   syncDocDefn = syncDocDefn.replace(/importDocumentDefinitionFragment\s*\(\s*"((?:\\"|[^"])+)"\s*\)/g, readDocDefinitionFragment)
     .replace(/importDocumentDefinitionFragment\s*\(\s*'((?:\\'|[^'])+)'\s*\)/g, readDocDefinitionFragment);
 
-  // Load the document definitions into the sync function template and then escape any occurrence of the backtick character so the sync
-  // function can be used in a Sync Gateway configuration file multiline string
-  var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; })
-    .replace(/`/g, function() { return '\\`'; });
+  // Load the document definitions into the sync function template
+  var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return syncDocDefn; });
 
-  // Normalize code block indentation, normalize line endings and replace blank lines with empty lines
+  // Normalize code block indentation, normalize line endings, replace blank lines with empty lines and then escape any occurrence of the
+  // backtick character so the sync function can be used in a Sync Gateway configuration file multiline string
   syncFunc = indent.indentJS(syncFunc, '  ')
     .replace(/(?:\r\n)|(?:\r)/g, function() { return '\n'; })
-    .replace(/^\s+$/gm, function() { return '' });
+    .replace(/^\s+$/gm, function() { return '' })
+    .replace(/`/g, function() { return '\\`'; });
 
   return syncFunc;
 };
