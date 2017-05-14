@@ -20,7 +20,7 @@ var outputFilename = process.argv[3];
 
 var syncFunc;
 try {
-  syncFunc = syncFunctionLoader.load(syncDocDefnFilename, scriptDir);
+  syncFunc = syncFunctionLoader.load(syncDocDefnFilename);
 } catch (ex) {
   process.exit(errorStatus);
 }

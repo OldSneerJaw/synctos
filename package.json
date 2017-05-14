@@ -1,6 +1,7 @@
 {
   "name": "synctos",
   "version": "1.9.1",
+  "main": "etc/sync-function-loader.js",
   "dependencies": { },
   "devDependencies": {
     "expect.js": "^0.3.1",
