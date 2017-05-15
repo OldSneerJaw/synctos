@@ -1,15 +1,17 @@
-var fs = require('fs');
-var path = require('path');
-var indent = require('../lib/indent.js/indent.min.js');
-
 /**
  * Generates a complete sync function from the specified document definitions file.
  *
  * @param {string} docDefinitionsFile The path to the document definitions file
  *
- * @returns The full contents of the sync function generated from the specified document definitions file
+ * @returns The full contents of the generated sync function as a string
  */
-exports.load = function(docDefinitionsFile) {
+exports.load = loadFromFile;
+
+var fs = require('fs');
+var path = require('path');
+var indent = require('../lib/indent.js/indent.min.js');
+
+function loadFromFile(docDefinitionsFile) {
   var syncFuncTemplateDir = path.dirname(module.filename);
 
   function readSyncFunctionFragment(fullMatch, fragmentFilename) {
