@@ -1,11 +1,3 @@
-var validationErrorFormatter = require('./validation-error-message-formatter.js');
-
-/**
- * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
- * found in the "validation-error-message-formatter" module.
- */
-exports.validationErrorFormatter = validationErrorFormatter;
-
 /**
  * Initializes the module with the sync function at the specified file path.
  *
@@ -24,6 +16,12 @@ exports.initDocumentDefinitions = initDocumentDefinitions;
  * DEPRECATED. Use initSyncFunction instead.
  */
 exports.init = initSyncFunction;
+
+/**
+ * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
+ * found in the "validation-error-message-formatter" module.
+ */
+exports.validationErrorFormatter = require('./validation-error-message-formatter.js');
 
 /**
  * Attempts to write the specified doc and then verifies that it completed successfully with the expected channels.
