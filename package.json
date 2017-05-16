@@ -1,11 +1,12 @@
 {
   "name": "synctos",
   "version": "1.9.1",
+  "main": "etc/sync-function-loader.js",
   "dependencies": { },
   "devDependencies": {
     "expect.js": "^0.3.1",
     "jshint": "^2.9.4",
-    "mocha": "^3.3.0",
+    "mocha": "^3.4.1",
     "simple-mock": "^0.7.3"
   },
   "scripts": {

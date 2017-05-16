@@ -1,14 +1,24 @@
+/**
+ * Generates a complete sync function from the specified document definitions file.
+ *
+ * @param {string} docDefinitionsFile The path to the document definitions file
+ *
+ * @returns The full contents of the generated sync function as a string
+ */
+exports.load = loadFromFile;
+
 var fs = require('fs');
 var path = require('path');
 var indent = require('../lib/indent.js/indent.min.js');
 
-exports.load = function(docDefinitionFilename, baseDir) {
-  var syncFuncTemplateDir = baseDir ? baseDir + '/etc' : 'etc';
+function loadFromFile(docDefinitionsFile) {
+  var syncFuncTemplateDir = path.dirname(module.filename);
+
   function readSyncFunctionFragment(fullMatch, fragmentFilename) {
     return readFileFragment(fullMatch, fragmentFilename, syncFuncTemplateDir);
   }
 
-  var docDefinitionDir = path.dirname(docDefinitionFilename);
+  var docDefinitionDir = path.dirname(docDefinitionsFile);
   function readDocDefinitionFragment(fullMatch, fragmentFilename) {
     return readFileFragment(fullMatch, fragmentFilename, docDefinitionDir);
   }
@@ -29,7 +39,7 @@ exports.load = function(docDefinitionFilename, baseDir) {
 
   var syncDocDefn;
   try {
-    syncDocDefn = fs.readFileSync(docDefinitionFilename, 'utf8').trim();
+    syncDocDefn = fs.readFileSync(docDefinitionsFile, 'utf8').trim();
   } catch (ex) {
     if (ex.code === 'ENOENT') {
       console.log('ERROR: Sync document definitions file does not exist');
