@@ -6,8 +6,6 @@ var syncFunctionLoader = require('./etc/sync-function-loader.js');
 
 var errorStatus = 1;
 
-var scriptDir = path.dirname(process.argv[1]);
-
 // Verify the correct number of commandline params
 if (process.argv.length !== 4) {
   showUsage();
