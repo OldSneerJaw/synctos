@@ -342,7 +342,7 @@ function() {
     function validateEquality(expectedItemValue) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var currentItemValue = currentItemEntry.itemValue;
-      if ((expectedItemValue === null && currentItemValue !== null) || !checkItemEquality(currentItemValue, expectedItemValue)) {
+      if (!checkItemEquality(currentItemValue, expectedItemValue)) {
         validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + JSON.stringify(expectedItemValue));
       }
     }
