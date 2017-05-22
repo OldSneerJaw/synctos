@@ -190,6 +190,11 @@ function() {
         validateImmutable(true);
       }
 
+      var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
+      if (typeof(expectedEqualValue) !== 'undefined') {
+        validateEquality(expectedEqualValue);
+      }
+
       if (!isValueNullOrUndefined(itemValue)) {
         if (resolveValidationConstraint(validator.mustNotBeEmpty) && itemValue.length < 1) {
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be empty');
@@ -325,7 +330,7 @@ function() {
         if (isValueNullOrUndefined(oldParentItemValue)) {
           constraintSatisfied = true;
         } else {
-          constraintSatisfied = validateImmutableItem(itemValue, oldItemValue);
+          constraintSatisfied = checkItemEquality(itemValue, oldItemValue);
         }
 
         if (!constraintSatisfied) {
@@ -334,37 +339,45 @@ function() {
       }
     }
 
-    function validateImmutableItem(itemValue, oldItemValue) {
+    function validateEquality(expectedItemValue) {
+      var currentItemEntry = itemStack[itemStack.length - 1];
+      var currentItemValue = currentItemEntry.itemValue;
+      if ((expectedItemValue === null && currentItemValue !== null) || !checkItemEquality(currentItemValue, expectedItemValue)) {
+        validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + JSON.stringify(expectedItemValue));
+      }
+    }
+
+    function checkItemEquality(itemValue, expectedItemValue) {
       var itemMissing = isValueNullOrUndefined(itemValue);
-      var oldItemMissing = isValueNullOrUndefined(oldItemValue);
-      if (oldItemValue === itemValue || (itemMissing && oldItemMissing)) {
+      var expectedItemMissing = isValueNullOrUndefined(expectedItemValue);
+      if (expectedItemValue === itemValue || (itemMissing && expectedItemMissing)) {
         return true;
-      } else if (itemMissing !== oldItemMissing) {
+      } else if (itemMissing !== expectedItemMissing) {
         // One value is null or undefined but the other is not, so they cannot be equal
         return false;
       } else {
-        if (itemValue instanceof Array || oldItemValue instanceof Array) {
-          return validateImmutableArray(itemValue, oldItemValue);
-        } else if (typeof(itemValue) === 'object' || typeof(oldItemValue) === 'object') {
-          return validateImmutableObject(itemValue, oldItemValue);
+        if (itemValue instanceof Array || expectedItemValue instanceof Array) {
+          return checkArrayEquality(itemValue, expectedItemValue);
+        } else if (typeof(itemValue) === 'object' || typeof(expectedItemValue) === 'object') {
+          return checkObjectEquality(itemValue, expectedItemValue);
         } else {
           return false;
         }
       }
     }
 
-    function validateImmutableArray(itemValue, oldItemValue) {
-      if (!(itemValue instanceof Array && oldItemValue instanceof Array)) {
+    function checkArrayEquality(itemValue, expectedItemValue) {
+      if (!(itemValue instanceof Array && expectedItemValue instanceof Array)) {
         return false;
-      } else if (itemValue.length !== oldItemValue.length) {
+      } else if (itemValue.length !== expectedItemValue.length) {
         return false;
       }
 
       for (var elementIndex = 0; elementIndex < itemValue.length; elementIndex++) {
         var elementValue = itemValue[elementIndex];
-        var oldElementValue = oldItemValue[elementIndex];
+        var expectedElementValue = expectedItemValue[elementIndex];
 
-        if (!validateImmutableItem(elementValue, oldElementValue)) {
+        if (!checkItemEquality(elementValue, expectedElementValue)) {
           return false;
         }
       }
@@ -373,8 +386,8 @@ function() {
       return true;
     }
 
-    function validateImmutableObject(itemValue, oldItemValue) {
-      if (typeof(itemValue) !== 'object' || typeof(oldItemValue) !== 'object') {
+    function checkObjectEquality(itemValue, expectedItemValue) {
+      if (typeof(itemValue) !== 'object' || typeof(expectedItemValue) !== 'object') {
         return false;
       }
 
@@ -383,18 +396,18 @@ function() {
         itemProperties.push(itemProp);
       }
 
-      for (var oldItemProp in oldItemValue) {
-        if (itemProperties.indexOf(oldItemProp) < 0) {
-          itemProperties.push(oldItemProp);
+      for (var expectedItemProp in expectedItemValue) {
+        if (itemProperties.indexOf(expectedItemProp) < 0) {
+          itemProperties.push(expectedItemProp);
         }
       }
 
       for (var propIndex = 0; propIndex < itemProperties.length; propIndex++) {
         var propertyName = itemProperties[propIndex];
         var propertyValue = itemValue[propertyName];
-        var oldPropertyValue = oldItemValue[propertyName];
+        var expectedPropertyValue = expectedItemValue[propertyName];
 
-        if (!validateImmutableItem(propertyValue, oldPropertyValue)) {
+        if (!checkItemEquality(propertyValue, expectedPropertyValue)) {
           return false;
         }
       }
