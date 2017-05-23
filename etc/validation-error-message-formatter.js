@@ -195,6 +195,16 @@ exports.minimumValueExclusiveViolation = function(itemPath, minValue) {
 };
 
 /**
+ * Formats a message for the error that occurs when a value does not equal the expected value.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.integerProp")
+ * @param {*} expectedItemValue The value that is expected
+ */
+exports.mustEqualViolation = function(itemPath, expectedItemValue) {
+  return 'value of item "' + itemPath + '" must equal ' + JSON.stringify(expectedItemValue);
+};
+
+/**
  * Formats a message for the error that occurs when there is an attempt to assign an empty string or array to a property or element where
  * that is forbidden.
  *
