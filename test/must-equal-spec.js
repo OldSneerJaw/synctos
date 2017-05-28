@@ -346,6 +346,59 @@ describe('Must equal validation parameter', function() {
     });
   });
 
+  describe('when applied to array elements', function() {
+    it('allows array element values that match', function() {
+      var doc = {
+        _id: 'arrayElementConstraintDoc',
+        arrayProp: [ 'foobar', 'foobar' ]
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects array element values that do not match', function() {
+      var doc = {
+        _id: 'arrayElementConstraintDoc',
+        arrayProp: [ 'foobar', 'foobar', 'fubar' ]
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'arrayElementConstraintDoc',
+        errorFormatter.mustEqualViolation('arrayProp[2]', 'foobar'));
+    });
+  });
+
+  describe('when applied to hashtable element values', function() {
+    it('allows hashtable element values that match', function() {
+      var doc = {
+        _id: 'hashtableElementConstraintDoc',
+        hashtableProp: {
+          a: -15,
+          b: -15
+        }
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects hashtable element values that do not match', function() {
+      var doc = {
+        _id: 'hashtableElementConstraintDoc',
+        hashtableProp: {
+          a: -15,
+          b: -15,
+          c: 15
+        }
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'hashtableElementConstraintDoc',
+        errorFormatter.mustEqualViolation('hashtableProp[c]', -15));
+    });
+  });
+
   describe('with an expected value of null', function() {
     it('allows a document with a value of null', function() {
       var doc = {

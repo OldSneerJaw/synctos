@@ -93,6 +93,32 @@ function() {
         }
       }
     },
+    arrayElementConstraintDoc: {
+      typeFilter: sharedTypeFilter,
+      channels: docChannels,
+      propertyValidators: {
+        arrayProp: {
+          type: 'array',
+          arrayElementsValidator: {
+            type: 'string',
+            mustEqual: 'foobar'
+          }
+        }
+      }
+    },
+    hashtableElementConstraintDoc: {
+      typeFilter: sharedTypeFilter,
+      channels: docChannels,
+      propertyValidators: {
+        hashtableProp: {
+          type: 'hashtable',
+          hashtableValuesValidator: {
+            type: 'integer',
+            mustEqual: -15
+          }
+        }
+      }
+    },
     nullExpectedValueDoc: {
       typeFilter: sharedTypeFilter,
       channels: docChannels,
