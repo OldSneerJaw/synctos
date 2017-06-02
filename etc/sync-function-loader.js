@@ -38,6 +38,6 @@ function loadFromFile(docDefinitionsFile) {
   // backtick character so the sync function can be used in a Sync Gateway configuration file multiline string
   return indent.indentJS(syncFunc, '  ')
     .replace(/(?:\r\n)|(?:\r)/g, function() { return '\n'; })
-    .replace(/^\s+$/gm, function() { return '' })
+    .replace(/^\s+$/gm, function() { return ''; })
     .replace(/`/g, function() { return '\\`'; });
-};
+}
