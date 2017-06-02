@@ -89,7 +89,13 @@ function validate(rawDocDefinitions) {
           }
           break;
         case 'attachmentConstraints':
-          if (!isAnObject(propertyValue) && typeof(propertyValue) !== 'function') {
+          if (isAnObject(propertyValue)) {
+            if (!docDefinition.allowAttachments) {
+              validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" property is defined but attachments have not been enabled via the "allowAttachments" property');
+            }
+
+            validateAttachmentConstraints(propertyValue);
+          } else if (typeof(propertyValue) !== 'function') {
             validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" property is not an object or a function');
           }
           break;
@@ -130,12 +136,68 @@ function validate(rawDocDefinitions) {
         for (var permissionIndex = 0; permissionIndex < permissions.length; permissionIndex++) {
           var permission = permissions[permissionIndex];
           if (typeof(permission) !== 'string') {
-            validationErrors.push(docTypePrefix(docType) + ': the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation contains an entry that is not a string: ' + JSON.stringify(permission));
+            validationErrors.push(docTypePrefix(docType) + ': the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation contains an element that is not a string: ' + JSON.stringify(permission));
           }
         }
       } else if (typeof(permissions) !== 'string') {
         validationErrors.push(docTypePrefix(docType) + ': the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation is not a string or array');
       }
+    }
+  }
+
+  function validateAttachmentConstraints(attachmentConstraintsDefinition) {
+    var maximumAttachmentCount = attachmentConstraintsDefinition.maximumAttachmentCount;
+    if (typeof(maximumAttachmentCount) !== 'undefined') {
+      if (!Number.isInteger(maximumAttachmentCount) || maximumAttachmentCount < 0) {
+        validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" specifies a "maximumAttachmentCount" property that is not a positive integer');
+      }
+    }
+
+    var maximumIndividualSize = attachmentConstraintsDefinition.maximumIndividualSize;
+    if (typeof(maximumIndividualSize) !== 'undefined') {
+      if (!Number.isInteger(maximumIndividualSize) || maximumIndividualSize < 0) {
+        validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" specifies a "maximumIndividualSize" property that is not a positive integer');
+      }
+    }
+
+    var maximumTotalSize = attachmentConstraintsDefinition.maximumTotalSize;
+    if (typeof(maximumTotalSize) !== 'undefined') {
+      if (!Number.isInteger(maximumTotalSize) || maximumTotalSize < 0) {
+        validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" specifies a "maximumTotalSize" property that is not a positive integer');
+      }
+    }
+
+    var supportedExtensions = attachmentConstraintsDefinition.supportedExtensions;
+    if (typeof(supportedExtensions) !== 'undefined') {
+      if (supportedExtensions instanceof Array) {
+        for (var extensionIndex = 0; extensionIndex < supportedExtensions.length; extensionIndex++) {
+          var extension = supportedExtensions[extensionIndex];
+          if (typeof(extension) !== 'string') {
+            validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" property\'s "supportedExtensions" contains an element that is not a string: ' + JSON.stringify(extension));
+          }
+        }
+      } else {
+        validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" specifies a "supportedExtensions" property that is not an array');
+      }
+    }
+
+    var supportedContentTypes = attachmentConstraintsDefinition.supportedContentTypes;
+    if (typeof(supportedContentTypes) !== 'undefined') {
+      if (supportedContentTypes instanceof Array) {
+        for (var contentTypeIndex = 0; contentTypeIndex < supportedContentTypes.length; contentTypeIndex++) {
+          var contentType = supportedContentTypes[contentTypeIndex];
+          if (typeof(contentType) !== 'string') {
+            validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" property\'s "supportedContentTypes" contains an element that is not a string: ' + JSON.stringify(contentType));
+          }
+        }
+      } else {
+        validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" specifies a "supportedContentTypes" property that is not an array');
+      }
+    }
+
+    var requireAttachmentReferences = attachmentConstraintsDefinition.requireAttachmentReferences;
+    if (typeof(requireAttachmentReferences) !== 'undefined' && typeof(requireAttachmentReferences) !== 'boolean') {
+      validationErrors.push(docTypePrefix(docType) + ': the "attachmentConstraints" specifies a "requireAttachmentReferences" property that is not a boolean');
     }
   }
 
