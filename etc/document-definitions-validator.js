@@ -41,6 +41,11 @@ function validateDocType(docType, docDefinition) {
   for (var propertyName in docDefinition) {
     var propertyValue = docDefinition[propertyName];
 
+    if (propertyValue === null) {
+      // No need to validate null properties
+      continue;
+    }
+
     switch(propertyName) {
       case 'typeFilter':
         hasTypeFilter = true;
@@ -115,8 +120,10 @@ function validateDocType(docType, docDefinition) {
         }
         break;
       case 'accessAssignments':
-        if (!(propertyValue instanceof Array) && typeof(propertyValue) !== 'string' && typeof(propertyValue) !== 'function') {
-          validationErrors.push('the "accessAssignments" property is not an array or a string or a function');
+        if (propertyValue instanceof Array) {
+          validateAccessAssignments(propertyValue);
+        } else if (typeof(propertyValue) !== 'function') {
+          validationErrors.push('the "accessAssignments" property is not an array or a function');
         }
         break;
       case 'customActions':
@@ -160,58 +167,116 @@ function validateDocType(docType, docDefinition) {
   }
 
   function validateAttachmentConstraints(attachmentConstraintsDefinition) {
-    var maximumAttachmentCount = attachmentConstraintsDefinition.maximumAttachmentCount;
-    if (typeof(maximumAttachmentCount) !== 'undefined') {
-      if (!Number.isInteger(maximumAttachmentCount) || maximumAttachmentCount < 0) {
-        validationErrors.push('the "attachmentConstraints" specifies a "maximumAttachmentCount" property that is not a positive integer');
-      }
+    validateAttachmentIntegerConstraint('maximumAttachmentCount', attachmentConstraintsDefinition.maximumAttachmentCount);
+    validateAttachmentIntegerConstraint('maximumIndividualSize', attachmentConstraintsDefinition.maximumIndividualSize);
+    validateAttachmentIntegerConstraint('maximumTotalSize', attachmentConstraintsDefinition.maximumTotalSize);
+
+    if (Number.isInteger(attachmentConstraintsDefinition.maximumIndividualSize) &&
+        Number.isInteger(attachmentConstraintsDefinition.maximumTotalSize) &&
+        attachmentConstraintsDefinition.maximumIndividualSize > attachmentConstraintsDefinition.maximumTotalSize) {
+      validationErrors.push('the "attachmentConstraints" property\'s "maximumIndividualSize" is greater than "maximumTotalSize"');
     }
 
-    var maximumIndividualSize = attachmentConstraintsDefinition.maximumIndividualSize;
-    if (typeof(maximumIndividualSize) !== 'undefined') {
-      if (!Number.isInteger(maximumIndividualSize) || maximumIndividualSize <= 0) {
-        validationErrors.push('the "attachmentConstraints" specifies a "maximumIndividualSize" property that is not a non-negative integer');
-      }
-    }
-
-    var maximumTotalSize = attachmentConstraintsDefinition.maximumTotalSize;
-    if (typeof(maximumTotalSize) !== 'undefined') {
-      if (!Number.isInteger(maximumTotalSize) || maximumTotalSize <= 0) {
-        validationErrors.push('the "attachmentConstraints" specifies a "maximumTotalSize" property that is not a non-negative integer');
-      }
-    }
-
-    var supportedExtensions = attachmentConstraintsDefinition.supportedExtensions;
-    if (typeof(supportedExtensions) !== 'undefined') {
-      if (supportedExtensions instanceof Array) {
-        for (var extensionIndex = 0; extensionIndex < supportedExtensions.length; extensionIndex++) {
-          var extension = supportedExtensions[extensionIndex];
-          if (typeof(extension) !== 'string') {
-            validationErrors.push('the "attachmentConstraints" property\'s "supportedExtensions" contains an element that is not a string: ' + JSON.stringify(extension));
-          }
-        }
-      } else {
-        validationErrors.push('the "attachmentConstraints" specifies a "supportedExtensions" property that is not an array');
-      }
-    }
-
-    var supportedContentTypes = attachmentConstraintsDefinition.supportedContentTypes;
-    if (typeof(supportedContentTypes) !== 'undefined') {
-      if (supportedContentTypes instanceof Array) {
-        for (var contentTypeIndex = 0; contentTypeIndex < supportedContentTypes.length; contentTypeIndex++) {
-          var contentType = supportedContentTypes[contentTypeIndex];
-          if (typeof(contentType) !== 'string') {
-            validationErrors.push('the "attachmentConstraints" property\'s "supportedContentTypes" contains an element that is not a string: ' + JSON.stringify(contentType));
-          }
-        }
-      } else {
-        validationErrors.push('the "attachmentConstraints" specifies a "supportedContentTypes" property that is not an array');
-      }
-    }
+    validateAttachmentListConstraint('supportedExtensions', attachmentConstraintsDefinition.supportedExtensions);
+    validateAttachmentListConstraint('supportedContentTypes', attachmentConstraintsDefinition.supportedContentTypes);
 
     var requireAttachmentReferences = attachmentConstraintsDefinition.requireAttachmentReferences;
-    if (typeof(requireAttachmentReferences) !== 'undefined' && typeof(requireAttachmentReferences) !== 'boolean') {
+    if (!isUndefined(requireAttachmentReferences) && typeof(requireAttachmentReferences) !== 'boolean') {
       validationErrors.push('the "attachmentConstraints" specifies a "requireAttachmentReferences" property that is not a boolean');
+    }
+  }
+
+  function validateAttachmentIntegerConstraint(propertyName, propertyValue) {
+    if (!isUndefined(propertyValue)) {
+      if (!Number.isInteger(propertyValue)) {
+        validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that is not an integer');
+      } else if (propertyValue <= 0) {
+        validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that is not a positive number');
+      }
+    }
+  }
+
+  function validateAttachmentListConstraint(propertyName, propertyValue) {
+    if (!isUndefined(propertyValue)) {
+      if (propertyValue instanceof Array) {
+        for (var elementIndex = 0; elementIndex < propertyValue.length; elementIndex++) {
+          var elementValue = propertyValue[elementIndex];
+          if (typeof(elementValue) !== 'string') {
+            validationErrors.push('the "attachmentConstraints" property\'s "' + propertyName + '" contains an element that is not a string: ' + JSON.stringify(elementValue));
+          }
+        }
+      } else {
+        validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that is not an array');
+      }
+    }
+  }
+
+  function validateAccessAssignments(accessAssignmentsDefinition) {
+    for (var assignmentIndex = 0; assignmentIndex < accessAssignmentsDefinition.length; assignmentIndex++) {
+      var accessAssignment = accessAssignmentsDefinition[assignmentIndex];
+      if (isAnObject(accessAssignment)) {
+        validateAccessAssignment(accessAssignment, assignmentIndex);
+      } else {
+        validationErrors.push('the "accessAssignments" property specifies an element that is not an object');
+      }
+    }
+  }
+
+  function validateAccessAssignment(accessAssignment, assignmentIndex) {
+    if (accessAssignment.type === 'role') {
+      validateRolesAssignment(accessAssignment, assignmentIndex);
+    } else if (accessAssignment.type === 'channel' || accessAssignment.type === null || isUndefined(accessAssignment.type)) {
+      validateChannelsAssignment(accessAssignment, assignmentIndex);
+    } else {
+      validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' has an invalid "type": ' + JSON.stringify(accessAssignment.type));
+    }
+  }
+
+  function validateRolesAssignment(accessAssignment, assignmentIndex) {
+    if (isUndefined(accessAssignment.roles)) {
+      validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' is missing its "roles" property');
+    } else {
+      validateAccessAssignmentEntities(accessAssignment, 'roles', assignmentIndex);
+    }
+
+    if (isUndefined(accessAssignment.users)) {
+      validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' is missing its "users" property');
+    } else {
+      validateAccessAssignmentEntities(accessAssignment, 'users', assignmentIndex);
+    }
+  }
+
+  function validateChannelsAssignment(accessAssignment, assignmentIndex) {
+    if (!isUndefined(accessAssignment.roles)) {
+      validateAccessAssignmentEntities(accessAssignment, 'roles', assignmentIndex);
+    }
+
+    if (!isUndefined(accessAssignment.users)) {
+      validateAccessAssignmentEntities(accessAssignment, 'users', assignmentIndex);
+    }
+
+    if (isUndefined(accessAssignment.users) && isUndefined(accessAssignment.roles)) {
+      validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' does not include either a "roles" or "users" property');
+    }
+
+    if (isUndefined(accessAssignment.channels)) {
+      validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' is missing its "channels" property');
+    } else {
+      validateAccessAssignmentEntities(accessAssignment, 'channels', assignmentIndex);
+    }
+  }
+
+  function validateAccessAssignmentEntities(accessAssignment, entitiesPropertyName, assignmentIndex) {
+    var entitiesProperty = accessAssignment[entitiesPropertyName];
+    if (entitiesProperty instanceof Array) {
+      for (var elementIndex = 0; elementIndex < entitiesProperty.length; elementIndex++) {
+        var elementValue = entitiesProperty[elementIndex];
+        if (typeof(elementValue) !== 'string') {
+          validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' "' + entitiesPropertyName + '" property has an element that is not a string: ' + JSON.stringify(elementValue));
+        }
+      }
+    } else if (typeof(entitiesProperty) !== 'string' && typeof(entitiesProperty) !== 'function') {
+      validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' has a "' + entitiesPropertyName + '" property that is not an array, string or function');
     }
   }
 
@@ -224,4 +289,8 @@ function resolveDocDefinitions(rawDocDefinitions) {
 
 function isAnObject(value) {
   return typeof(value) === 'object' && !(value instanceof Array);
+}
+
+function isUndefined(value) {
+  return typeof(value) === 'undefined';
 }

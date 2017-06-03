@@ -20,18 +20,23 @@ var rawDocDefinitions = docDefinitionsLoader.parseDocDefinitions(rawDocDefinitio
 
 var validationErrors = docDefinitionsValidator.validate(rawDocDefinitions);
 
+var exitStatus = 0;
 if (typeof(validationErrors) === 'string') {
   console.log('ERROR: ' + validationErrors);
+
+  exitStatus = errorStatus;
 } else {
   for (var docType in validationErrors) {
     var docTypeErrors = validationErrors[docType];
     if (docTypeErrors.length > 0) {
       console.log('Document type "' + docType + '":\n- ' + docTypeErrors.join('\n- '));
+
+      exitStatus = errorStatus;
     }
   }
-
-  process.exit(errorStatus);
 }
+
+process.exit(exitStatus);
 
 function showUsage() {
   var nodeBinary = path.basename(process.argv[0]);
