@@ -24,7 +24,7 @@ function validate(rawDocDefinitions) {
     if (!isAnObject(docDefinition)) {
       allValidationErrors[docType] = [ 'not specified as an object' ];
     } else {
-      allValidationErrors[docType] = validateDocType(docType, docDefinition);
+      allValidationErrors[docType] = validateDocDefinition(docType, docDefinition);
     }
   }
 
@@ -32,8 +32,15 @@ function validate(rawDocDefinitions) {
 }
 
 var supportedPermissionOperations = new Set([ 'view', 'add', 'replace', 'remove', 'write' ]);
+var supportedCustomActionEvents = new Set([
+  'onTypeIdentificationSucceeded',
+  'onAuthorizationSucceeded',
+  'onValidationSucceeded',
+  'onAccessAssignmentsSucceeded',
+  'onDocumentChannelAssignmentSucceeded'
+]);
 
-function validateDocType(docType, docDefinition) {
+function validateDocDefinition(docType, docDefinition) {
   var validationErrors = [ ];
   var hasTypeFilter = false;
   var hasPermissionGrant = false;
@@ -127,7 +134,9 @@ function validateDocType(docType, docDefinition) {
         }
         break;
       case 'customActions':
-        if (!isAnObject(propertyValue)) {
+        if (isAnObject(propertyValue)) {
+          validateCustomActions(propertyValue);
+        } else {
           validationErrors.push('the "customActions" property is not an object');
         }
         break;
@@ -277,6 +286,18 @@ function validateDocType(docType, docDefinition) {
       }
     } else if (typeof(entitiesProperty) !== 'string' && typeof(entitiesProperty) !== 'function') {
       validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' has a "' + entitiesPropertyName + '" property that is not an array, string or function');
+    }
+  }
+
+  function validateCustomActions(customActionsDefinition) {
+    for (var customActionName in customActionsDefinition) {
+      var customActionFunc = customActionsDefinition[customActionName];
+
+      if (!supportedCustomActionEvents.has(customActionName)) {
+        validationErrors.push('the "customActions" property specifies an invalid event: ' + JSON.stringify(customActionName));
+      } else if (typeof(customActionFunc) !== 'function') {
+        validationErrors.push('the "customActions" property contains a value for the "' + customActionName + '" event that is not a function');
+      }
     }
   }
 
