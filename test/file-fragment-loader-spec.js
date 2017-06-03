@@ -12,6 +12,11 @@ describe('File fragment loader', function() {
     fileFragmentLoader = mockRequire.reRequire('../etc/file-fragment-loader.js');
   });
 
+  afterEach(function() {
+    // Restore "require" calls to their original behaviour after each test case
+    mockRequire.stopAll();
+  });
+
   it('should replace instances of the macro with the correct file contents', function() {
     var baseDir = '/my/base/dir';
     var macroName = 'myFileFragmentMacro';
