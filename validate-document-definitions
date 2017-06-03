@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
 var path = require('path');
 var docDefinitionsLoader = require('./etc/document-definitions-loader.js');
 var docDefinitionsValidator = require('./etc/document-definitions-validator.js');
 
-var successStatus = 0;
 var errorStatus = 1;
 
 // Verify the correct number of commandline params
@@ -22,14 +20,17 @@ var rawDocDefinitions = docDefinitionsLoader.parseDocDefinitions(rawDocDefinitio
 
 var validationErrors = docDefinitionsValidator.validate(rawDocDefinitions);
 
-if (validationErrors.length > 0) {
-  console.log('Validation failed: \n- ' + validationErrors.join('\n- '));
+if (typeof(validationErrors) === 'string') {
+  console.log('ERROR: ' + validationErrors);
+} else {
+  for (var docType in validationErrors) {
+    var docTypeErrors = validationErrors[docType];
+    if (docTypeErrors.length > 0) {
+      console.log('Document type "' + docType + '":\n- ' + docTypeErrors.join('\n- '));
+    }
+  }
 
   process.exit(errorStatus);
-} else {
-  console.log('Validation succeeded!');
-
-  process.exit(successStatus);
 }
 
 function showUsage() {
