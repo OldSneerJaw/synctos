@@ -312,6 +312,12 @@ function() {
       } else if (resolveValidationConstraint(validator.required)) {
         // The item has no value (either it's null or undefined), but the validator indicates it is required
         validationErrors.push('required item "' + buildItemPath(itemStack) + '" is missing');
+      } else if (resolveValidationConstraint(validator.mustNotBeMissing) && typeof(itemValue) === 'undefined') {
+        // The item is missing (i.e. it's undefined), but the validator indicates it must not be
+        validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be missing');
+      } else if (resolveValidationConstraint(validator.mustNotBeNull) && itemValue === null) {
+        // The item is null, but the validator indicates it must not be
+        validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be null');
       }
     }
 
