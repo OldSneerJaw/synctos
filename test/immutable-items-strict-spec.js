@@ -1,7 +1,7 @@
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Strict immutable item validation parameter', function() {
+describe('Strict immutable item constraint:', function() {
   beforeEach(function() {
     testHelper.initSyncFunction('build/sync-functions/test-immutable-items-strict-sync-function.js');
   });

@@ -1,9 +1,9 @@
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Immutable when set constraint:', function() {
+describe('Strict immutable when set constraint:', function() {
   beforeEach(function() {
-    testHelper.initSyncFunction('build/sync-functions/test-immutable-when-set-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-immutable-when-set-strict-sync-function.js');
   });
 
   describe('a property with static validation', function() {
@@ -58,19 +58,6 @@ describe('Immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can be set to a value if it was null in the old document', function() {
-      var doc = {
-        _id: 'myDoc',
-        staticValidationProp: 'foobar'
-      };
-      var oldDoc = {
-        _id: 'myDoc',
-        staticValidationProp: null
-      };
-
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
-    });
-
     it('can be set to null if it was undefined in the old document', function() {
       var doc = {
         _id: 'myDoc',
@@ -83,7 +70,7 @@ describe('Immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can be set to undefined if it was null in the old document', function() {
+    it('cannot be set to undefined if it was null in the old document', function() {
       var doc = {
         _id: 'myDoc'
       };
@@ -92,7 +79,20 @@ describe('Immutable when set constraint:', function() {
         staticValidationProp: null
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
+    });
+
+    it('cannot be set to a value if it was null in the old document', function() {
+      var doc = {
+        _id: 'myDoc',
+        staticValidationProp: 'foobar'
+      };
+      var oldDoc = {
+        _id: 'myDoc',
+        staticValidationProp: null
+      };
+
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
     it('cannot be changed to a new value if it was set to a value in the old document', function() {

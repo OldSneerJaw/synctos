@@ -194,6 +194,10 @@ function() {
         validateImmutable(true, true);
       }
 
+      if (resolveValidationConstraint(validator.immutableWhenSetStrict)) {
+        validateImmutable(true, false);
+      }
+
       var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
       if (typeof(expectedEqualValue) !== 'undefined') {
         validateEquality(expectedEqualValue);
@@ -332,7 +336,7 @@ function() {
         var oldItemValue = currentItemEntry.oldItemValue;
 
         if (onlyEnforceIfHasValue && hasNoValue(oldItemValue, treatNullAsUndefined)) {
-          // No need to continue; the constraint only applies if the old value is neither null nor undefined
+          // No need to continue; the constraint only applies if the old document has a value for this item
           return;
         }
 
