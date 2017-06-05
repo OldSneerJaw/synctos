@@ -215,6 +215,24 @@ exports.mustNotBeEmptyViolation = function(itemPath) {
 };
 
 /**
+ * Formats a message for the error that occurs when a property or element value is not allowed to be missing/undefined.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
+ */
+exports.mustNotBeMissingValueViolation = function(itemPath) {
+  return 'item "' + itemPath + '" must not be missing';
+};
+
+/**
+ * Formats a message for the error that occurs when a property or element value is not allowed to be null.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].integerProp")
+ */
+exports.mustNotBeNullValueViolation = function(itemPath) {
+  return 'item "' + itemPath + '" must not be null';
+};
+
+/**
  * Formats a message for the error that occurs when a hashtable key fails to satisfy the regular expression pattern.
  *
  * @param {string} hashtableKeyPath The full path of the hashtable key in which the error occurs
