@@ -16,8 +16,8 @@ function load(baseDir, macroName, rawText) {
     return readFileFragment(fragmentFilename, baseDir);
   }
 
-  return rawText.replace(new RegExp(macroName + '\\s*\\(\\s*"((?:\\\\"|[^"])+)"\\s*\\)', 'g'), replacer)
-    .replace(new RegExp(macroName + '\\s*\\(\\s*\'((?:\\\\\'|[^\'])+)\'\\s*\\)', 'g'), replacer);
+  return rawText.replace(new RegExp('\\b' + macroName + '\\s*\\(\\s*"((?:\\\\"|[^"])+)"\\s*\\)', 'g'), replacer)
+    .replace(new RegExp('\\b' + macroName + '\\s*\\(\\s*\'((?:\\\\\'|[^\'])+)\'\\s*\\)', 'g'), replacer);
 }
 
 function readFileFragment(fragmentFilename, baseDir) {
