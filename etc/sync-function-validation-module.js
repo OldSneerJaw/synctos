@@ -196,7 +196,12 @@ function() {
 
       var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
       if (typeof(expectedEqualValue) !== 'undefined') {
-        validateEquality(expectedEqualValue);
+        validateEquality(expectedEqualValue, true);
+      }
+
+      var expectedStrictEqualValue = resolveValidationConstraint(validator.mustEqualStrict);
+      if (typeof(expectedStrictEqualValue) !== 'undefined') {
+        validateEquality(expectedStrictEqualValue, false);
       }
 
       if (!isValueNullOrUndefined(itemValue)) {
@@ -353,10 +358,10 @@ function() {
       }
     }
 
-    function validateEquality(expectedItemValue) {
+    function validateEquality(expectedItemValue, treatNullAsUndefined) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var currentItemValue = currentItemEntry.itemValue;
-      if (!checkItemEquality(currentItemValue, expectedItemValue, true)) {
+      if (!checkItemEquality(currentItemValue, expectedItemValue, treatNullAsUndefined)) {
         validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + JSON.stringify(expectedItemValue));
       }
     }

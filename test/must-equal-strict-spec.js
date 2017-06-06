@@ -1,9 +1,9 @@
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Equality constraint:', function() {
+describe('Strict equality constraint:', function() {
   beforeEach(function() {
-    testHelper.initSyncFunction('build/sync-functions/test-must-equal-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-must-equal-strict-sync-function.js');
   });
 
   describe('array type with static property validation', function() {
@@ -12,7 +12,7 @@ describe('Equality constraint:', function() {
     it('allows a document when the array elements match', function() {
       var doc = {
         _id: 'staticArrayDoc',
-        arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], undefined, { foo: 'bar' }, [ ] ]
+        arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ]
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -80,6 +80,15 @@ describe('Equality constraint:', function() {
 
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
+
+    it('rejects a document when an unexpected nested object property is null', function() {
+      var doc = {
+        _id: 'staticArrayDoc',
+        arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar', baz: null }, [ ] ]
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
+    });
   });
 
   describe('array type with dynamic property validation', function() {
@@ -118,7 +127,7 @@ describe('Equality constraint:', function() {
       var doc = {
         _id: 'staticObjectDoc',
         objectProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ undefined ], { } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { } ],
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
           myStringProp: 'foobar',
           myIntegerProp: 8,
@@ -192,14 +201,34 @@ describe('Equality constraint:', function() {
 
       testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
+
+    it('rejects a document when an unexpected nested object property is null', function() {
+      var doc = {
+        _id: 'staticObjectDoc',
+        objectProp: {
+          myStringProp: 'foobar',
+          myIntegerProp: 8,
+          myBooleanProp: true,
+          myFloatProp: 88.92,
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { } ],
+          myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
+          myUnexpectedProp: null
+        }
+      };
+
+      testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
+    });
   });
 
   describe('object type with dynamic property validation', function() {
     it('allows a document when the object properties match', function() {
       var doc = {
         _id: 'dynamicObjectDoc',
-        expectedDynamicValue: { myFloatProp: 88.92 },
-        objectProp: { myFloatProp: 88.92, foo: null }
+        expectedDynamicValue: {
+          myFloatProp: 88.92,
+          foo: undefined
+        },
+        objectProp: { myFloatProp: 88.92 }
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -232,7 +261,7 @@ describe('Equality constraint:', function() {
         hashtableProp: {
           myStringProp: 'foobar',
           myFloatProp: 88.92,
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ undefined ], { foobar: 18 } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: 18 } ],
           myIntegerProp: 8,
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
           myBooleanProp: true
@@ -311,6 +340,26 @@ describe('Equality constraint:', function() {
           myIntegerProp: 8,
           myBooleanProp: true,
           myFloatProp: 88.92
+        }
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'staticHashtableDoc',
+        errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
+    });
+
+    it('rejects a document when an unexpected nested hashtable property is null', function() {
+      var doc = {
+        _id: 'staticHashtableDoc',
+        hashtableProp: {
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: 18 } ],
+          myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
+          myStringProp: 'invalid',
+          myIntegerProp: 8,
+          myBooleanProp: true,
+          myFloatProp: 88.92,
+          myUnexpectedProp: null
         }
       };
 
@@ -409,15 +458,16 @@ describe('Equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a document with a missing value', function() {
-      var doc = {
-        _id: 'nullExpectedValueDoc'
-      };
+    it('rejects a document with a missing value', function() {
+      var doc = { _id: 'nullExpectedValueDoc' };
 
-      testHelper.verifyDocumentCreated(doc);
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'nullExpectedValueDoc',
+        errorFormatter.mustEqualViolation('stringProp', null));
     });
 
-    it('blocks a document with a value that is neither null nor undefined', function() {
+    it('rejects a document with a value that is neither null nor undefined', function() {
       var doc = {
         _id: 'nullExpectedValueDoc',
         stringProp: 'foobar'
