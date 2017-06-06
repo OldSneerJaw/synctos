@@ -43,7 +43,7 @@ function() {
     return nameComponents.join('');
   }
 
-  // Resolves a constraint defined at the document level (e.g. `propertyValidators`, `allowUnknownProperties`, `immutable`).
+  // Resolves a constraint defined at the document level (e.g. propertyValidators, allowUnknownProperties, immutable).
   function resolveDocConstraint(doc, oldDoc, constraintDefinition) {
     return (typeof(constraintDefinition) === 'function') ? constraintDefinition(doc, getEffectiveOldDoc(oldDoc)) : constraintDefinition;
   }
