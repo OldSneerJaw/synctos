@@ -235,6 +235,7 @@ exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 var expect = require('expect.js');
 var simple = require('simple-mock');
 var fs = require('fs');
+var vm = require('vm');
 var syncFunctionLoader = require('./sync-function-loader.js');
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
@@ -254,38 +255,52 @@ var customActionStub;
 var defaultWriteChannel = 'write';
 
 function initSyncFunction(filePath) {
-  // Load the contents of the sync function file into a global variable called syncFunction
   var rawSyncFunction = fs.readFileSync(filePath).toString();
 
-  /*jslint evil: true */
-  eval('syncFunction = ' + unescapeBackticks(rawSyncFunction));
-  /*jslint evil: false */
-
-  init();
+  init(rawSyncFunction, filePath);
 }
 
 function initDocumentDefinitions(filePath) {
-  // Generate a sync function from the document definitions and load its contents into a global variable called syncFunction
-  var rawDocDefinitions = syncFunctionLoader.load(filePath);
+  var rawSyncFunction = syncFunctionLoader.load(filePath);
 
-  /*jslint evil: true */
-  eval('syncFunction = ' + unescapeBackticks(rawDocDefinitions));
-  /*jslint evil: false */
-
-  init();
+  init(rawSyncFunction);
 }
 
-function init() {
-  exports.syncFunction = syncFunction;
+function init(rawSyncFunction, syncFunctionFile) {
+  var testHelperEnvironment = loadEnvironment(rawSyncFunction, syncFunctionFile);
 
-  exports.requireAccess = requireAccess = simple.stub();
-  exports.requireRole = requireRole = simple.stub();
-  exports.requireUser = requireUser = simple.stub();
-  exports.channel = channel = simple.stub();
-  exports.access = access = simple.stub();
-  exports.role = role = simple.stub();
+  exports.requireAccess = requireAccess = testHelperEnvironment.requireAccess;
+  exports.requireRole = requireRole = testHelperEnvironment.requireRole;
+  exports.requireUser = requireUser = testHelperEnvironment.requireUser;
+  exports.channel = channel = testHelperEnvironment.channel;
+  exports.access = access = testHelperEnvironment.access;
+  exports.role = role = testHelperEnvironment.role;
 
-  exports.customActionStub = customActionStub = simple.stub();
+  exports.customActionStub = customActionStub = testHelperEnvironment.customActionStub;
+
+  exports.syncFunction = syncFunction = testHelperEnvironment.syncFunction;
+}
+
+function loadEnvironment(rawSyncFunction, syncFunctionFile) {
+  var options = {
+    filename: syncFunctionFile,
+    displayErrors: true
+  };
+
+  var testHelperEnvironmentTemplate;
+  try {
+    testHelperEnvironmentTemplate = fs.readFileSync(__dirname + '/test-helper-environment-template.js', 'utf8').trim();
+  } catch (ex) {
+    console.log('ERROR: Unable to read the test helper environment template: ' + ex);
+
+    throw ex;
+  }
+
+  var testHelperEnvironmentString = testHelperEnvironmentTemplate.replace(
+    '%SYNC_FUNC_PLACEHOLDER%',
+    function() { return unescapeBackticks(rawSyncFunction); });
+
+  return vm.runInThisContext(testHelperEnvironmentString, options)(require);
 }
 
 function verifyRequireAccess(expectedChannels) {
@@ -625,9 +640,9 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   var userAccessDenied = new Error('User access denied!');
   var generalAuthFailedMessage = 'missing channel access';
 
-  requireAccess = simple.stub().throwWith(channelAccessDenied);
-  requireRole = simple.stub().throwWith(roleAccessDenied);
-  requireUser = simple.stub().throwWith(userAccessDenied);
+  requireAccess.throwWith(channelAccessDenied);
+  requireRole.throwWith(roleAccessDenied);
+  requireUser.throwWith(userAccessDenied);
 
   expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
     if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
