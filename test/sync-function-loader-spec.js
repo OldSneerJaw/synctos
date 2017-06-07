@@ -19,10 +19,10 @@ describe('Document definitions loader', function() {
     mockRequire('../lib/indent.js/indent.min.js', indentMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
-    mockRequire('../etc/file-fragment-loader.js', fileFragmentLoaderMock);
+    mockRequire('../src/file-fragment-loader.js', fileFragmentLoaderMock);
 
     docDefinitionsLoaderMock = { load: simpleMock.stub() };
-    mockRequire('../etc/document-definitions-loader.js', docDefinitionsLoaderMock);
+    mockRequire('../src/document-definitions-loader.js', docDefinitionsLoaderMock);
 
     syncFunctionLoader = mockRequire.reRequire('../etc/sync-function-loader.js');
   });

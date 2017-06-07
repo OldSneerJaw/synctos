@@ -19,9 +19,9 @@ describe('Document definitions loader', function() {
     mockRequire('vm', vmMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
-    mockRequire('../etc/file-fragment-loader.js', fileFragmentLoaderMock);
+    mockRequire('../src/file-fragment-loader.js', fileFragmentLoaderMock);
 
-    docDefinitionsLoader = mockRequire.reRequire('../etc/document-definitions-loader.js');
+    docDefinitionsLoader = mockRequire.reRequire('../src/document-definitions-loader.js');
   });
 
   afterEach(function() {

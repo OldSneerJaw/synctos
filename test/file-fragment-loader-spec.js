@@ -9,7 +9,7 @@ describe('File fragment loader', function() {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
-    fileFragmentLoader = mockRequire.reRequire('../etc/file-fragment-loader.js');
+    fileFragmentLoader = mockRequire.reRequire('../src/file-fragment-loader.js');
   });
 
   afterEach(function() {
