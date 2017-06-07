@@ -83,7 +83,7 @@ describe('Document definitions loader', function() {
       expect(result).to.eql(expectedOutput);
 
       expect(vmMock.runInNewContext.callCount).to.be(1);
-      expect(vmMock.runInNewContext.calls[0].args[0]).to.equal('documentDefinitionsPlaceholder = ' + docDefinitionsString);
+      expect(vmMock.runInNewContext.calls[0].args[0]).to.equal('(' + docDefinitionsString + ');');
       expect(vmMock.runInNewContext.calls[0].args[2]).to.eql({
         filename: originalFilename,
         displayErrors: true

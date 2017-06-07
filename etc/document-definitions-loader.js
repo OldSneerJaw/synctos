@@ -66,7 +66,7 @@ function parseDocDefinitions(docDefinitionsString, originalFilename) {
     displayErrors: true
   };
 
-  var rawDocDefinitions = vm.runInNewContext('documentDefinitionsPlaceholder = ' + docDefinitionsString, sandbox, options);
+  var rawDocDefinitions = vm.runInNewContext('(' + docDefinitionsString + ');', sandbox, options);
 
   return rawDocDefinitions;
 }
