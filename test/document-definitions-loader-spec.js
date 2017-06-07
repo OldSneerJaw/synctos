@@ -26,45 +26,66 @@ describe('Document definitions loader', function() {
     mockRequire.stopAll();
   });
 
-  it('should load the contents of a document definitions file that exists', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var expectedDir = '/an/arbitrary/directory';
-    var originalFileContents = '\tmy-original-doc-definitions\n';
-    var expectedFileContents = 'my-expected-doc-definitions';
+  describe('when loading from a file', function() {
+    it('should load the contents of a document definitions file that exists', function() {
+      var docDefinitionsFile = 'my/doc-definitions.js';
+      var expectedDir = '/an/arbitrary/directory';
+      var originalFileContents = '\tmy-original-doc-definitions\n';
+      var expectedFileContents = 'my-expected-doc-definitions';
 
-    fsMock.readFileSync.returnWith(originalFileContents);
-    pathMock.dirname.returnWith(expectedDir);
-    fileFragmentLoaderMock.load.returnWith(expectedFileContents);
+      fsMock.readFileSync.returnWith(originalFileContents);
+      pathMock.dirname.returnWith(expectedDir);
+      fileFragmentLoaderMock.load.returnWith(expectedFileContents);
 
-    var result = docDefinitionsLoader.load(docDefinitionsFile);
+      var result = docDefinitionsLoader.load(docDefinitionsFile);
 
-    expect(result).to.equal(expectedFileContents);
+      expect(result).to.equal(expectedFileContents);
 
-    expect(fsMock.readFileSync.callCount).to.be(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
+      expect(fsMock.readFileSync.callCount).to.be(1);
+      expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
 
-    expect(pathMock.dirname.callCount).to.be(1);
-    expect(pathMock.dirname.calls[0].args).to.eql([ docDefinitionsFile ]);
+      expect(pathMock.dirname.callCount).to.be(1);
+      expect(pathMock.dirname.calls[0].args).to.eql([ docDefinitionsFile ]);
 
-    expect(fileFragmentLoaderMock.load.callCount).to.be(1);
-    expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalFileContents.trim() ]);
+      expect(fileFragmentLoaderMock.load.callCount).to.be(1);
+      expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalFileContents.trim() ]);
+    });
+
+    it('should throw an exception if the document definitions file does not exist', function() {
+      var docDefinitionsFile = 'my/doc-definitions.js';
+      var expectedException = new Error('my-expected-exception');
+
+      fsMock.readFileSync.throwWith(expectedException);
+      pathMock.dirname.returnWith('');
+      fileFragmentLoaderMock.load.returnWith('');
+
+      expect(docDefinitionsLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
+
+      expect(fsMock.readFileSync.callCount).to.be(1);
+      expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
+
+      expect(pathMock.dirname.callCount).to.be(0);
+
+      expect(fileFragmentLoaderMock.load.callCount).to.be(0);
+    });
   });
 
-  it('should throw an exception if the document definitions file does not exist', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var expectedException = new Error('my-expected-exception');
+  describe('when parsing a document definitions string as JavaScript', function() {
+    it('produces an object from an object string', function() {
+      var input = '{ foo: "bar" }';
 
-    fsMock.readFileSync.throwWith(expectedException);
-    pathMock.dirname.returnWith('');
-    fileFragmentLoaderMock.load.returnWith('');
+      var result = docDefinitionsLoader.parseDocDefinitions(input);
 
-    expect(docDefinitionsLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
+      expect(result).to.eql({ foo: 'bar' });
+    });
 
-    expect(fsMock.readFileSync.callCount).to.be(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
+    it('produces a function from a function string', function() {
+      var input = 'function() { return { bar: "baz" } }';
 
-    expect(pathMock.dirname.callCount).to.be(0);
+      var result = docDefinitionsLoader.parseDocDefinitions(input);
 
-    expect(fileFragmentLoaderMock.load.callCount).to.be(0);
+      expect(typeof(result)).to.be('function');
+      expect(result()).to.eql({ bar: 'baz' });
+    });
   });
 });

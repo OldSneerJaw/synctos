@@ -1,5 +1,6 @@
 /**
- * Loads the document definitions from the specified file.
+ * Loads the document definitions from the specified file. Any document definition fragments referenced therein will be resolved
+ * automatically.
  *
  * @param {string} docDefinitionsFile The path to the document definitions file
  *
@@ -12,7 +13,7 @@ exports.load = loadFromFile;
  *
  * @param {string} docDefinitionsString The document definitions as a string
  *
- * @returns The document definitions as a JavaScript entity
+ * @returns The document definitions as a JavaScript object or function
  */
 exports.parseDocDefinitions = parseDocDefinitions;
 
@@ -40,22 +41,22 @@ function loadFromFile(docDefinitionsFile) {
   return fileFragmentLoader.load(docDefinitionsDir, 'importDocumentDefinitionFragment', docDefinitions);
 }
 
-// Fake the various global variables and functions that are available to document definitions
-var doc = { };
-var oldDoc = { };
-var typeIdValidator = { };
-function simpleTypeFilter() { return true; }
-function isDocumentMissingOrDeleted() { return false; }
-function isValueNullOrUndefined() { return false; }
-function getEffectiveOldDoc() { return oldDoc; }
-function requireAccess() { }
-function requireRole() { }
-function requireUser() { }
-function channel() { }
-function access() { }
-function role() { }
-
 function parseDocDefinitions(docDefinitionsString) {
+  // Fake the various global variables and functions that are available to document definitions
+  var doc = { };
+  var oldDoc = { };
+  var typeIdValidator = { };
+  function simpleTypeFilter() { return true; }
+  function isDocumentMissingOrDeleted() { return false; }
+  function isValueNullOrUndefined() { return false; }
+  function getEffectiveOldDoc() { return oldDoc; }
+  function requireAccess() { }
+  function requireRole() { }
+  function requireUser() { }
+  function channel() { }
+  function access() { }
+  function role() { }
+
   var rawDocDefinitions;
   /*jslint evil: true */
   eval('rawDocDefinitions = ' + docDefinitionsString);
