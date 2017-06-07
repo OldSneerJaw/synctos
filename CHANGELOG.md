@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#110](https://github.com/Kashoo/synctos/issues/110): Item constraint that requires an exact value match
 - [#108](https://github.com/Kashoo/synctos/issues/108): Finer grained control over whether null and missing values are accepted
 - [#127](https://github.com/Kashoo/synctos/issues/127): Immutable constraints that treat null and missing values as different
+- [#128](https://github.com/Kashoo/synctos/issues/128): Equality constraint that treats null and missing values as different
 
 ### Changed
 - [#118](https://github.com/Kashoo/synctos/issues/118): Embed indent.js as a static dependency
