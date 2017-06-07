@@ -3,7 +3,7 @@ var simpleMock = require('simple-mock');
 var mockRequire = require('mock-require');
 
 describe('Document definitions loader', function() {
-  var docDefinitionsLoader, fsMock, pathMock, fileFragmentLoaderMock;
+  var docDefinitionsLoader, fsMock, pathMock, vmMock, fileFragmentLoaderMock;
 
   var expectedMacroName = 'importDocumentDefinitionFragment';
 
@@ -14,6 +14,9 @@ describe('Document definitions loader', function() {
 
     pathMock = { dirname: simpleMock.stub() };
     mockRequire('path', pathMock);
+
+    vmMock = { runInNewContext: simpleMock.stub() };
+    mockRequire('vm', vmMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
     mockRequire('../etc/file-fragment-loader.js', fileFragmentLoaderMock);
@@ -71,21 +74,61 @@ describe('Document definitions loader', function() {
   });
 
   describe('when parsing a document definitions string as JavaScript', function() {
-    it('produces an object from an object string', function() {
-      var input = '{ foo: "bar" }';
+    function verifyParse(docDefinitionsString, originalFilename) {
+      var expectedOutput = { foo: 'bar' };
+      vmMock.runInNewContext.returnWith(expectedOutput);
 
-      var result = docDefinitionsLoader.parseDocDefinitions(input);
+      var result = docDefinitionsLoader.parseDocDefinitions(docDefinitionsString, originalFilename);
 
-      expect(result).to.eql({ foo: 'bar' });
+      expect(result).to.eql(expectedOutput);
+
+      expect(vmMock.runInNewContext.callCount).to.be(1);
+      expect(vmMock.runInNewContext.calls[0].args[0]).to.equal('documentDefinitionsPlaceholder = ' + docDefinitionsString);
+      expect(vmMock.runInNewContext.calls[0].args[2]).to.eql({
+        filename: originalFilename,
+        displayErrors: true
+      });
+
+      var sandbox = vmMock.runInNewContext.calls[0].args[1];
+      expect(sandbox).to.only.have.keys([
+        'doc',
+        'oldDoc',
+        'typeIdValidator',
+        'simpleTypeFilter',
+        'isDocumentMissingOrDeleted',
+        'isValueNullOrUndefined',
+        'getEffectiveOldDoc',
+        'requireAccess',
+        'requireRole',
+        'requireUser',
+        'channel',
+        'access',
+        'role'
+      ]);
+      expect(sandbox.doc).to.be.an('object');
+      expect(sandbox.doc).not.to.be.an(Array);
+      expect(sandbox.oldDoc).to.be.an('object');
+      expect(sandbox.oldDoc).not.to.be.an(Array);
+      expect(sandbox.typeIdValidator).to.be.an('object');
+      expect(sandbox.typeIdValidator).not.to.be.an(Array);
+      expect(sandbox.simpleTypeFilter).to.be.a('function');
+      expect(sandbox.isDocumentMissingOrDeleted).to.be.a('function');
+      expect(sandbox.isValueNullOrUndefined).to.be.a('function');
+      expect(sandbox.getEffectiveOldDoc).to.be.a('function');
+      expect(sandbox.requireAccess).to.be.a('function');
+      expect(sandbox.requireRole).to.be.a('function');
+      expect(sandbox.requireUser).to.be.a('function');
+      expect(sandbox.channel).to.be.a('function');
+      expect(sandbox.access).to.be.a('function');
+      expect(sandbox.role).to.be.a('function');
+    }
+
+    it('evaluates the input with a filename for stack traces', function() {
+      verifyParse('my-doc-definitions1', 'my-original-filename');
     });
 
-    it('produces a function from a function string', function() {
-      var input = 'function() { return { bar: "baz" } }';
-
-      var result = docDefinitionsLoader.parseDocDefinitions(input);
-
-      expect(typeof(result)).to.be('function');
-      expect(result()).to.eql({ bar: 'baz' });
+    it('evaluates the input without a filename', function() {
+      verifyParse('my-doc-definitions2');
     });
   });
 });

@@ -12,6 +12,8 @@ exports.load = loadFromFile;
  * Parses the given document definitions string as JavaScript.
  *
  * @param {string} docDefinitionsString The document definitions as a string
+ * @param {string} [originalFilename] The optional name/path of the file from which the document definitions were read. Will be used in
+ *                                    stack traces.
  *
  * @returns The document definitions as a JavaScript object or function
  */
@@ -19,6 +21,7 @@ exports.parseDocDefinitions = parseDocDefinitions;
 
 var fs = require('fs');
 var path = require('path');
+var vm = require('vm');
 var fileFragmentLoader = require('./file-fragment-loader.js');
 
 function loadFromFile(docDefinitionsFile) {
@@ -41,26 +44,29 @@ function loadFromFile(docDefinitionsFile) {
   return fileFragmentLoader.load(docDefinitionsDir, 'importDocumentDefinitionFragment', docDefinitions);
 }
 
-function parseDocDefinitions(docDefinitionsString) {
+function parseDocDefinitions(docDefinitionsString, originalFilename) {
   // Fake the various global variables and functions that are available to document definitions
-  var doc = { };
-  var oldDoc = { };
-  var typeIdValidator = { };
-  function simpleTypeFilter() { return true; }
-  function isDocumentMissingOrDeleted() { return false; }
-  function isValueNullOrUndefined() { return false; }
-  function getEffectiveOldDoc() { return oldDoc; }
-  function requireAccess() { }
-  function requireRole() { }
-  function requireUser() { }
-  function channel() { }
-  function access() { }
-  function role() { }
+  var sandbox = {
+    doc: { },
+    oldDoc: { },
+    typeIdValidator: { },
+    simpleTypeFilter: function() { return true; },
+    isDocumentMissingOrDeleted: function() { return false; },
+    isValueNullOrUndefined: function() { return false; },
+    getEffectiveOldDoc: function() { return oldDoc; },
+    requireAccess: function() { },
+    requireRole: function() { },
+    requireUser: function() { },
+    channel: function() { },
+    access: function() { },
+    role: function() { }
+  };
+  var options = {
+    filename: originalFilename,
+    displayErrors: true
+  };
 
-  var rawDocDefinitions;
-  /*jslint evil: true */
-  eval('rawDocDefinitions = ' + docDefinitionsString);
-  /*jslint evil: false */
+  var rawDocDefinitions = vm.runInNewContext('documentDefinitionsPlaceholder = ' + docDefinitionsString, sandbox, options);
 
   return rawDocDefinitions;
 }

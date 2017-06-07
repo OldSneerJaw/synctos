@@ -16,7 +16,7 @@ if (process.argv.length !== 3) {
 var docDefinitionsFilename = process.argv[2];
 
 var rawDocDefinitionsString = docDefinitionsLoader.load(docDefinitionsFilename);
-var rawDocDefinitions = docDefinitionsLoader.parseDocDefinitions(rawDocDefinitionsString);
+var rawDocDefinitions = docDefinitionsLoader.parseDocDefinitions(rawDocDefinitionsString, docDefinitionsFilename);
 
 var validationErrors = docDefinitionsValidator.validate(rawDocDefinitions);
 
