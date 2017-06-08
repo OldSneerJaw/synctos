@@ -8,13 +8,12 @@
 exports.load = loadFromFile;
 
 var fs = require('fs');
-var path = require('path');
 var indent = require('../lib/indent.js/indent.min.js');
 var docDefinitionsLoader = require('./document-definitions-loader.js');
 var fileFragmentLoader = require('./file-fragment-loader.js');
 
 function loadFromFile(docDefinitionsFile) {
-  var syncFuncTemplateDir = path.dirname(module.filename);
+  var syncFuncTemplateDir = __dirname;
 
   var syncFuncTemplatePath = syncFuncTemplateDir + '/sync-function-template.js';
   var syncFuncTemplate;
