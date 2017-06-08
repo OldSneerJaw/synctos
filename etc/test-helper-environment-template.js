@@ -1,4 +1,4 @@
-(function(require) {
+function(require) {
   var simple = require('simple-mock');
 
   var requireAccess = simple.stub();
@@ -20,4 +20,4 @@
     customActionStub: customActionStub,
     syncFunction: %SYNC_FUNC_PLACEHOLDER%
   };
-});
+}

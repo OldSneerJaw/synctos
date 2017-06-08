@@ -296,11 +296,20 @@ function loadEnvironment(rawSyncFunction, syncFunctionFile) {
     throw ex;
   }
 
+  // The test helper environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
+  // the sync function
   var testHelperEnvironmentString = testHelperEnvironmentTemplate.replace(
     '%SYNC_FUNC_PLACEHOLDER%',
     function() { return unescapeBackticks(rawSyncFunction); });
 
-  return vm.runInThisContext(testHelperEnvironmentString, options)(require);
+  // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
+  // valid statement.
+  var testHelperEnvironmentStatement = '(' + testHelperEnvironmentString + ');';
+
+  // Assign the compiled test helper environment function to a variable
+  var testHelperEnvironmentFunction = vm.runInThisContext(testHelperEnvironmentStatement, options);
+
+  return testHelperEnvironmentFunction(require);
 }
 
 function verifyRequireAccess(expectedChannels) {
