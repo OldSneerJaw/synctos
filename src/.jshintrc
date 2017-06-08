@@ -1,0 +1,22 @@
+{
+  "extends": "../.jshintrc",
+  "undef": true,
+  "globals": {
+    "__dirname": false,
+    "access": true,
+    "channel": true,
+    "console": false,
+    "customActionStub": true,
+    "exports": false,
+    "getEffectiveOldDoc": false,
+    "isDocumentMissingOrDeleted": false,
+    "isValueNullOrUndefined": false,
+    "require": false,
+    "requireAccess": true,
+    "requireRole": true,
+    "requireUser": true,
+    "role": true,
+    "simpleTypeFilter": false,
+    "typeIdValidator": false
+  }
+}

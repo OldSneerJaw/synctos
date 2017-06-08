@@ -1,5 +1,5 @@
 var expect = require('expect.js');
-var testHelper = require('../etc/test-helper.js');
+var testHelper = require('../src/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Test helper module initialization', function() {
