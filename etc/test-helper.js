@@ -306,7 +306,8 @@ function loadEnvironment(rawSyncFunction, syncFunctionFile) {
   // valid statement.
   var testHelperEnvironmentStatement = '(' + testHelperEnvironmentString + ');';
 
-  // Assign the compiled test helper environment function to a variable
+  // Compile the test helper environment function within the current virtual machine context so it can share access to the "requireAccess",
+  // "channel", "customActionStub", etc. stubs with the test-helper module
   var testHelperEnvironmentFunction = vm.runInThisContext(testHelperEnvironmentStatement, options);
 
   return testHelperEnvironmentFunction(require);
