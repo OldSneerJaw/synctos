@@ -1,5 +1,5 @@
 var sampleSpecHelper = require('./modules/sample-spec-helper.js');
-var testHelper = require('../etc/test-helper.js');
+var testHelper = require('../src/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Sample invoice payment processing attempt doc definition', function() {

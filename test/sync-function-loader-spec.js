@@ -7,7 +7,8 @@ describe('Sync function loader', function() {
   var syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
   var expectedMacroName = 'importSyncFunctionFragment';
-  var syncFuncTemplateDir = path.resolve(__dirname, '../etc');
+  var syncFuncTemplateDir = path.resolve(__dirname, '../src/templates');
+  var syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
 
   beforeEach(function() {
     // Mock out the "require" calls in the module under test
@@ -23,7 +24,7 @@ describe('Sync function loader', function() {
     docDefinitionsLoaderMock = { load: simpleMock.stub() };
     mockRequire('../src/document-definitions-loader.js', docDefinitionsLoaderMock);
 
-    syncFunctionLoader = mockRequire.reRequire('../etc/sync-function-loader.js');
+    syncFunctionLoader = mockRequire.reRequire('../src/sync-function-loader.js');
   });
 
   afterEach(function() {
@@ -48,7 +49,7 @@ describe('Sync function loader', function() {
     expect(result).to.equal('my\n\nfinal\nsync \\`func\\`');
 
     expect(fsMock.readFileSync.callCount).to.be(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(syncFuncTemplateDir, 'sync-function-template.js'), 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ syncFuncTemplateFile, 'utf8' ]);
 
     expect(fileFragmentLoaderMock.load.callCount).to.be(1);
     expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ syncFuncTemplateDir, expectedMacroName, originalSyncFuncTemplate ]);
@@ -72,7 +73,7 @@ describe('Sync function loader', function() {
     expect(syncFunctionLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
 
     expect(fsMock.readFileSync.callCount).to.be(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(syncFuncTemplateDir, 'sync-function-template.js'), 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ syncFuncTemplateFile, 'utf8' ]);
 
     expect(fileFragmentLoaderMock.load.callCount).to.be(0);
 

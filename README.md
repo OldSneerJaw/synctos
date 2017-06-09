@@ -662,7 +662,7 @@ Custom code (e.g. type filters, custom validation functions, custom actions) wit
 
 # Testing
 
-The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`etc/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
+The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`src/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
 
 The post [Testing your Sync Gateway functions with synctos](https://blog.couchbase.com/testing-sync-gateway-functions-synctos/) on the official Couchbase blog provides a detailed walkthrough, with examples, for setting up and running tests. The following section also provides a brief overview of the process.
 
@@ -676,7 +676,7 @@ The synctos project uses `mocha` for writing and executing test cases and the fo
 
 After that, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
-    var testHelper = require('../node_modules/synctos/etc/test-helper.js');
+    var testHelper = require('../node_modules/synctos/src/test-helper.js');
 
 Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
 
@@ -744,6 +744,6 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 });
 ```
 
-The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `etc/validation-error-message-formatter.js` module in this project for documentation.
+The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/validation-error-message-formatter.js` module in this project for documentation.
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).
