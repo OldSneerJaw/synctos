@@ -2,6 +2,7 @@
 
 var path = require('path');
 var docDefinitionsLoader = require('./src/document-definitions-loader.js');
+var docDefinitionsShellMaker = require('./src/document-definitions-shell-maker.js');
 var docDefinitionsValidator = require('./src/document-definitions-validator.js');
 
 var errorStatus = 1;
@@ -16,9 +17,10 @@ if (process.argv.length !== 3) {
 var docDefinitionsFilename = process.argv[2];
 
 var rawDocDefinitionsString = docDefinitionsLoader.load(docDefinitionsFilename);
-var rawDocDefinitions = docDefinitionsLoader.parseDocDefinitions(rawDocDefinitionsString, docDefinitionsFilename);
 
-var validationErrors = docDefinitionsValidator.validate(rawDocDefinitions);
+var rawDocDefinitionsShell = docDefinitionsShellMaker.createShell(rawDocDefinitionsString, docDefinitionsFilename);
+
+var validationErrors = docDefinitionsValidator.validate(rawDocDefinitionsShell);
 
 var exitStatus = 0;
 if (typeof(validationErrors) === 'string') {

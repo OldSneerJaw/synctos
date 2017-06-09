@@ -29,106 +29,45 @@ describe('Document definitions loader', function() {
     mockRequire.stopAll();
   });
 
-  describe('when loading from a file', function() {
-    it('should load the contents of a document definitions file that exists', function() {
-      var docDefinitionsFile = 'my/doc-definitions.js';
-      var expectedDir = '/an/arbitrary/directory';
-      var originalFileContents = '\tmy-original-doc-definitions\n';
-      var expectedFileContents = 'my-expected-doc-definitions';
+  it('should load the contents of a document definitions file that exists', function() {
+    var docDefinitionsFile = 'my/doc-definitions.js';
+    var expectedDir = '/an/arbitrary/directory';
+    var originalFileContents = '\tmy-original-doc-definitions\n';
+    var expectedFileContents = 'my-expected-doc-definitions';
 
-      fsMock.readFileSync.returnWith(originalFileContents);
-      pathMock.dirname.returnWith(expectedDir);
-      fileFragmentLoaderMock.load.returnWith(expectedFileContents);
+    fsMock.readFileSync.returnWith(originalFileContents);
+    pathMock.dirname.returnWith(expectedDir);
+    fileFragmentLoaderMock.load.returnWith(expectedFileContents);
 
-      var result = docDefinitionsLoader.load(docDefinitionsFile);
+    var result = docDefinitionsLoader.load(docDefinitionsFile);
 
-      expect(result).to.equal(expectedFileContents);
+    expect(result).to.equal(expectedFileContents);
 
-      expect(fsMock.readFileSync.callCount).to.be(1);
-      expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
+    expect(fsMock.readFileSync.callCount).to.be(1);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
 
-      expect(pathMock.dirname.callCount).to.be(1);
-      expect(pathMock.dirname.calls[0].args).to.eql([ docDefinitionsFile ]);
+    expect(pathMock.dirname.callCount).to.be(1);
+    expect(pathMock.dirname.calls[0].args).to.eql([ docDefinitionsFile ]);
 
-      expect(fileFragmentLoaderMock.load.callCount).to.be(1);
-      expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalFileContents.trim() ]);
-    });
-
-    it('should throw an exception if the document definitions file does not exist', function() {
-      var docDefinitionsFile = 'my/doc-definitions.js';
-      var expectedException = new Error('my-expected-exception');
-
-      fsMock.readFileSync.throwWith(expectedException);
-      pathMock.dirname.returnWith('');
-      fileFragmentLoaderMock.load.returnWith('');
-
-      expect(docDefinitionsLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
-
-      expect(fsMock.readFileSync.callCount).to.be(1);
-      expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
-
-      expect(pathMock.dirname.callCount).to.be(0);
-
-      expect(fileFragmentLoaderMock.load.callCount).to.be(0);
-    });
+    expect(fileFragmentLoaderMock.load.callCount).to.be(1);
+    expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalFileContents.trim() ]);
   });
 
-  describe('when parsing a document definitions string as JavaScript', function() {
-    function verifyParse(docDefinitionsString, originalFilename) {
-      var expectedOutput = { foo: 'bar' };
-      vmMock.runInNewContext.returnWith(expectedOutput);
+  it('should throw an exception if the document definitions file does not exist', function() {
+    var docDefinitionsFile = 'my/doc-definitions.js';
+    var expectedException = new Error('my-expected-exception');
 
-      var result = docDefinitionsLoader.parseDocDefinitions(docDefinitionsString, originalFilename);
+    fsMock.readFileSync.throwWith(expectedException);
+    pathMock.dirname.returnWith('');
+    fileFragmentLoaderMock.load.returnWith('');
 
-      expect(result).to.eql(expectedOutput);
+    expect(docDefinitionsLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
 
-      expect(vmMock.runInNewContext.callCount).to.be(1);
-      expect(vmMock.runInNewContext.calls[0].args[0]).to.equal('(' + docDefinitionsString + ');');
-      expect(vmMock.runInNewContext.calls[0].args[2]).to.eql({
-        filename: originalFilename,
-        displayErrors: true
-      });
+    expect(fsMock.readFileSync.callCount).to.be(1);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
 
-      var sandbox = vmMock.runInNewContext.calls[0].args[1];
-      expect(sandbox).to.only.have.keys([
-        'doc',
-        'oldDoc',
-        'typeIdValidator',
-        'simpleTypeFilter',
-        'isDocumentMissingOrDeleted',
-        'isValueNullOrUndefined',
-        'getEffectiveOldDoc',
-        'requireAccess',
-        'requireRole',
-        'requireUser',
-        'channel',
-        'access',
-        'role'
-      ]);
-      expect(sandbox.doc).to.be.an('object');
-      expect(sandbox.doc).not.to.be.an(Array);
-      expect(sandbox.oldDoc).to.be.an('object');
-      expect(sandbox.oldDoc).not.to.be.an(Array);
-      expect(sandbox.typeIdValidator).to.be.an('object');
-      expect(sandbox.typeIdValidator).not.to.be.an(Array);
-      expect(sandbox.simpleTypeFilter).to.be.a('function');
-      expect(sandbox.isDocumentMissingOrDeleted).to.be.a('function');
-      expect(sandbox.isValueNullOrUndefined).to.be.a('function');
-      expect(sandbox.getEffectiveOldDoc).to.be.a('function');
-      expect(sandbox.requireAccess).to.be.a('function');
-      expect(sandbox.requireRole).to.be.a('function');
-      expect(sandbox.requireUser).to.be.a('function');
-      expect(sandbox.channel).to.be.a('function');
-      expect(sandbox.access).to.be.a('function');
-      expect(sandbox.role).to.be.a('function');
-    }
+    expect(pathMock.dirname.callCount).to.be(0);
 
-    it('evaluates the input with a filename for stack traces', function() {
-      verifyParse('my-doc-definitions1', 'my-original-filename');
-    });
-
-    it('evaluates the input without a filename', function() {
-      verifyParse('my-doc-definitions2');
-    });
+    expect(fileFragmentLoaderMock.load.callCount).to.be(0);
   });
 });
