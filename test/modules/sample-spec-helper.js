@@ -1,6 +1,6 @@
 // This module contains a collection of functions to be used when validating the sample document definitions
 
-var testHelper = require('../../etc/test-helper.js');
+var testHelper = require('../../src/test-helper.js');
 
 function getExpectedAuthorization(expectedChannels) {
   return {

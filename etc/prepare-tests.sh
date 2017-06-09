@@ -7,8 +7,8 @@ outputDir="build/sync-functions"
 mkdir -p "$outputDir"
 mkdir -p build/test-reports/
 
-echo "Linting test-helper module and specs with JSHint\n"
-node_modules/jshint/bin/jshint etc/test-helper.js test/*.js
+echo "Linting modules and specs with JSHint\n"
+node_modules/jshint/bin/jshint src/*.js test/*.js
 
 # Create a temporary sync function from the sample document definitions file
 ./make-sync-function samples/sample-sync-doc-definitions.js "$outputDir"/test-sample-sync-function.js
