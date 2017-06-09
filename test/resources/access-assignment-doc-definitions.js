@@ -4,6 +4,7 @@
     typeFilter: function(doc) {
       return doc._id === 'staticAccessDoc';
     },
+    propertyValidators: { },
     accessAssignments: [
       {
         type: 'channel',

@@ -1,0 +1,59 @@
+#!/usr/bin/env node
+
+var path = require('path');
+var docDefinitionsLoader = require('./src/document-definitions-loader.js');
+var docDefinitionsShellMaker = require('./src/document-definitions-shell-maker.js');
+var docDefinitionsValidator = require('./src/document-definitions-validator.js');
+
+var errorStatus = 1;
+
+// Verify the correct number of commandline params
+if (process.argv.length !== 3) {
+  showUsage();
+
+  process.exit(errorStatus);
+}
+
+var docDefinitionsFilename = process.argv[2];
+
+var rawDocDefinitionsString = docDefinitionsLoader.load(docDefinitionsFilename);
+
+var rawDocDefinitionsShell = docDefinitionsShellMaker.createShell(rawDocDefinitionsString, docDefinitionsFilename);
+
+var validationErrors = docDefinitionsValidator.validate(rawDocDefinitionsShell);
+
+var exitStatus = 0;
+if (typeof(validationErrors) === 'string') {
+  console.log('ERROR: ' + validationErrors);
+
+  exitStatus = errorStatus;
+} else {
+  for (var docType in validationErrors) {
+    var docTypeErrors = validationErrors[docType];
+    if (docTypeErrors.length > 0) {
+      console.log('Document type "' + docType + '":\n- ' + docTypeErrors.join('\n- '));
+
+      exitStatus = errorStatus;
+    }
+  }
+}
+
+process.exit(exitStatus);
+
+function showUsage() {
+  var nodeBinary = path.basename(process.argv[0]);
+  var scriptName = path.basename(process.argv[1]);
+
+  console.log('A utility for validating the structure of a synctos document definitions file.\n');
+
+  console.log('Usage:  ' + scriptName + ' <document_definitions_file>');
+  console.log('   or:  ' + nodeBinary + ' ' + scriptName + ' <document_definitions_file>\n');
+
+  console.log('Arguments:');
+  console.log('    document_definitions_file');
+  console.log('        Path to the JavaScript file that defines the document types for analysis\n');
+
+  console.log('For example:  ' + scriptName + ' /path/to/my-sync-doc-definitions.js\n');
+
+  console.log('See the README for more information.');
+}

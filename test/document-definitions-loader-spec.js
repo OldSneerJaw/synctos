@@ -3,7 +3,7 @@ var simpleMock = require('simple-mock');
 var mockRequire = require('mock-require');
 
 describe('Document definitions loader', function() {
-  var docDefinitionsLoader, fsMock, pathMock, fileFragmentLoaderMock;
+  var docDefinitionsLoader, fsMock, pathMock, vmMock, fileFragmentLoaderMock;
 
   var expectedMacroName = 'importDocumentDefinitionFragment';
 
@@ -14,6 +14,9 @@ describe('Document definitions loader', function() {
 
     pathMock = { dirname: simpleMock.stub() };
     mockRequire('path', pathMock);
+
+    vmMock = { runInNewContext: simpleMock.stub() };
+    mockRequire('vm', vmMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
     mockRequire('../src/file-fragment-loader.js', fileFragmentLoaderMock);

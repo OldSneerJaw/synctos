@@ -1,5 +1,6 @@
 /**
- * Loads the document definitions from the specified file.
+ * Loads the document definitions from the specified file. Any document definition fragments referenced therein will be resolved
+ * automatically.
  *
  * @param {string} docDefinitionsFile The path to the document definitions file
  *
