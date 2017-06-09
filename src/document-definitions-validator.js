@@ -31,14 +31,14 @@ function validate(rawDocDefinitions) {
   return allValidationErrors;
 }
 
-var supportedPermissionOperations = new Set([ 'view', 'add', 'replace', 'remove', 'write' ]);
-var supportedCustomActionEvents = new Set([
-  'onTypeIdentificationSucceeded',
-  'onAuthorizationSucceeded',
-  'onValidationSucceeded',
-  'onAccessAssignmentsSucceeded',
-  'onDocumentChannelAssignmentSucceeded'
-]);
+var supportedPermissionOperations = { 'view': true, 'add': true, 'replace': true, 'remove': true, 'write': true };
+var supportedCustomActionEvents = {
+  'onTypeIdentificationSucceeded': true,
+  'onAuthorizationSucceeded': true,
+  'onValidationSucceeded': true,
+  'onAccessAssignmentsSucceeded': true,
+  'onDocumentChannelAssignmentSucceeded': true
+};
 
 function validateDocDefinition(docType, docDefinition) {
   var validationErrors = [ ];
@@ -160,7 +160,9 @@ function validateDocDefinition(docType, docDefinition) {
     for (var permissionOperation in permissionsDefinition) {
       var permissions = permissionsDefinition[permissionOperation];
 
-      if (!supportedPermissionOperations.has(permissionOperation)) {
+      console.log(permissionsCategory + ' is an array: ' + (permissions instanceof Array));
+
+      if (!supportedPermissionOperations[permissionOperation]) {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is not supported');
       } else if (permissions instanceof Array) {
         for (var permissionIndex = 0; permissionIndex < permissions.length; permissionIndex++) {
@@ -293,7 +295,7 @@ function validateDocDefinition(docType, docDefinition) {
     for (var customActionName in customActionsDefinition) {
       var customActionFunc = customActionsDefinition[customActionName];
 
-      if (!supportedCustomActionEvents.has(customActionName)) {
+      if (!supportedCustomActionEvents[customActionName]) {
         validationErrors.push('the "customActions" property specifies an invalid event: ' + JSON.stringify(customActionName));
       } else if (typeof(customActionFunc) !== 'function') {
         validationErrors.push('the "customActions" property contains a value for the "' + customActionName + '" event that is not a function');
