@@ -1,19 +1,18 @@
+var path = require('path');
 var expect = require('expect.js');
 var simpleMock = require('simple-mock');
 var mockRequire = require('mock-require');
 
-describe('Document definitions loader', function() {
-  var syncFunctionLoader, fsMock, pathMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
+describe('Sync function loader', function() {
+  var syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
   var expectedMacroName = 'importSyncFunctionFragment';
+  var syncFuncTemplateDir = path.resolve(__dirname, '../etc');
 
   beforeEach(function() {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
-
-    pathMock = { dirname: simpleMock.stub() };
-    mockRequire('path', pathMock);
 
     indentMock = { indentJS: simpleMock.stub() };
     mockRequire('../lib/indent.js/indent.min.js', indentMock);
@@ -33,14 +32,12 @@ describe('Document definitions loader', function() {
   });
 
   it('should load a sync function', function() {
-    var expectedDir = '/an/arbitrary/directory';
     var docDefinitionsFile = 'my/doc-definitions.js';
     var docDefinitionsContent = 'my-doc-definitions';
     var originalSyncFuncTemplate = 'my-original-sync-fync-template';
     var updatedSyncFuncTemplate = 'function my-sync-func-template() { %SYNC_DOCUMENT_DEFINITIONS%; }';
     var indentedSyncFunc = 'my\n  \r\nfinal\rsync `func`';
 
-    pathMock.dirname.returnWith(expectedDir);
     fsMock.readFileSync.returnWith(originalSyncFuncTemplate);
     fileFragmentLoaderMock.load.returnWith(updatedSyncFuncTemplate);
     docDefinitionsLoaderMock.load.returnWith(docDefinitionsContent);
@@ -50,15 +47,11 @@ describe('Document definitions loader', function() {
 
     expect(result).to.equal('my\n\nfinal\nsync \\`func\\`');
 
-    expect(pathMock.dirname.callCount).to.be(1);
-    expect(pathMock.dirname.calls[0].args.length).to.be(1);
-    expect(pathMock.dirname.calls[0].args[0]).to.match(/etc\/sync-function-loader.js$/);
-
     expect(fsMock.readFileSync.callCount).to.be(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ expectedDir + '/sync-function-template.js', 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(syncFuncTemplateDir, 'sync-function-template.js'), 'utf8' ]);
 
     expect(fileFragmentLoaderMock.load.callCount).to.be(1);
-    expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalSyncFuncTemplate ]);
+    expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ syncFuncTemplateDir, expectedMacroName, originalSyncFuncTemplate ]);
 
     expect(docDefinitionsLoaderMock.load.callCount).to.be(1);
     expect(docDefinitionsLoaderMock.load.calls[0].args).to.eql([ docDefinitionsFile ]);
@@ -68,11 +61,9 @@ describe('Document definitions loader', function() {
   });
 
   it('should throw an exception if the sync function template file does not exist', function() {
-    var expectedDir = '/an/arbitrary/directory';
     var docDefinitionsFile = 'my/doc-definitions.js';
     var expectedException = new Error('my-expected-exception');
 
-    pathMock.dirname.returnWith(expectedDir);
     fsMock.readFileSync.throwWith(expectedException);
     fileFragmentLoaderMock.load.returnWith('');
     docDefinitionsLoaderMock.load.returnWith('');
@@ -80,12 +71,8 @@ describe('Document definitions loader', function() {
 
     expect(syncFunctionLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
 
-    expect(pathMock.dirname.callCount).to.be(1);
-    expect(pathMock.dirname.calls[0].args.length).to.be(1);
-    expect(pathMock.dirname.calls[0].args[0]).to.match(/etc\/sync-function-loader.js$/);
-
     expect(fsMock.readFileSync.callCount).to.be(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ expectedDir + '/sync-function-template.js', 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(syncFuncTemplateDir, 'sync-function-template.js'), 'utf8' ]);
 
     expect(fileFragmentLoaderMock.load.callCount).to.be(0);
 
