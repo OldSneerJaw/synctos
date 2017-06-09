@@ -160,8 +160,6 @@ function validateDocDefinition(docType, docDefinition) {
     for (var permissionOperation in permissionsDefinition) {
       var permissions = permissionsDefinition[permissionOperation];
 
-      console.log(permissionsCategory + ' is an array: ' + (permissions instanceof Array));
-
       if (!supportedPermissionOperations[permissionOperation]) {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is not supported');
       } else if (permissions instanceof Array) {
