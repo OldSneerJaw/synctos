@@ -1,14 +1,12 @@
-# Introduction
+        # Introduction
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/Kashoo/synctos.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/Kashoo/synctos.svg?branch=master)](https://travis-ci.org/Kashoo/synctos) [![Greenkeeper Enabled](https://badges.greenkeeper.io/Kashoo/synctos.svg)](https://greenkeeper.io/)
 
 Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
 
 With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for [sync functions](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/sync-function-api-guide/index.html) with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation, sync functions generated with synctos return specific, detailed error messages that make it easy for a client app developer to figure out exactly what went wrong. An included test helper module also provides a simple framework to write unit tests for generated sync functions.
 
 To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/index.html). And, for a comprehensive introduction to synctos, see the post [Validating your Sync Gateway documents with synctos](https://blog.couchbase.com/validating-your-sync-gateway-documents-with-synctos/) on the official Couchbase blog.
-
-[![Build Status](https://travis-ci.org/Kashoo/synctos.svg?branch=master)](https://travis-ci.org/Kashoo/synctos)
 
 # Installation
 
