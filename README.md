@@ -1,4 +1,4 @@
-        # Introduction
+# Introduction
 
 [![Build Status](https://travis-ci.org/Kashoo/synctos.svg?branch=master)](https://travis-ci.org/Kashoo/synctos) [![Greenkeeper Enabled](https://badges.greenkeeper.io/Kashoo/synctos.svg)](https://greenkeeper.io/)
 
