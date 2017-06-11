@@ -180,8 +180,8 @@ function validateDocDefinition(docType, docDefinition) {
     validateAttachmentIntegerConstraint('maximumIndividualSize', attachmentConstraintsDefinition.maximumIndividualSize);
     validateAttachmentIntegerConstraint('maximumTotalSize', attachmentConstraintsDefinition.maximumTotalSize);
 
-    if (Number.isInteger(attachmentConstraintsDefinition.maximumIndividualSize) &&
-        Number.isInteger(attachmentConstraintsDefinition.maximumTotalSize) &&
+    if (isInteger(attachmentConstraintsDefinition.maximumIndividualSize) &&
+        isInteger(attachmentConstraintsDefinition.maximumTotalSize) &&
         attachmentConstraintsDefinition.maximumIndividualSize > attachmentConstraintsDefinition.maximumTotalSize) {
       validationErrors.push('the "attachmentConstraints" property\'s "maximumIndividualSize" is greater than "maximumTotalSize"');
     }
@@ -197,7 +197,7 @@ function validateDocDefinition(docType, docDefinition) {
 
   function validateAttachmentIntegerConstraint(propertyName, propertyValue) {
     if (!isUndefined(propertyValue)) {
-      if (!Number.isInteger(propertyValue)) {
+      if (!isInteger(propertyValue)) {
         validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that is not an integer');
       } else if (propertyValue <= 0) {
         validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that is not a positive number');
@@ -314,4 +314,14 @@ function isAnObject(value) {
 
 function isUndefined(value) {
   return typeof(value) === 'undefined';
+}
+
+// Determine if a given value is an integer. Exists as a failsafe because Number.isInteger does not exist in older versions of Node.js
+// (e.g. 0.10.x).
+function isInteger(value) {
+  if (typeof(Number.isInteger) === 'function') {
+    return Number.isInteger(value);
+  } else {
+    return typeof(value) === 'number' && isFinite(value) && Math.floor(value) === value;
+  }
 }
