@@ -18,7 +18,7 @@ describe('Document definitions validator:', function() {
         },
         propertyValidators: { },
         allowUnknownProperties: false,
-        immutable: function() { return true; },
+        immutable: true,
         cannotReplace: false,
         cannotDelete: false,
         allowAttachments: true,
@@ -57,30 +57,33 @@ describe('Document definitions validator:', function() {
           return { write: 'foo' };
         },
         propertyValidators: function() { return { }; },
-        allowUnknownProperties: function() { return true; },
-        immutable: false,
-        cannotReplace: function() { return true; },
-        cannotDelete: function() { return true; },
-        allowAttachments: function() { return true; },
-        attachmentConstraints: function() { return { }; },
+        allowUnknownProperties: function() { },
+        immutable: function() { },
+        cannotReplace: function() { },
+        cannotDelete: function() { },
+        allowAttachments: function() { },
+        attachmentConstraints: function() { },
         accessAssignments: [
           {
             type: 'role',
-            roles: function() { return [ ]; },
-            users: function() { return [ ]; }
+            roles: function() { },
+            users: function() { }
           },
           {
             // The absence of the "type" property indicates it is the channel assignment type
-            channels: function() { return [ ]; },
-            roles: function() { return [ ]; },
-            users: function() { return [ ]; }
+            channels: function() { },
+            roles: function() { },
+            users: function() { }
           }
         ]
       },
       myDoc3: {
         typeFilter: simpleTypeFilter,
         authorizedUsers: { write: [ 'write' ] },
-        propertyValidators: { }
+        propertyValidators: { },
+        immutable: false,
+        cannotReplace: true,
+        cannotDelete: true
       }
     };
   });

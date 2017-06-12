@@ -103,7 +103,7 @@ function validateDocDefinition(docType, docDefinition) {
       case 'immutable':
         if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
           validationErrors.push('the "immutable" property is not a boolean or a function');
-        } else if (docDefinition.immutable && (docDefinition.cannotReplace || docDefinition.cannotDelete)) {
+        } else if (docDefinition.immutable === true && (docDefinition.cannotReplace === true || docDefinition.cannotDelete === true)) {
           validationErrors.push('the "immutable" property should not be enabled when either "cannotReplace" or "cannotDelete" are also enabled');
         }
         break;
@@ -123,11 +123,11 @@ function validateDocDefinition(docType, docDefinition) {
         }
         break;
       case 'attachmentConstraints':
-        if (isAnObject(propertyValue)) {
-          if (!docDefinition.allowAttachments) {
-            validationErrors.push('the "attachmentConstraints" property is defined but attachments have not been enabled via the "allowAttachments" property');
-          }
+        if (!docDefinition.allowAttachments) {
+          validationErrors.push('the "attachmentConstraints" property is defined but attachments have not been enabled via the "allowAttachments" property');
+        }
 
+        if (isAnObject(propertyValue)) {
           validateAttachmentConstraints(propertyValue);
         } else if (typeof(propertyValue) !== 'function') {
           validationErrors.push('the "attachmentConstraints" property is not an object or a function');
@@ -175,6 +175,7 @@ function validateDocDefinition(docType, docDefinition) {
         if (permissions.length < 1) {
           validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation does not contain any elements');
         }
+
         for (var permissionIndex = 0; permissionIndex < permissions.length; permissionIndex++) {
           var permission = permissions[permissionIndex];
           if (typeof(permission) !== 'string') {
@@ -224,17 +225,15 @@ function validateDocDefinition(docType, docDefinition) {
   function validateAttachmentListConstraint(propertyName, propertyValue) {
     if (!isUndefined(propertyValue)) {
       if (propertyValue instanceof Array) {
-        var hasElements = false;
+        if (propertyValue.length < 1) {
+          validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that does not contain any elements');
+        }
+
         for (var elementIndex = 0; elementIndex < propertyValue.length; elementIndex++) {
-          hasElements = true;
           var elementValue = propertyValue[elementIndex];
           if (typeof(elementValue) !== 'string') {
             validationErrors.push('the "attachmentConstraints" property\'s "' + propertyName + '" contains an element that is not a string: ' + JSON.stringify(elementValue));
           }
-        }
-
-        if (!hasElements) {
-          validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that does not contain any elements');
         }
       } else {
         validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that is not an array');
