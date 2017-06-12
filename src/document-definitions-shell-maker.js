@@ -31,9 +31,7 @@ function createShell(docDefinitionsString, originalFilename) {
 
   // The test helper environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
   // contents of the document definitions
-  var shellString = shellTemplateString.replace(
-    '%DOC_DEFINITIONS_PLACEHOLDER%',
-    function() { return unescapeBackticks(docDefinitionsString); });
+  var shellString = shellTemplateString.replace('%DOC_DEFINITIONS_PLACEHOLDER%', function() { return docDefinitionsString; });
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.
@@ -44,12 +42,4 @@ function createShell(docDefinitionsString, originalFilename) {
   var shellFunction = vm.runInThisContext(shellStatement, options);
 
   return shellFunction(require);
-}
-
-// Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function
-// generator script automatically escapes backtick characters with the sequence "\`" so that it produces a valid multiline string.
-// However, when loaded by this module, document definitions are not inserted into a Sync Gateway configuration file so we must "unescape"
-// backtick characters to preserve the original intention.
-function unescapeBackticks(originalString) {
-  return originalString.replace(/\\`/g, function() { return '`'; });
 }
