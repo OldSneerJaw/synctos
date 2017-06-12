@@ -169,39 +169,4 @@ describe('Authorization:', function() {
       testHelper.verifyAccessDenied(doc, oldDoc, { expectedUsers: [ 'remove1', 'remove2' ] });
     });
   });
-
-  describe('for a document that does not define any authorized channels, roles or users', function() {
-    it('rejects document creation', function() {
-      var doc = {
-        _id: 'noAuthorizationsDefinedDoc',
-        stringProp: 'foobar'
-      };
-
-      testHelper.verifyAccessDenied(doc, null, { });
-    });
-
-    it('rejects document replacement', function() {
-      var doc = {
-        _id: 'noAuthorizationsDefinedDoc',
-        stringProp: 'foobar'
-      };
-      var oldDoc = {
-        _id: 'noAuthorizationsDefinedDoc'
-      };
-
-      testHelper.verifyAccessDenied(doc, oldDoc, { });
-    });
-
-    it('rejects document deletion', function() {
-      var doc = {
-        _id: 'noAuthorizationsDefinedDoc',
-        _deleted: true
-      };
-      var oldDoc = {
-        _id: 'noAuthorizationsDefinedDoc'
-      };
-
-      testHelper.verifyAccessDenied(doc, oldDoc, { });
-    });
-  });
 });

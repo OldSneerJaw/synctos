@@ -85,15 +85,5 @@
         type: 'string'
       }
     }
-  },
-  noAuthorizationsDefinedDoc: {
-    typeFilter: function(doc) {
-      return doc._id === 'noAuthorizationsDefinedDoc';
-    },
-    propertyValidators: {
-      stringProp: {
-        type: 'string'
-      }
-    }
   }
 }

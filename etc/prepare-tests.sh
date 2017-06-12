@@ -10,14 +10,21 @@ mkdir -p build/test-reports/
 echo "Linting modules and specs with JSHint\n"
 node_modules/jshint/bin/jshint src/*.js test/*.js
 
-# Create a temporary sync function from the sample document definitions file
-./make-sync-function samples/sample-sync-doc-definitions.js "$outputDir"/test-sample-sync-function.js
+sampleDocDefinitionsPath="samples/sample-sync-doc-definitions.js"
 
-# Automatically create a sync function from each document definitions file in the test resources directory
+# Validate the structure and sematics of the sample document definitions
+./validate-document-definitions "$sampleDocDefinitionsPath"
+
+# Create a temporary sync function from the sample document definitions file
+./make-sync-function "$sampleDocDefinitionsPath" "$outputDir"/test-sample-sync-function.js
+
+# Automatically validate and create a sync function from each document definitions file in the test resources directory
 definitionsDir="test/resources"
 for docDefinitionPath in "$definitionsDir"/*-doc-definitions.js; do
   # Skip entries that are not files
   if [ ! -f "$docDefinitionPath" ]; then continue; fi
+
+  ./validate-document-definitions "$docDefinitionPath"
 
   syncFuncName=$(basename "$docDefinitionPath" "-doc-definitions.js")
 

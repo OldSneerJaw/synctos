@@ -6,35 +6,50 @@
  * @param {string} [originalFilename] The optional name/path of the file from which the document definitions were read. To be used in
  *                                    stack traces.
  *
- * @returns The document definitions as a JavaScript object or function with stubbed global dependencies
+ * @returns A JavaScript object that exposes the document definitions via the "documentDefinitions" property along with the stubbed global
+ *          dependencies via properties that match their names (e.g. "doc", "oldDoc", "typeIdValidator", "channel")
  */
 exports.createShell = createShell;
 
+var fs = require('fs');
 var vm = require('vm');
 
 function createShell(docDefinitionsString, originalFilename) {
-  // Fake the various global variables and functions that are available to document definitions
-  var sandbox = {
-    doc: { },
-    oldDoc: { },
-    typeIdValidator: { },
-    simpleTypeFilter: function() { },
-    isDocumentMissingOrDeleted: function() { },
-    isValueNullOrUndefined: function() { },
-    getEffectiveOldDoc: function() { },
-    requireAccess: function() { },
-    requireRole: function() { },
-    requireUser: function() { },
-    channel: function() { },
-    access: function() { },
-    role: function() { }
-  };
   var options = {
     filename: originalFilename,
     displayErrors: true
   };
 
-  var rawDocDefinitions = vm.runInNewContext('(' + docDefinitionsString + ');', sandbox, options);
+  var shellTemplateString;
+  try {
+    shellTemplateString = fs.readFileSync(__dirname + '/templates/document-definitions-shell-template.js', 'utf8').trim();
+  } catch (ex) {
+    console.log('ERROR: Unable to read the document definitions shell template: ' + ex);
 
-  return rawDocDefinitions;
+    throw ex;
+  }
+
+  // The test helper environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
+  // contents of the document definitions
+  var shellString = shellTemplateString.replace(
+    '%DOC_DEFINITIONS_PLACEHOLDER%',
+    function() { return unescapeBackticks(docDefinitionsString); });
+
+  // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
+  // valid statement.
+  var shellStatement = '(' + shellString + ');';
+
+  // Compile the document definitions shell function within the current virtual machine context so it can share access to the
+  // "requireAccess", "channel", "customActionStub", etc. stubs
+  var shellFunction = vm.runInThisContext(shellStatement, options);
+
+  return shellFunction(require);
+}
+
+// Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function
+// generator script automatically escapes backtick characters with the sequence "\`" so that it produces a valid multiline string.
+// However, when loaded by this module, document definitions are not inserted into a Sync Gateway configuration file so we must "unescape"
+// backtick characters to preserve the original intention.
+function unescapeBackticks(originalString) {
+  return originalString.replace(/\\`/g, function() { return '`'; });
 }
