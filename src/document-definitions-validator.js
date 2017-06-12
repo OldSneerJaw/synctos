@@ -224,11 +224,17 @@ function validateDocDefinition(docType, docDefinition) {
   function validateAttachmentListConstraint(propertyName, propertyValue) {
     if (!isUndefined(propertyValue)) {
       if (propertyValue instanceof Array) {
+        var hasElements = false;
         for (var elementIndex = 0; elementIndex < propertyValue.length; elementIndex++) {
+          hasElements = true;
           var elementValue = propertyValue[elementIndex];
           if (typeof(elementValue) !== 'string') {
             validationErrors.push('the "attachmentConstraints" property\'s "' + propertyName + '" contains an element that is not a string: ' + JSON.stringify(elementValue));
           }
+        }
+
+        if (!hasElements) {
+          validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that does not contain any elements');
         }
       } else {
         validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that is not an array');
