@@ -10,7 +10,12 @@
 exports.validate = validate;
 
 function validate(rawDocDefinitions) {
-  var docDefinitions = resolveDocDefinitions(rawDocDefinitions);
+  var docDefinitions;
+  try {
+    docDefinitions = resolveDocDefinitions(rawDocDefinitions);
+  } catch (ex) {
+    return 'Document definitions threw an exception: ' + ex.message;
+  }
 
   if (!isAnObject(docDefinitions)) {
     return 'Document definitions are not specified as an object';
@@ -98,6 +103,8 @@ function validateDocDefinition(docType, docDefinition) {
       case 'immutable':
         if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
           validationErrors.push('the "immutable" property is not a boolean or a function');
+        } else if (docDefinition.immutable && (docDefinition.cannotReplace || docDefinition.cannotDelete)) {
+          validationErrors.push('the "immutable" property should not be enabled when either "cannotReplace" or "cannotDelete" are also enabled');
         }
         break;
       case 'cannotReplace':
@@ -157,12 +164,17 @@ function validateDocDefinition(docType, docDefinition) {
   }
 
   function validatePermissions(permissionsCategory, permissionsDefinition) {
+    var hasPermissionOperations = false;
     for (var permissionOperation in permissionsDefinition) {
+      hasPermissionOperations = true;
       var permissions = permissionsDefinition[permissionOperation];
 
       if (!supportedPermissionOperations[permissionOperation]) {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is not supported');
       } else if (permissions instanceof Array) {
+        if (permissions.length < 1) {
+          validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation does not contain any elements');
+        }
         for (var permissionIndex = 0; permissionIndex < permissions.length; permissionIndex++) {
           var permission = permissions[permissionIndex];
           if (typeof(permission) !== 'string') {
@@ -172,6 +184,10 @@ function validateDocDefinition(docType, docDefinition) {
       } else if (typeof(permissions) !== 'string') {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation is not a string or array');
       }
+    }
+
+    if (!hasPermissionOperations) {
+      validationErrors.push('the "' + permissionsCategory + '" property does not specify any operation types (e.g. "view", "add", "replace", "remove", "write")');
     }
   }
 
