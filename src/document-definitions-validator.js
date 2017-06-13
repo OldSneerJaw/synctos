@@ -10,7 +10,12 @@
 exports.validate = validate;
 
 function validate(rawDocDefinitions) {
-  var docDefinitions = resolveDocDefinitions(rawDocDefinitions);
+  var docDefinitions;
+  try {
+    docDefinitions = resolveDocDefinitions(rawDocDefinitions);
+  } catch (ex) {
+    return 'Document definitions threw an exception: ' + ex.message;
+  }
 
   if (!isAnObject(docDefinitions)) {
     return 'Document definitions are not specified as an object';
@@ -98,6 +103,8 @@ function validateDocDefinition(docType, docDefinition) {
       case 'immutable':
         if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
           validationErrors.push('the "immutable" property is not a boolean or a function');
+        } else if (docDefinition.immutable === true && (docDefinition.cannotReplace === true || docDefinition.cannotDelete === true)) {
+          validationErrors.push('the "immutable" property should not be enabled when either "cannotReplace" or "cannotDelete" are also enabled');
         }
         break;
       case 'cannotReplace':
@@ -116,11 +123,11 @@ function validateDocDefinition(docType, docDefinition) {
         }
         break;
       case 'attachmentConstraints':
-        if (isAnObject(propertyValue)) {
-          if (!docDefinition.allowAttachments) {
-            validationErrors.push('the "attachmentConstraints" property is defined but attachments have not been enabled via the "allowAttachments" property');
-          }
+        if (!docDefinition.allowAttachments) {
+          validationErrors.push('the "attachmentConstraints" property is defined but attachments have not been enabled via the "allowAttachments" property');
+        }
 
+        if (isAnObject(propertyValue)) {
           validateAttachmentConstraints(propertyValue);
         } else if (typeof(propertyValue) !== 'function') {
           validationErrors.push('the "attachmentConstraints" property is not an object or a function');
@@ -157,12 +164,18 @@ function validateDocDefinition(docType, docDefinition) {
   }
 
   function validatePermissions(permissionsCategory, permissionsDefinition) {
+    var hasPermissionOperations = false;
     for (var permissionOperation in permissionsDefinition) {
+      hasPermissionOperations = true;
       var permissions = permissionsDefinition[permissionOperation];
 
       if (!supportedPermissionOperations[permissionOperation]) {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is not supported');
       } else if (permissions instanceof Array) {
+        if (permissions.length < 1) {
+          validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation does not contain any elements');
+        }
+
         for (var permissionIndex = 0; permissionIndex < permissions.length; permissionIndex++) {
           var permission = permissions[permissionIndex];
           if (typeof(permission) !== 'string') {
@@ -172,6 +185,10 @@ function validateDocDefinition(docType, docDefinition) {
       } else if (typeof(permissions) !== 'string') {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation is not a string or array');
       }
+    }
+
+    if (!hasPermissionOperations) {
+      validationErrors.push('the "' + permissionsCategory + '" property does not specify any operation types (e.g. "view", "add", "replace", "remove", "write")');
     }
   }
 
@@ -208,6 +225,10 @@ function validateDocDefinition(docType, docDefinition) {
   function validateAttachmentListConstraint(propertyName, propertyValue) {
     if (!isUndefined(propertyValue)) {
       if (propertyValue instanceof Array) {
+        if (propertyValue.length < 1) {
+          validationErrors.push('the "attachmentConstraints" specifies a "' + propertyName + '" property that does not contain any elements');
+        }
+
         for (var elementIndex = 0; elementIndex < propertyValue.length; elementIndex++) {
           var elementValue = propertyValue[elementIndex];
           if (typeof(elementValue) !== 'string') {
