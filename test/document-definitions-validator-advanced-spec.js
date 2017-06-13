@@ -554,6 +554,47 @@ describe('Document definitions validator:', function() {
     });
   });
 
+  describe('custom actions', function() {
+    it('cannot be an invalid type', function() {
+      testDocDefinitions.myDoc1.customActions.onFoobar = function() { };
+
+      var results = docDefinitionsValidator.validate(testDocDefinitions);
+
+      expect(results).to.eql({
+        myDoc1: [ 'the "customActions" property specifies an invalid event: "onFoobar"' ],
+        myDoc2: [ ],
+        myDoc3: [ ]
+      });
+    });
+
+    it('cannot be anything other than a function', function() {
+      testDocDefinitions.myDoc1.customActions = {
+        onTypeIdentificationSucceeded: null,
+        onAuthorizationSucceeded: { }
+      };
+      testDocDefinitions.myDoc2.customActions = {
+        onValidationSucceeded: 0,
+        onAccessAssignmentsSucceeded: 'function() { }'
+      };
+      testDocDefinitions.myDoc3.customActions = {
+        onDocumentChannelAssignmentSucceeded: true
+      };
+
+      var results = docDefinitionsValidator.validate(testDocDefinitions);
+
+      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1).to.contain('the "customActions" property contains a value for the "onTypeIdentificationSucceeded" event that is not a function');
+      expect(results.myDoc1).to.contain('the "customActions" property contains a value for the "onAuthorizationSucceeded" event that is not a function');
+
+      expect(results.myDoc2.length).to.be(2);
+      expect(results.myDoc2).to.contain('the "customActions" property contains a value for the "onValidationSucceeded" event that is not a function');
+      expect(results.myDoc2).to.contain('the "customActions" property contains a value for the "onAccessAssignmentsSucceeded" event that is not a function');
+
+      expect(results.myDoc3.length).to.be(1);
+      expect(results.myDoc3).to.contain('the "customActions" property contains a value for the "onDocumentChannelAssignmentSucceeded" event that is not a function');
+    });
+  });
+
   function verifyAttachmentIntegerConstraint(propertyName) {
     it('cannot declare a value that is not an integer', function() {
       testDocDefinitions.myDoc1.attachmentConstraints = { };
