@@ -3,87 +3,29 @@ var docDefinitionsValidator = require('../src/document-definitions-validator.js'
 
 describe('Document definitions validator:', function() {
   var testDocDefinitions;
-  var simpleTypeFilter = function(doc, oldDoc, docType) { return true; };
 
   beforeEach(function() {
     // By default these document definitions are valid
     testDocDefinitions = {
       myDoc1: {
-        typeFilter: simpleTypeFilter,
+        typeFilter: function() { },
         channels: {
           view: 'view',
           add: 'add',
           replace: 'replace',
           remove: 'remove'
         },
-        propertyValidators: { },
-        allowUnknownProperties: false,
-        immutable: true,
-        cannotReplace: false,
-        cannotDelete: false,
-        allowAttachments: true,
-        attachmentConstraints: {
-          maximumAttachmentCount: 1,
-          maximumIndividualSize: 256,
-          maximumTotalSize: 256,
-          supportedExtensions: [ 'txt' ],
-          supportedContentTypes: [ 'text/plain' ],
-          requireAttachmentReferences: true
-        },
-        accessAssignments: [
-          {
-            type: 'role',
-            roles: [ 'role1' ],
-            users: [ 'user1' ]
-          },
-          {
-            type: 'channel',
-            channels: [ 'channel1' ],
-            roles: [ 'role1', 'role2' ],
-            users: [ 'user1', 'user2' ]
-          }
-        ],
-        customActions: {
-          onTypeIdentificationSucceeded: function() { },
-          onAuthorizationSucceeded: function() { },
-          onValidationSucceeded: function() { },
-          onAccessAssignmentsSucceeded: function() { },
-          onDocumentChannelAssignmentSucceeded: function() { }
-        }
+        propertyValidators: { }
       },
       myDoc2: {
-        typeFilter: simpleTypeFilter,
-        authorizedRoles: function() {
-          return { write: 'foo' };
-        },
-        propertyValidators: function() { return { }; },
-        allowUnknownProperties: function() { },
-        immutable: function() { },
-        cannotReplace: function() { },
-        cannotDelete: function() { },
-        allowAttachments: function() { },
-        attachmentConstraints: function() { },
-        accessAssignments: [
-          {
-            type: 'role',
-            roles: function() { },
-            users: function() { }
-          },
-          {
-            // The absence of the "type" property indicates it is the channel assignment type
-            channels: function() { },
-            roles: function() { },
-            users: function() { }
-          }
-        ]
+        typeFilter: function() { },
+        authorizedRoles: function() { },
+        propertyValidators: function() { }
       },
       myDoc3: {
-        typeFilter: simpleTypeFilter,
+        typeFilter: function() { },
         authorizedUsers: { write: [ 'write' ] },
-        propertyValidators: { },
-        immutable: false,
-        cannotReplace: true,
-        cannotDelete: true
+        propertyValidators: { }
       }
     };
   });
@@ -116,6 +58,18 @@ describe('Document definitions validator:', function() {
 
   it('rejects a function input that does not return a plain object', function() {
     var results = docDefinitionsValidator.validate(function() { return 'not-an-object'; });
+
+    expect(results).to.equal('Document definitions are not specified as an object');
+  });
+
+  it('rejects a value input that is null', function() {
+    var results = docDefinitionsValidator.validate(null);
+
+    expect(results).to.equal('Document definitions are not specified as an object');
+  });
+
+  it('rejects a function input that returns null', function() {
+    var results = docDefinitionsValidator.validate(null);
 
     expect(results).to.equal('Document definitions are not specified as an object');
   });
