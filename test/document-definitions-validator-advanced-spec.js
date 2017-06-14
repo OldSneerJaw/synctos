@@ -1,7 +1,7 @@
 var expect = require('expect.js');
 var docDefinitionsValidator = require('../src/document-definitions-validator.js');
 
-describe('Document definitions validator:', function() {
+describe('Document definitions advanced properties validator:', function() {
   var testDocDefinitions;
 
   beforeEach(function() {
@@ -10,10 +10,8 @@ describe('Document definitions validator:', function() {
       myDoc1: {
         typeFilter: function() { },
         channels: {
-          view: 'view',
-          add: 'add',
-          replace: 'replace',
-          remove: 'remove'
+          view: [ 'view' ],
+          write: [ 'user1' ]
         },
         propertyValidators: { },
         allowUnknownProperties: false,
@@ -76,7 +74,16 @@ describe('Document definitions validator:', function() {
       },
       myDoc3: {
         typeFilter: function() { },
-        authorizedUsers: { write: [ 'write' ] },
+        authorizedRoles: {
+          add: 'add-role1',
+          replace: 'replace-role1',
+          remove: 'remove-role1'
+        },
+        authorizedUsers: {
+          add: 'add-role1',
+          replace: 'replace-role1',
+          remove: 'remove-role1'
+        },
         propertyValidators: { },
         immutable: false,
         cannotReplace: true,
