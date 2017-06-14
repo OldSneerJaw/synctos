@@ -9,6 +9,8 @@
  */
 exports.validate = validate;
 
+var propertiesValidator = require('./document-definition-properties-validator.js');
+
 function validate(rawDocDefinitions) {
   var docDefinitions;
   try {
@@ -29,7 +31,7 @@ function validate(rawDocDefinitions) {
     if (!isAnObject(docDefinition)) {
       allValidationErrors[docType] = [ 'not specified as an object' ];
     } else {
-      allValidationErrors[docType] = validateDocDefinition(docType, docDefinition);
+      allValidationErrors[docType] = validateDocDefinition(docDefinition);
     }
   }
 
@@ -47,7 +49,7 @@ var supportedCustomActionEvents = {
 var supportedRoleAssignmentProperties = { type: true, roles: true, users: true };
 var supportedChannelAssignmentProperties = { type: true, roles: true, users: true, channels: true };
 
-function validateDocDefinition(docType, docDefinition) {
+function validateDocDefinition(docDefinition) {
   var validationErrors = [ ];
   var hasTypeFilter = false;
   var hasPermissionGrant = false;
@@ -93,7 +95,10 @@ function validateDocDefinition(docType, docDefinition) {
         break;
       case 'propertyValidators':
         hasPropertyValidators = true;
-        if (!isAnObject(propertyValue) && typeof(propertyValue) !== 'function') {
+        if (isAnObject(propertyValue)) {
+          var propertiesValidationErrors = propertiesValidator.validate(docDefinition, propertyValue);
+          validationErrors = validationErrors.concat(propertiesValidationErrors);
+        } else if (typeof(propertyValue) !== 'function') {
           validationErrors.push('the "propertyValidators" property is not an object or a function');
         }
         break;
@@ -215,7 +220,7 @@ function validateDocDefinition(docType, docDefinition) {
           validateAttachmentListConstraint('supportedContentTypes', attachmentConstraintPropertyValue);
           break;
         case 'requireAttachmentReferences':
-          if (!isUndefined(attachmentConstraintPropertyValue) && typeof(attachmentConstraintPropertyValue) !== 'boolean') {
+          if (typeof(attachmentConstraintPropertyValue) !== 'boolean') {
             validationErrors.push('the "attachmentConstraints" specifies a "requireAttachmentReferences" property that is not a boolean');
           }
           break;

@@ -1,8 +1,9 @@
 var expect = require('expect.js');
-var docDefinitionsValidator = require('../src/document-definitions-validator.js');
+var simpleMock = require('simple-mock');
+var mockRequire = require('mock-require');
 
-describe('Document definitions validator:', function() {
-  var testDocDefinitions;
+describe('Document definitions advanced validator:', function() {
+  var docDefinitionsValidator, propertiesValidatorMock, testDocDefinitions;
 
   beforeEach(function() {
     // By default these document definitions are valid
@@ -40,6 +41,16 @@ describe('Document definitions validator:', function() {
             channels: 'channel1',
             roles: 'role2',
             users: 'user2'
+          },
+          {
+            type: 'role',
+            roles: [ 'role3' ],
+            users: [ 'user3' ]
+          },
+          {
+            channels: 'channel2',
+            roles: [ 'role4' ],
+            users: [ 'user4' ]
           }
         ],
         customActions: {
@@ -83,6 +94,17 @@ describe('Document definitions validator:', function() {
         cannotDelete: true
       }
     };
+
+    propertiesValidatorMock = { validate: simpleMock.stub() };
+    propertiesValidatorMock.validate.returnWith([ ]);
+    mockRequire('../src/document-definition-properties-validator.js', propertiesValidatorMock);
+
+    docDefinitionsValidator = mockRequire.reRequire('../src/document-definitions-validator.js');
+  });
+
+  afterEach(function() {
+    // Restore "require" calls to their original behaviour after each test case
+    mockRequire.stopAll();
   });
 
   it('approves valid document definitions as an object', function() {

@@ -3,7 +3,7 @@ function(require) {
 
   var doc = { };
   var oldDoc = { };
-  var typeIdValidator = { };
+  var typeIdValidator = { type: 'string' };
   var simpleTypeFilter = simple.stub();
   var isDocumentMissingOrDeleted = simple.stub();
   var isValueNullOrUndefined = simple.stub();
