@@ -1,10 +1,10 @@
 /**
-* Validates that the given document definition's property validator definitions conform to specifications.
-*
-* @param {Object} docDefinition The document type definition
-* @param {Object} docPropertyValidatorDefinitions The document type's property validator definitions
-*
-* @returns {string[]} An array of all problems that were identified in the property validators
+ * Validates that the given document definition's property validator definitions conform to specifications.
+ *
+ * @param {Object} docDefinition The document type definition
+ * @param {Object} docPropertyValidatorDefinitions The document type's property validator definitions
+ *
+ * @returns {string[]} An array of all problems that were identified in the property validators
  */
 exports.validate = validate;
 
