@@ -1,7 +1,7 @@
 var expect = require('expect.js');
 var docDefinitionsValidator = require('../src/document-definitions-validator.js');
 
-describe('Document definitions validator:', function() {
+describe('Document definitions essential properties validator:', function() {
   var testDocDefinitions;
 
   beforeEach(function() {
@@ -19,12 +19,23 @@ describe('Document definitions validator:', function() {
       },
       myDoc2: {
         typeFilter: function() { },
+        channels: function() { },
         authorizedRoles: function() { },
+        authorizedUsers: function() { },
         propertyValidators: function() { }
       },
       myDoc3: {
         typeFilter: function() { },
-        authorizedUsers: { write: [ 'write' ] },
+        authorizedRoles: {
+          add: [ 'add-role1' ],
+          replace: [ 'replace-role1' ],
+          remove: [ 'remove-role1' ]
+        },
+        authorizedUsers: {
+          add: [ 'add-role1' ],
+          replace: [ 'replace-role1' ],
+          remove: [ 'remove-role1' ]
+        },
         propertyValidators: { }
       }
     };
@@ -112,11 +123,14 @@ describe('Document definitions validator:', function() {
   });
 
   describe('channels', function() {
-    verifyPermissionsCategory('channels');
+    verifyPermissionsCategory('channels', true);
 
     it('cannot be left undefined or null if neither authorizedRoles nor authorizedUsers are defined', function() {
-      testDocDefinitions.myDoc1.channels = null;
+      delete testDocDefinitions.myDoc1.channels;
+
+      testDocDefinitions.myDoc2.channels = null;
       testDocDefinitions.myDoc2.authorizedRoles = null;
+      testDocDefinitions.myDoc2.authorizedUsers = null;
 
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
@@ -129,11 +143,11 @@ describe('Document definitions validator:', function() {
   });
 
   describe('authorizedRoles', function() {
-    verifyPermissionsCategory('authorizedRoles');
+    verifyPermissionsCategory('authorizedRoles', false);
   });
 
   describe('authorizedUsers', function() {
-    verifyPermissionsCategory('authorizedUsers');
+    verifyPermissionsCategory('authorizedUsers', false);
   });
 
   describe('property validators', function() {
@@ -165,7 +179,7 @@ describe('Document definitions validator:', function() {
     });
   });
 
-  function verifyPermissionsCategory(category) {
+  function verifyPermissionsCategory(category, supportsViewOperation) {
     it('cannot be anything other than an object or a function', function() {
       testDocDefinitions.myDoc1[category] = [ 'foo', 'bar' ];
       testDocDefinitions.myDoc2[category] = 'foobar';
@@ -207,17 +221,20 @@ describe('Document definitions validator:', function() {
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
       expect(results).to.eql({
-        myDoc1: [ 'the "' + category + '" property does not specify any operation types (e.g. "view", "add", "replace", "remove", "write")' ],
+        myDoc1: [ 'the "' + category + '" property does not specify any operation types' ],
         myDoc2: [ ],
         myDoc3: [ ]
       });
     });
 
     it('cannot contain empty operations', function() {
-      testDocDefinitions.myDoc1[category] = {
-        view: [ ],
-        write: [ ]
-      };
+      var expectedDoc1Errors = [ 'the "' + category + '" property\'s "write" operation does not contain any elements' ];
+      testDocDefinitions.myDoc1[category] = { write: [ ] };
+      if (supportsViewOperation) {
+        expectedDoc1Errors.push('the "' + category + '" property\'s "view" operation does not contain any elements');
+        testDocDefinitions.myDoc1[category].view = [ ];
+      }
+
       testDocDefinitions.myDoc2[category] = {
         add: [ ],
         replace: [ ],
@@ -227,10 +244,7 @@ describe('Document definitions validator:', function() {
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
       expect(results).to.eql({
-        myDoc1: [
-          'the "' + category + '" property\'s "view" operation does not contain any elements',
-          'the "' + category + '" property\'s "write" operation does not contain any elements'
-        ],
+        myDoc1: expectedDoc1Errors,
         myDoc2: [
           'the "' + category + '" property\'s "add" operation does not contain any elements',
           'the "' + category + '" property\'s "replace" operation does not contain any elements',
@@ -241,11 +255,13 @@ describe('Document definitions validator:', function() {
     });
 
     it('cannot contain operations that are not specified as strings or arrays', function() {
-      var myObj = { foo: 'bar' };
-      testDocDefinitions.myDoc1[category] = {
-        view: true,
-        write: null
-      };
+      var expectedDoc1Errors = [ 'the "' + category + '" property\'s "write" operation is not a string or array' ];
+      testDocDefinitions.myDoc1[category] = { write: null };
+      if (supportsViewOperation) {
+        expectedDoc1Errors.push('the "' + category + '" property\'s "view" operation is not a string or array');
+        testDocDefinitions.myDoc1[category].view = true;
+      }
+
       testDocDefinitions.myDoc2[category] = {
         add: { bar: 'baz' },
         replace: -3,
@@ -255,10 +271,7 @@ describe('Document definitions validator:', function() {
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
       expect(results).to.eql({
-        myDoc1: [
-          'the "' + category + '" property\'s "view" operation is not a string or array',
-          'the "' + category + '" property\'s "write" operation is not a string or array'
-        ],
+        myDoc1: expectedDoc1Errors,
         myDoc2: [
           'the "' + category + '" property\'s "add" operation is not a string or array',
           'the "' + category + '" property\'s "replace" operation is not a string or array',
@@ -269,11 +282,14 @@ describe('Document definitions validator:', function() {
     });
 
     it('cannot contain channels that are not strings', function() {
+      var expectedDoc1Errors = [ 'the "' + category + '" property\'s "write" operation contains an element that is not a string: true' ];
+      testDocDefinitions.myDoc1[category] = { write: [ true ] };
+      if (supportsViewOperation) {
+        expectedDoc1Errors.push('the "' + category + '" property\'s "view" operation contains an element that is not a string: 1');
+        testDocDefinitions.myDoc1[category].view = [ 1 ];
+      }
+
       var myObj = { foo: 'bar' };
-      testDocDefinitions.myDoc1[category] = {
-        view: [ 1 ],
-        write: [ true ]
-      };
       testDocDefinitions.myDoc2[category] = {
         add: [ myObj ],
         replace: [ -17.83 ],
@@ -283,10 +299,7 @@ describe('Document definitions validator:', function() {
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
       expect(results).to.eql({
-        myDoc1: [
-          'the "' + category + '" property\'s "view" operation contains an element that is not a string: 1',
-          'the "' + category + '" property\'s "write" operation contains an element that is not a string: true'
-        ],
+        myDoc1: expectedDoc1Errors,
         myDoc2: [
           'the "' + category + '" property\'s "add" operation contains an element that is not a string: ' + JSON.stringify(myObj),
           'the "' + category + '" property\'s "replace" operation contains an element that is not a string: -17.83',
@@ -295,5 +308,20 @@ describe('Document definitions validator:', function() {
         myDoc3: [ ]
       });
     });
+
+    if (!supportsViewOperation) {
+      it('cannot include the view operation', function() {
+        testDocDefinitions.myDoc1[category] = { view: [ 'view' ] };
+        testDocDefinitions.myDoc2[category] = { view: 'view' };
+
+        var results = docDefinitionsValidator.validate(testDocDefinitions);
+
+        expect(results).to.eql({
+          myDoc1: [ 'the "' + category + '" property\'s "view" operation type is not supported' ],
+          myDoc2: [ 'the "' + category + '" property\'s "view" operation type is not supported' ],
+          myDoc3: [ ]
+        });
+      });
+    }
   }
 });

@@ -1,7 +1,7 @@
 var expect = require('expect.js');
 var docDefinitionsValidator = require('../src/document-definitions-validator.js');
 
-describe('Document definitions validator:', function() {
+describe('Document definitions advanced properties validator:', function() {
   var testDocDefinitions;
 
   beforeEach(function() {
@@ -10,10 +10,8 @@ describe('Document definitions validator:', function() {
       myDoc1: {
         typeFilter: function() { },
         channels: {
-          view: 'view',
-          add: 'add',
-          replace: 'replace',
-          remove: 'remove'
+          view: [ 'view' ],
+          write: [ 'user1' ]
         },
         propertyValidators: { },
         allowUnknownProperties: false,
@@ -76,7 +74,8 @@ describe('Document definitions validator:', function() {
       },
       myDoc3: {
         typeFilter: function() { },
-        authorizedUsers: { write: [ 'write' ] },
+        authorizedRoles: { write: 'role1' },
+        authorizedUsers: { write: 'user1' },
         propertyValidators: { },
         immutable: false,
         cannotReplace: true,
@@ -158,6 +157,54 @@ describe('Document definitions validator:', function() {
         myDoc2: [ ],
         myDoc3: [ ]
       });
+    });
+
+    it('cannot be enabled along with channels for replace or remove operations', function() {
+      testDocDefinitions.myDoc1.immutable = true;
+      testDocDefinitions.myDoc1.channels = {
+        replace: [ 'replace' ],
+        remove: [ 'remove' ]
+      };
+
+      var results = docDefinitionsValidator.validate(testDocDefinitions);
+
+      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1).to.contain('the "channels" property\'s "replace" operation type is invalid when the document type is immutable');
+      expect(results.myDoc1).to.contain('the "channels" property\'s "remove" operation type is invalid when the document type is immutable');
+      expect(results.myDoc2.length).to.be(0);
+      expect(results.myDoc3.length).to.be(0);
+    });
+
+    it('cannot be enabled along with roles for replace or remove operations', function() {
+      testDocDefinitions.myDoc1.immutable = true;
+      testDocDefinitions.myDoc1.authorizedRoles = {
+        replace: [ 'replace' ],
+        remove: [ 'remove' ]
+      };
+
+      var results = docDefinitionsValidator.validate(testDocDefinitions);
+
+      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1).to.contain('the "authorizedRoles" property\'s "replace" operation type is invalid when the document type is immutable');
+      expect(results.myDoc1).to.contain('the "authorizedRoles" property\'s "remove" operation type is invalid when the document type is immutable');
+      expect(results.myDoc2.length).to.be(0);
+      expect(results.myDoc3.length).to.be(0);
+    });
+
+    it('cannot be enabled along with users for replace or remove operations', function() {
+      testDocDefinitions.myDoc1.immutable = true;
+      testDocDefinitions.myDoc1.authorizedUsers = {
+        replace: [ 'replace' ],
+        remove: [ 'remove' ]
+      };
+
+      var results = docDefinitionsValidator.validate(testDocDefinitions);
+
+      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1).to.contain('the "authorizedUsers" property\'s "replace" operation type is invalid when the document type is immutable');
+      expect(results.myDoc1).to.contain('the "authorizedUsers" property\'s "remove" operation type is invalid when the document type is immutable');
+      expect(results.myDoc2.length).to.be(0);
+      expect(results.myDoc3.length).to.be(0);
     });
   });
 

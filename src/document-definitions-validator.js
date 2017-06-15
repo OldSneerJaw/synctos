@@ -36,7 +36,8 @@ function validate(rawDocDefinitions) {
   return allValidationErrors;
 }
 
-var supportedPermissionOperations = { view: true, add: true, replace: true, remove: true, write: true };
+var supportedChannelOperations = { view: true, add: true, replace: true, remove: true, write: true };
+var supportedRoleOrUserOperations = { add: true, replace: true, remove: true, write: true };
 var supportedCustomActionEvents = {
   onTypeIdentificationSucceeded: true,
   onAuthorizationSucceeded: true,
@@ -70,7 +71,7 @@ function validateDocDefinition(docType, docDefinition) {
       case 'channels':
         hasPermissionGrant = true;
         if (isAnObject(propertyValue)) {
-          validatePermissions('channels', propertyValue);
+          validatePermissions('channels', propertyValue, supportedChannelOperations);
         } else if (typeof(propertyValue) !== 'function') {
           validationErrors.push('the "channels" property is not an object or a function');
         }
@@ -78,7 +79,7 @@ function validateDocDefinition(docType, docDefinition) {
       case 'authorizedRoles':
         hasPermissionGrant = true;
         if (isAnObject(propertyValue)) {
-          validatePermissions('authorizedRoles', propertyValue);
+          validatePermissions('authorizedRoles', propertyValue, supportedRoleOrUserOperations);
         } else if (typeof(propertyValue) !== 'function') {
           validationErrors.push('the "authorizedRoles" property is not an object or a function');
         }
@@ -86,7 +87,7 @@ function validateDocDefinition(docType, docDefinition) {
       case 'authorizedUsers':
         hasPermissionGrant = true;
         if (isAnObject(propertyValue)) {
-          validatePermissions('authorizedUsers', propertyValue);
+          validatePermissions('authorizedUsers', propertyValue, supportedRoleOrUserOperations);
         } else if (typeof(propertyValue) !== 'function') {
           validationErrors.push('the "authorizedUsers" property is not an object or a function');
         }
@@ -165,11 +166,17 @@ function validateDocDefinition(docType, docDefinition) {
     validationErrors.push('missing a "propertyValidators" property');
   }
 
-  function validatePermissions(permissionsCategory, permissionsDefinition) {
+  function validatePermissions(permissionsCategory, permissionsDefinition, supportedPermissionOperations) {
     var hasPermissionOperations = false;
     for (var permissionOperation in permissionsDefinition) {
       hasPermissionOperations = true;
       var permissions = permissionsDefinition[permissionOperation];
+
+      if (permissionOperation === 'replace' && (docDefinition.immutable === true || docDefinition.cannotReplace === true)) {
+        validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is invalid when the document type is immutable');
+      } else if (permissionOperation === 'remove' && (docDefinition.immutable === true || docDefinition.cannotDelete === true)) {
+        validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is invalid when the document type is immutable');
+      }
 
       if (!supportedPermissionOperations[permissionOperation]) {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is not supported');
@@ -190,7 +197,7 @@ function validateDocDefinition(docType, docDefinition) {
     }
 
     if (!hasPermissionOperations) {
-      validationErrors.push('the "' + permissionsCategory + '" property does not specify any operation types (e.g. "view", "add", "replace", "remove", "write")');
+      validationErrors.push('the "' + permissionsCategory + '" property does not specify any operation types');
     }
   }
 
