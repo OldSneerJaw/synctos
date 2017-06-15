@@ -172,6 +172,12 @@ function validateDocDefinition(docType, docDefinition) {
       hasPermissionOperations = true;
       var permissions = permissionsDefinition[permissionOperation];
 
+      if (permissionOperation === 'replace' && (docDefinition.immutable === true || docDefinition.cannotReplace === true)) {
+        validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is invalid when the document type is immutable');
+      } else if (permissionOperation === 'remove' && (docDefinition.immutable === true || docDefinition.cannotDelete === true)) {
+        validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is invalid when the document type is immutable');
+      }
+
       if (!supportedPermissionOperations[permissionOperation]) {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation type is not supported');
       } else if (permissions instanceof Array) {

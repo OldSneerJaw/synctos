@@ -26,8 +26,16 @@ describe('Document definitions essential properties validator:', function() {
       },
       myDoc3: {
         typeFilter: function() { },
-        authorizedRoles: { write: [ 'role1' ] },
-        authorizedUsers: { write: [ 'user1' ] },
+        authorizedRoles: {
+          add: [ 'add-role1' ],
+          replace: [ 'replace-role1' ],
+          remove: [ 'remove-role1' ]
+        },
+        authorizedUsers: {
+          add: [ 'add-role1' ],
+          replace: [ 'replace-role1' ],
+          remove: [ 'remove-role1' ]
+        },
         propertyValidators: { }
       }
     };
