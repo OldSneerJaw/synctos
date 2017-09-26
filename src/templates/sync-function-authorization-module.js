@@ -63,7 +63,7 @@ function() {
     } else if (!isDocumentMissingOrDeleted(oldDoc) && authorizationMap.replace) {
       writeAuthorizationFound = true;
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.replace);
-    } else if (authorizationMap.add) {
+    } else if (authorizationMap.add && !oldDoc) {
       writeAuthorizationFound = true;
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.add);
     }
