@@ -3,7 +3,8 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-Nothing yet
+### Fixed
+- [#149](https://github.com/Kashoo/synctos/issues/149): Permissions for add operations sometimes applied to other operation types
 
 ## [1.9.1] - 2017-05-01
 ### Fixed
