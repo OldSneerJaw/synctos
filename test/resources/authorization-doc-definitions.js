@@ -28,6 +28,20 @@
       }
     }
   },
+  writeAndAddChannelsDoc: {
+    channels: {
+      write: 'edit',
+      add: 'add'
+    },
+    typeFilter: function(doc) {
+      return doc._id === 'writeAndAddChannelsDoc';
+    },
+    propertyValidators: {
+      stringProp: {
+        type: 'string'
+      }
+    }
+  },
   dynamicChannelsRolesAndUsersDoc: {
     typeFilter: function(doc) {
       return doc._id === 'dynamicChannelsRolesAndUsersDoc';

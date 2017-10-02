@@ -50,6 +50,34 @@ describe('Authorization:', function() {
     });
   });
 
+  describe('for a document with write channels and an explicit add channel defined', function() {
+    it('allows document addition for a user with only the add channel', function() {
+      var doc = { _id: 'writeAndAddChannelsDoc' };
+
+      testHelper.verifyDocumentCreated(doc, [ 'edit', 'add' ]);
+    });
+
+    it('rejects document replacement for a user with only the add channel', function() {
+      var doc = {
+        _id: 'writeAndAddChannelsDoc',
+        stringProp: 'foobar'
+      };
+      var oldDoc = { _id: 'writeAndAddChannelsDoc' };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, 'edit');
+    });
+
+    it('rejects document deletion for a user with only the add channel', function() {
+      var doc = {
+        _id: 'writeAndAddChannelsDoc',
+        _deleted: true
+      };
+      var oldDoc = { _id: 'writeAndAddChannelsDoc' };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, 'edit');
+    });
+  });
+
   describe('for a document with dynamically-assigned roles, channels and users', function() {
     var expectedWriteChannels = [ 'dynamicChannelsRolesAndUsersDoc-write' ];
     var expectedWriteRoles = [ 'write-role1', 'write-role2' ];
