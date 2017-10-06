@@ -6,7 +6,7 @@
   "devDependencies": {
     "expect.js": "^0.3.1",
     "jshint": "^2.9.4",
-    "mocha": "^3.4.2",
+    "mocha": "^4.0.1",
     "mock-require": "^2.0.2",
     "simple-mock": "^0.8.0"
   },
