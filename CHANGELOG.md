@@ -13,6 +13,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - [#118](https://github.com/Kashoo/synctos/issues/118): Embed indent.js as a static dependency
 
+## [1.9.3] - 2017-10-23
+### Fixed
+- [#152](https://github.com/Kashoo/synctos/issues/152): Cannot append a new object with immutable properties to an array
+
 ## [1.9.2] - 2017-10-02
 ### Fixed
 - [#149](https://github.com/Kashoo/synctos/issues/149): Permissions for add operations sometimes applied to other operation types
@@ -96,7 +100,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.2...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.3...HEAD
+[1.9.3]: https://github.com/Kashoo/synctos/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/Kashoo/synctos/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/Kashoo/synctos/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/Kashoo/synctos/compare/v1.8.0...v1.9.0
