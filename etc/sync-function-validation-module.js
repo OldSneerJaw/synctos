@@ -438,11 +438,8 @@ function() {
         for (var elementIndex = 0; elementIndex < itemValue.length; elementIndex++) {
           var elementName = '[' + elementIndex + ']';
           var elementValue = itemValue[elementIndex];
-
-          var oldElementValue;
-          if (!isValueNullOrUndefined(oldItemValue) && elementIndex < oldItemValue.length) {
-            oldElementValue = oldItemValue[elementIndex];
-          }
+          var oldElementValue =
+            (!isValueNullOrUndefined(oldItemValue) && elementIndex < oldItemValue.length) ? oldItemValue[elementIndex] : null;
 
           itemStack.push({
             itemName: elementName,

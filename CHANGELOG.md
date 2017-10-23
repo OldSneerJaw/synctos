@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Fixed
+- [#152](https://github.com/Kashoo/synctos/issues/152): Cannot append a new object with immutable properties to an array
+
 ## [1.9.2] - 2017-10-02
 ### Fixed
 - [#149](https://github.com/Kashoo/synctos/issues/149): Permissions for add operations sometimes applied to other operation types
