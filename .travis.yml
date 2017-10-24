@@ -2,3 +2,9 @@ language: node_js
 node_js:
   - "node"
   - "lts/*"
+
+# Enable Greenkeeper's support for npm 5+ lockfiles: https://github.com/greenkeeperio/greenkeeper-lockfile
+before_install:
+  - npm install -g greenkeeper-lockfile@1
+before_script: greenkeeper-lockfile-update
+after_script: greenkeeper-lockfile-upload
