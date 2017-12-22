@@ -1,4 +1,4 @@
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
@@ -11,26 +11,35 @@ describe('Functionality that is common to all documents:', function() {
     it('rejects document creation with an unrecognized doc type', function() {
       var doc = { _id: 'my-invalid-doc' };
 
-      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+      try {
+        testHelper.syncFunction(doc);
+        expect.fail('Expected unrecognized document type violation not thrown');
+      } catch(ex) {
         expect(ex).to.eql({ forbidden: 'Unknown document type' });
-      });
+      }
     });
 
     it('rejects document replacement with an unrecognized doc type', function() {
       var doc = { _id: 'my-invalid-doc', foo: 'bar' };
       var oldDoc = { _id: 'my-invalid-doc' };
 
-      expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+      try {
+        testHelper.syncFunction(doc, oldDoc);
+        expect.fail('Expected unrecognized document type violation not thrown');
+      } catch(ex) {
         expect(ex).to.eql({ forbidden: 'Unknown document type' });
-      });
+      }
     });
 
     it('rejects document deletion with an unrecognized type', function() {
       var doc = { _id: 'my-invalid-doc', _deleted: true };
 
-      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+      try {
+        testHelper.syncFunction(doc);
+        expect.fail('Expected unrecognized document violation not thrown');
+      } catch(ex) {
         expect(ex).to.eql({ forbidden: 'Unknown document type' });
-      });
+      }
     });
   });
 
@@ -198,7 +207,10 @@ describe('Functionality that is common to all documents:', function() {
       }
     };
 
-    expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+    try {
+      testHelper.syncFunction(doc);
+      expect.fail('Expected whitelisted property error not thrown');
+    } catch(ex) {
       testHelper.verifyValidationErrors(
         'generalDoc',
         [
@@ -209,7 +221,7 @@ describe('Functionality that is common to all documents:', function() {
           errorFormatter.unsupportedProperty('objectProp._attachments')
         ],
         ex);
-    });
+    }
   });
 
   it('cannot include attachments in documents that do not explicitly allow them', function() {
@@ -223,8 +235,11 @@ describe('Functionality that is common to all documents:', function() {
       }
     };
 
-    expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+    try {
+      testHelper.syncFunction(doc);
+      expect.fail('Expected attachment error not thrown');
+    } catch(ex) {
       testHelper.verifyValidationErrors('generalDoc', errorFormatter.allowAttachmentsViolation(), ex);
-    });
+    }
   });
 });

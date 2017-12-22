@@ -1,4 +1,4 @@
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var testHelper = require('../etc/test-helper.js');
 
 describe('User and role access assignment:', function() {
@@ -56,9 +56,10 @@ describe('User and role access assignment:', function() {
         invalidProperty: 'foobar'
       };
 
-      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(testHelper.access.callCount).to.be(0);
-      });
+      expect(function() {
+        testHelper.syncFunction(doc);
+      }).to.throw();
+      expect(testHelper.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', function() {
@@ -68,9 +69,10 @@ describe('User and role access assignment:', function() {
       };
       var oldDoc = { _id: 'staticAccessDoc' };
 
-      expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(testHelper.access.callCount).to.be(0);
-      });
+      expect(function() {
+        testHelper.syncFunction(doc, oldDoc);
+      }).to.throw();
+      expect(testHelper.access.callCount).to.equal(0);
     });
   });
 
@@ -164,9 +166,10 @@ describe('User and role access assignment:', function() {
         invalidProperty: 'foobar'
       };
 
-      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
-        expect(testHelper.access.callCount).to.be(0);
-      });
+      expect(function() {
+        testHelper.syncFunction(doc);
+      }).to.throw();
+      expect(testHelper.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', function() {
@@ -178,9 +181,10 @@ describe('User and role access assignment:', function() {
       };
       var oldDoc = { _id: 'dynamicAccessDoc' };
 
-      expect(testHelper.syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
-        expect(testHelper.access.callCount).to.be(0);
-      });
+      expect(function() {
+        testHelper.syncFunction(doc, oldDoc);
+      }).to.throw();
+      expect(testHelper.access.callCount).to.equal(0);
     });
   });
 });

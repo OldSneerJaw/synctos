@@ -1,4 +1,4 @@
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
