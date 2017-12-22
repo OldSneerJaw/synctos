@@ -1,11 +1,3 @@
-var validationErrorFormatter = require('./validation-error-message-formatter.js');
-
-/**
- * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
- * found in the "validation-error-message-formatter" module.
- */
-exports.validationErrorFormatter = validationErrorFormatter;
-
 /**
  * Initializes the module with the sync function at the specified file path.
  *
@@ -24,6 +16,12 @@ exports.initDocumentDefinitions = initDocumentDefinitions;
  * DEPRECATED. Use initSyncFunction instead.
  */
 exports.init = initSyncFunction;
+
+/**
+ * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
+ * found in the "validation-error-message-formatter" module.
+ */
+exports.validationErrorFormatter = require('./validation-error-message-formatter.js');
 
 /**
  * Attempts to write the specified doc and then verifies that it completed successfully with the expected channels.
@@ -233,9 +231,11 @@ exports.verifyAccessDenied = verifyAccessDenied;
  */
 exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 
-var assert = require('assert');
+
+var expect = require('expect.js');
 var simple = require('simple-mock');
 var fs = require('fs');
+var vm = require('vm');
 var syncFunctionLoader = require('./sync-function-loader.js');
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
@@ -255,60 +255,88 @@ var customActionStub;
 var defaultWriteChannel = 'write';
 
 function initSyncFunction(filePath) {
-  // Load the contents of the sync function file into a global variable called syncFunction
   var rawSyncFunction = fs.readFileSync(filePath).toString();
 
-  /*jslint evil: true */
-  eval('syncFunction = ' + unescapeBackticks(rawSyncFunction));
-  /*jslint evil: false */
-
-  init();
+  init(rawSyncFunction, filePath);
 }
 
 function initDocumentDefinitions(filePath) {
-  // Generate a sync function from the document definitions and load its contents into a global variable called syncFunction
-  var rawDocDefinitions = syncFunctionLoader.load(filePath);
+  var rawSyncFunction = syncFunctionLoader.load(filePath);
 
-  /*jslint evil: true */
-  eval('syncFunction = ' + unescapeBackticks(rawDocDefinitions));
-  /*jslint evil: false */
-
-  init();
+  init(rawSyncFunction);
 }
 
-function init() {
-  exports.syncFunction = syncFunction;
+function init(rawSyncFunction, syncFunctionFile) {
+  var testHelperEnvironment = loadEnvironment(rawSyncFunction, syncFunctionFile);
 
-  exports.requireAccess = requireAccess = simple.stub();
-  exports.requireRole = requireRole = simple.stub();
-  exports.requireUser = requireUser = simple.stub();
-  exports.channel = channel = simple.stub();
-  exports.access = access = simple.stub();
-  exports.role = role = simple.stub();
+  exports.requireAccess = requireAccess = testHelperEnvironment.requireAccess;
+  exports.requireRole = requireRole = testHelperEnvironment.requireRole;
+  exports.requireUser = requireUser = testHelperEnvironment.requireUser;
+  exports.channel = channel = testHelperEnvironment.channel;
+  exports.access = access = testHelperEnvironment.access;
+  exports.role = role = testHelperEnvironment.role;
 
-  exports.customActionStub = customActionStub = simple.stub();
+  exports.customActionStub = customActionStub = testHelperEnvironment.customActionStub;
+
+  exports.syncFunction = syncFunction = testHelperEnvironment.syncFunction;
+}
+
+function loadEnvironment(rawSyncFunction, syncFunctionFile) {
+  var options = {
+    filename: syncFunctionFile,
+    displayErrors: true
+  };
+
+  var testHelperEnvironmentTemplate;
+  try {
+    testHelperEnvironmentTemplate = fs.readFileSync(__dirname + '/templates/test-helper-environment-template.js', 'utf8').trim();
+  } catch (ex) {
+    console.log('ERROR: Unable to read the test helper environment template: ' + ex);
+
+    throw ex;
+  }
+
+  // The test helper environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
+  // the sync function
+  var testHelperEnvironmentString = testHelperEnvironmentTemplate.replace(
+    '%SYNC_FUNC_PLACEHOLDER%',
+    function() { return unescapeBackticks(rawSyncFunction); });
+
+  // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
+  // valid statement.
+  var testHelperEnvironmentStatement = '(' + testHelperEnvironmentString + ');';
+
+  // Compile the test helper environment function within the current virtual machine context so it can share access to the "requireAccess",
+  // "channel", "customActionStub", etc. stubs with the test-helper module
+  var testHelperEnvironmentFunction = vm.runInThisContext(testHelperEnvironmentStatement, options);
+
+  return testHelperEnvironmentFunction(require);
 }
 
 function verifyRequireAccess(expectedChannels) {
-  assert.ok(requireAccess.callCount > 0, 'Require access not called when expected');
+  if (expectedChannels.length > 0) {
+    expect(requireAccess.callCount).to.be.greaterThan(0);
 
-  checkAuthorizations(expectedChannels, requireAccess.calls[0].arg, 'channel');
+    checkAuthorizations(expectedChannels, requireAccess.calls[0].arg, 'channel');
+  } else {
+    expect(requireAccess.callCount).to.be(0, 'requireAccess was called when it was not expected to be');
+  }
 }
 
 function verifyRequireRole(expectedRoles) {
-  assert.ok(requireRole.callCount > 0, 'Require role not called when expected');
+  expect(requireRole.callCount).to.be.greaterThan(0);
 
   checkAuthorizations(expectedRoles, requireRole.calls[0].arg, 'role');
 }
 
 function verifyRequireUser(expectedUsers) {
-  assert.ok(requireUser.callCount > 0, 'Require user not called when expected');
+  expect(requireUser.callCount).to.be.greaterThan(0);
 
   checkAuthorizations(expectedUsers, requireUser.calls[0].arg, 'user');
 }
 
 function verifyChannelAssignment(expectedChannels) {
-  assert.equal(channel.callCount, 1, 'Expected channel assignment was not made');
+  expect(channel.callCount).to.be(1);
 
   checkAuthorizations(expectedChannels, channel.calls[0].arg, 'channel');
 }
@@ -327,14 +355,14 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
   for (var expectedAuthIndex = 0; expectedAuthIndex < expectedAuthorizations.length; expectedAuthIndex++) {
     var expectedAuth = expectedAuthorizations[expectedAuthIndex];
     if (actualAuthorizations.indexOf(expectedAuth) < 0) {
-      assert.fail('Expected ' + authorizationType + ' was not encountered: ' + expectedAuth);
+      expect().fail('Expected ' + authorizationType + ' was not encountered: ' + expectedAuth);
     }
   }
 
   for (var actualAuthIndex = 0; actualAuthIndex < actualAuthorizations.length; actualAuthIndex++) {
     var actualAuth = actualAuthorizations[actualAuthIndex];
     if (expectedAuthorizations.indexOf(actualAuth) < 0) {
-      assert.fail('Unexpected ' + authorizationType + ' encountered: ' + actualAuth);
+      expect().fail('Unexpected ' + authorizationType + ' encountered: ' + actualAuth);
     }
   }
 }
@@ -408,7 +436,7 @@ function verifyChannelAccessAssignment(expectedAssignment) {
   }
 
   if (!accessAssignmentCallExists(access, expectedUsersAndRoles, expectedChannels)) {
-    assert.fail(
+    expect().fail(
       'Missing expected call to assign channel access (' +
       JSON.stringify(expectedChannels) +
       ') to users and roles (' +
@@ -441,7 +469,7 @@ function verifyRoleAccessAssignment(expectedAssignment) {
   }
 
   if (!accessAssignmentCallExists(role, expectedUsers, expectedRoles)) {
-    assert.fail(
+    expect().fail(
       'Missing expected call to assign role access (' +
       JSON.stringify(expectedRoles) +
       ') to users (' +
@@ -466,26 +494,26 @@ function verifyAccessAssignments(expectedAccessAssignments) {
   }
 
   if (access.callCount !== expectedAccessCalls) {
-    assert.fail('Number of calls to assign channel access (' + access.callCount + ') does not match expected (' + expectedAccessCalls + ')');
+    expect().fail('Number of calls to assign channel access (' + access.callCount + ') does not match expected (' + expectedAccessCalls + ')');
   }
 
   if (role.callCount !== expectedRoleCalls) {
-    assert.fail('Number of calls to assign role access (' + role.callCount + ') does not match expected (' + expectedRoleCalls + ')');
+    expect().fail('Number of calls to assign role access (' + role.callCount + ') does not match expected (' + expectedRoleCalls + ')');
   }
 }
 
 function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
   if (channel.callCount !== 1) {
-    assert.fail('Document failed authorization and/or validation');
+    expect().fail('Document failed authorization and/or validation');
   }
 
   var actualChannels = channel.calls[0].arg;
   if (expectedChannels instanceof Array) {
     for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
-      assert.ok(actualChannels.indexOf(expectedChannels[channelIndex]) >= 0, 'Expected channel "' + expectedChannels[channelIndex] + '" was not authorized');
+      expect(actualChannels).to.contain(expectedChannels[channelIndex]);
     }
   } else {
-    assert.ok(actualChannels.indexOf(expectedChannels) >= 0, 'Expected assignment channel not found: "' + expectedChannels + '" actual: "' + actualChannels + '"');
+    expect(actualChannels).to.contain(expectedChannels);
   }
 }
 
@@ -496,24 +524,24 @@ function verifyAuthorization(expectedAuthorization) {
     // for authorization
     expectedOperationChannels = expectedAuthorization;
     verifyRequireAccess(expectedAuthorization);
-    assert.equal(requireRole.callCount, 0, 'Require role called unexpectedly: ' + requireRole.calls);
-    assert.equal(requireUser.callCount, 0, 'Require user called unexpectedly: ' + requireUser.calls);
+    expect(requireRole.callCount).to.be(0);
+    expect(requireUser.callCount).to.be(0);
   } else {
-    if (expectedAuthorization.expectedChannels) {
+    if (expectedAuthorization.expectedChannels && expectedAuthorization.expectedChannels.length > 0) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
       verifyRequireAccess(expectedAuthorization.expectedChannels);
     }
 
-    if (expectedAuthorization.expectedRoles) {
+    if (expectedAuthorization.expectedRoles && expectedAuthorization.expectedRoles.length > 0) {
       verifyRequireRole(expectedAuthorization.expectedRoles);
     } else {
-      assert.equal(requireRole.callCount, 0, 'Require role called unexpectedly: ' + requireRole.calls);
+      expect(requireRole.callCount).to.be(0);
     }
 
-    if (expectedAuthorization.expectedUsers) {
+    if (expectedAuthorization.expectedUsers && expectedAuthorization.expectedUsers.length > 0) {
       verifyRequireUser(expectedAuthorization.expectedUsers);
     } else {
-      assert.equal(requireUser.callCount, 0, 'Require user called unexpectedly: ' + requireUser.calls);
+      expect(requireUser.callCount).to.be(0);
     }
 
     if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles) && !(expectedAuthorization.expectedUsers)) {
@@ -549,16 +577,13 @@ function verifyDocumentDeleted(oldDoc, expectedAuthorization, expectedAccessAssi
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {
-  try {
-    syncFunction(doc, oldDoc);
-    assert.fail('No errors thrown when some expected');
-  } catch (ex) {
+  expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
     verifyValidationErrors(docType, expectedErrorMessages, ex);
-  }
+  });
 
   verifyAuthorization(expectedAuthorization);
 
-  assert.equal(channel.callCount, 0, 'Channel assignment made unexpectedly: ' + channel.calls);
+  expect(channel.callCount).to.equal(0);
 }
 
 function verifyDocumentNotCreated(doc, docType, expectedErrorMessages, expectedAuthorization) {
@@ -584,10 +609,10 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   var exceptionMessageMatches = validationErrorRegex.exec(exception.forbidden);
   var actualErrorMessages;
   if (exceptionMessageMatches) {
-    assert.equal(exceptionMessageMatches.length, 3);
+    expect(exceptionMessageMatches.length).to.be(3);
 
     var invalidDocMessage = exceptionMessageMatches[1].trim();
-    assert.equal(invalidDocMessage, 'Invalid ' + docType + ' document', 'Expected invalid document type message not reported');
+    expect(invalidDocMessage).to.equal('Invalid ' + docType + ' document');
 
     actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
   } else {
@@ -595,8 +620,7 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   }
 
   for (var expectedErrorIndex = 0; expectedErrorIndex < expectedErrorMessages.length; expectedErrorIndex++) {
-    var expectedErrorMsg = expectedErrorMessages[expectedErrorIndex];
-    assert.ok(actualErrorMessages.indexOf(expectedErrorMsg) >= 0, 'Expected error message "' + expectedErrorMsg  +'" not reported');
+    expect(actualErrorMessages).to.contain(expectedErrorMessages[expectedErrorIndex]);
   }
 
   // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
@@ -604,7 +628,7 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   for (var actualErrorIndex = 0; actualErrorIndex < actualErrorMessages.length; actualErrorIndex++) {
     var errorMessage = actualErrorMessages[actualErrorIndex];
     if (expectedErrorMessages.indexOf(errorMessage) < 0) {
-      assert.fail('Unexpected validation error: ' + errorMessage);
+      expect().fail('Unexpected validation error: ' + errorMessage);
     }
   }
 }
@@ -630,42 +654,39 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   var userAccessDenied = new Error('User access denied!');
   var generalAuthFailedMessage = 'missing channel access';
 
-  requireAccess = simple.stub().throwWith(channelAccessDenied);
-  requireRole = simple.stub().throwWith(roleAccessDenied);
-  requireUser = simple.stub().throwWith(userAccessDenied);
+  requireAccess.throwWith(channelAccessDenied);
+  requireRole.throwWith(roleAccessDenied);
+  requireUser.throwWith(userAccessDenied);
 
-  try {
-    syncFunction(doc, oldDoc);
-    assert.fail('No errors thrown when some expected');
-  } catch (ex) {
+  expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
     if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
-      assert.equal(ex, channelAccessDenied);
+      expect(ex).to.eql(channelAccessDenied);
     } else if (countAuthorizationTypes(expectedAuthorization) === 0) {
       verifyRequireAccess([ ]);
+      console.log(requireRole.calls[0].arg);
+      expect(requireRole.callCount).to.be(0, 'requireRole was called when it was not expected to be');
+      expect(requireUser.callCount).to.be(0, 'requireUser was called when it was not expected to be');
     } else if (countAuthorizationTypes(expectedAuthorization) > 1) {
-      assert.equal(ex.forbidden, generalAuthFailedMessage, 'Expected authorization exception not met: ' + ex.forbidden);
+      expect(ex.forbidden).to.equal(generalAuthFailedMessage);
     } else if (expectedAuthorization.expectedChannels) {
-      assert.ok(ex instanceof Error && ex.message === channelAccessDenied.message, 'Expected channel authorization error not triggered, got this instead: ' + ex);
+      expect(ex).to.eql(channelAccessDenied);
     } else if (expectedAuthorization.expectedRoles) {
-      assert.ok(ex instanceof Error && ex.message === roleAccessDenied.message, 'Expected role authorization error not triggered, got this instead: ' + ex);
+      expect(ex).to.eql(roleAccessDenied);
     } else if (expectedAuthorization.expectedUsers) {
-      assert.ok(ex instanceof Error && ex.message === userAccessDenied.message, 'Expected user authorization error not triggered, got this instead: ' + ex);
+      expect(ex).to.eql(userAccessDenied);
     }
-  }
+  });
 
   verifyAuthorization(expectedAuthorization);
 }
 
 function verifyUnknownDocumentType(doc, oldDoc) {
-  try {
-    syncFunction(doc, oldDoc);
-    assert.fail('Expected unknown document type error not thrown');
-  } catch (ex) {
-    assert.equal(ex.forbidden, 'Unknown document type');
-  }
+  expect(syncFunction).withArgs(doc, oldDoc).to.throwException(function(ex) {
+    expect(ex.forbidden).to.equal('Unknown document type');
+  });
 
-  assert.equal(requireAccess.callCount, 0, 'Unexpected require access call');
-  assert.equal(channel.callCount, 0, 'Unexpected channel assignment call');
+  expect(requireAccess.callCount).to.be(0);
+  expect(channel.callCount).to.be(0);
 }
 
 // Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function

@@ -232,4 +232,78 @@ describe('Authorization:', function() {
       testHelper.verifyAccessDenied(doc, oldDoc, { });
     });
   });
+
+  describe('for a document with statically-assigned replace role and nothing else', function() {
+    it('rejects document creation', function() {
+      var doc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyAccessDenied(doc, null, []);
+    });
+
+    it('allows document replacement', function() {
+      var doc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+      var oldDoc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'barfoo'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc, { expectedRoles: [ 'replace' ] });
+    });
+
+    it('rejects document deletion for a user with only replace role', function() {
+      var doc = {
+        _id: 'replaceOnlyRoleDoc',
+        _deleted: true
+      };
+      var oldDoc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ ] });
+    });
+  });
+
+  describe('for a document with statically-assigned add role and nothing else', function() {
+    it('allows document creation', function() {
+      var doc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyDocumentCreated(doc, { expectedRoles: [ 'add' ] });
+    });
+
+    it('rejects document replacement', function() {
+      var doc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+      var oldDoc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'barfoo'
+      };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, []);
+    });
+
+    it('rejects document deletion for a user with only add role', function() {
+      var doc = {
+        _id: 'addOnlyRoleDoc',
+        _deleted: true
+      };
+      var oldDoc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, []);
+    });
+  });
 });
