@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Changed
+- [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
+
 ## [1.9.3] - 2017-10-23
 ### Fixed
 - [#152](https://github.com/Kashoo/synctos/issues/152): Cannot append a new object with immutable properties to an array
