@@ -57,9 +57,11 @@ function() {
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.write);
     }
 
-    if (doc._deleted && authorizationMap.remove) {
-      writeAuthorizationFound = true;
-      appendToAuthorizationList(requiredAuthorizations, authorizationMap.remove);
+    if (doc._deleted) {
+      if (authorizationMap.remove) {
+        writeAuthorizationFound = true;
+        appendToAuthorizationList(requiredAuthorizations, authorizationMap.remove);
+      }
     } else if (!isDocumentMissingOrDeleted(oldDoc) && authorizationMap.replace) {
       writeAuthorizationFound = true;
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.replace);

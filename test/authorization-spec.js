@@ -266,7 +266,7 @@ describe('Authorization:', function() {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ ] });
+      testHelper.verifyAccessDenied(doc, oldDoc, []);
     });
   });
 

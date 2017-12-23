@@ -645,11 +645,11 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
     } else if (countAuthorizationTypes(expectedAuthorization) > 1) {
       assert.equal(ex.forbidden, generalAuthFailedMessage, 'Expected authorization exception not met: ' + ex.forbidden);
     } else if (expectedAuthorization.expectedChannels) {
-      assert.ok(ex instanceof Error && ex.message === channelAccessDenied.message, 'Expected channel authorization error not triggered, got this instead: ' + ex);
+      assert.equal(ex, channelAccessDenied, 'Expected channel authorization error not triggered, got this instead: ' + ex);
     } else if (expectedAuthorization.expectedRoles) {
-      assert.ok(ex instanceof Error && ex.message === roleAccessDenied.message, 'Expected role authorization error not triggered, got this instead: ' + ex);
+      assert.equal(ex, roleAccessDenied, 'Expected role authorization error not triggered, got this instead: ' + ex);
     } else if (expectedAuthorization.expectedUsers) {
-      assert.ok(ex instanceof Error && ex.message === userAccessDenied.message, 'Expected user authorization error not triggered, got this instead: ' + ex);
+      assert.equal(ex, userAccessDenied, 'Expected user authorization error not triggered, got this instead: ' + ex);
     }
   }
 
