@@ -135,18 +135,5 @@
         type: 'string'
       }
     }
-  },
-  removeOnlyRoleDoc: {
-    authorizedRoles: {
-      remove: 'remove'
-    },
-    typeFilter: function(doc) {
-      return doc._id === 'removeOnlyRoleDoc';
-    },
-    propertyValidators: {
-      stringProp: {
-        type: 'string'
-      }
-    }
   }
 }
