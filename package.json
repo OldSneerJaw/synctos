@@ -5,7 +5,7 @@
     "indent.js": "^0.1.4"
   },
   "devDependencies": {
-    "expect.js": "^0.3.1",
+    "chai": "^4.1.2",
     "jshint": "^2.9.4",
     "mocha": "^3.3.0",
     "simple-mock": "^0.7.3"

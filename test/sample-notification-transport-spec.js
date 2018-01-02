@@ -1,7 +1,7 @@
 var sampleSpecHelper = require('./modules/sample-spec-helper.js');
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
-var expect = require('expect.js');
+var expect = require('chai').expect;
 
 describe('Sample business notification transport doc definition', function() {
   beforeEach(function() {
@@ -12,12 +12,12 @@ describe('Sample business notification transport doc definition', function() {
   var expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
   function verifyAuthorizationCustomAction(docId, action) {
-    expect(testHelper.requireAccess.callCount).to.be(2);
+    expect(testHelper.requireAccess.callCount).to.equal(2);
     expect(testHelper.requireAccess.calls[1].arg).to.equal(docId + '-' + action);
   }
 
   function verifyNoAuthorizationCustomAction() {
-    expect(testHelper.requireAccess.callCount).to.be(1);
+    expect(testHelper.requireAccess.callCount).to.equal(1);
   }
 
   it('successfully creates a valid notification transport document', function() {

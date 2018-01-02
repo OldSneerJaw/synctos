@@ -1,6 +1,6 @@
 var testHelper = require('../etc/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
-var expect = require('expect.js');
+var expect = require('chai').expect;
 
 describe('Custom actions:', function() {
   var expectedAuthorization = {
@@ -37,9 +37,12 @@ describe('Custom actions:', function() {
       var unknownDocType = 'foo';
       var doc = { _id: unknownDocType };
 
-      expect(testHelper.syncFunction).withArgs(doc, expectedAuthorization).to.throwException(function(ex) {
+      try {
+        testHelper.syncFunction(doc, expectedAuthorization);
+        expect.fail('Expected error during custom action not thrown');
+      } catch(ex) {
         testHelper.verifyValidationErrors(unknownDocType, errorFormatter.unknownDocumentType(), ex);
-      });
+      }
       verifyCustomActionNotExecuted();
     });
   });
@@ -161,16 +164,19 @@ describe('Custom actions:', function() {
       var expectedError = new Error('bad channels!');
       testHelper.channel.throwWith(expectedError);
 
-      expect(testHelper.syncFunction).withArgs(doc).to.throwException(function(ex) {
+      try {
+        testHelper.syncFunction(doc);
+        expect.fail('Expected error during custom action not thrown');
+      } catch(ex) {
         expect(ex).to.equal(expectedError);
-      });
+      }
       verifyCustomActionNotExecuted();
     });
   });
 });
 
 function verifyCustomActionExecuted(doc, oldDoc, expectedActionType) {
-  expect(testHelper.customActionStub.callCount).to.be(1);
+  expect(testHelper.customActionStub.callCount).to.equal(1);
   expect(testHelper.customActionStub.calls[0].args[0]).to.eql(doc);
   expect(testHelper.customActionStub.calls[0].args[1]).to.eql(oldDoc);
 
@@ -178,7 +184,7 @@ function verifyCustomActionExecuted(doc, oldDoc, expectedActionType) {
 }
 
 function verifyCustomActionNotExecuted() {
-  expect(testHelper.customActionStub.callCount).to.be(0);
+  expect(testHelper.customActionStub.callCount).to.equal(0);
 }
 
 function verifyCustomActionMetadata(actualMetadata, docType, expectedActionType) {
@@ -190,8 +196,8 @@ function verifyCustomActionMetadata(actualMetadata, docType, expectedActionType)
 }
 
 function verifyTypeMetadata(actualMetadata, docType) {
-  expect(actualMetadata.documentTypeId).to.be(docType);
-  expect(actualMetadata.documentDefinition.typeFilter({ _id: docType })).to.be(true);
+  expect(actualMetadata.documentTypeId).to.equal(docType);
+  expect(actualMetadata.documentDefinition.typeFilter({ _id: docType })).to.equal(true);
 }
 
 function verifyAuthorizationMetadata(actualMetadata) {
@@ -216,7 +222,7 @@ function verifyAccessAssignmentMetadata(actualMetadata) {
     }
     expect(actualMetadata.accessAssignments).to.eql(expectedAssignments);
   } else {
-    expect(actualMetadata.accessAssignments).to.be(undefined);
+    expect(actualMetadata.accessAssignments).to.equal(undefined);
   }
 }
 
@@ -225,7 +231,7 @@ function verifyDocChannelsMetadata(actualMetadata) {
 }
 
 function verifyCustomActionTypeMetadata(actualMetadata, expectedActionType) {
-  expect(actualMetadata.actionType).to.be(expectedActionType);
+  expect(actualMetadata.actionType).to.equal(expectedActionType);
 }
 
 function getDeletedDoc(docType) {
