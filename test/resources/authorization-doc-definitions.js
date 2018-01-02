@@ -109,5 +109,31 @@
         type: 'string'
       }
     }
+  },
+  replaceOnlyRoleDoc: {
+    authorizedRoles: {
+      replace: 'replace'
+    },
+    typeFilter: function(doc) {
+      return doc._id === 'replaceOnlyRoleDoc';
+    },
+    propertyValidators: {
+      stringProp: {
+        type: 'string'
+      }
+    }
+  },
+  addOnlyRoleDoc: {
+    authorizedRoles: {
+      add: 'add'
+    },
+    typeFilter: function(doc) {
+      return doc._id === 'addOnlyRoleDoc';
+    },
+    propertyValidators: {
+      stringProp: {
+        type: 'string'
+      }
+    }
   }
 }
