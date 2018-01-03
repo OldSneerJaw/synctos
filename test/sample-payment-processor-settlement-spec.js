@@ -52,7 +52,7 @@ describe('Sample payment processor settlement doc definition', function() {
     verifySettlementNotWritten(
       'my-business',
       doc,
-      undefined,
+      void 0,
       [
         errorFormatter.maximumValueViolation('businessId', 12345),
         errorFormatter.requiredValueViolation('transferId'),

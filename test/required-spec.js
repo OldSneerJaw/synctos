@@ -89,17 +89,17 @@ describe('Required value constraint', function() {
     it('blocks a doc with top-level values that are undefined', function() {
       var doc = {
         _id: 'staticDoc',
-        stringProp: undefined,
-        integerProp: undefined,
-        floatProp: undefined,
-        booleanProp: undefined,
-        datetimeProp: undefined,
-        dateProp: undefined,
-        enumProp: undefined,
-        attachmentReferenceProp: undefined,
-        arrayProp: undefined,
-        objectProp: undefined,
-        hashtableProp: undefined,
+        stringProp: void 0,
+        integerProp: void 0,
+        floatProp: void 0,
+        booleanProp: void 0,
+        datetimeProp: void 0,
+        dateProp: void 0,
+        enumProp: void 0,
+        attachmentReferenceProp: void 0,
+        arrayProp: void 0,
+        objectProp: void 0,
+        hashtableProp: void 0,
       };
 
       testHelper.verifyDocumentNotCreated(
@@ -131,9 +131,9 @@ describe('Required value constraint', function() {
         dateProp: '2017-04-10',
         enumProp: 2,
         attachmentReferenceProp: 'barfoo.baz',
-        arrayProp: [ undefined ],
-        objectProp: { subProp: undefined },
-        hashtableProp: { 'key': undefined },
+        arrayProp: [ void 0 ],
+        objectProp: { subProp: void 0 },
+        hashtableProp: { 'key': void 0 },
       };
 
       testHelper.verifyDocumentNotCreated(
@@ -213,15 +213,15 @@ describe('Required value constraint', function() {
         _id: 'dynamicDoc',
         dynamicPropsRequired: false,
         stringProp: null,
-        integerProp: undefined,
+        integerProp: void 0,
         floatProp: null,
-        booleanProp: undefined,
+        booleanProp: void 0,
         datetimeProp: null,
-        dateProp: undefined,
+        dateProp: void 0,
         enumProp: null,
-        attachmentReferenceProp: undefined,
+        attachmentReferenceProp: void 0,
         arrayProp: null,
-        objectProp: undefined,
+        objectProp: void 0,
         hashtableProp: null
       };
 
@@ -232,7 +232,7 @@ describe('Required value constraint', function() {
       var doc = {
         _id: 'dynamicDoc',
         arrayProp: [ null ],
-        objectProp: { subProp: undefined },
+        objectProp: { subProp: void 0 },
         hashtableProp: { 'key': null }
       };
 
@@ -305,17 +305,17 @@ describe('Required value constraint', function() {
       var doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
-        stringProp: undefined,
-        integerProp: undefined,
-        floatProp: undefined,
-        booleanProp: undefined,
-        datetimeProp: undefined,
-        dateProp: undefined,
-        enumProp: undefined,
-        attachmentReferenceProp: undefined,
-        arrayProp: undefined,
-        objectProp: undefined,
-        hashtableProp: undefined,
+        stringProp: void 0,
+        integerProp: void 0,
+        floatProp: void 0,
+        booleanProp: void 0,
+        datetimeProp: void 0,
+        dateProp: void 0,
+        enumProp: void 0,
+        attachmentReferenceProp: void 0,
+        arrayProp: void 0,
+        objectProp: void 0,
+        hashtableProp: void 0,
       };
 
       testHelper.verifyDocumentNotCreated(
@@ -348,9 +348,9 @@ describe('Required value constraint', function() {
         dateProp: '2017-04-10',
         enumProp: 2,
         attachmentReferenceProp: 'barfoo.baz',
-        arrayProp: [ undefined ],
-        objectProp: { subProp: undefined },
-        hashtableProp: { 'key': undefined },
+        arrayProp: [ void 0 ],
+        objectProp: { subProp: void 0 },
+        hashtableProp: { 'key': void 0 },
       };
 
       testHelper.verifyDocumentNotCreated(

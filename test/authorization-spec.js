@@ -10,7 +10,7 @@ describe('Authorization:', function() {
     it('rejects document creation for a user with no matching channels', function() {
       var doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyAccessDenied(doc, undefined, 'add');
+      testHelper.verifyAccessDenied(doc, void 0, 'add');
     });
 
     it('rejects document replacement for a user with no matching channels', function() {
@@ -23,7 +23,7 @@ describe('Authorization:', function() {
     it('rejects document deletion for a user with no matching channels', function() {
       var doc = { _id: 'explicitChannelsDoc', _deleted: true };
 
-      testHelper.verifyAccessDenied(doc, undefined, [ 'remove', 'delete' ]);
+      testHelper.verifyAccessDenied(doc, void 0, [ 'remove', 'delete' ]);
     });
   });
 
@@ -33,7 +33,7 @@ describe('Authorization:', function() {
     it('rejects document creation for a user with no matching channels', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyAccessDenied(doc, undefined, writeChannels);
+      testHelper.verifyAccessDenied(doc, void 0, writeChannels);
     });
 
     it('rejects document replacement for a user with no matching channels', function() {
@@ -46,7 +46,7 @@ describe('Authorization:', function() {
     it('rejects document deletion for a user with no matching channels', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', _deleted: true };
 
-      testHelper.verifyAccessDenied(doc, undefined, writeChannels);
+      testHelper.verifyAccessDenied(doc, void 0, writeChannels);
     });
   });
 

@@ -266,7 +266,7 @@ describe('Hashtable validation type', function() {
             '1': 'foo',
             '2': '',
             '3': null,
-            '4': undefined,
+            '4': void 0,
             '5': 13
           }
         };
