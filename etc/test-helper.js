@@ -234,7 +234,7 @@ exports.verifyAccessDenied = verifyAccessDenied;
 exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 
 var assert = require('assert');
-var simple = require('simple-mock');
+var simple = require('../lib/simple-mock/index.js');
 var fs = require('fs');
 var syncFunctionLoader = require('./sync-function-loader.js');
 

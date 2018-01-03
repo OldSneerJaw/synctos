@@ -5,10 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 
 ### Changed
-- [#156](https://github.com/Kashoo/synctos/issues/156): Fix for an edge case where users assigned a replace role may gain the privilege of removing a document erroneously under certain document definition conditions
 - [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
+- [#163](https://github.com/Kashoo/synctos/issues/163): Embed simple-mock as a static development dependency
 
 ### Fixed
+- [#156](https://github.com/Kashoo/synctos/issues/156): Users with a replace role may erroneously gain the privilege of removing a document under certain conditions
 - [#160](https://github.com/Kashoo/synctos/issues/160): Unable to import document if it was deleted via Couchbase SDK
 
 ## [1.9.3] - 2017-10-23
