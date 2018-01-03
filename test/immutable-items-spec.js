@@ -27,7 +27,7 @@ describe('Immutable item validation parameter', function() {
       };
       var oldDoc = {
         _id: 'immutableItemsDoc',
-        staticImmutableArrayProp: [ [ 'foobar', 3, false ], [ 45.9 ], [ ], undefined, { foo: 'bar' } ]
+        staticImmutableArrayProp: [ [ 'foobar', 3, false ], [ 45.9 ], [ ], void 0, { foo: 'bar' } ]
       };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc);
@@ -463,7 +463,7 @@ describe('Immutable item validation parameter', function() {
       var doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ undefined ], { foobar: 18.0 } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ void 0 ], { foobar: 18.0 } ],
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] }
         }
       };

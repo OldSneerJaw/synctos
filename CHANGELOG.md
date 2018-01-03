@@ -8,6 +8,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#156](https://github.com/Kashoo/synctos/issues/156): Fix for an edge case where users assigned a replace role may gain the privilege of removing a document erroneously under certain document definition conditions
 - [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
 
+### Fixed
+- [#160](https://github.com/Kashoo/synctos/issues/160): Unable to import document if it was deleted via Couchbase SDK
+
 ## [1.9.3] - 2017-10-23
 ### Fixed
 - [#152](https://github.com/Kashoo/synctos/issues/152): Cannot append a new object with immutable properties to an array

@@ -31,15 +31,21 @@ describe('Functionality that is common to all documents:', function() {
       }
     });
 
-    it('rejects document deletion with an unrecognized type', function() {
+    it('allows a missing document to be "deleted" even if the type is unrecognized', function() {
       var doc = { _id: 'my-invalid-doc', _deleted: true };
 
-      try {
-        testHelper.syncFunction(doc);
-        expect.fail('Expected unrecognized document violation not thrown');
-      } catch(ex) {
-        expect(ex).to.eql({ forbidden: 'Unknown document type' });
-      }
+      // When deleting a document that does not exist and the document's type cannot be determined, the fallback
+      // behaviour is to allow it to be deleted and assign the public channel to it
+      testHelper.verifyDocumentAccepted(doc, void 0, [ '!' ]);
+    });
+
+    it('allows a deleted document to be deleted again even if the type is unrecognized', function() {
+      var doc = { _id: 'my-invalid-doc', _deleted: true };
+      var oldDoc = { _id: 'my-invalid-doc', _deleted: true };
+
+      // When deleting a document that was already deleted and the document's type cannot be determined, the fallback
+      // behaviour is to allow it to be deleted and assign the public channel to it
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ '!' ]);
     });
   });
 

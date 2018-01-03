@@ -20,7 +20,7 @@ describe('Custom actions:', function() {
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, undefined, 'onTypeIdentificationSucceeded');
+      verifyCustomActionExecuted(doc, void 0, 'onTypeIdentificationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', function() {
@@ -54,7 +54,7 @@ describe('Custom actions:', function() {
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, undefined, 'onAuthorizationSucceeded');
+      verifyCustomActionExecuted(doc, void 0, 'onAuthorizationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', function() {
@@ -80,7 +80,7 @@ describe('Custom actions:', function() {
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, undefined, 'onValidationSucceeded');
+      verifyCustomActionExecuted(doc, void 0, 'onValidationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', function() {
@@ -111,7 +111,7 @@ describe('Custom actions:', function() {
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, undefined, 'onAccessAssignmentsSucceeded');
+      verifyCustomActionExecuted(doc, void 0, 'onAccessAssignmentsSucceeded');
     });
 
     it('executes a custom action when a document is replaced', function() {
@@ -146,7 +146,7 @@ describe('Custom actions:', function() {
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, undefined, 'onDocumentChannelAssignmentSucceeded');
+      verifyCustomActionExecuted(doc, void 0, 'onDocumentChannelAssignmentSucceeded');
     });
 
     it('executes a custom action when a document is replaced', function() {
@@ -222,7 +222,7 @@ function verifyAccessAssignmentMetadata(actualMetadata) {
     }
     expect(actualMetadata.accessAssignments).to.eql(expectedAssignments);
   } else {
-    expect(actualMetadata.accessAssignments).to.equal(undefined);
+    expect(actualMetadata.accessAssignments).to.equal(void 0);
   }
 }
 

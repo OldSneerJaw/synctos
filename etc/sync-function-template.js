@@ -76,7 +76,20 @@ function synctos(doc, oldDoc) {
   var theDocType = getDocumentType(doc, oldDoc);
 
   if (isValueNullOrUndefined(theDocType)) {
-    throw({ forbidden: 'Unknown document type' });
+    if (isDocumentMissingOrDeleted(oldDoc) && isDocumentMissingOrDeleted(doc)) {
+      // Attempting to delete a document that does not exist. This may occur when bucket access/sharing
+      // (https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/shared-bucket-access.html)
+      // is enabled and the document was deleted via the Couchbase SDK. Skip everything else and simply assign the
+      // public channel
+      // (https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/channels/index.html#special-channels)
+      // to the document so that it can be replaced in the future.
+      requireAccess('!');
+      channel('!');
+
+      return;
+    } else {
+      throw({ forbidden: 'Unknown document type' });
+    }
   }
 
   var theDocDefinition = docDefinitions[theDocType];
