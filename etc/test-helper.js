@@ -485,7 +485,7 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
       assert.ok(actualChannels.indexOf(expectedChannels[channelIndex]) >= 0, 'Expected channel "' + expectedChannels[channelIndex] + '" was not authorized');
     }
   } else {
-    assert.ok(actualChannels.indexOf(expectedChannels) >= 0, 'Expected assignment channel not found: "' + expectedChannels + '" actual: "' + actualChannels + '"');
+    assert.ok(actualChannels.indexOf(expectedChannels) >= 0, 'Expected assignment channel not found.  Expected channels: "' + expectedChannels + '"; actual channels: "' + actualChannels + '"');
   }
 }
 
@@ -496,8 +496,8 @@ function verifyAuthorization(expectedAuthorization) {
     // for authorization
     expectedOperationChannels = expectedAuthorization;
     verifyRequireAccess(expectedAuthorization);
-    assert.equal(requireRole.callCount, 0, 'Require role called unexpectedly: ' + requireRole.calls);
-    assert.equal(requireUser.callCount, 0, 'Require user called unexpectedly: ' + requireUser.calls);
+    assert.equal(requireRole.callCount, 0, 'Require role called unexpectedly: ' + JSON.stringify(requireRole.calls));
+    assert.equal(requireUser.callCount, 0, 'Require user called unexpectedly: ' + JSON.stringify(requireUser.calls));
   } else {
     if (expectedAuthorization.expectedChannels) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
@@ -507,13 +507,13 @@ function verifyAuthorization(expectedAuthorization) {
     if (expectedAuthorization.expectedRoles) {
       verifyRequireRole(expectedAuthorization.expectedRoles);
     } else {
-      assert.equal(requireRole.callCount, 0, 'Require role called unexpectedly: ' + requireRole.calls);
+      assert.equal(requireRole.callCount, 0, 'Require role called unexpectedly: ' + JSON.stringify(requireRole.calls));
     }
 
     if (expectedAuthorization.expectedUsers) {
       verifyRequireUser(expectedAuthorization.expectedUsers);
     } else {
-      assert.equal(requireUser.callCount, 0, 'Require user called unexpectedly: ' + requireUser.calls);
+      assert.equal(requireUser.callCount, 0, 'Require user called unexpectedly: ' + JSON.stringify(requireUser.calls));
     }
 
     if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles) && !(expectedAuthorization.expectedUsers)) {
@@ -558,7 +558,7 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
 
   verifyAuthorization(expectedAuthorization);
 
-  assert.equal(channel.callCount, 0, 'Channel assignment made unexpectedly: ' + channel.calls);
+  assert.equal(channel.callCount, 0, 'Channel assignment made unexpectedly: ' + JSON.stringify(channel.calls));
 }
 
 function verifyDocumentNotCreated(doc, docType, expectedErrorMessages, expectedAuthorization) {
@@ -645,11 +645,11 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
     } else if (countAuthorizationTypes(expectedAuthorization) > 1) {
       assert.equal(ex.forbidden, generalAuthFailedMessage, 'Expected authorization exception not met: ' + ex.forbidden);
     } else if (expectedAuthorization.expectedChannels) {
-      assert.equal(ex, channelAccessDenied, 'Expected channel authorization error not triggered, got this instead: ' + ex);
+      assert.equal(ex, channelAccessDenied, 'Expected channel authorization error not triggered, got this instead: ' + JSON.stringify(ex));
     } else if (expectedAuthorization.expectedRoles) {
-      assert.equal(ex, roleAccessDenied, 'Expected role authorization error not triggered, got this instead: ' + ex);
+      assert.equal(ex, roleAccessDenied, 'Expected role authorization error not triggered, got this instead: ' + JSON.stringify(ex));
     } else if (expectedAuthorization.expectedUsers) {
-      assert.equal(ex, userAccessDenied, 'Expected user authorization error not triggered, got this instead: ' + ex);
+      assert.equal(ex, userAccessDenied, 'Expected user authorization error not triggered, got this instead: ' + JSON.stringify(ex));
     }
   }
 

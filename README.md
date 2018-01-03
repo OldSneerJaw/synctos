@@ -662,11 +662,18 @@ The post [Testing your Sync Gateway functions with synctos](https://blog.couchba
 
 To include the test helper module in your own sync function test cases, you must first ensure that your project [includes](https://docs.npmjs.com/getting-started/using-a-package.json) the development dependencies it relies upon. Update your project's `devDependencies` to include the following packages:
 
-* [expect.js](https://www.npmjs.com/package/expect.js) for test assertions
 * [simple-mock](https://www.npmjs.com/package/simple-mock) for mocking/stubbing the built-in Sync Gateway functions `requireAccess`, `channel`, `access`, etc.
 * [mocha](https://mochajs.org/) or another JavaScript test runner/framework that supports `expect.js`
 
-The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like. Once your dev dependencies have been set up, run `npm install` to download the extra dependencies.
+The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like.
+
+Similarly, the `Chai` assertion library is used in test cases on the synctos project, with the exception of several assertions made in `etc/test-helper.js`, which uses the Node.js assert API.  This by no means ties a client project to either of these dependencies and any assertion library may be used for writing test cases in a dependent project, including:
+
+* [Chai](http://chaijs.com/)
+* [Node.js Assertions](https://nodejs.org/dist/latest/docs/api/assert.html)
+* [expect.js](https://www.npmjs.com/package/expect.js)
+
+Once your dev dependencies have been set up, run `npm install` to download the extra dependencies.
 
 After that, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
