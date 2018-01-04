@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.9.4] - 2018-01-04
 
 ### Changed
 - [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
