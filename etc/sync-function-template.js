@@ -82,7 +82,8 @@ function synctos(doc, oldDoc) {
       // is enabled and the document was deleted via the Couchbase SDK. Skip everything else and simply assign the
       // public channel
       // (https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/channels/index.html#special-channels)
-      // to the document so that it can be replaced in the future.
+      // to the document so that users will get a 404 Not Found if they attempt to fetch (i.e. "view") the deleted
+      // document rather than a 403 Forbidden.
       requireAccess('!');
       channel('!');
 
