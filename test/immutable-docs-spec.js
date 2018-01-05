@@ -43,7 +43,7 @@ describe('Immutable document validation:', function() {
           _deleted: true
         };
 
-        testHelper.verifyDocumentAccepted(doc, undefined, 'write');
+        testHelper.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
       it('refuses to replace an existing document even if its properties have not been modified', function() {
@@ -201,7 +201,7 @@ describe('Immutable document validation:', function() {
           _deleted: true
         };
 
-        testHelper.verifyDocumentAccepted(doc, undefined, 'write');
+        testHelper.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
       it('refuses to replace an existing document even if its properties have not been modified', function() {
@@ -331,7 +331,7 @@ describe('Immutable document validation:', function() {
           _deleted: true
         };
 
-        testHelper.verifyDocumentAccepted(doc, undefined, 'write');
+        testHelper.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
       it('allows a document to be replaced', function() {

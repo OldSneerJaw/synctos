@@ -58,7 +58,7 @@ describe('Sample Business config doc definition', function() {
     verifyBusinessConfigRejected(
       5,
       doc,
-      undefined,
+      void 0,
       [
         errorFormatter.typeConstraintViolation('paymentProcessors', 'array'),
         errorFormatter.typeConstraintViolation('businessLogoAttachment', 'attachmentReference'),

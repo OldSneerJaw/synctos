@@ -1,6 +1,6 @@
 var path = require('path');
-var expect = require('expect.js');
-var simpleMock = require('simple-mock');
+var expect = require('chai').expect;
+var simpleMock = require('../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Document definitions shell maker', function() {
@@ -35,10 +35,10 @@ describe('Document definitions shell maker', function() {
 
     expect(result).to.eql(expectedResult);
 
-    expect(fsMock.readFileSync.callCount).to.be(1);
+    expect(fsMock.readFileSync.callCount).to.equal(1);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(__dirname, '../src/templates/document-definitions-shell-template.js'), 'utf8' ]);
 
-    expect(vmMock.runInThisContext.callCount).to.be(1);
+    expect(vmMock.runInThisContext.callCount).to.equal(1);
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
       '(' + expectedFileContents + ');',
       {
@@ -47,7 +47,7 @@ describe('Document definitions shell maker', function() {
       }
     ]);
 
-    expect(mockEnvironment.callCount).to.be(1);
+    expect(mockEnvironment.callCount).to.equal(1);
   }
 
   it('creates a shell from the input with a filename for stack traces', function() {

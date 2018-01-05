@@ -1,5 +1,5 @@
 function(require) {
-  var simple = require('simple-mock');
+  var simple = require('../lib/simple-mock/index.js');
 
   var requireAccess = simple.stub();
   var requireRole = simple.stub();

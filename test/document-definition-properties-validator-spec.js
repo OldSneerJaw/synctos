@@ -1,4 +1,4 @@
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var docDefinitionPropertiesValidator = require('../src/document-definition-properties-validator.js');
 
 describe('Document definition properties validator', function() {

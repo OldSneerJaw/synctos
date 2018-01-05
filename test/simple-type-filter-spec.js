@@ -1,6 +1,6 @@
 var testHelper = require('../src/test-helper.js');
 
-describe('Simple type filter', function() {
+describe('Simple type filter:', function() {
   beforeEach(function() {
     testHelper.initSyncFunction('build/sync-functions/test-simple-type-filter-sync-function.js');
   });
@@ -90,7 +90,9 @@ describe('Simple type filter', function() {
         _deleted: true
       };
 
-      testHelper.verifyUnknownDocumentType(doc);
+      // When deleting a document that does not exist and the document's type cannot be determined, the fallback
+      // behaviour is to allow it to be deleted and assign the public channel to it
+      testHelper.verifyDocumentAccepted(doc, void 0, [ '!' ]);
     });
 
     it('cannot identify a deleted document when the old document is also deleted', function() {
@@ -103,7 +105,9 @@ describe('Simple type filter', function() {
         _deleted: true
       };
 
-      testHelper.verifyUnknownDocumentType(doc, oldDoc);
+      // When deleting a document that was already deleted and the document's type cannot be determined, the fallback
+      // behaviour is to allow it to be deleted and assign the public channel to it
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ '!' ]);
     });
   }
 

@@ -1,5 +1,5 @@
-var expect = require('expect.js');
-var simpleMock = require('simple-mock');
+var expect = require('chai').expect;
+var simpleMock = require('../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Document definitions essential properties validator:', function() {
@@ -81,28 +81,28 @@ describe('Document definitions essential properties validator:', function() {
     var results = docDefinitionsValidator.validate([ 1, 2, 3 ]);
 
     expect(results).to.equal('Document definitions are not specified as an object');
-    expect(propertiesValidatorMock.validate.callCount).to.be(0);
+    expect(propertiesValidatorMock.validate.callCount).to.equal(0);
   });
 
   it('rejects a function input that does not return a plain object', function() {
     var results = docDefinitionsValidator.validate(function() { return 'not-an-object'; });
 
     expect(results).to.equal('Document definitions are not specified as an object');
-    expect(propertiesValidatorMock.validate.callCount).to.be(0);
+    expect(propertiesValidatorMock.validate.callCount).to.equal(0);
   });
 
   it('rejects a value input that is null', function() {
     var results = docDefinitionsValidator.validate(null);
 
     expect(results).to.equal('Document definitions are not specified as an object');
-    expect(propertiesValidatorMock.validate.callCount).to.be(0);
+    expect(propertiesValidatorMock.validate.callCount).to.equal(0);
   });
 
   it('rejects a function input that returns null', function() {
     var results = docDefinitionsValidator.validate(null);
 
     expect(results).to.equal('Document definitions are not specified as an object');
-    expect(propertiesValidatorMock.validate.callCount).to.be(0);
+    expect(propertiesValidatorMock.validate.callCount).to.equal(0);
   });
 
   it('rejects an input that throws an exception', function() {
@@ -111,7 +111,7 @@ describe('Document definitions essential properties validator:', function() {
     var results = docDefinitionsValidator.validate(function() { throw exception; });
 
     expect(results).to.equal('Document definitions threw an exception: ' + exception.message);
-    expect(propertiesValidatorMock.validate.callCount).to.be(0);
+    expect(propertiesValidatorMock.validate.callCount).to.equal(0);
   });
 
   describe('type filter', function() {
@@ -185,7 +185,7 @@ describe('Document definitions essential properties validator:', function() {
         myDoc3: [ 'the "propertyValidators" property is not an object or a function' ]
       });
 
-      expect(propertiesValidatorMock.validate.callCount).to.be(0);
+      expect(propertiesValidatorMock.validate.callCount).to.equal(0);
     });
 
     it('cannot be be left undefined or null', function() {
@@ -200,7 +200,7 @@ describe('Document definitions essential properties validator:', function() {
         myDoc3: [ ]
       });
 
-      expect(propertiesValidatorMock.validate.callCount).to.be(1);
+      expect(propertiesValidatorMock.validate.callCount).to.equal(1);
       expect(propertiesValidatorMock.validate.calls[0].args).to.eql(
         [ testDocDefinitions.myDoc3, testDocDefinitions.myDoc3.propertyValidators ]);
     });
@@ -369,7 +369,7 @@ describe('Document definitions essential properties validator:', function() {
   }
 
   function verifyPropertyValidationPerformed() {
-    expect(propertiesValidatorMock.validate.callCount).to.be(2);
+    expect(propertiesValidatorMock.validate.callCount).to.equal(2);
     expect(propertiesValidatorMock.validate.calls[0].args).to.eql([ testDocDefinitions.myDoc1, testDocDefinitions.myDoc1.propertyValidators ]);
     expect(propertiesValidatorMock.validate.calls[1].args).to.eql([ testDocDefinitions.myDoc3, testDocDefinitions.myDoc3.propertyValidators ]);
   }

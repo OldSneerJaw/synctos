@@ -10,7 +10,7 @@ describe('Authorization:', function() {
     it('rejects document creation for a user with no matching channels', function() {
       var doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyAccessDenied(doc, undefined, 'add');
+      testHelper.verifyAccessDenied(doc, void 0, 'add');
     });
 
     it('rejects document replacement for a user with no matching channels', function() {
@@ -23,7 +23,7 @@ describe('Authorization:', function() {
     it('rejects document deletion for a user with no matching channels', function() {
       var doc = { _id: 'explicitChannelsDoc', _deleted: true };
 
-      testHelper.verifyAccessDenied(doc, undefined, [ 'remove', 'delete' ]);
+      testHelper.verifyAccessDenied(doc, void 0, [ 'remove', 'delete' ]);
     });
   });
 
@@ -33,7 +33,7 @@ describe('Authorization:', function() {
     it('rejects document creation for a user with no matching channels', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyAccessDenied(doc, undefined, writeChannels);
+      testHelper.verifyAccessDenied(doc, void 0, writeChannels);
     });
 
     it('rejects document replacement for a user with no matching channels', function() {
@@ -46,7 +46,7 @@ describe('Authorization:', function() {
     it('rejects document deletion for a user with no matching channels', function() {
       var doc = { _id: 'writeOnlyChannelsDoc', _deleted: true };
 
-      testHelper.verifyAccessDenied(doc, undefined, writeChannels);
+      testHelper.verifyAccessDenied(doc, void 0, writeChannels);
     });
   });
 
@@ -195,6 +195,80 @@ describe('Authorization:', function() {
       };
 
       testHelper.verifyAccessDenied(doc, oldDoc, { expectedUsers: [ 'remove1', 'remove2' ] });
+    });
+  });
+
+  describe('for a document with statically-assigned replace role and nothing else', function() {
+    it('rejects document creation', function() {
+      var doc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyAccessDenied(doc, null, []);
+    });
+
+    it('allows document replacement', function() {
+      var doc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+      var oldDoc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'barfoo'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc, { expectedRoles: [ 'replace' ] });
+    });
+
+    it('rejects document deletion for a user with only replace role', function() {
+      var doc = {
+        _id: 'replaceOnlyRoleDoc',
+        _deleted: true
+      };
+      var oldDoc = {
+        _id: 'replaceOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, []);
+    });
+  });
+
+  describe('for a document with statically-assigned add role and nothing else', function() {
+    it('allows document creation', function() {
+      var doc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyDocumentCreated(doc, { expectedRoles: [ 'add' ] });
+    });
+
+    it('rejects document replacement', function() {
+      var doc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+      var oldDoc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'barfoo'
+      };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, []);
+    });
+
+    it('rejects document deletion for a user with only add role', function() {
+      var doc = {
+        _id: 'addOnlyRoleDoc',
+        _deleted: true
+      };
+      var oldDoc = {
+        _id: 'addOnlyRoleDoc',
+        stringProp: 'foobar'
+      };
+
+      testHelper.verifyAccessDenied(doc, oldDoc, []);
     });
   });
 });

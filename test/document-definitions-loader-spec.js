@@ -1,5 +1,5 @@
-var expect = require('expect.js');
-var simpleMock = require('simple-mock');
+var expect = require('chai').expect;
+var simpleMock = require('../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Document definitions loader', function() {
@@ -43,13 +43,13 @@ describe('Document definitions loader', function() {
 
     expect(result).to.equal(expectedFileContents);
 
-    expect(fsMock.readFileSync.callCount).to.be(1);
+    expect(fsMock.readFileSync.callCount).to.equal(1);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
 
-    expect(pathMock.dirname.callCount).to.be(1);
+    expect(pathMock.dirname.callCount).to.equal(1);
     expect(pathMock.dirname.calls[0].args).to.eql([ docDefinitionsFile ]);
 
-    expect(fileFragmentLoaderMock.load.callCount).to.be(1);
+    expect(fileFragmentLoaderMock.load.callCount).to.equal(1);
     expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalFileContents.trim() ]);
   });
 
@@ -61,13 +61,15 @@ describe('Document definitions loader', function() {
     pathMock.dirname.returnWith('');
     fileFragmentLoaderMock.load.returnWith('');
 
-    expect(docDefinitionsLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
+    expect(function() {
+      docDefinitionsLoader.load(docDefinitionsFile);
+    }).to.throw(expectedException.message);
 
-    expect(fsMock.readFileSync.callCount).to.be(1);
+    expect(fsMock.readFileSync.callCount).to.equal(1);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ docDefinitionsFile, 'utf8' ]);
 
-    expect(pathMock.dirname.callCount).to.be(0);
+    expect(pathMock.dirname.callCount).to.equal(0);
 
-    expect(fileFragmentLoaderMock.load.callCount).to.be(0);
+    expect(fileFragmentLoaderMock.load.callCount).to.equal(0);
   });
 });

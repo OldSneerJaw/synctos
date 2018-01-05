@@ -666,17 +666,26 @@ The synctos project includes a variety of specifications/test cases to verify th
 
 The post [Testing your Sync Gateway functions with synctos](https://blog.couchbase.com/testing-sync-gateway-functions-synctos/) on the official Couchbase blog provides a detailed walkthrough, with examples, for setting up and running tests. The following section also provides a brief overview of the process.
 
-To include the test helper module in your own sync function test cases, you must first ensure that your project [includes](https://docs.npmjs.com/getting-started/using-a-package.json) the development dependencies it relies upon. Update your project's `devDependencies` to include the following packages:
+The synctos project uses the [mocha](https://mochajs.org/) test framework for writing and executing test cases, and the following instructions assume that you will too. Similarly, the [Chai](http://chaijs.com/) assertion library is used by synctos. But, by no means are your projects restricted to using either of these libraries for their own tests.
 
-* [expect.js](https://www.npmjs.com/package/expect.js) for test assertions
-* [simple-mock](https://www.npmjs.com/package/simple-mock) for mocking/stubbing the built-in Sync Gateway functions `requireAccess`, `channel`, `access`, etc.
-* [mocha](https://mochajs.org/) or another JavaScript test runner/framework that supports `expect.js`
+Some other test runners/frameworks that might be of interest:
 
-The synctos project uses `mocha` for writing and executing test cases and the following instructions assume that you will too, but you are free to substitute something else if you like. Once your dev dependencies have been set up, run `npm install` to download the extra dependencies.
+* [Jasmine](https://jasmine.github.io/)
+* [Vows](http://vowsjs.org/)
 
-After that, create a new spec file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
+And some alternate assertion libraries:
 
-    var testHelper = require('../node_modules/synctos/src/test-helper.js');
+* [Node.js Assertions](https://nodejs.org/dist/latest/docs/api/assert.html)
+* [expect.js](https://www.npmjs.com/package/expect.js)
+* [should.js](https://www.npmjs.com/package/should)
+
+Once your testing libraries have been set up as development dependencies in your project's [package.json](https://docs.npmjs.com/getting-started/using-a-package.json), run `npm install` to download them.
+
+After that, create a new specification file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
+
+```
+var testHelper = require('../node_modules/synctos/etc/test-helper.js');
+```
 
 Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
 

@@ -41,7 +41,7 @@ describe('Sample notification transport processing summary doc definition', func
 
     verifyProcessingSummaryNotWritten(
       doc,
-      undefined,
+      void 0,
       [
         errorFormatter.requiredValueViolation('nonce'),
         errorFormatter.typeConstraintViolation('processedBy', 'string'),

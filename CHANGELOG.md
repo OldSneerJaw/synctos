@@ -13,6 +13,16 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - [#118](https://github.com/Kashoo/synctos/issues/118): Embed indent.js as a static dependency
 
+## [1.9.4] - 2018-01-04
+
+### Changed
+- [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
+- [#163](https://github.com/Kashoo/synctos/issues/163): Embed simple-mock as a static development dependency
+
+### Fixed
+- [#156](https://github.com/Kashoo/synctos/issues/156): Users with a replace role may erroneously gain the privilege of removing a document under certain conditions
+- [#160](https://github.com/Kashoo/synctos/issues/160): Unable to import document if it was deleted via Couchbase SDK
+
 ## [1.9.3] - 2017-10-23
 ### Fixed
 - [#152](https://github.com/Kashoo/synctos/issues/152): Cannot append a new object with immutable properties to an array
@@ -100,7 +110,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.3...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.4...HEAD
+[1.9.4]: https://github.com/Kashoo/synctos/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/Kashoo/synctos/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/Kashoo/synctos/compare/v1.9.1...v1.9.2
 [1.9.1]: https://github.com/Kashoo/synctos/compare/v1.9.0...v1.9.1
