@@ -23,11 +23,11 @@ describe('Strict immutable item constraint:', function() {
     it('allows replacement of a document with an immutable array when the nested complex type elements have not changed', function() {
       var doc = {
         _id: 'immutableItemsDoc',
-        staticImmutableArrayProp: [ [ 'foobar', 3, false ], undefined, [ 45.9 ], [ ], null, { foo: 'bar' } ]
+        staticImmutableArrayProp: [ [ 'foobar', 3, false ], void 0, [ 45.9 ], [ ], null, { foo: 'bar' } ]
       };
       var oldDoc = {
         _id: 'immutableItemsDoc',
-        staticImmutableArrayProp: [ [ 'foobar', 3, false ], undefined, [ 45.9 ], [ ], null, { foo: 'bar', baz: undefined } ]
+        staticImmutableArrayProp: [ [ 'foobar', 3, false ], void 0, [ 45.9 ], [ ], null, { foo: 'bar', baz: void 0 } ]
       };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc);
@@ -217,7 +217,7 @@ describe('Strict immutable item constraint:', function() {
       };
       var oldDoc = {
         _id: 'immutableItemsDoc',
-        dynamicImmutableArrayProp: [ '#1', undefined ],
+        dynamicImmutableArrayProp: [ '#1', void 0 ],
         dynamicPropertiesAreImmutable: false
       };
 
@@ -268,7 +268,7 @@ describe('Strict immutable item constraint:', function() {
       var doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foo: undefined } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foo: void 0 } ],
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] }
         }
       };
@@ -372,7 +372,7 @@ describe('Strict immutable item constraint:', function() {
       var oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: undefined } ] ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: void 0 } ] ],
           myObjectProp: { foo: 'bar', baz: 73 }
         }
       };
@@ -585,7 +585,7 @@ describe('Strict immutable item constraint:', function() {
       var oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: 18, baz: undefined } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: 18, baz: void 0 } ],
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] }
         }
       };
@@ -675,7 +675,7 @@ describe('Strict immutable item constraint:', function() {
       var doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: undefined } ] ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: void 0 } ] ],
           myObjectProp: { foo: 'bar', baz: 73 }
         }
       };
