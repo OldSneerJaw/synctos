@@ -1,5 +1,5 @@
-var expect = require('expect.js');
-var simpleMock = require('simple-mock');
+var expect = require('chai').expect;
+var simpleMock = require('../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Document definitions advanced properties validator:', function() {
@@ -190,11 +190,11 @@ describe('Document definitions advanced properties validator:', function() {
 
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
-      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1.length).to.equal(2);
       expect(results.myDoc1).to.contain('the "channels" property\'s "replace" operation type is invalid when the document type is immutable');
       expect(results.myDoc1).to.contain('the "channels" property\'s "remove" operation type is invalid when the document type is immutable');
-      expect(results.myDoc2.length).to.be(0);
-      expect(results.myDoc3.length).to.be(0);
+      expect(results.myDoc2.length).to.equal(0);
+      expect(results.myDoc3.length).to.equal(0);
     });
 
     it('cannot be enabled along with roles for replace or remove operations', function() {
@@ -206,11 +206,11 @@ describe('Document definitions advanced properties validator:', function() {
 
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
-      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1.length).to.equal(2);
       expect(results.myDoc1).to.contain('the "authorizedRoles" property\'s "replace" operation type is invalid when the document type is immutable');
       expect(results.myDoc1).to.contain('the "authorizedRoles" property\'s "remove" operation type is invalid when the document type is immutable');
-      expect(results.myDoc2.length).to.be(0);
-      expect(results.myDoc3.length).to.be(0);
+      expect(results.myDoc2.length).to.equal(0);
+      expect(results.myDoc3.length).to.equal(0);
     });
 
     it('cannot be enabled along with users for replace or remove operations', function() {
@@ -222,11 +222,11 @@ describe('Document definitions advanced properties validator:', function() {
 
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
-      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1.length).to.equal(2);
       expect(results.myDoc1).to.contain('the "authorizedUsers" property\'s "replace" operation type is invalid when the document type is immutable');
       expect(results.myDoc1).to.contain('the "authorizedUsers" property\'s "remove" operation type is invalid when the document type is immutable');
-      expect(results.myDoc2.length).to.be(0);
-      expect(results.myDoc3.length).to.be(0);
+      expect(results.myDoc2.length).to.equal(0);
+      expect(results.myDoc3.length).to.equal(0);
     });
   });
 
@@ -651,15 +651,15 @@ describe('Document definitions advanced properties validator:', function() {
 
       var results = docDefinitionsValidator.validate(testDocDefinitions);
 
-      expect(results.myDoc1.length).to.be(2);
+      expect(results.myDoc1.length).to.equal(2);
       expect(results.myDoc1).to.contain('the "customActions" property contains a value for the "onTypeIdentificationSucceeded" event that is not a function');
       expect(results.myDoc1).to.contain('the "customActions" property contains a value for the "onAuthorizationSucceeded" event that is not a function');
 
-      expect(results.myDoc2.length).to.be(2);
+      expect(results.myDoc2.length).to.equal(2);
       expect(results.myDoc2).to.contain('the "customActions" property contains a value for the "onValidationSucceeded" event that is not a function');
       expect(results.myDoc2).to.contain('the "customActions" property contains a value for the "onAccessAssignmentsSucceeded" event that is not a function');
 
-      expect(results.myDoc3.length).to.be(1);
+      expect(results.myDoc3.length).to.equal(1);
       expect(results.myDoc3).to.contain('the "customActions" property contains a value for the "onDocumentChannelAssignmentSucceeded" event that is not a function');
     });
   });

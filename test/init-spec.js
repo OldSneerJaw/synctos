@@ -1,4 +1,4 @@
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var testHelper = require('../src/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
@@ -17,9 +17,12 @@ describe('Test helper module initialization', function() {
     });
 
     it('fails to load the sync function for a file that does not exist', function() {
-      expect(testHelper.initSyncFunction).withArgs('build/sync-functions/test-nonexistant-sync-function.js').to.throwException(function(ex) {
-        expect(ex.code).to.eql('ENOENT');
-      });
+      try {
+        testHelper.initSyncFunction('build/sync-functions/test-nonexistant-sync-function.js');
+        expect.fail('Expected exception not thrown');
+      } catch(ex) {
+        expect(ex.code).to.equal('ENOENT');
+      }
     });
   });
 
@@ -37,9 +40,12 @@ describe('Test helper module initialization', function() {
     });
 
     it('fails to load the sync function for a file that does not exist', function() {
-      expect(testHelper.initDocumentDefinitions).withArgs('test/resources/nonexistant-doc-definitions.js').to.throwException(function(ex) {
-        expect(ex.code).to.eql('ENOENT');
-      });
+      try {
+        testHelper.initDocumentDefinitions('test/resources/nonexistant-doc-definitions.js');
+        expect.fail('Expected exception not thrown');
+      } catch (ex) {
+        expect(ex.code).to.equal('ENOENT');
+      }
     });
   });
 });

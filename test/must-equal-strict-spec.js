@@ -226,7 +226,7 @@ describe('Strict equality constraint:', function() {
         _id: 'dynamicObjectDoc',
         expectedDynamicValue: {
           myFloatProp: 88.92,
-          foo: undefined
+          foo: void 0
         },
         objectProp: { myFloatProp: 88.92 }
       };

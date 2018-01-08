@@ -12,7 +12,7 @@ describe('Equality constraint:', function() {
     it('allows a document when the array elements match', function() {
       var doc = {
         _id: 'staticArrayDoc',
-        arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], undefined, { foo: 'bar' }, [ ] ]
+        arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], void 0, { foo: 'bar' }, [ ] ]
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -118,7 +118,7 @@ describe('Equality constraint:', function() {
       var doc = {
         _id: 'staticObjectDoc',
         objectProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ undefined ], { } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ void 0 ], { } ],
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
           myStringProp: 'foobar',
           myIntegerProp: 8,
@@ -232,7 +232,7 @@ describe('Equality constraint:', function() {
         hashtableProp: {
           myStringProp: 'foobar',
           myFloatProp: 88.92,
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ undefined ], { foobar: 18 } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ void 0 ], { foobar: 18 } ],
           myIntegerProp: 8,
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
           myBooleanProp: true

@@ -133,7 +133,7 @@ describe('Array validation type', function() {
       it('blocks a doc when the array elements fail validation', function() {
         var doc = {
           _id: 'arrayDoc',
-          staticArrayElementsValidatorProp: [ 0, null, undefined, 'foo', -1, 3 ]
+          staticArrayElementsValidatorProp: [ 0, null, void 0, 'foo', -1, 3 ]
         };
 
         testHelper.verifyDocumentNotCreated(
@@ -164,7 +164,7 @@ describe('Array validation type', function() {
       it('blocks a doc when the array elements fail validation', function() {
         var doc = {
           _id: 'arrayDoc',
-          dynamicArrayElementsValidatorProp: [ '2017-04-11', null, undefined, 'foo', 47 ],
+          dynamicArrayElementsValidatorProp: [ '2017-04-11', null, void 0, 'foo', 47 ],
           dynamicArrayElementsType: 'date',
           dynamicArrayElementsRequired: true
         };

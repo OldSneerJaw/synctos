@@ -1,6 +1,6 @@
 var path = require('path');
-var expect = require('expect.js');
-var simpleMock = require('simple-mock');
+var expect = require('chai').expect;
+var simpleMock = require('../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Sync function loader', function() {
@@ -48,16 +48,16 @@ describe('Sync function loader', function() {
 
     expect(result).to.equal('my\n\nfinal\nsync \\`func\\`');
 
-    expect(fsMock.readFileSync.callCount).to.be(1);
+    expect(fsMock.readFileSync.callCount).to.equal(1);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ syncFuncTemplateFile, 'utf8' ]);
 
-    expect(fileFragmentLoaderMock.load.callCount).to.be(1);
+    expect(fileFragmentLoaderMock.load.callCount).to.equal(1);
     expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ syncFuncTemplateDir, expectedMacroName, originalSyncFuncTemplate ]);
 
-    expect(docDefinitionsLoaderMock.load.callCount).to.be(1);
+    expect(docDefinitionsLoaderMock.load.callCount).to.equal(1);
     expect(docDefinitionsLoaderMock.load.calls[0].args).to.eql([ docDefinitionsFile ]);
 
-    expect(indentMock.indentJS.callCount).to.be(1);
+    expect(indentMock.indentJS.callCount).to.equal(1);
     expect(indentMock.indentJS.calls[0].args).to.eql([ 'function my-sync-func-template() { ' + docDefinitionsContent + '; }', '  ' ]);
   });
 
@@ -70,15 +70,17 @@ describe('Sync function loader', function() {
     docDefinitionsLoaderMock.load.returnWith('');
     indentMock.indentJS.returnWith('');
 
-    expect(syncFunctionLoader.load).withArgs(docDefinitionsFile).to.throwException(expectedException.message);
+    expect(function() {
+      syncFunctionLoader.load(docDefinitionsFile);
+    }).to.throw(expectedException.message);
 
-    expect(fsMock.readFileSync.callCount).to.be(1);
+    expect(fsMock.readFileSync.callCount).to.equal(1);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ syncFuncTemplateFile, 'utf8' ]);
 
-    expect(fileFragmentLoaderMock.load.callCount).to.be(0);
+    expect(fileFragmentLoaderMock.load.callCount).to.equal(0);
 
-    expect(docDefinitionsLoaderMock.load.callCount).to.be(0);
+    expect(docDefinitionsLoaderMock.load.callCount).to.equal(0);
 
-    expect(indentMock.indentJS.callCount).to.be(0);
+    expect(indentMock.indentJS.callCount).to.equal(0);
   });
 });

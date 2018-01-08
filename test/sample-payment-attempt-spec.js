@@ -57,7 +57,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
     verifyPaymentAttemptNotWritten(
       'my-business',
       doc,
-      undefined,
+      void 0,
       [
         errorFormatter.typeConstraintViolation('businessId', 'integer'),
         errorFormatter.requiredValueViolation('invoiceRecordId'),

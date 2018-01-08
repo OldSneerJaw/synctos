@@ -1,5 +1,5 @@
-var expect = require('expect.js');
-var simpleMock = require('simple-mock');
+var expect = require('chai').expect;
+var simpleMock = require('../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('File fragment loader', function() {
@@ -34,7 +34,7 @@ describe('File fragment loader', function() {
 
     expect(result).to.equal('doSomething();\nnotmyFileFragmentMacro("foo.js");' + fileFragment1Contents.trim() + ';\t' + fileFragment2Contents.trim() + ';');
 
-    expect(fsMock.readFileSync.callCount).to.be(3);
+    expect(fsMock.readFileSync.callCount).to.equal(3);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ baseDir + '/bar.js', 'utf8' ]);
     expect(fsMock.readFileSync.calls[1].args).to.eql([ baseDir + '/baz.js', 'utf8' ]);
     expect(fsMock.readFileSync.calls[2].args).to.eql([ 'baz.js', 'utf8' ]);
@@ -48,9 +48,11 @@ describe('File fragment loader', function() {
     var expectedException = new Error('my-expected-exception');
     fsMock.readFileSync.throwWith(expectedException);
 
-    expect(fileFragmentLoader.load).withArgs(baseDir, macroName, rawText).to.throwException(expectedException.message);
+    expect(function() {
+      fileFragmentLoader.load(baseDir, macroName, rawText);
+    }).to.throw(expectedException.message);
 
-    expect(fsMock.readFileSync.callCount).to.be(2);
+    expect(fsMock.readFileSync.callCount).to.equal(2);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ baseDir + '/foo.js', 'utf8' ]);
     expect(fsMock.readFileSync.calls[1].args).to.eql([ 'foo.js', 'utf8' ]);
   });
