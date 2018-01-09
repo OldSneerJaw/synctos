@@ -1,3 +1,7 @@
+# Introduction
+
+Synctos is an open source project. Contributions, whether as bug reports, feature requests or code, are welcomed and encouraged. Before you begin, please take a few moments to read and understand the guidelines for contribution below.
+
 # Requesting Changes
 
 Every bug or feature request should have a corresponding issue logged in the GitHub project's [Issues](https://github.com/Kashoo/synctos/issues) tab.
