@@ -46,17 +46,21 @@ In either case, include an entry for each change in `CHANGELOG.md`'s "Unreleased
 
 ### Example document definitions
 
-The project's `samples` directory contains a number of document definitions as examples for end users (originally based on Kashoo's official [document definitions](https://github.com/Kashoo/kashoo-document-definitions)). Features that introduce new configuration elements should also be added as examples to these sample document definitions for illustrative purposes.
+The project's `samples` directory contains a number of document definitions as examples for end users (originally based on Kashoo's official [document definitions](https://github.com/Kashoo/kashoo-document-definitions)). Configuration elements introduced by new features should also be added as examples to these sample document definitions for illustrative purposes.
 
 ### Backward compatibility
 
 The project's public API will evolve over time, but it is important to avoid changes that break the behaviour of validation types, document type definition properties, helper functions, etc. that are referenced in `README.md` and functions and variables that are defined in the test-helper and validation-error-message-formatter modules (and any others that may be introduced as public components over time). Only under special circumstances and with prior deliberation and approval from official project contributors will breaking changes be considered for inclusion.
 
-Note: Since the project follows the principle of Semantic Versioning, a breaking change will make it necessary to update the next release's major version number component (e.g. from `1.x.y` to `2.0.0`).
-
 ### Package dependencies
 
-The project does not and should not include any external Node.js package dependencies. In fact, in most cases it should not be necessary to add any new dependencies since the project is constrained to run within the limited JavaScript context provided by Sync Gateway, which does not allow for external packages to be imported. But in those cases where a particular utility is absolutely critical, it should be embedded statically in the project's `lib` directory, as long as it is available under a license that is compatible with this project's MIT license (e.g. Apache License 2.0, BSD, Mozilla Public License 2.0). In that event, create a new directory for the project in the `lib` directory and be sure to include an unaltered copy of the project's license file, a file called `VERSION` that specifies the exact version number that is included and only the files from the project that are absolutely necessary for the desired feature to work correctly in synctos (e.g. don't include `.gitignore`, `package.json`, `README`, etc.). If upgrading an embedded dependency, be sure to updating the `VERSION` file as well. See `lib/indent.js` and `lib/simple-mock` for examples.
+The project does not and should not include any external Node.js package dependencies. In fact, in most cases it should not be necessary to add any new dependencies since the project is constrained to run within the limited JavaScript context provided by Sync Gateway, which does not allow for external packages to be imported. But in those cases where a particular utility is absolutely critical, it should be embedded statically in the project's `lib` directory, as long as it is available under a license that is compatible with this project's MIT license (e.g. Apache License 2.0, BSD, Mozilla Public License 2.0).
+
+In that event, create a new directory for the dependency in the `lib` directory and be sure to include an unaltered copy of the dependency's license file, a new file called `VERSION` that specifies the exact version number of the dependency and only the files from the dependency that are absolutely necessary for the desired feature to work correctly in synctos (e.g. don't include `.gitignore`, `package.json`, `README`, etc.). If upgrading an existing embedded dependency, be sure to updating the `VERSION` file as well. See `lib/indent.js` and `lib/simple-mock` for examples.
+
+### Package versioning
+
+The project follows the principle of [Semantic Versioning](https://semver.org/). However, the package's version is updated **only** as part of the release process. Commits for bugs and features should not modify the "version" property in `package.json`. In other words, unless you are personally responsible for publishing a release of synctos, leave the version number as is.
 
 ### Pull requests
 
