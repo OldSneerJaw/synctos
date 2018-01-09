@@ -1,14 +1,6 @@
-# Getting Started
-
-1. Install [Node.js](https://nodejs.org/) (the latest Long Term Support release or better is recommended) to build and run the project
-2. Fork the synctos repository
-3. Clone your fork of the synctos repository
-4. Install the project's local dependencies (run from the project root directory): `npm install`
-5. Execute the project's tests (also run from the project root directory): `npm test`
-
 # Requesting Changes
 
-Every bug or feature should have a corresponding issue logged in the GitHub project's [Issues](https://github.com/Kashoo/synctos/issues) tab.
+Every bug or feature request should have a corresponding issue logged in the GitHub project's [Issues](https://github.com/Kashoo/synctos/issues) tab.
 
 For bugs, be sure to include clear steps to reproduce the issue, including which versions of synctos are affected, as well as which versions of Couchbase Server and Sync Gateway the issue is reproducible with. When a bug has been reviewed by a project contributor, it will be assigned the [bug](https://github.com/Kashoo/synctos/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Abug) label.
 
@@ -17,6 +9,14 @@ For feature requests, describe the desired behaviour and provide examples of val
 # Implementing Changes
 
 This section contains information on how to implement new features or fix bugs in the project.
+
+### Getting Started
+
+1. Install [Node.js](https://nodejs.org/) (the latest Long Term Support release or better is recommended) to build and run the project
+2. Fork the synctos repository on GitHub
+3. Clone your fork of the synctos repository
+4. Install the project's local dependencies (run from the project root directory): `npm install`
+5. Execute the project's tests (also run from the project root directory): `npm test`
 
 ### Commits
 
@@ -62,8 +62,8 @@ The project's Travis CI [build job](https://travis-ci.org/Kashoo/synctos) will b
 
 # Reviewing Changes
 
-Once a change has been posted as a GitHub pull request, a project contributor other than the change's author needs to examine the code for style, correctness, test coverage, documentation and semantics. As part of your due diligence, verify that the Travis CI build job successfully ran to completion for the pull request.
+Once a change has been posted as a GitHub pull request, a synctos project contributor other than the change's author needs to examine the code for style, correctness, test coverage, documentation and semantics. As part of your due diligence, verify that the Travis CI build job successfully ran to completion for the pull request.
 
-Special care should be taken to ensure that each submission is captured as a GitHub issue, thoroughly documented in `README.md` and in `CHANGELOG.md`'s "Unreleased" section, comprehensively covered by test cases, includes examples in the sample document definitions, does not introduce breaking changes to public APIs, does not introduce new package dependencies and does not make use of advanced JavaScript/ECMAScript language features that are not supported by the [version](https://github.com/robertkrimen/otto/tree/5282a5a45ba989692b3ae22f730fa6b9dd67662f) of the otto JavaScript engine/interpreter that is used by Sync Gateway.
+Special care should be taken to ensure that each submission is captured as a GitHub issue, thoroughly documented in `README.md` and in `CHANGELOG.md`'s "Unreleased" section, comprehensively covered by test cases, includes examples in the sample document definitions directory, does not introduce breaking changes to public APIs, does not introduce new package dependencies and does not make use of advanced JavaScript/ECMAScript language features that are not supported by the [version](https://github.com/robertkrimen/otto/tree/5282a5a45ba989692b3ae22f730fa6b9dd67662f) of the otto JavaScript engine/interpreter that is used by Sync Gateway.
 
 If/when a change is deemed satisfactory, it is the responsibility of the reviewer to merge the pull request and delete its feature branch, where possible.
