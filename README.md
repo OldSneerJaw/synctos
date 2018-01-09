@@ -38,7 +38,7 @@ Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
 ### Specifications
 
-Document definitions must conform to the following specification. See the `samples/` directory for some example definitions.
+Document definitions must conform to the following specification. See the `samples/` directory and Kashoo's official [document definitions](https://github.com/Kashoo/kashoo-document-definitions) repository for some examples.
 
 At the top level, the document definitions object contains a property for each document type that is to be supported by the Sync Gateway bucket. For example:
 
