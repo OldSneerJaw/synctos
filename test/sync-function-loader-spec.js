@@ -15,7 +15,7 @@ describe('Sync function loader', function() {
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
 
-    indentMock = { indentJS: simpleMock.stub() };
+    indentMock = { js: simpleMock.stub() };
     mockRequire('../lib/indent.js/indent.min.js', indentMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
@@ -42,7 +42,7 @@ describe('Sync function loader', function() {
     fsMock.readFileSync.returnWith(originalSyncFuncTemplate);
     fileFragmentLoaderMock.load.returnWith(updatedSyncFuncTemplate);
     docDefinitionsLoaderMock.load.returnWith(docDefinitionsContent);
-    indentMock.indentJS.returnWith(indentedSyncFunc);
+    indentMock.js.returnWith(indentedSyncFunc);
 
     var result = syncFunctionLoader.load(docDefinitionsFile);
 
@@ -57,8 +57,9 @@ describe('Sync function loader', function() {
     expect(docDefinitionsLoaderMock.load.callCount).to.equal(1);
     expect(docDefinitionsLoaderMock.load.calls[0].args).to.eql([ docDefinitionsFile ]);
 
-    expect(indentMock.indentJS.callCount).to.equal(1);
-    expect(indentMock.indentJS.calls[0].args).to.eql([ 'function my-sync-func-template() { ' + docDefinitionsContent + '; }', '  ' ]);
+    expect(indentMock.js.callCount).to.equal(1);
+    expect(indentMock.js.calls[0].args).to.eql(
+      [ 'function my-sync-func-template() { ' + docDefinitionsContent + '; }', { tabString: '  ' } ]);
   });
 
   it('should throw an exception if the sync function template file does not exist', function() {
@@ -68,7 +69,7 @@ describe('Sync function loader', function() {
     fsMock.readFileSync.throwWith(expectedException);
     fileFragmentLoaderMock.load.returnWith('');
     docDefinitionsLoaderMock.load.returnWith('');
-    indentMock.indentJS.returnWith('');
+    indentMock.js.returnWith('');
 
     expect(function() {
       syncFunctionLoader.load(docDefinitionsFile);
@@ -81,6 +82,6 @@ describe('Sync function loader', function() {
 
     expect(docDefinitionsLoaderMock.load.callCount).to.equal(0);
 
-    expect(indentMock.indentJS.callCount).to.equal(0);
+    expect(indentMock.js.callCount).to.equal(0);
   });
 });
