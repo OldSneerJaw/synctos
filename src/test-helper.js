@@ -577,16 +577,21 @@ function verifyDocumentDeleted(oldDoc, expectedAuthorization, expectedAccessAssi
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {
+  var syncFuncError = null;
   try {
     syncFunction(doc, oldDoc);
-    assert.fail('Document validation succeeded when it was expected to fail');
   } catch (ex) {
-    verifyValidationErrors(docType, expectedErrorMessages, ex);
+    syncFuncError = ex;
   }
 
-  verifyAuthorization(expectedAuthorization);
+  if (syncFuncError) {
+    verifyValidationErrors(docType, expectedErrorMessages, syncFuncError);
+    verifyAuthorization(expectedAuthorization);
 
-  assert.equal(channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(channel.calls));
+    assert.equal(channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(channel.calls));
+  } else {
+    assert.fail('Document validation succeeded when it was expected to fail');
+  }
 }
 
 function verifyDocumentNotCreated(doc, docType, expectedErrorMessages, expectedAuthorization) {
@@ -629,7 +634,7 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
     var expectedErrorMsg = expectedErrorMessages[expectedErrorIndex];
     assert.ok(
       actualErrorMessages.indexOf(expectedErrorMsg) >= 0,
-      'Document validation errors do not include expected error message: "' + expectedErrorMsg  + '"');
+      'Document validation errors do not include expected error message: "' + expectedErrorMsg  + '". Actual error: ' + exception.forbidden);
   }
 
   // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
@@ -667,58 +672,70 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   requireRole.throwWith(roleAccessDeniedError);
   requireUser.throwWith(userAccessDeniedError);
 
+  var syncFuncError = null;
   try {
     syncFunction(doc, oldDoc);
-    assert.fail('Document authorization succeeded when it was expected to fail');
   } catch (ex) {
+    syncFuncError = ex;
+  }
+
+  if (syncFuncError) {
     if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
       assert.equal(
-        ex,
+        syncFuncError,
         channelAccessDeniedError,
-        'Document authorization error does not indicate channel access was denied. Actual: ' + JSON.stringify(ex));
+        'Document authorization error does not indicate channel access was denied. Actual: ' + JSON.stringify(syncFuncError));
     } else if (countAuthorizationTypes(expectedAuthorization) === 0) {
       verifyRequireAccess([ ]);
     } else if (countAuthorizationTypes(expectedAuthorization) > 1) {
       assert.equal(
-        ex.forbidden,
+        syncFuncError.forbidden,
         generalAuthFailedMessage,
-        'Document authorization error does not indicate that channel, role and user access were all denied. Actual: ' + JSON.stringify(ex));
+        'Document authorization error does not indicate that channel, role and user access were all denied. Actual: ' + JSON.stringify(syncFuncError));
     } else if (expectedAuthorization.expectedChannels) {
       assert.equal(
-        ex,
+        syncFuncError,
         channelAccessDeniedError,
-        'Document authorization error does not indicate channel access was denied. Actual: ' + JSON.stringify(ex));
+        'Document authorization error does not indicate channel access was denied. Actual: ' + JSON.stringify(syncFuncError));
     } else if (expectedAuthorization.expectedRoles) {
       assert.equal(
-        ex,
+        syncFuncError,
         roleAccessDeniedError,
-        'Document authorization error does not indicate role access was denied. Actual: ' + JSON.stringify(ex));
+        'Document authorization error does not indicate role access was denied. Actual: ' + JSON.stringify(syncFuncError));
     } else if (expectedAuthorization.expectedUsers) {
       assert.ok(
-        ex,
+        syncFuncError,
         userAccessDeniedError,
-        'Document authorization error does not indicate user access was denied. Actual: ' + JSON.stringify(ex));
+        'Document authorization error does not indicate user access was denied. Actual: ' + JSON.stringify(syncFuncError));
     }
-  }
 
-  verifyAuthorization(expectedAuthorization);
+    verifyAuthorization(expectedAuthorization);
+  } else {
+    assert.fail('Document authorization succeeded when it was expected to fail');
+  }
 }
 
 function verifyUnknownDocumentType(doc, oldDoc) {
+  var syncFuncError = null;
   try {
     syncFunction(doc, oldDoc);
-    assert.fail('Document type was successfully identified when it was expected to be unknown');
   } catch (ex) {
-    assert.equal(
-      ex.forbidden,
-      'Unknown document type',
-      'Document validation error does not indicate the document type is unrecognized. Actual: ' + JSON.stringify(ex));
+    syncFuncError = ex;
   }
 
-  assert.equal(channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(channel.calls));
-  assert.equal(requireAccess.callCount, 0, 'Unexpected attempt to specify required channels: ' + JSON.stringify(requireAccess.calls));
-  assert.equal(requireRole.callCount, 0, 'Unexpected attempt to specify required roles: ' + JSON.stringify(requireRole.calls));
-  assert.equal(requireUser.callCount, 0, 'Unexpected attempt to specify required users: ' + JSON.stringify(requireUser.calls));
+  if (syncFuncError) {
+    assert.equal(
+      syncFuncError.forbidden,
+      'Unknown document type',
+      'Document validation error does not indicate the document type is unrecognized. Actual: ' + JSON.stringify(syncFuncError));
+
+    assert.equal(channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(channel.calls));
+    assert.equal(requireAccess.callCount, 0, 'Unexpected attempt to specify required channels: ' + JSON.stringify(requireAccess.calls));
+    assert.equal(requireRole.callCount, 0, 'Unexpected attempt to specify required roles: ' + JSON.stringify(requireRole.calls));
+    assert.equal(requireUser.callCount, 0, 'Unexpected attempt to specify required users: ' + JSON.stringify(requireUser.calls));
+  } else {
+    assert.fail('Document type was successfully identified when it was expected to be unknown');
+  }
 }
 
 // Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function
