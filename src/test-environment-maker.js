@@ -22,12 +22,12 @@ function init(rawSyncFunction, syncFunctionFile) {
   try {
     environmentTemplate = fs.readFileSync(__dirname + '/templates/test-environment-template.js', 'utf8').trim();
   } catch (ex) {
-    console.log('ERROR: Unable to read the test helper environment template: ' + ex);
+    console.log('ERROR: Unable to read the test environment template: ' + ex);
 
     throw ex;
   }
 
-  // The test helper environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
+  // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
   // the sync function
   var environmentString = environmentTemplate.replace(
     '%SYNC_FUNC_PLACEHOLDER%',
@@ -37,7 +37,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   // valid statement.
   var environmentStatement = '(' + environmentString + ');';
 
-  // Compile the test helper environment function within the current virtual machine context so it can share access to the "requireAccess",
+  // Compile the test environment function within the current virtual machine context so it can share access to the "requireAccess",
   // "channel", "customActionStub", etc. stubs with the test-helper module
   var environmentFunction = vm.runInThisContext(environmentStatement, options);
 
