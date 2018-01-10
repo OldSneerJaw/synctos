@@ -1,4 +1,5 @@
 function(require) {
+  var _ = require('../lib/underscore/underscore-min.js');
   var simple = require('../lib/simple-mock/index.js');
 
   var requireAccess = simple.stub();
@@ -11,6 +12,7 @@ function(require) {
   var customActionStub = simple.stub();
 
   return {
+    _: _,
     requireAccess: requireAccess,
     requireRole: requireRole,
     requireUser: requireUser,

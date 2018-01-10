@@ -11,6 +11,7 @@
   "strict": false,
   "undef": true,
   "globals": {
+    "_": false,
     "access": false,
     "channel": false,
     "customActionStub": false,
