@@ -233,10 +233,9 @@ exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 
 
 var assert = require('assert');
-var simple = require('../lib/simple-mock/index.js');
 var fs = require('fs');
-var vm = require('vm');
 var syncFunctionLoader = require('./sync-function-loader.js');
+var testEnvironmentMaker = require('./test-environment-maker.js');
 
 // Placeholders for stubbing built-in Sync Gateway support functions.
 // More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
@@ -267,7 +266,7 @@ function initDocumentDefinitions(filePath) {
 }
 
 function init(rawSyncFunction, syncFunctionFile) {
-  var testHelperEnvironment = loadEnvironment(rawSyncFunction, syncFunctionFile);
+  var testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
 
   exports.requireAccess = requireAccess = testHelperEnvironment.requireAccess;
   exports.requireRole = requireRole = testHelperEnvironment.requireRole;
@@ -279,38 +278,6 @@ function init(rawSyncFunction, syncFunctionFile) {
   exports.customActionStub = customActionStub = testHelperEnvironment.customActionStub;
 
   exports.syncFunction = syncFunction = testHelperEnvironment.syncFunction;
-}
-
-function loadEnvironment(rawSyncFunction, syncFunctionFile) {
-  var options = {
-    filename: syncFunctionFile,
-    displayErrors: true
-  };
-
-  var testHelperEnvironmentTemplate;
-  try {
-    testHelperEnvironmentTemplate = fs.readFileSync(__dirname + '/templates/test-helper-environment-template.js', 'utf8').trim();
-  } catch (ex) {
-    console.log('ERROR: Unable to read the test helper environment template: ' + ex);
-
-    throw ex;
-  }
-
-  // The test helper environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
-  // the sync function
-  var testHelperEnvironmentString = testHelperEnvironmentTemplate.replace(
-    '%SYNC_FUNC_PLACEHOLDER%',
-    function() { return unescapeBackticks(rawSyncFunction); });
-
-  // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
-  // valid statement.
-  var testHelperEnvironmentStatement = '(' + testHelperEnvironmentString + ');';
-
-  // Compile the test helper environment function within the current virtual machine context so it can share access to the "requireAccess",
-  // "channel", "customActionStub", etc. stubs with the test-helper module
-  var testHelperEnvironmentFunction = vm.runInThisContext(testHelperEnvironmentStatement, options);
-
-  return testHelperEnvironmentFunction(require);
 }
 
 function verifyRequireAccess(expectedChannels) {
@@ -736,12 +703,4 @@ function verifyUnknownDocumentType(doc, oldDoc) {
   } else {
     assert.fail('Document type was successfully identified when it was expected to be unknown');
   }
-}
-
-// Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function
-// generator script automatically escapes backtick characters with the sequence "\`" so that it produces a valid multiline string.
-// However, when loaded by the test helper, a sync function is not inserted into a Sync Gateway configuration file so we must "unescape"
-// backtick characters to preserve the original intention.
-function unescapeBackticks(originalString) {
-  return originalString.replace(/\\`/g, function() { return '`'; });
 }
