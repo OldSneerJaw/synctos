@@ -1,8 +1,18 @@
+/**
+ * Creates simulated Sync Gateway sync function environments for use in tests.
+ *
+ * @param {string} rawSyncFunction The raw string contents of the sync function
+ * @param {string} [syncFunctionFile] The optional path to the sync function file, to be used to generate stack traces when errors occur
+ *
+ * @returns {Object} The simulated environment created for the sync function
+ */
+exports.init = init;
+
 var fs = require('fs');
 var vm = require('vm');
 var simple = require('../lib/simple-mock/index.js');
 
-exports.init = function(rawSyncFunction, syncFunctionFile) {
+function init(rawSyncFunction, syncFunctionFile) {
   var options = {
     filename: syncFunctionFile,
     displayErrors: true
@@ -32,7 +42,7 @@ exports.init = function(rawSyncFunction, syncFunctionFile) {
   var environmentFunction = vm.runInThisContext(environmentStatement, options);
 
   return environmentFunction(require);
-};
+}
 
 // Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function
 // generator script automatically escapes backtick characters with the sequence "\`" so that it produces a valid multiline string.
