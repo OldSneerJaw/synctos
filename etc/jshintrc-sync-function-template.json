@@ -1,0 +1,16 @@
+{
+  "extends": "../../.jshintrc",
+  "esversion": 3,
+  "unused": false,
+  "globals": {
+    "_": false,
+    "access": false,
+    "channel": false,
+    "customActionStub": false,
+    "JSON": false,
+    "requireAccess": false,
+    "requireRole": false,
+    "requireUser": false,
+    "role": false
+  }
+}

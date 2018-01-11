@@ -1,13 +1,4 @@
 {
   "extends": "../.jshintrc",
-  "undef": false,
-  "globals": {
-    "access": false,
-    "channel": false,
-    "customActionStub": false,
-    "requireAccess": false,
-    "requireRole": false,
-    "requireUser": false,
-    "role": false
-  }
+  "mocha" : true
 }

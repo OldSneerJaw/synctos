@@ -44,7 +44,7 @@
           required: false,
           mustNotBeEmpty: true
         }
-      },
+      }
     },
     paymentProcessors: {
       // The list of payment processor IDs that are available for the business

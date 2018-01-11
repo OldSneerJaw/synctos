@@ -66,7 +66,7 @@ function validateDocDefinition(docDefinition) {
     switch(propertyName) {
       case 'typeFilter':
         hasTypeFilter = true;
-        if (typeof(propertyValue) !== 'function') {
+        if (typeof propertyValue !== 'function') {
           validationErrors.push('the "typeFilter" property is not a function');
         }
         break;
@@ -74,7 +74,7 @@ function validateDocDefinition(docDefinition) {
         hasPermissionGrant = true;
         if (isAnObject(propertyValue)) {
           validatePermissions('channels', propertyValue, supportedChannelOperations);
-        } else if (typeof(propertyValue) !== 'function') {
+        } else if (typeof propertyValue !== 'function') {
           validationErrors.push('the "channels" property is not an object or a function');
         }
         break;
@@ -82,7 +82,7 @@ function validateDocDefinition(docDefinition) {
         hasPermissionGrant = true;
         if (isAnObject(propertyValue)) {
           validatePermissions('authorizedRoles', propertyValue, supportedRoleOrUserOperations);
-        } else if (typeof(propertyValue) !== 'function') {
+        } else if (typeof propertyValue !== 'function') {
           validationErrors.push('the "authorizedRoles" property is not an object or a function');
         }
         break;
@@ -90,7 +90,7 @@ function validateDocDefinition(docDefinition) {
         hasPermissionGrant = true;
         if (isAnObject(propertyValue)) {
           validatePermissions('authorizedUsers', propertyValue, supportedRoleOrUserOperations);
-        } else if (typeof(propertyValue) !== 'function') {
+        } else if (typeof propertyValue !== 'function') {
           validationErrors.push('the "authorizedUsers" property is not an object or a function');
         }
         break;
@@ -99,34 +99,34 @@ function validateDocDefinition(docDefinition) {
         if (isAnObject(propertyValue)) {
           var propertiesValidationErrors = propertiesValidator.validate(docDefinition, propertyValue);
           validationErrors = validationErrors.concat(propertiesValidationErrors);
-        } else if (typeof(propertyValue) !== 'function') {
+        } else if (typeof propertyValue !== 'function') {
           validationErrors.push('the "propertyValidators" property is not an object or a function');
         }
         break;
       case 'allowUnknownProperties':
-        if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
+        if (typeof propertyValue !== 'boolean' && typeof propertyValue !== 'function') {
           validationErrors.push('the "allowUnknownProperties" property is not a boolean or a function');
         }
         break;
       case 'immutable':
-        if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
+        if (typeof propertyValue !== 'boolean' && typeof propertyValue !== 'function') {
           validationErrors.push('the "immutable" property is not a boolean or a function');
         } else if (docDefinition.immutable === true && (docDefinition.cannotReplace === true || docDefinition.cannotDelete === true)) {
           validationErrors.push('the "immutable" property should not be enabled when either "cannotReplace" or "cannotDelete" are also enabled');
         }
         break;
       case 'cannotReplace':
-        if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
+        if (typeof propertyValue !== 'boolean' && typeof propertyValue !== 'function') {
           validationErrors.push('the "cannotReplace" property is not a boolean or a function');
         }
         break;
       case 'cannotDelete':
-        if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
+        if (typeof propertyValue !== 'boolean' && typeof propertyValue !== 'function') {
           validationErrors.push('the "cannotDelete" property is not a boolean or a function');
         }
         break;
       case 'allowAttachments':
-        if (typeof(propertyValue) !== 'boolean' && typeof(propertyValue) !== 'function') {
+        if (typeof propertyValue !== 'boolean' && typeof propertyValue !== 'function') {
           validationErrors.push('the "allowAttachments" property is not a boolean or a function');
         }
         break;
@@ -137,7 +137,7 @@ function validateDocDefinition(docDefinition) {
 
         if (isAnObject(propertyValue)) {
           validateAttachmentConstraints(propertyValue);
-        } else if (typeof(propertyValue) !== 'function') {
+        } else if (typeof propertyValue !== 'function') {
           validationErrors.push('the "attachmentConstraints" property is not an object or a function');
         }
         break;
@@ -192,11 +192,11 @@ function validateDocDefinition(docDefinition) {
 
         for (var permissionIndex = 0; permissionIndex < permissions.length; permissionIndex++) {
           var permission = permissions[permissionIndex];
-          if (typeof(permission) !== 'string') {
+          if (typeof permission !== 'string') {
             validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation contains an element that is not a string: ' + JSON.stringify(permission));
           }
         }
-      } else if (typeof(permissions) !== 'string') {
+      } else if (typeof permissions !== 'string') {
         validationErrors.push('the "' + permissionsCategory + '" property\'s "' + permissionOperation + '" operation is not a string or array');
       }
     }
@@ -227,7 +227,7 @@ function validateDocDefinition(docDefinition) {
           validateAttachmentListConstraint('supportedContentTypes', attachmentConstraintPropertyValue);
           break;
         case 'requireAttachmentReferences':
-          if (typeof(attachmentConstraintPropertyValue) !== 'boolean') {
+          if (typeof attachmentConstraintPropertyValue !== 'boolean') {
             validationErrors.push('the "attachmentConstraints" specifies a "requireAttachmentReferences" property that is not a boolean');
           }
           break;
@@ -260,7 +260,7 @@ function validateDocDefinition(docDefinition) {
 
       for (var elementIndex = 0; elementIndex < propertyValue.length; elementIndex++) {
         var elementValue = propertyValue[elementIndex];
-        if (typeof(elementValue) !== 'string') {
+        if (typeof elementValue !== 'string') {
           validationErrors.push('the "attachmentConstraints" property\'s "' + propertyName + '" contains an element that is not a string: ' + JSON.stringify(elementValue));
         }
       }
@@ -343,11 +343,11 @@ function validateDocDefinition(docDefinition) {
 
       for (var elementIndex = 0; elementIndex < entitiesProperty.length; elementIndex++) {
         var elementValue = entitiesProperty[elementIndex];
-        if (typeof(elementValue) !== 'string') {
+        if (typeof elementValue !== 'string') {
           validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' "' + entitiesPropertyName + '" property has an element that is not a string: ' + JSON.stringify(elementValue));
         }
       }
-    } else if (typeof(entitiesProperty) !== 'string' && typeof(entitiesProperty) !== 'function') {
+    } else if (typeof entitiesProperty !== 'string' && typeof entitiesProperty !== 'function') {
       validationErrors.push('the "accessAssignments" element ' + assignmentIndex + ' has a "' + entitiesPropertyName + '" property that is not an array, string or function');
     }
   }
@@ -358,7 +358,7 @@ function validateDocDefinition(docDefinition) {
 
       if (!supportedCustomActionEvents[customActionName]) {
         validationErrors.push('the "customActions" property specifies an invalid event: ' + JSON.stringify(customActionName));
-      } else if (typeof(customActionFunc) !== 'function') {
+      } else if (typeof customActionFunc !== 'function') {
         validationErrors.push('the "customActions" property contains a value for the "' + customActionName + '" event that is not a function');
       }
     }
@@ -368,23 +368,23 @@ function validateDocDefinition(docDefinition) {
 }
 
 function resolveDocDefinitions(rawDocDefinitions) {
-  return (typeof(rawDocDefinitions) === 'function') ? rawDocDefinitions() : rawDocDefinitions;
+  return (typeof rawDocDefinitions === 'function') ? rawDocDefinitions() : rawDocDefinitions;
 }
 
 function isAnObject(value) {
-  return value !== null && typeof(value) === 'object' && !(value instanceof Array);
+  return value !== null && typeof value === 'object' && !(value instanceof Array);
 }
 
 function isUndefined(value) {
-  return typeof(value) === 'undefined';
+  return typeof value === 'undefined';
 }
 
 // Determine if a given value is an integer. Exists as a failsafe because Number.isInteger does not exist in older versions of Node.js
 // (e.g. 0.10.x).
 function isInteger(value) {
-  if (typeof(Number.isInteger) === 'function') {
+  if (typeof Number.isInteger === 'function') {
     return Number.isInteger(value);
   } else {
-    return typeof(value) === 'number' && isFinite(value) && Math.floor(value) === value;
+    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
   }
 }

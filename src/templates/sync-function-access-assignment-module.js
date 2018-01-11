@@ -1,7 +1,7 @@
 function() {
   // Adds a prefix to the specified item if the prefix is defined
   function prefixItem(item, prefix) {
-    return (prefix ? prefix + item : item.toString());
+    return prefix ? prefix + item : item.toString();
   }
 
   // Transforms the given item or items into a new list of items with the specified prefix (if any) appended to each element
@@ -33,7 +33,7 @@ function() {
     if (isValueNullOrUndefined(collectionDefinition)) {
       return [ ];
     } else {
-      if (typeof(collectionDefinition) === 'function') {
+      if (typeof collectionDefinition === 'function') {
         var fnResults = collectionDefinition(doc, oldDoc);
 
         return resolveCollectionItems(fnResults, itemPrefix);
