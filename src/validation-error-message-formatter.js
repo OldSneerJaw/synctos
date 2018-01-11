@@ -286,13 +286,6 @@ exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, e
 };
 
 /**
- * DEPRECATED. Use supportedContentTypesAttachmentReferenceViolation instead.
- */
-exports.supportedContentTypesAttachmentViolation = function(itemPath, expectedContentTypes) {
-  return exports.supportedContentTypesAttachmentReferenceViolation(itemPath, expectedContentTypes);
-};
-
-/**
  * Formats a message for the error that occurs when a file attachment is not one of the supported content types.
  *
  * @param {string} attachmentName The name of the attachment in question
@@ -316,13 +309,6 @@ exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, exp
   var extensionsString = expectedFileExtensions.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
-};
-
-/**
- * DEPRECATED. Use supportedExtensionsAttachmentReferenceViolation instead.
- */
-exports.supportedExtensionsAttachmentViolation = function(itemPath, expectedFileExtensions) {
-  return exports.supportedExtensionsAttachmentReferenceViolation(itemPath, expectedFileExtensions);
 };
 
 /**

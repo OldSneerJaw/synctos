@@ -13,11 +13,6 @@ exports.initSyncFunction = initSyncFunction;
 exports.initDocumentDefinitions = initDocumentDefinitions;
 
 /**
- * DEPRECATED. Use initSyncFunction instead.
- */
-exports.init = initSyncFunction;
-
-/**
  * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
  * found in the "validation-error-message-formatter" module.
  */
