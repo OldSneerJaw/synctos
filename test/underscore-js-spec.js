@@ -1,5 +1,4 @@
 var testHelper = require('../src/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Array validation type', function() {
   beforeEach(function() {

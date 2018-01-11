@@ -10,7 +10,6 @@ exports.init = init;
 
 var fs = require('fs');
 var vm = require('vm');
-var simple = require('../lib/simple-mock/index.js');
 
 function init(rawSyncFunction, syncFunctionFile) {
   var options = {
