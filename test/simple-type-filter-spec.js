@@ -42,10 +42,6 @@ describe('Simple type filter:', function() {
     });
 
     it('identifies a deleted document by the type property of the old document', function() {
-      var doc = {
-        _id: 'my-doc',
-        _deleted: true
-      };
       var oldDoc = {
         _id: 'my-doc',
         type: docTypeId

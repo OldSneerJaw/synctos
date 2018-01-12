@@ -26,14 +26,14 @@ function validate(docDefinition, docPropertyValidatorDefinitions) {
 
   function validatePropertyDefinition(propertyName, propertyDefinition) {
     var type = propertyDefinition.type;
-    if (typeof(type) === 'undefined') {
+    if (typeof type === 'undefined') {
       validationErrors.push('the "propertyValidators" entry "' + propertyName + '" does not declare a "type"');
 
       return;
-    } else if (typeof(type) === 'function') {
+    } else if (typeof type === 'function') {
       // Properties with a type that is determined dynamically cannot be validated at this point
       return;
-    } else if (typeof(type) !== 'string') {
+    } else if (typeof type !== 'string') {
       validationErrors.push('the "propertyValidators" entry "' + propertyName + '" declares a "type" that is neither a string nor a function');
 
       return;
@@ -72,5 +72,5 @@ function validate(docDefinition, docPropertyValidatorDefinitions) {
 }
 
 function isAnObject(value) {
-  return value !== null && typeof(value) === 'object' && !(value instanceof Array);
+  return value !== null && typeof value === 'object' && !(value instanceof Array);
 }

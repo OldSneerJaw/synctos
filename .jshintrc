@@ -6,18 +6,10 @@
   "futurehostile": true,
   "latedef": "nofunc",
   "noarg": true,
+  "node": true,
   "nonew": true,
   "shadow": false,
   "strict": false,
   "undef": true,
-  "globals": {
-    "_": false,
-    "access": false,
-    "channel": false,
-    "customActionStub": false,
-    "requireAccess": false,
-    "requireRole": false,
-    "requireUser": false,
-    "role": false
-  }
+  "unused": true
 }

@@ -450,7 +450,7 @@ function verifyAccessAssignments(expectedAccessAssignments) {
     if (expectedAssignment.expectedType === 'role') {
       verifyRoleAccessAssignment(expectedAssignment);
       expectedRoleCalls++;
-    } else if (expectedAssignment.expectedType === 'channel' || !(expectedAssignment.expectedType)) {
+    } else if (expectedAssignment.expectedType === 'channel' || !expectedAssignment.expectedType) {
       verifyChannelAccessAssignment(expectedAssignment);
       expectedAccessCalls++;
     }
@@ -486,7 +486,7 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
 
 function verifyAuthorization(expectedAuthorization) {
   var expectedOperationChannels = [ ];
-  if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
+  if (typeof expectedAuthorization === 'string' || expectedAuthorization instanceof Array) {
     // For backward compatibility, if the authorization parameter is not an object, treat it as the collection of channels that are required
     // for authorization
     expectedOperationChannels = expectedAuthorization;
@@ -511,7 +511,7 @@ function verifyAuthorization(expectedAuthorization) {
       assert.equal(requireUser.callCount, 0, 'Unexpected document users assigned: ' + JSON.stringify(requireUser.calls));
     }
 
-    if (!(expectedAuthorization.expectedChannels) && !(expectedAuthorization.expectedRoles) && !(expectedAuthorization.expectedUsers)) {
+    if (!expectedAuthorization.expectedChannels && !expectedAuthorization.expectedRoles && !expectedAuthorization.expectedUsers) {
       verifyRequireAccess([ ]);
     }
   }
@@ -647,7 +647,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   }
 
   if (syncFuncError) {
-    if (typeof(expectedAuthorization) === 'string' || expectedAuthorization instanceof Array) {
+    if (typeof expectedAuthorization === 'string' || expectedAuthorization instanceof Array) {
       assert.equal(
         syncFuncError,
         channelAccessDeniedError,

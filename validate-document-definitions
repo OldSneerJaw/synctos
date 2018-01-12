@@ -23,7 +23,7 @@ var environmentShell = environmentShellMaker.createShell(rawDocDefinitionsString
 var validationErrors = docDefinitionsValidator.validate(environmentShell.documentDefinitions);
 
 var exitStatus = 0;
-if (typeof(validationErrors) === 'string') {
+if (typeof validationErrors === 'string') {
   console.log('ERROR: ' + validationErrors);
 
   exitStatus = errorStatus;

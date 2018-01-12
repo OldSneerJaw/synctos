@@ -45,7 +45,7 @@ function() {
 
   // Resolves a constraint defined at the document level (e.g. `propertyValidators`, `allowUnknownProperties`, `immutable`).
   function resolveDocConstraint(doc, oldDoc, constraintDefinition) {
-    return (typeof(constraintDefinition) === 'function') ? constraintDefinition(doc, getEffectiveOldDoc(oldDoc)) : constraintDefinition;
+    return (typeof constraintDefinition === 'function') ? constraintDefinition(doc, getEffectiveOldDoc(oldDoc)) : constraintDefinition;
   }
 
   // Ensures the document structure and content are valid
@@ -114,7 +114,7 @@ function() {
     // The following functions are nested within this function so they can share access to the doc, oldDoc and validationErrors params and
     // the attachmentReferenceValidators and itemStack variables
     function resolveValidationConstraint(constraintDefinition) {
-      if (typeof(constraintDefinition) === 'function') {
+      if (typeof constraintDefinition === 'function') {
         var currentItemEntry = itemStack[itemStack.length - 1];
 
         return constraintDefinition(doc, getEffectiveOldDoc(oldDoc), currentItemEntry.itemValue, currentItemEntry.oldItemValue);
@@ -199,12 +199,12 @@ function() {
       }
 
       var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
-      if (typeof(expectedEqualValue) !== 'undefined') {
+      if (typeof expectedEqualValue !== 'undefined') {
         validateEquality(expectedEqualValue, true);
       }
 
       var expectedStrictEqualValue = resolveValidationConstraint(validator.mustEqualStrict);
-      if (typeof(expectedStrictEqualValue) !== 'undefined') {
+      if (typeof expectedStrictEqualValue !== 'undefined') {
         validateEquality(expectedStrictEqualValue, false);
       }
 
@@ -260,7 +260,7 @@ function() {
             var regexPattern = resolveValidationConstraint(validator.regexPattern);
             if (typeof itemValue !== 'string') {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be a string');
-            } else if (regexPattern && !(regexPattern.test(itemValue))) {
+            } else if (regexPattern && !regexPattern.test(itemValue)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must conform to expected format ' + regexPattern);
             }
             break;
@@ -316,12 +316,12 @@ function() {
             break;
           default:
             // This is not a document validation error; the item validator is configured incorrectly and must be fixed
-            throw({ forbidden: 'No data type defined for validator of item "' + buildItemPath(itemStack) + '"' });
+            throw { forbidden: 'No data type defined for validator of item "' + buildItemPath(itemStack) + '"' };
         }
       } else if (resolveValidationConstraint(validator.required)) {
         // The item has no value (either it's null or undefined), but the validator indicates it is required
         validationErrors.push('required item "' + buildItemPath(itemStack) + '" is missing');
-      } else if (resolveValidationConstraint(validator.mustNotBeMissing) && typeof(itemValue) === 'undefined') {
+      } else if (resolveValidationConstraint(validator.mustNotBeMissing) && typeof itemValue === 'undefined') {
         // The item is missing (i.e. it's undefined), but the validator indicates it must not be
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be missing');
       } else if (resolveValidationConstraint(validator.mustNotBeNull) && itemValue === null) {
@@ -331,7 +331,7 @@ function() {
     }
 
     function hasNoValue(value, treatNullAsUndefined) {
-      return treatNullAsUndefined ? isValueNullOrUndefined(value) : typeof(value) === 'undefined';
+      return treatNullAsUndefined ? isValueNullOrUndefined(value) : typeof value === 'undefined';
     }
 
     function validateImmutable(onlyEnforceIfHasValue, treatNullAsUndefined) {
@@ -383,7 +383,7 @@ function() {
       } else {
         if (itemValue instanceof Array || expectedItemValue instanceof Array) {
           return checkArrayEquality(itemValue, expectedItemValue, treatNullAsUndefined);
-        } else if (typeof(itemValue) === 'object' || typeof(expectedItemValue) === 'object') {
+        } else if (typeof itemValue === 'object' || typeof expectedItemValue === 'object') {
           return checkObjectEquality(itemValue, expectedItemValue, treatNullAsUndefined);
         } else {
           return false;
@@ -412,7 +412,7 @@ function() {
     }
 
     function checkObjectEquality(itemValue, expectedItemValue, treatNullAsUndefined) {
-      if (typeof(itemValue) !== 'object' || typeof(expectedItemValue) !== 'object') {
+      if (typeof itemValue !== 'object' || typeof expectedItemValue !== 'object') {
         return false;
       }
 
@@ -518,7 +518,7 @@ function() {
                 validationErrors.push('empty hashtable key in item "' + buildItemPath(itemStack) + '" is not allowed');
               }
               var regexPattern = resolveValidationConstraint(keyValidator.regexPattern);
-              if (regexPattern && !(regexPattern.test(elementKey))) {
+              if (regexPattern && !regexPattern.test(elementKey)) {
                 validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format ' + regexPattern);
               }
             }

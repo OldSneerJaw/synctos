@@ -18,7 +18,7 @@ function() {
 
   // A document definition may define its authorized channels, roles or users as either a function or an object/hashtable
   function getAuthorizationMap(doc, oldDoc, authorizationDefinition) {
-    if (typeof(authorizationDefinition) === 'function') {
+    if (typeof authorizationDefinition === 'function') {
       return authorizationDefinition(doc, getEffectiveOldDoc(oldDoc));
     } else {
       return authorizationDefinition;
@@ -134,7 +134,7 @@ function() {
       requireAccess([ ]);
     } else if (!channelMatch && !roleMatch && !userMatch) {
       // None of the authorization methods (e.g. channels, roles, users) succeeded
-      throw({ forbidden: 'missing channel access' });
+      throw { forbidden: 'missing channel access' };
     }
 
     return {
