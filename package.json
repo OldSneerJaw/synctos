@@ -7,7 +7,7 @@
     "chai": "^4.1.2",
     "jshint": "^2.9.5",
     "mocha": "^4.1.0",
-    "mock-require": "^2.0.2"
+    "mock-require": "^3.0.1"
   },
   "scripts": {
     "test": "etc/prepare-tests.sh && node_modules/.bin/mocha",
