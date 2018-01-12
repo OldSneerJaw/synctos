@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Added
+- [#146](https://github.com/Kashoo/synctos/issues/146): Underscore.js support
 - [#123](https://github.com/Kashoo/synctos/issues/123): Specify sync-function-loader.js as the main package file
 - [#110](https://github.com/Kashoo/synctos/issues/110): Item constraint that requires an exact value match
 - [#108](https://github.com/Kashoo/synctos/issues/108): Finer grained control over whether null and missing values are accepted
