@@ -696,7 +696,7 @@ Once your testing libraries have been set up as development dependencies in your
 After that, create a new specification file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
 ```
-var testHelper = require('../node_modules/synctos/etc/test-helper.js');
+var testHelper = require('../node_modules/synctos/src/test-helper.js');
 ```
 
 Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:

@@ -3,7 +3,7 @@ var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Attachment reference validation type', function() {
   beforeEach(function() {
-    testHelper.init('build/sync-functions/test-attachment-reference-sync-function.js');
+    testHelper.initSyncFunction('build/sync-functions/test-attachment-reference-sync-function.js');
   });
 
   describe('file extensions constraint', function() {
