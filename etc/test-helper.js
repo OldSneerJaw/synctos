@@ -10,3 +10,4 @@ var deprecationMessage = 'The etc/test-helper.js module has been deprecated. Use
 exports.initSyncFunction = deprecate(testHelper.initSyncFunction, deprecationMessage);
 exports.initDocumentDefinitions = deprecate(testHelper.initDocumentDefinitions, deprecationMessage);
 exports.init = deprecate(testHelper.initSyncFunction, deprecationMessage);
+exports.validationErrorFormatter = require('./validation-error-message-formatter.js');
