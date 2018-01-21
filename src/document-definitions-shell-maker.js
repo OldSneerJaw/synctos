@@ -12,6 +12,7 @@
 exports.createShell = createShell;
 
 var fs = require('fs');
+var path = require('path');
 var vm = require('vm');
 
 function createShell(docDefinitionsString, originalFilename) {
@@ -22,7 +23,7 @@ function createShell(docDefinitionsString, originalFilename) {
 
   var shellTemplateString;
   try {
-    shellTemplateString = fs.readFileSync(__dirname + '/templates/document-definitions-shell-template.js', 'utf8').trim();
+    shellTemplateString = fs.readFileSync(path.resolve(__dirname, '../templates/document-definitions-shell-template.js'), 'utf8').trim();
   } catch (ex) {
     console.log('ERROR: Unable to read the document definitions shell template: ' + ex);
 

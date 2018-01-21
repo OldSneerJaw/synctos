@@ -7,7 +7,7 @@ describe('Sync function loader', function() {
   var syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
   var expectedMacroName = 'importSyncFunctionFragment';
-  var syncFuncTemplateDir = path.resolve(__dirname, './templates');
+  var syncFuncTemplateDir = path.resolve(__dirname, '../templates');
   var syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
 
   beforeEach(function() {

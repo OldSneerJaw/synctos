@@ -36,7 +36,7 @@ describe('Document definitions shell maker', function() {
     expect(result).to.eql(expectedResult);
 
     expect(fsMock.readFileSync.callCount).to.equal(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(__dirname, './templates/document-definitions-shell-template.js'), 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(__dirname, '../templates/document-definitions-shell-template.js'), 'utf8' ]);
 
     expect(vmMock.runInThisContext.callCount).to.equal(1);
     expect(vmMock.runInThisContext.calls[0].args).to.eql([

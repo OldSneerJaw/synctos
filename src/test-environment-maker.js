@@ -9,6 +9,7 @@
 exports.init = init;
 
 var fs = require('fs');
+var path = require('path');
 var vm = require('vm');
 
 function init(rawSyncFunction, syncFunctionFile) {
@@ -19,7 +20,7 @@ function init(rawSyncFunction, syncFunctionFile) {
 
   var environmentTemplate;
   try {
-    environmentTemplate = fs.readFileSync(__dirname + '/templates/test-environment-template.js', 'utf8').trim();
+    environmentTemplate = fs.readFileSync(path.resolve(__dirname, '../templates/test-environment-template.js'), 'utf8').trim();
   } catch (ex) {
     console.log('ERROR: Unable to read the test environment template: ' + ex);
 
