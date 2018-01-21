@@ -696,7 +696,7 @@ Once your testing libraries have been set up as development dependencies in your
 After that, create a new specification file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
 
 ```
-var testHelper = require('../node_modules/synctos/src/test-helper.js');
+var testHelper = require('synctos').testHelper;
 ```
 
 Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
@@ -765,6 +765,6 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 });
 ```
 
-The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/validation-error-message-formatter.js` module in this project for documentation.
+The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/validation-error-formatter.js` module in this project for documentation.
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).

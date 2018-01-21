@@ -14,9 +14,9 @@ exports.initDocumentDefinitions = initDocumentDefinitions;
 
 /**
  * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
- * found in the "validation-error-message-formatter" module.
+ * found in the "validation-error-formatter" module.
  */
-exports.validationErrorFormatter = require('./validation-error-message-formatter.js');
+exports.validationErrorFormatter = require('./validation-error-formatter.js');
 
 /**
  * Attempts to write the specified doc and then verifies that it completed successfully with the expected channels.
