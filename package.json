@@ -10,8 +10,8 @@
     "mock-require": "^3.0.1"
   },
   "scripts": {
-    "test": "etc/prepare-tests.sh && node_modules/.bin/mocha",
-    "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha -R xunit test/ > build/test-reports/synctos.xml"
+    "test": "etc/prepare-tests.sh && node_modules/.bin/mocha **/*.spec.js",
+    "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha -R xunit **/*.spec.js > build/test-reports/synctos.xml"
   },
   "license": "MIT",
   "repository": {

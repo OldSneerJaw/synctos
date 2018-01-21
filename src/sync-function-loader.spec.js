@@ -7,7 +7,7 @@ describe('Sync function loader', function() {
   var syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
   var expectedMacroName = 'importSyncFunctionFragment';
-  var syncFuncTemplateDir = path.resolve(__dirname, '../src/templates');
+  var syncFuncTemplateDir = path.resolve(__dirname, './templates');
   var syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
 
   beforeEach(function() {
@@ -19,12 +19,12 @@ describe('Sync function loader', function() {
     mockRequire('../lib/indent.js/indent.min.js', indentMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
-    mockRequire('../src/file-fragment-loader.js', fileFragmentLoaderMock);
+    mockRequire('./file-fragment-loader.js', fileFragmentLoaderMock);
 
     docDefinitionsLoaderMock = { load: simpleMock.stub() };
-    mockRequire('../src/document-definitions-loader.js', docDefinitionsLoaderMock);
+    mockRequire('./document-definitions-loader.js', docDefinitionsLoaderMock);
 
-    syncFunctionLoader = mockRequire.reRequire('../src/sync-function-loader.js');
+    syncFunctionLoader = mockRequire.reRequire('./sync-function-loader.js');
   });
 
   afterEach(function() {

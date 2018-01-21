@@ -32,7 +32,12 @@ Issue #100: Allow test-helper module to initialize from document definitions
 
 ### Testing
 
-Every change should include comprehensive test cases defined in the `test` directory using the [Chai](http://chaijs.com/) assertion library's [expect](http://chaijs.com/api/bdd/) assertion style. Tests are executed by the [Mocha](http://mochajs.org/) test runner. Be sure to make use of the built-in test-helper module to simplify test cases wherever possible. See the synctos [Testing](https://github.com/Kashoo/synctos/blob/master/README.md#testing) documentation for more info.
+Every change should include comprehensive test cases. There are two different categories for specifications/tests in the project:
+
+- Document definition configuration: Specifications for configuration elements that are defined in the `templates` directory are stored in the `test` directory. Document definitions that are to be referenced in such test cases should be stored in the `test/resources` directory. For example, the specifications for the `mustEqual` constraint are stored at `test/must-equal.spec.js` and the corresponding test document definitions are stored at `test/resources/must-equal-doc-definitions.js`. Be sure to make use of the built-in test-helper module to simplify test cases wherever possible. See the synctos [Testing](https://github.com/Kashoo/synctos/blob/master/README.md#testing) documentation for more info.
+- Node.js supporting code: Specifications for Node.js code that is defined in the `src` directory are stored alongside the corresponding source code files in the `src` directory. Except in special cases, the specifications file's name should match that of the file under test. For example, the specifications for `src/sync-function-loader.js` are stored at `src/sync-function-loader.spec.js`.
+
+In either case, specification files must be denoted by the `.spec.js` filename suffix to be executed by the [Mocha](http://mochajs.org/) test runner. Test cases should use the [Chai](http://chaijs.com/) assertion library's [expect](http://chaijs.com/api/bdd/) assertion style.
 
 To execute the full test suite and lint the project's JS files with JSHint, run `npm test` from the project's root directory.
 
