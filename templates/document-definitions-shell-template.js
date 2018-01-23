@@ -1,4 +1,5 @@
 function(require) {
+  var _ = require('../lib/underscore/underscore-min.js');
   var simple = require('../lib/simple-mock/index.js');
 
   var doc = { };
@@ -18,6 +19,7 @@ function(require) {
   var customActionStub = simple.stub();
 
   return {
+    _: _,
     doc: doc,
     oldDoc: oldDoc,
     typeIdValidator: typeIdValidator,

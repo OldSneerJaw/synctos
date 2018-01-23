@@ -96,9 +96,9 @@ describe('Document definitions advanced properties validator:', function() {
 
     propertiesValidatorMock = { validate: simpleMock.stub() };
     propertiesValidatorMock.validate.returnWith([ ]);
-    mockRequire('../src/document-definition-properties-validator.js', propertiesValidatorMock);
+    mockRequire('./document-definition-properties-validator.js', propertiesValidatorMock);
 
-    docDefinitionsValidator = mockRequire.reRequire('../src/document-definitions-validator.js');
+    docDefinitionsValidator = mockRequire.reRequire('./document-definitions-validator.js');
   });
 
   afterEach(function() {

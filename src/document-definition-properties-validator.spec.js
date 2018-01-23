@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var docDefinitionPropertiesValidator = require('../src/document-definition-properties-validator.js');
+var docDefinitionPropertiesValidator = require('./document-definition-properties-validator.js');
 
 describe('Document definition properties validator', function() {
   var testPropertyValidators, testDocDefinition;

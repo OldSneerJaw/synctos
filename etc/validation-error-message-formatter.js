@@ -1,9 +1,9 @@
-// DEPRECATION NOTICE: This module has been deprecated in favour of src/validation-error-message-formatter.js
+// DEPRECATION NOTICE: This module has been deprecated in favour of src/validation-error-formatter.js
 
 var deprecate = require('util').deprecate;
-var errorFormatter = require('../src/validation-error-message-formatter.js');
+var errorFormatter = require('../src/validation-error-formatter.js');
 
-var deprecationMessage = 'The etc/validation-error-message-formatter.js module has been deprecated. Use src/validation-error-message-formatter.js instead.';
+var deprecationMessage = 'The etc/validation-error-message-formatter.js module has been deprecated. Use src/validation-error-formatter.js instead.';
 
 exports.allowAttachmentsViolation = deprecate(errorFormatter.allowAttachmentsViolation, deprecationMessage);
 exports.cannotDeleteDocViolation = deprecate(errorFormatter.cannotDeleteDocViolation, deprecationMessage);
