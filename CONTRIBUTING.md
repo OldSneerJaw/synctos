@@ -75,7 +75,7 @@ The project does not and should not include any external Node.js package depende
 
 In that event, create a new directory for the dependency in the `lib` directory and be sure to include an unaltered copy of the dependency's license file, a new file called `VERSION` that specifies the exact version number of the dependency and only the files from the dependency that are absolutely necessary for the desired feature to work correctly in synctos (e.g. don't include `.gitignore`, `package.json`, `README`, etc.). If upgrading an existing embedded dependency, be sure to update the `VERSION` file as well. See `lib/indent.js` and `lib/simple-mock` for examples.
 
-Note that development dependencies (i.e. `devDependencies` in `package.json`) _may be_ allowed since they are not transitive, but one should exercise good judgement and only include dependencies that are vital and non-trivial.
+Note that development dependencies (i.e. `devDependencies` in `package.json`) _may be_ allowed since they are not transitive, but one should exercise good judgement and only include dependencies that provide vital and non-trivial functionality.
 
 Dependencies of either type may be rejected at the discretion of official project contributors if they are deemed unnecessary.
 
