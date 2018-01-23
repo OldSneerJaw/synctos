@@ -18,6 +18,12 @@ function() {
     return regex.test(value);
   }
 
+  function isUuid(value) {
+    var regex = /^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$/;
+
+    return regex.test(value);
+  }
+
   // A regular expression that matches one of the given file extensions
   function buildSupportedExtensionsRegex(extensions) {
     // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
@@ -295,6 +301,11 @@ function() {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" belongs to an enum that has no predefined values');
             } else if (enumPredefinedValues.indexOf(itemValue) < 0) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + enumPredefinedValues.toString());
+            }
+            break;
+          case 'uuid':
+            if (!isUuid(itemValue)) {
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" is not a valid UUID');
             }
             break;
           case 'object':

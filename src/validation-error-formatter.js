@@ -359,6 +359,15 @@ exports.unsupportedProperty = function(propertyPath) {
   return 'property "' + propertyPath + '" is not supported';
 };
 
+/**
+ * Formats a message for the error that occurs when the format for a UUID is invalid.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[10].uuidProp")
+ */
+exports.uuidFormatInvalid = function(propertyPath) {
+  return 'item "' + propertyPath + '" is not a valid UUID';
+};
+
 function getTypeDescription(type) {
   switch (type) {
     case 'array':

@@ -28,6 +28,11 @@
     }
   ],
   propertyValidators: {
+    eventId: {
+      type: 'uuid',
+      required: true,
+      immutable: true
+    },
     sender: {
       // Which Kashoo app/service generated the notification
       type: 'string',

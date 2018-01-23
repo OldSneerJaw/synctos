@@ -62,6 +62,7 @@ describe('Sample business notification doc definition', function() {
   it('successfully creates a valid notification document', function() {
     var doc = {
       _id: 'biz.63.notification.5',
+      eventId: '082979cf-6990-44a6-bb62-9b9517c3052b',
       sender: 'test-service',
       type: 'invoice-payments',
       subject: 'pay up!',
@@ -77,6 +78,7 @@ describe('Sample business notification doc definition', function() {
   it('cannot create a notification document when the properties are invalid', function() {
     var doc = {
       _id: 'biz.13.notification.5',
+      eventId: 'not-a-uuid',
       type: true ,
       subject: '', // missing sender, empty subject
       'whatsthis?': 'something I dont recognize!', // unrecognized property
@@ -98,13 +100,15 @@ describe('Sample business notification doc definition', function() {
         errorFormatter.requiredValueViolation('actions[0].label'),
         errorFormatter.requiredValueViolation('actions[1]'),
         errorFormatter.unsupportedProperty('whatsthis?'),
-        errorFormatter.datetimeFormatInvalid('firstReadAt')
+        errorFormatter.datetimeFormatInvalid('firstReadAt'),
+        errorFormatter.uuidFormatInvalid('eventId')
       ]);
   });
 
   it('successfully replaces a valid notification document', function() {
     var doc = {
       _id: 'biz.7.notification.3',
+      eventId: '1d856cd8-a0db-473c-9ea0-20b3113e2571',
       type: 'invoice-payments',
       sender: 'test-service',
       subject: 'a different subject',
@@ -116,6 +120,7 @@ describe('Sample business notification doc definition', function() {
     };
     var oldDoc = {
       _id: 'biz.7.notification.3',
+      eventId: '1d856cd8-a0db-473c-9ea0-20b3113e2571',
       type: 'invoice-payments',
       sender: 'test-service',
       subject: 'a different subject',
@@ -131,6 +136,7 @@ describe('Sample business notification doc definition', function() {
   it('cannot replace a notification document when the properties are invalid', function() {
     var doc = {
       _id: 'biz.10.notification.3',
+      eventId: '692d8c84-8ff2-358-b806-edbf4c3c5813',
       sender: '', // missing type, empty sender
       message: '', // missing subject, empty message
       createdAt: '2016-04-29T17:13:43.666Z', // changed createdAt
@@ -139,6 +145,7 @@ describe('Sample business notification doc definition', function() {
     };
     var oldDoc = { // valid oldDoc
       _id: 'biz.10.notification.3',
+      eventId: '692d8c84-8ff2-358-b806-edbf4c3c5813',
       type: 'invoice-payments',
       sender: 'test-service',
       subject: 'a different subject',
@@ -165,13 +172,15 @@ describe('Sample business notification doc definition', function() {
         errorFormatter.immutableItemViolation('actions'),
         errorFormatter.requiredValueViolation('actions[0].url'),
         errorFormatter.mustNotBeEmptyViolation('actions[0].label'),
-        errorFormatter.immutableItemViolation('firstReadAt')
+        errorFormatter.immutableItemViolation('firstReadAt'),
+        errorFormatter.uuidFormatInvalid('eventId')
       ]);
   });
 
   it('successfully deletes a valid notification document', function() {
     var oldDoc = {
       _id: 'biz.71.notification.5',
+      eventId: '56be8a52-f050-4d72-b4cb-c4f6eb2ca3ed',
       type: 'invoice-payments',
       sender: 'test-service',
       subject: 'pay up!',

@@ -54,6 +54,8 @@ function validate(docDefinition, docPropertyValidatorDefinitions) {
         break;
       case 'enum':
         break;
+      case 'uuid':
+        break;
       case 'attachmentReference':
         break;
       case 'array':
