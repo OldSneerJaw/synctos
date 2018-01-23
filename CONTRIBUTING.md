@@ -67,7 +67,7 @@ The project's `samples` directory contains a number of document definitions as e
 
 ### Backward compatibility
 
-The project's public API will evolve over time, but it is important to avoid changes that break the behaviour of validation types, document type definition properties, helper functions, etc. that are referenced in `README.md` and functions and variables that are defined in the test-helper and validation-error-formatter modules (and any others that may be introduced as public components over time). Only under special circumstances and with prior deliberation and approval from official project contributors will breaking changes be considered for inclusion.
+The project's public API will evolve over time, but it is important to avoid changes that break the behaviour of validation types, document type definition properties, helper functions, etc. that are referenced in `README.md` and the functions and variables that are defined in the package's main module (i.e. `index.js`) and any other Node.js modules that may be introduced as public components over time. Only under special circumstances and with prior deliberation and approval from official project contributors will breaking changes be considered for inclusion.
 
 ### Package dependencies
 
