@@ -22,6 +22,18 @@ This section contains information on how to implement new features or fix bugs i
 4. Install the project's local dependencies (run from the project root directory): `npm install`
 5. Execute the project's tests (also run from the project root directory): `npm test`
 
+### Project Structure
+
+Files in the project are organized into the following directories:
+
+* `/`: Reserved for project configuration files (e.g. `.gitignore`, `.travis.yml`, `package.json`), documentation (e.g. `README.md`, `CHANGELOG.md`, `LICENSE`) and executable command line scripts that are part of the package's public interface (e.g. `make-sync-function`, `validate-document-definitions`).
+* `etc`: Any development script or other type of file that is not part of the package's public interface (e.g. build scripts).
+* `lib`: Reserved for external packages (i.e. libraries) to be embedded as static dependencies in the project.
+* `samples`: A collection of document definitions that are purely for example purposes. Specifications for these document definitions are stored in the top level `test` directory.
+* `src`: JavaScript code that is executable by Node.js. Specifications should be stored in files alongside the code under test in this directory.
+* `templates`: JavaScript templates for sync functions/document definitions. Notably, the code in this directory is _not_ intended to be executable by Node.js. Specifications are stored in the top level `test` directory.
+* `test`: Test cases for document definition configuration elements from the top level `templates` directory and example document definitions from the top level `samples` directory.
+
 ### Commits
 
 Individual commits for an issue should reference the GitHub issue's ticket number in the commit message and provide a brief description of what has changed. For example:
@@ -61,7 +73,11 @@ The project's public API will evolve over time, but it is important to avoid cha
 
 The project does not and should not include any external Node.js package dependencies. In fact, in most cases it should not be necessary to add any new dependencies since the project is constrained to run within the limited JavaScript context provided by Sync Gateway, which does not allow for external packages to be imported. But in those cases where a particular utility is absolutely critical, it should be embedded statically in the project's `lib` directory, as long as it is available under a license that is compatible with this project's MIT license (e.g. Apache License 2.0, BSD, Mozilla Public License 2.0).
 
-In that event, create a new directory for the dependency in the `lib` directory and be sure to include an unaltered copy of the dependency's license file, a new file called `VERSION` that specifies the exact version number of the dependency and only the files from the dependency that are absolutely necessary for the desired feature to work correctly in synctos (e.g. don't include `.gitignore`, `package.json`, `README`, etc.). If upgrading an existing embedded dependency, be sure to updating the `VERSION` file as well. See `lib/indent.js` and `lib/simple-mock` for examples.
+In that event, create a new directory for the dependency in the `lib` directory and be sure to include an unaltered copy of the dependency's license file, a new file called `VERSION` that specifies the exact version number of the dependency and only the files from the dependency that are absolutely necessary for the desired feature to work correctly in synctos (e.g. don't include `.gitignore`, `package.json`, `README`, etc.). If upgrading an existing embedded dependency, be sure to update the `VERSION` file as well. See `lib/indent.js` and `lib/simple-mock` for examples.
+
+Note that development dependencies (i.e. `devDependencies` in `package.json`) _may be_ allowed since they are not transitive, but one should exercise good judgement and only include dependencies that provide vital and non-trivial functionality.
+
+Dependencies of either type may be rejected at the discretion of official project contributors if they are deemed unnecessary.
 
 ### Package versioning
 
