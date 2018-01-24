@@ -1,6 +1,8 @@
 # Change Log
-All notable changes to this project will be documented in this file.
-This project adheres to [Semantic Versioning](http://semver.org/).
+This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
+
+## [Unreleased]
+Nothing yet
 
 ## [1.10.0] - 2018-01-24
 ### Added
@@ -16,7 +18,6 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#174](https://github.com/Kashoo/synctos/issues/174): Reorganize project source structure
 
 ## [1.9.4] - 2018-01-04
-
 ### Changed
 - [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
 - [#163](https://github.com/Kashoo/synctos/issues/163): Embed simple-mock as a static development dependency
