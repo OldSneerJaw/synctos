@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.10.0] - 2018-01-24
 ### Added
 - [#146](https://github.com/Kashoo/synctos/issues/146): Underscore.js support
 - [#110](https://github.com/Kashoo/synctos/issues/110): Item constraint that requires an exact value match
@@ -112,7 +112,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.9.4...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/Kashoo/synctos/compare/v1.9.4...v1.10.0
 [1.9.4]: https://github.com/Kashoo/synctos/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/Kashoo/synctos/compare/v1.9.2...v1.9.3
 [1.9.2]: https://github.com/Kashoo/synctos/compare/v1.9.1...v1.9.2
