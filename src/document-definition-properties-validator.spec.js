@@ -27,6 +27,9 @@ describe('Document definition properties validator', function() {
       enumTypeProp: {
         type: 'enum'
       },
+      uuidTypeProp: {
+        type: 'uuid'
+      },
       attachmentReferenceTypeProp: {
         type: 'attachmentReference'
       },

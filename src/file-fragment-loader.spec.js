@@ -20,7 +20,7 @@ describe('File fragment loader', function() {
   it('should replace instances of the macro with the correct file contents', function() {
     var baseDir = '/my/base/dir';
     var macroName = 'myFileFragmentMacro';
-    var rawText = 'doSomething();\nnotmyFileFragmentMacro("foo.js");myFileFragmentMacro("bar.js");\tmyFileFragmentMacro(\'baz.js\');';
+    var rawText = 'doSomething();\nnotmyFileFragmentMacro("foo.js");myFileFragmentMacro("bar.js");\tmyFileFragmentMacro(\'foo\\ baz.js\');';
 
     var fileFragment1Contents = ' somethingElseGoesHere()\n';
     var fileFragment2Contents = '\nyetAnotherThingHere(\'qux\') ';
@@ -36,8 +36,8 @@ describe('File fragment loader', function() {
 
     expect(fsMock.readFileSync.callCount).to.equal(3);
     expect(fsMock.readFileSync.calls[0].args).to.eql([ baseDir + '/bar.js', 'utf8' ]);
-    expect(fsMock.readFileSync.calls[1].args).to.eql([ baseDir + '/baz.js', 'utf8' ]);
-    expect(fsMock.readFileSync.calls[2].args).to.eql([ 'baz.js', 'utf8' ]);
+    expect(fsMock.readFileSync.calls[1].args).to.eql([ baseDir + '/foo baz.js', 'utf8' ]);
+    expect(fsMock.readFileSync.calls[2].args).to.eql([ 'foo baz.js', 'utf8' ]);
   });
 
   it('should throw an exception if the file fragment cannot be found', function() {

@@ -21,14 +21,7 @@ function createShell(docDefinitionsString, originalFilename) {
     displayErrors: true
   };
 
-  var shellTemplateString;
-  try {
-    shellTemplateString = fs.readFileSync(path.resolve(__dirname, '../templates/document-definitions-shell-template.js'), 'utf8').trim();
-  } catch (ex) {
-    console.log('ERROR: Unable to read the document definitions shell template: ' + ex);
-
-    throw ex;
-  }
+  var shellTemplateString = fs.readFileSync(path.resolve(__dirname, '../templates/document-definitions-shell-template.js'), 'utf8').trim();
 
   // The test helper environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
   // contents of the document definitions

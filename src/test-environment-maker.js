@@ -18,14 +18,7 @@ function init(rawSyncFunction, syncFunctionFile) {
     displayErrors: true
   };
 
-  var environmentTemplate;
-  try {
-    environmentTemplate = fs.readFileSync(path.resolve(__dirname, '../templates/test-environment-template.js'), 'utf8').trim();
-  } catch (ex) {
-    console.log('ERROR: Unable to read the test environment template: ' + ex);
-
-    throw ex;
-  }
+  var environmentTemplate = fs.readFileSync(path.resolve(__dirname, '../templates/test-environment-template.js'), 'utf8').trim();
 
   // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
   // the sync function

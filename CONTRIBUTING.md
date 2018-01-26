@@ -29,10 +29,10 @@ Files in the project are organized into the following directories:
 * `/`: Reserved for project configuration files (e.g. `.gitignore`, `.travis.yml`, `package.json`), documentation (e.g. `README.md`, `CHANGELOG.md`, `LICENSE`) and executable command line scripts that are part of the package's public interface (e.g. `make-sync-function`, `validate-document-definitions`).
 * `etc`: Any development script or other type of file that is not part of the package's public interface (e.g. build scripts).
 * `lib`: Reserved for external packages (i.e. libraries) to be embedded as static dependencies in the project.
-* `samples`: A collection of document definitions that are purely for example purposes. Specifications for these document definitions are stored in the top level `test` directory.
-* `src`: JavaScript code that is executable by Node.js. Specifications should be stored in files alongside the code under test in this directory.
-* `templates`: JavaScript templates for sync functions/document definitions. Notably, the code in this directory is _not_ intended to be executable by Node.js. Specifications are stored in the top level `test` directory.
-* `test`: Test cases for document definition configuration elements from the top level `templates` directory and example document definitions from the top level `samples` directory.
+* `samples`: A collection of document definitions that are purely for example purposes. Specifications for these document definitions are stored in the top level `test` directory. Code must be written to the **ECMAScript 3** specification for compatibility with Sync Gateway.
+* `src`: JavaScript code that is executable by Node.js. Specifications should be stored in files alongside the code under test in this directory. Code must be written to the **ECMAScript 5** specification for backward compatibility with previous versions of Node.js.
+* `templates`: JavaScript templates for sync functions/document definitions. Notably, the code in this directory is _not_ intended to be executable by Node.js. Specifications are stored in the top level `test` directory. Code must be written to the **ECMAScript 3** specification for compatibility with Sync Gateway.
+* `test`: Test cases for document definition configuration elements from the top level `templates` directory and example document definitions from the top level `samples` directory. Code must be written to the **ECMAScript 5** specification for backward compatibility with previous versions of Node.js.
 
 ### Commits
 
@@ -51,7 +51,7 @@ Every change should include comprehensive test cases. There are two different ca
 
 In either case, specification files must be denoted by the `.spec.js` filename suffix to be executed by the [Mocha](http://mochajs.org/) test runner. Test cases should use the [Chai](http://chaijs.com/) assertion library's [expect](http://chaijs.com/api/bdd/) assertion style.
 
-To execute the full test suite and lint the project's JS files with JSHint, run `npm test` from the project's root directory.
+To execute the full test suite and lint the project's JS files with JSHint, run `npm test` from the project's root directory. A detailed, human-readable code coverage report is generated at `build/coverage/lcov-report/index.html`.
 
 ### Documentation
 
@@ -59,7 +59,7 @@ The project includes comprehensive end user documentation and, to ensure it stay
 
 Bugs do not generally need to be documented in `README.md` unless there is some caveat that users should be aware of. For example, the need to double-escape backslashes in document definitions for older versions of Sync Gateway (see sync_gateway issue [#1866](https://github.com/couchbase/sync_gateway/issues/1866)).
 
-In either case, include an entry for each change in `CHANGELOG.md`'s "Unreleased" section according to the guidelines at [Keep a CHANGELOG](http://keepachangelog.com).
+In either case, include an entry for each change in `CHANGELOG.md`'s "Unreleased" section according to the guidelines at [Keep a Changelog](http://keepachangelog.com).
 
 ### Example document definitions
 

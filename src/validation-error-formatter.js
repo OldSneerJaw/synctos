@@ -390,6 +390,8 @@ function getTypeDescription(type) {
       return 'an object';
     case 'string':
       return 'a string';
+
+    /* istanbul ignore next */
     default:
       throw new Error('Unrecognized validation type: ' + type);
   }
