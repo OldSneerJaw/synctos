@@ -1,4 +1,4 @@
-function() {
+function validationModule() {
   // Determine if a given value is an integer. Exists as a failsafe because Number.isInteger is not guaranteed to exist in all environments.
   var isInteger = Number.isInteger || function(value) {
     return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;

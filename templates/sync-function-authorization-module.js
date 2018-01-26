@@ -1,4 +1,4 @@
-function() {
+function authorizationModule() {
   // A document definition may define its authorizations (channels, roles or users) for each operation type (view, add, replace, delete or
   // write) as either a string or an array of strings. In either case, add them to the list if they are not already present.
   function appendToAuthorizationList(allAuthorizations, authorizationsToAdd) {

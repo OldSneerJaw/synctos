@@ -1,0 +1,22 @@
+{
+  "extends": "../.jshintrc",
+  "esversion": 3,
+  "node": false,
+  "globals": {
+    "_": false,
+    "access": false,
+    "channel": false,
+    "customActionStub": false,
+    "getEffectiveOldDoc": false,
+    "importSyncFunctionFragment": false,
+    "isDocumentMissingOrDeleted": false,
+    "isValueNullOrUndefined": false,
+    "JSON": false,
+    "requireAccess": false,
+    "requireRole": false,
+    "requireUser": false,
+    "role": false,
+    "simpleTypeFilter": false,
+    "typeIdValidator": false
+  }
+}
