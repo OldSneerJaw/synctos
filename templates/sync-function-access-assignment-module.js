@@ -1,4 +1,4 @@
-function() {
+function accessAssignmentModule() {
   // Adds a prefix to the specified item if the prefix is defined
   function prefixItem(item, prefix) {
     return prefix ? prefix + item : item.toString();

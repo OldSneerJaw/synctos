@@ -1,4 +1,4 @@
-function(require) {
+function makeTestEnvironment(require) {
   var _ = require('../lib/underscore/underscore-min.js');
   var simple = require('../lib/simple-mock/index.js');
 
