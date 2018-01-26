@@ -7,11 +7,12 @@
     "chai": "^4.1.2",
     "jshint": "^2.9.5",
     "mocha": "^5.0.0",
-    "mock-require": "^3.0.1"
+    "mock-require": "^3.0.1",
+    "nyc": "^11.4.1"
   },
   "scripts": {
-    "test": "etc/prepare-tests.sh && node_modules/.bin/mocha **/*.spec.js",
-    "test-report": "etc/prepare-tests.sh && node_modules/.bin/mocha -R xunit **/*.spec.js > build/test-reports/synctos.xml"
+    "test": "etc/prepare-tests.sh && nyc mocha **/*.spec.js",
+    "test-report": "etc/prepare-tests.sh && nyc mocha -R xunit **/*.spec.js > build/test-reports/synctos.xml"
   },
   "license": "MIT",
   "repository": {
