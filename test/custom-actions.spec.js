@@ -37,16 +37,18 @@ describe('Custom actions:', function() {
       var unknownDocType = 'foo';
       var doc = { _id: unknownDocType };
 
+      var syncFuncError = null;
       expect(function() {
         try {
           testHelper.syncFunction(doc, expectedAuthorization);
         } catch (ex) {
-          testHelper.verifyValidationErrors(unknownDocType, errorFormatter.unknownDocumentType(), ex);
+          syncFuncError = ex;
 
           throw ex;
         }
       }).to.throw();
 
+      testHelper.verifyValidationErrors(unknownDocType, errorFormatter.unknownDocumentType(), syncFuncError);
       verifyCustomActionNotExecuted();
     });
   });
@@ -169,14 +171,8 @@ describe('Custom actions:', function() {
       testHelper.channel.throwWith(expectedError);
 
       expect(function() {
-        try {
-          testHelper.syncFunction(doc);
-        } catch (ex) {
-          expect(ex).to.equal(expectedError);
-
-          throw ex;
-        }
-      }).to.throw();
+        testHelper.syncFunction(doc);
+      }).to.throw(expectedError);
 
       verifyCustomActionNotExecuted();
     });

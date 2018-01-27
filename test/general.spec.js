@@ -11,30 +11,36 @@ describe('Functionality that is common to all documents:', function() {
     it('rejects document creation with an unrecognized doc type', function() {
       var doc = { _id: 'my-invalid-doc' };
 
+      var syncFuncError = null;
       expect(function() {
         try {
           testHelper.syncFunction(doc);
         } catch (ex) {
-          expect(ex).to.eql({ forbidden: 'Unknown document type' });
+          syncFuncError = ex;
 
           throw ex;
         }
       }).to.throw();
+
+      expect(syncFuncError).to.eql({ forbidden: 'Unknown document type' });
     });
 
     it('rejects document replacement with an unrecognized doc type', function() {
       var doc = { _id: 'my-invalid-doc', foo: 'bar' };
       var oldDoc = { _id: 'my-invalid-doc' };
 
+      var syncFuncError = null;
       expect(function() {
         try {
           testHelper.syncFunction(doc, oldDoc);
         } catch (ex) {
-          expect(ex).to.eql({ forbidden: 'Unknown document type' });
+          syncFuncError = ex;
 
           throw ex;
         }
       }).to.throw();
+
+      expect(syncFuncError).to.eql({ forbidden: 'Unknown document type' });
     });
 
     it('allows a missing document to be "deleted" even if the type is unrecognized', function() {
@@ -219,24 +225,27 @@ describe('Functionality that is common to all documents:', function() {
       }
     };
 
+    var syncFuncError = null;
     expect(function() {
       try {
         testHelper.syncFunction(doc);
       } catch (ex) {
-        testHelper.verifyValidationErrors(
-          'generalDoc',
-          [
-            errorFormatter.unsupportedProperty('objectProp._id'),
-            errorFormatter.unsupportedProperty('objectProp._rev'),
-            errorFormatter.unsupportedProperty('objectProp._deleted'),
-            errorFormatter.unsupportedProperty('objectProp._revisions'),
-            errorFormatter.unsupportedProperty('objectProp._attachments')
-          ],
-          ex);
+        syncFuncError = ex;
 
         throw ex;
       }
     }).to.throw();
+
+    testHelper.verifyValidationErrors(
+      'generalDoc',
+      [
+        errorFormatter.unsupportedProperty('objectProp._id'),
+        errorFormatter.unsupportedProperty('objectProp._rev'),
+        errorFormatter.unsupportedProperty('objectProp._deleted'),
+        errorFormatter.unsupportedProperty('objectProp._revisions'),
+        errorFormatter.unsupportedProperty('objectProp._attachments')
+      ],
+      syncFuncError);
   });
 
   it('cannot include attachments in documents that do not explicitly allow them', function() {
@@ -250,14 +259,17 @@ describe('Functionality that is common to all documents:', function() {
       }
     };
 
+    var syncFuncError = null;
     expect(function() {
       try {
         testHelper.syncFunction(doc);
       } catch (ex) {
-        testHelper.verifyValidationErrors('generalDoc', errorFormatter.allowAttachmentsViolation(), ex);
+        syncFuncError = ex;
 
         throw ex;
       }
     }).to.throw();
+
+    testHelper.verifyValidationErrors('generalDoc', errorFormatter.allowAttachmentsViolation(), syncFuncError);
   });
 });

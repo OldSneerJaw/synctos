@@ -16,15 +16,18 @@ describe('Test helper module initialization', function() {
     });
 
     it('fails to load the sync function for a file that does not exist', function() {
+      var syncFuncError = null;
       expect(function() {
         try {
           testHelper.initSyncFunction('build/sync-functions/test-nonexistant-sync-function.js');
         } catch (ex) {
-          expect(ex.code).to.equal('ENOENT');
+          syncFuncError = ex;
 
           throw ex;
         }
       }).to.throw();
+
+      expect(syncFuncError.code).to.equal('ENOENT');
     });
   });
 
@@ -42,15 +45,18 @@ describe('Test helper module initialization', function() {
     });
 
     it('fails to load the sync function for a file that does not exist', function() {
+      var syncFuncError = null;
       expect(function() {
         try {
           testHelper.initDocumentDefinitions('test/resources/nonexistant-doc-definitions.js');
         } catch (ex) {
-          expect(ex.code).to.equal('ENOENT');
+          syncFuncError = ex;
 
           throw ex;
         }
       }).to.throw();
+
+      expect(syncFuncError.code).to.equal('ENOENT');
     });
   });
 });
