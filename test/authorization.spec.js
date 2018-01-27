@@ -23,7 +23,7 @@ describe('Authorization:', function() {
     it('rejects document deletion for a user with no matching channels', function() {
       var doc = { _id: 'explicitChannelsDoc', _deleted: true };
 
-      testHelper.verifyAccessDenied(doc, void 0, [ 'remove', 'delete' ]);
+      testHelper.verifyAccessDenied(doc, void 0, { expectedChannels: [ 'remove', 'delete' ] });
     });
   });
 
