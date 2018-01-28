@@ -293,9 +293,7 @@ exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, e
  *                                        Element order must match that set in the validator in the document definition.
  */
 exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, expectedContentTypes) {
-  var contentTypesString = expectedContentTypes.join(',');
-
-  return 'attachment "' + attachmentName + '" must have a supported content type (' + contentTypesString + ')';
+  return 'attachment "' + attachmentName + '" must have a supported content type (' + expectedContentTypes + ')';
 };
 
 /**
@@ -306,9 +304,7 @@ exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, e
  *                                          Element order must match that set in the validator in the document definition.
  */
 exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, expectedFileExtensions) {
-  var extensionsString = expectedFileExtensions.join(',');
-
-  return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
+  return 'attachment reference "' + itemPath + '" must have a supported file extension (' + expectedFileExtensions + ')';
 };
 
 /**
@@ -349,7 +345,7 @@ exports.unknownDocumentType = function() {
 };
 
 /**
- * Formats a message for the error that occurs when an unrecognized property is discovered on at the root level of a document or in an
+ * Formats a message for the error that occurs when an unrecognized property is discovered at the root level of a document or in an
  * object nested in a document.
  *
  * @param {string} propertyPath The full path of the property or element in which the error occurs
@@ -364,8 +360,8 @@ exports.unsupportedProperty = function(propertyPath) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[10].uuidProp")
  */
-exports.uuidFormatInvalid = function(propertyPath) {
-  return 'item "' + propertyPath + '" is not a valid UUID';
+exports.uuidFormatInvalid = function(itemPath) {
+  return 'item "' + itemPath + '" is not a valid UUID';
 };
 
 function getTypeDescription(type) {
@@ -380,6 +376,8 @@ function getTypeDescription(type) {
       return 'an ISO 8601 date string with no time or time zone components';
     case 'datetime':
       return 'an ISO 8601 date string with optional time and time zone components';
+    case 'enum':
+      return 'an integer or a string';
     case 'float':
       return 'a floating point or integer number';
     case 'hashtable':
@@ -390,8 +388,8 @@ function getTypeDescription(type) {
       return 'an object';
     case 'string':
       return 'a string';
-
-    /* istanbul ignore next */
+    case 'uuid':
+      return 'a string';
     default:
       throw new Error('Unrecognized validation type: ' + type);
   }
