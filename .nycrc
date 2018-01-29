@@ -1,0 +1,21 @@
+{
+  "check-coverage": true,
+  "per-file": true,
+  "statements": 95,
+  "branches": 95,
+  "functions": 100,
+  "lines": 0,
+  "include": [
+    "src/**/*.js"
+  ],
+  "exclude": [
+    "src/**/*.spec.js"
+  ],
+  "reporter": [
+    "text-summary",
+    "lcov"
+  ],
+  "cache": true,
+  "all": true,
+  "report-dir": "build/coverage"
+}

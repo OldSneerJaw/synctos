@@ -22,16 +22,21 @@ describe('Document definitions shell maker', function() {
     mockRequire.stopAll();
   });
 
-  function verifyParse(expectedFileContents, originalFilename) {
-    fsMock.readFileSync.returnWith(expectedFileContents);
+  function verifyParse(rawDocumentDefinitions, originalFilename) {
+    var shellTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
+    fsMock.readFileSync.returnWith(shellTemplateFileContents);
+
+    var expectedShellString = shellTemplateFileContents.replace(
+      '%DOC_DEFINITIONS_PLACEHOLDER%',
+      function() { return rawDocumentDefinitions; });
 
     var expectedResult = { foo: 'bar' };
-    var mockEnvironment = simpleMock.stub();
-    mockEnvironment.returnWith(expectedResult);
+    var mockVmEnvironment = simpleMock.stub();
+    mockVmEnvironment.returnWith(expectedResult);
 
-    vmMock.runInThisContext.returnWith(mockEnvironment);
+    vmMock.runInThisContext.returnWith(mockVmEnvironment);
 
-    var result = environmentShellMaker.createShell(expectedFileContents, originalFilename);
+    var result = environmentShellMaker.createShell(rawDocumentDefinitions, originalFilename);
 
     expect(result).to.eql(expectedResult);
 
@@ -40,21 +45,21 @@ describe('Document definitions shell maker', function() {
 
     expect(vmMock.runInThisContext.callCount).to.equal(1);
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
-      '(' + expectedFileContents + ');',
+      '(' + expectedShellString + ');',
       {
         filename: originalFilename,
         displayErrors: true
       }
     ]);
 
-    expect(mockEnvironment.callCount).to.equal(1);
+    expect(mockVmEnvironment.callCount).to.equal(1);
   }
 
   it('creates a shell from the input with a filename for stack traces', function() {
-    verifyParse('my-doc-definitions1', 'my-original-filename');
+    verifyParse('my-doc-definitions-1', 'my-original-filename');
   });
 
   it('creates a shell from the input but without a filename', function() {
-    verifyParse('my-doc-definitions2');
+    verifyParse('my-doc-definitions-2');
   });
 });

@@ -32,6 +32,7 @@ exports.validationErrorFormatter = require('./validation-error-formatter.js');
  *                                                  - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
+ *                                               - expectedType: an optional string that indicates whether this is a "channel" (default) or "role" assignment
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
  *                                               - expectedUsers: an optional list of users to which to assign the channels
  *                                               - expectedRoles: an optional list of roles to which to assign the channels
@@ -50,6 +51,7 @@ exports.verifyDocumentAccepted = verifyDocumentAccepted;
  *                                                    - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
+ *                                               - expectedType: an optional string that indicates whether this is a "channel" (default) or "role" assignment
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
  *                                               - expectedUsers: an optional list of users to which to assign the channels
  *                                               - expectedRoles: an optional list of roles to which to assign the channels
@@ -69,6 +71,7 @@ exports.verifyDocumentCreated = verifyDocumentCreated;
  *                                                    - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
+ *                                               - expectedType: an optional string that indicates whether this is a "channel" (default) or "role" assignment
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
  *                                               - expectedUsers: an optional list of users to which to assign the channels
  *                                               - expectedRoles: an optional list of roles to which to assign the channels
@@ -87,6 +90,7 @@ exports.verifyDocumentReplaced = verifyDocumentReplaced;
  *                                                    - expectedUsers: an optional list of users that are authorized
  * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
  *                                               that contains the following fields:
+ *                                               - expectedType: an optional string that indicates whether this is a "channel" (default) or "role" assignment
  *                                               - expectedChannels: an optional list of channels to assign to the users and roles
  *                                               - expectedUsers: an optional list of users to which to assign the channels
  *                                               - expectedRoles: an optional list of roles to which to assign the channels
@@ -226,30 +230,16 @@ exports.verifyAccessDenied = verifyAccessDenied;
  */
 exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 
-
+// Implementation begins here
 var assert = require('assert');
 var fs = require('fs');
 var syncFunctionLoader = require('./sync-function-loader.js');
 var testEnvironmentMaker = require('./test-environment-maker.js');
 
-// Placeholders for stubbing built-in Sync Gateway support functions.
-// More info: http://developer.couchbase.com/mobile/develop/guides/sync-gateway/sync-function-api-guide/index.html
-var requireAccess;
-var requireRole;
-var requireUser;
-var channel;
-var access;
-var role;
-
-var syncFunction;
-
-// A function stub that can be used in document definitions for test cases to verify custom actions
-var customActionStub;
-
 var defaultWriteChannel = 'write';
 
 function initSyncFunction(filePath) {
-  var rawSyncFunction = fs.readFileSync(filePath).toString();
+  var rawSyncFunction = fs.readFileSync(filePath, 'utf8').toString();
 
   init(rawSyncFunction, filePath);
 }
@@ -263,40 +253,41 @@ function initDocumentDefinitions(filePath) {
 function init(rawSyncFunction, syncFunctionFile) {
   var testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
 
-  exports.requireAccess = requireAccess = testHelperEnvironment.requireAccess;
-  exports.requireRole = requireRole = testHelperEnvironment.requireRole;
-  exports.requireUser = requireUser = testHelperEnvironment.requireUser;
-  exports.channel = channel = testHelperEnvironment.channel;
-  exports.access = access = testHelperEnvironment.access;
-  exports.role = role = testHelperEnvironment.role;
+  exports.requireAccess = testHelperEnvironment.requireAccess;
+  exports.requireRole = testHelperEnvironment.requireRole;
+  exports.requireUser = testHelperEnvironment.requireUser;
+  exports.channel = testHelperEnvironment.channel;
+  exports.access = testHelperEnvironment.access;
+  exports.role = testHelperEnvironment.role;
 
-  exports.customActionStub = customActionStub = testHelperEnvironment.customActionStub;
+  // A function stub that can be used in document definitions for test cases to verify custom actions
+  exports.customActionStub = testHelperEnvironment.customActionStub;
 
-  exports.syncFunction = syncFunction = testHelperEnvironment.syncFunction;
+  exports.syncFunction = testHelperEnvironment.syncFunction;
 }
 
 function verifyRequireAccess(expectedChannels) {
-  assert.ok(requireAccess.callCount > 0, 'Document does not specify required channels. Expected: ' + expectedChannels);
+  assert.ok(exports.requireAccess.callCount > 0, 'Document does not specify required channels. Expected: ' + expectedChannels);
 
-  checkAuthorizations(expectedChannels, requireAccess.calls[0].arg, 'channel');
+  checkAuthorizations(expectedChannels, exports.requireAccess.calls[0].arg, 'channel');
 }
 
 function verifyRequireRole(expectedRoles) {
-  assert.ok(requireRole.callCount > 0, 'Document does not specify required roles. Expected: ' + expectedRoles);
+  assert.ok(exports.requireRole.callCount > 0, 'Document does not specify required roles. Expected: ' + expectedRoles);
 
-  checkAuthorizations(expectedRoles, requireRole.calls[0].arg, 'role');
+  checkAuthorizations(expectedRoles, exports.requireRole.calls[0].arg, 'role');
 }
 
 function verifyRequireUser(expectedUsers) {
-  assert.ok(requireUser.callCount > 0, 'Document does not specify required users. Expected: ' + expectedUsers);
+  assert.ok(exports.requireUser.callCount > 0, 'Document does not specify required users. Expected: ' + expectedUsers);
 
-  checkAuthorizations(expectedUsers, requireUser.calls[0].arg, 'user');
+  checkAuthorizations(expectedUsers, exports.requireUser.calls[0].arg, 'user');
 }
 
 function verifyChannelAssignment(expectedChannels) {
-  assert.equal(channel.callCount, 1, 'Document was not assigned to any channels. Expected: ' + expectedChannels);
+  assert.equal(exports.channel.callCount, 1, 'Document was not assigned to any channels. Expected: ' + expectedChannels);
 
-  checkAuthorizations(expectedChannels, channel.calls[0].arg, 'channel');
+  checkAuthorizations(expectedChannels, exports.channel.calls[0].arg, 'channel');
 }
 
 function checkAuthorizations(expectedAuthorizations, actualAuthorizations, authorizationType) {
@@ -342,11 +333,11 @@ function areUnorderedListsEqual(list1, list2) {
   return true;
 }
 
-function accessAssignmentCallExists(accessFunction, expectedParam1, expectedParam2) {
+function accessAssignmentCallExists(accessFunction, expectedAssignees, expectedPermissions) {
   // Try to find an actual channel/role access assignment call that matches the expected call
   for (var accessCallIndex = 0; accessCallIndex < accessFunction.callCount; accessCallIndex++) {
     var accessCall = accessFunction.calls[accessCallIndex];
-    if (areUnorderedListsEqual(accessCall.args[0], expectedParam1) && areUnorderedListsEqual(accessCall.args[1], expectedParam2)) {
+    if (areUnorderedListsEqual(accessCall.args[0], expectedAssignees) && areUnorderedListsEqual(accessCall.args[1], expectedPermissions)) {
       return true;
     }
   }
@@ -393,7 +384,7 @@ function verifyChannelAccessAssignment(expectedAssignment) {
     }
   }
 
-  if (!accessAssignmentCallExists(access, expectedUsersAndRoles, expectedChannels)) {
+  if (!accessAssignmentCallExists(exports.access, expectedUsersAndRoles, expectedChannels)) {
     assert.fail(
       'Missing expected call to assign channel access (' +
       JSON.stringify(expectedChannels) +
@@ -426,7 +417,7 @@ function verifyRoleAccessAssignment(expectedAssignment) {
     }
   }
 
-  if (!accessAssignmentCallExists(role, expectedUsers, expectedRoles)) {
+  if (!accessAssignmentCallExists(exports.role, expectedUsers, expectedRoles)) {
     assert.fail(
       'Missing expected call to assign role access (' +
       JSON.stringify(expectedRoles) +
@@ -448,24 +439,26 @@ function verifyAccessAssignments(expectedAccessAssignments) {
     } else if (expectedAssignment.expectedType === 'channel' || !expectedAssignment.expectedType) {
       verifyChannelAccessAssignment(expectedAssignment);
       expectedAccessCalls++;
+    } else {
+      assert.fail('Unrecognized expected access assignment type ("' + expectedAssignment.expectedType + '")');
     }
   }
 
-  if (access.callCount !== expectedAccessCalls) {
-    assert.fail('Number of calls to assign channel access (' + access.callCount + ') does not match expected (' + expectedAccessCalls + ')');
+  if (exports.access.callCount !== expectedAccessCalls) {
+    assert.fail('Number of calls to assign channel access (' + exports.access.callCount + ') does not match expected (' + expectedAccessCalls + ')');
   }
 
-  if (role.callCount !== expectedRoleCalls) {
-    assert.fail('Number of calls to assign role access (' + role.callCount + ') does not match expected (' + expectedRoleCalls + ')');
+  if (exports.role.callCount !== expectedRoleCalls) {
+    assert.fail('Number of calls to assign role access (' + exports.role.callCount + ') does not match expected (' + expectedRoleCalls + ')');
   }
 }
 
 function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
-  if (channel.callCount !== 1) {
-    assert.fail('Document failed authorization and/or validation');
+  if (exports.channel.callCount !== 1) {
+    assert.fail('Document channels were not assigned');
   }
 
-  var actualChannels = channel.calls[0].arg;
+  var actualChannels = exports.channel.calls[0].arg;
   if (expectedChannels instanceof Array) {
     for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
       assert.ok(
@@ -486,8 +479,8 @@ function verifyAuthorization(expectedAuthorization) {
     // for authorization
     expectedOperationChannels = expectedAuthorization;
     verifyRequireAccess(expectedAuthorization);
-    assert.equal(requireRole.callCount, 0, 'Unexpected document roles assigned: ' + JSON.stringify(requireRole.calls));
-    assert.equal(requireUser.callCount, 0, 'Unexpected document users assigned: ' + JSON.stringify(requireUser.calls));
+    assert.equal(exports.requireRole.callCount, 0, 'Unexpected document roles assigned: ' + JSON.stringify(exports.requireRole.calls));
+    assert.equal(exports.requireUser.callCount, 0, 'Unexpected document users assigned: ' + JSON.stringify(exports.requireUser.calls));
   } else {
     if (expectedAuthorization.expectedChannels) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
@@ -497,13 +490,13 @@ function verifyAuthorization(expectedAuthorization) {
     if (expectedAuthorization.expectedRoles) {
       verifyRequireRole(expectedAuthorization.expectedRoles);
     } else {
-      assert.equal(requireRole.callCount, 0, 'Unexpected document roles assigned: ' + JSON.stringify(requireRole.calls));
+      assert.equal(exports.requireRole.callCount, 0, 'Unexpected document roles assigned: ' + JSON.stringify(exports.requireRole.calls));
     }
 
     if (expectedAuthorization.expectedUsers) {
       verifyRequireUser(expectedAuthorization.expectedUsers);
     } else {
-      assert.equal(requireUser.callCount, 0, 'Unexpected document users assigned: ' + JSON.stringify(requireUser.calls));
+      assert.equal(exports.requireUser.callCount, 0, 'Unexpected document users assigned: ' + JSON.stringify(exports.requireUser.calls));
     }
 
     if (!expectedAuthorization.expectedChannels && !expectedAuthorization.expectedRoles && !expectedAuthorization.expectedUsers) {
@@ -515,7 +508,7 @@ function verifyAuthorization(expectedAuthorization) {
 }
 
 function verifyDocumentAccepted(doc, oldDoc, expectedAuthorization, expectedAccessAssignments) {
-  syncFunction(doc, oldDoc);
+  exports.syncFunction(doc, oldDoc);
 
   if (expectedAccessAssignments) {
     verifyAccessAssignments(expectedAccessAssignments);
@@ -541,7 +534,7 @@ function verifyDocumentDeleted(oldDoc, expectedAuthorization, expectedAccessAssi
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {
   var syncFuncError = null;
   try {
-    syncFunction(doc, oldDoc);
+    exports.syncFunction(doc, oldDoc);
   } catch (ex) {
     syncFuncError = ex;
   }
@@ -550,7 +543,7 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
     verifyValidationErrors(docType, expectedErrorMessages, syncFuncError);
     verifyAuthorization(expectedAuthorization);
 
-    assert.equal(channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(channel.calls));
+    assert.equal(exports.channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(exports.channel.calls));
   } else {
     assert.fail('Document validation succeeded when it was expected to fail');
   }
@@ -630,13 +623,13 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   var userAccessDeniedError = new Error('User access denied!');
   var generalAuthFailedMessage = 'missing channel access';
 
-  requireAccess.throwWith(channelAccessDeniedError);
-  requireRole.throwWith(roleAccessDeniedError);
-  requireUser.throwWith(userAccessDeniedError);
+  exports.requireAccess.throwWith(channelAccessDeniedError);
+  exports.requireRole.throwWith(roleAccessDeniedError);
+  exports.requireUser.throwWith(userAccessDeniedError);
 
   var syncFuncError = null;
   try {
-    syncFunction(doc, oldDoc);
+    exports.syncFunction(doc, oldDoc);
   } catch (ex) {
     syncFuncError = ex;
   }
@@ -664,7 +657,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
         syncFuncError,
         roleAccessDeniedError,
         'Document authorization error does not indicate role access was denied. Actual: ' + JSON.stringify(syncFuncError));
-    } else if (expectedAuthorization.expectedUsers) {
+    } else {
       assert.ok(
         syncFuncError,
         userAccessDeniedError,
@@ -680,7 +673,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
 function verifyUnknownDocumentType(doc, oldDoc) {
   var syncFuncError = null;
   try {
-    syncFunction(doc, oldDoc);
+    exports.syncFunction(doc, oldDoc);
   } catch (ex) {
     syncFuncError = ex;
   }
@@ -691,10 +684,10 @@ function verifyUnknownDocumentType(doc, oldDoc) {
       'Unknown document type',
       'Document validation error does not indicate the document type is unrecognized. Actual: ' + JSON.stringify(syncFuncError));
 
-    assert.equal(channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(channel.calls));
-    assert.equal(requireAccess.callCount, 0, 'Unexpected attempt to specify required channels: ' + JSON.stringify(requireAccess.calls));
-    assert.equal(requireRole.callCount, 0, 'Unexpected attempt to specify required roles: ' + JSON.stringify(requireRole.calls));
-    assert.equal(requireUser.callCount, 0, 'Unexpected attempt to specify required users: ' + JSON.stringify(requireUser.calls));
+    assert.equal(exports.channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(exports.channel.calls));
+    assert.equal(exports.requireAccess.callCount, 0, 'Unexpected attempt to specify required channels: ' + JSON.stringify(exports.requireAccess.calls));
+    assert.equal(exports.requireRole.callCount, 0, 'Unexpected attempt to specify required roles: ' + JSON.stringify(exports.requireRole.calls));
+    assert.equal(exports.requireUser.callCount, 0, 'Unexpected attempt to specify required users: ' + JSON.stringify(exports.requireUser.calls));
   } else {
     assert.fail('Document type was successfully identified when it was expected to be unknown');
   }
