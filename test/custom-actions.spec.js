@@ -37,12 +37,18 @@ describe('Custom actions:', function() {
       var unknownDocType = 'foo';
       var doc = { _id: unknownDocType };
 
-      try {
-        testHelper.syncFunction(doc, expectedAuthorization);
-        expect.fail('Expected error during custom action not thrown');
-      } catch(ex) {
-        testHelper.verifyValidationErrors(unknownDocType, errorFormatter.unknownDocumentType(), ex);
-      }
+      var syncFuncError = null;
+      expect(function() {
+        try {
+          testHelper.syncFunction(doc, expectedAuthorization);
+        } catch (ex) {
+          syncFuncError = ex;
+
+          throw ex;
+        }
+      }).to.throw();
+
+      testHelper.verifyValidationErrors(unknownDocType, errorFormatter.unknownDocumentType(), syncFuncError);
       verifyCustomActionNotExecuted();
     });
   });
@@ -164,12 +170,10 @@ describe('Custom actions:', function() {
       var expectedError = new Error('bad channels!');
       testHelper.channel.throwWith(expectedError);
 
-      try {
+      expect(function() {
         testHelper.syncFunction(doc);
-        expect.fail('Expected error during custom action not thrown');
-      } catch(ex) {
-        expect(ex).to.equal(expectedError);
-      }
+      }).to.throw(expectedError);
+
       verifyCustomActionNotExecuted();
     });
   });

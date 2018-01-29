@@ -75,12 +75,21 @@ describe('File attachment constraints:', function() {
             attachmentRefProp: 'bar.html' // The attachmentReference's maximum size of 40 overrides the document's maximum individual size of 25
           };
 
-          try {
-            testHelper.syncFunction(doc);
-            expect.fail('Expected maximum attachment violation exception not thrown');
-          } catch (ex) {
-            testHelper.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumTotalAttachmentSizeViolation(40), ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors(
+            'staticRegularAttachmentsDoc',
+            errorFormatter.maximumTotalAttachmentSizeViolation(40),
+            syncFuncError);
         });
 
         it('should block replacement when document attachments exceed the limits', function() {
@@ -99,15 +108,21 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          try {
-            testHelper.syncFunction(doc, oldDoc);
-            expect.fail('Expected maximum attachment violation exception not thrown');
-          } catch (ex) {
-            testHelper.verifyValidationErrors(
-              'staticRegularAttachmentsDoc',
-              [ errorFormatter.maximumTotalAttachmentSizeViolation(40), errorFormatter.maximumIndividualAttachmentSizeViolation('foo.xml', 25) ],
-              ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc, oldDoc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors(
+            'staticRegularAttachmentsDoc',
+            [ errorFormatter.maximumTotalAttachmentSizeViolation(40), errorFormatter.maximumIndividualAttachmentSizeViolation('foo.xml', 25) ],
+            syncFuncError);
         });
       });
 
@@ -136,12 +151,18 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          try {
-            testHelper.syncFunction(doc);
-            expect.fail('Expected maximum attachment count violation exception not thrown');
-          } catch(ex) {
-            testHelper.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumAttachmentCountViolation(3), ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumAttachmentCountViolation(3), syncFuncError);
         });
 
         it('should block replacement when document attachments exceed the limit', function() {
@@ -172,12 +193,18 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          try {
-            testHelper.syncFunction(doc, oldDoc);
-            expect.fail('Expected maximum attachment count violation exception not thrown');
-          } catch (ex) {
-            testHelper.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumAttachmentCountViolation(3), ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc, oldDoc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumAttachmentCountViolation(3), syncFuncError);
         });
       });
 
@@ -204,18 +231,24 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          try {
-            testHelper.syncFunction(doc);
-            expect.fail('Expected file extension constraint violation not thrown');
-          } catch(ex) {
-            testHelper.verifyValidationErrors(
-              'staticRegularAttachmentsDoc',
-              [
-                errorFormatter.supportedExtensionsRawAttachmentViolation('baz.unknown', expectedExtensions),
-                errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions)
-              ],
-              ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors(
+            'staticRegularAttachmentsDoc',
+            [
+              errorFormatter.supportedExtensionsRawAttachmentViolation('baz.unknown', expectedExtensions),
+              errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions)
+            ],
+            syncFuncError);
         });
 
         it('should block replacement when document attachments have unsupported extensions', function() {
@@ -239,15 +272,21 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          try {
-            testHelper.syncFunction(doc, oldDoc);
-            expect.fail('Expected file attachment constraint violation not thrown');
-          } catch (ex) {
-            testHelper.verifyValidationErrors(
-              'staticRegularAttachmentsDoc',
-              errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions),
-              ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc, oldDoc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors(
+            'staticRegularAttachmentsDoc',
+            errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions),
+            syncFuncError);
         });
       });
 
@@ -274,18 +313,24 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          try {
-            testHelper.syncFunction(doc);
-            expect.fail('Expected file extension constraint violation not thrown');
-          } catch(ex) {
-            testHelper.verifyValidationErrors(
-              'staticRegularAttachmentsDoc',
-              [
-                errorFormatter.supportedContentTypesRawAttachmentViolation('baz.xml', expectedContentTypes),
-                errorFormatter.supportedContentTypesRawAttachmentViolation('foo.txt', expectedContentTypes)
-              ],
-              ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors(
+            'staticRegularAttachmentsDoc',
+            [
+              errorFormatter.supportedContentTypesRawAttachmentViolation('baz.xml', expectedContentTypes),
+              errorFormatter.supportedContentTypesRawAttachmentViolation('foo.txt', expectedContentTypes)
+            ],
+            syncFuncError);
         });
 
         it('should block replacement when document attachments have unsupported content types', function() {
@@ -309,15 +354,21 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          try {
-            testHelper.syncFunction(doc, oldDoc);
-            expect.fail('Expected file extension constraint violation not thrown');
-          } catch(ex) {
-            testHelper.verifyValidationErrors(
-              'staticRegularAttachmentsDoc',
-              errorFormatter.supportedContentTypesRawAttachmentViolation('foo.jpg', expectedContentTypes),
-              ex);
-          }
+          var syncFuncError = null;
+          expect(function() {
+            try {
+              testHelper.syncFunction(doc, oldDoc);
+            } catch (ex) {
+              syncFuncError = ex;
+
+              throw ex;
+            }
+          }).to.throw();
+
+          testHelper.verifyValidationErrors(
+            'staticRegularAttachmentsDoc',
+            errorFormatter.supportedContentTypesRawAttachmentViolation('foo.jpg', expectedContentTypes),
+            syncFuncError);
         });
       });
     });
@@ -356,12 +407,21 @@ describe('File attachment constraints:', function() {
           attachmentRefProp: 'foo.pdf'
         };
 
-        try {
-          testHelper.syncFunction(doc);
-          expect.fail('Expected attachment constraint violation not thrown');
-        } catch(ex) {
-          testHelper.verifyValidationErrors('staticAttachmentRefsOnlyDoc', errorFormatter.requireAttachmentReferencesViolation('bar.txt'), ex);
-        }
+        var syncFuncError = null;
+        expect(function() {
+          try {
+            testHelper.syncFunction(doc);
+          } catch (ex) {
+            syncFuncError = ex;
+
+            throw ex;
+          }
+        }).to.throw();
+
+        testHelper.verifyValidationErrors(
+          'staticAttachmentRefsOnlyDoc',
+          errorFormatter.requireAttachmentReferencesViolation('bar.txt'),
+          syncFuncError);
       });
 
       it('should allow replacement when document attachments do not violate the constraint', function() {
@@ -405,12 +465,21 @@ describe('File attachment constraints:', function() {
           type: 'staticAttachmentRefsOnlyDoc'
         };
 
-        try {
-          testHelper.syncFunction(doc, oldDoc);
-          expect.fail('Expected attachment constraint violation not thrown');
-        } catch(ex) {
-          testHelper.verifyValidationErrors('staticAttachmentRefsOnlyDoc', errorFormatter.requireAttachmentReferencesViolation('baz.jpg'), ex);
-        }
+        var syncFuncError = null;
+        expect(function() {
+          try {
+            testHelper.syncFunction(doc, oldDoc);
+          } catch (ex) {
+            syncFuncError = ex;
+
+            throw ex;
+          }
+        }).to.throw();
+
+        testHelper.verifyValidationErrors(
+          'staticAttachmentRefsOnlyDoc',
+          errorFormatter.requireAttachmentReferencesViolation('baz.jpg'),
+          syncFuncError);
       });
     });
   });
