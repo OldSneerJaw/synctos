@@ -3,7 +3,7 @@
 var path = require('path');
 var docDefinitionsLoader = require('./src/document-definitions-loader.js');
 var environmentShellMaker = require('./src/document-definitions-shell-maker.js');
-var docDefinitionsValidator = require('./src/document-definitions-validator.js');
+var documentDefinitionSchema = require('./src/document-definition-schema.js');
 
 var errorStatus = 1;
 
@@ -19,24 +19,24 @@ var docDefinitionsFilename = process.argv[2];
 var rawDocDefinitionsString = docDefinitionsLoader.load(docDefinitionsFilename);
 
 var environmentShell = environmentShellMaker.createShell(rawDocDefinitionsString, docDefinitionsFilename);
-
-var validationErrors = docDefinitionsValidator.validate(environmentShell.documentDefinitions);
+var documentDefinitions = typeof environmentShell.documentDefinitions === 'function' ? environmentShell.documentDefinitions() : environmentShell.documentDefinitions;
 
 var exitStatus = 0;
-if (typeof validationErrors === 'string') {
-  console.log('ERROR: ' + validationErrors);
+Object.keys(documentDefinitions).forEach(function(documentType) {
+  documentDefinitionSchema.validate(
+    documentDefinitions[documentType],
+    { abortEarly: false },
+    function(error) {
+      if (error) {
+        error.details.forEach(function(errorDetails) {
+          var path = errorDetails.path.length < 1 ? documentType : documentType + '.' + errorDetails.path.join('.');
+          console.log(path + ': ' + errorDetails.message);
 
-  exitStatus = errorStatus;
-} else {
-  for (var docType in validationErrors) {
-    var docTypeErrors = validationErrors[docType];
-    if (docTypeErrors.length > 0) {
-      console.log('Document type "' + docType + '":\n- ' + docTypeErrors.join('\n- '));
-
-      exitStatus = errorStatus;
-    }
-  }
-}
+          exitStatus = errorStatus;
+        });
+      }
+    });
+  });
 
 process.exit(exitStatus);
 

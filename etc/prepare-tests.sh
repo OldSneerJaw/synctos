@@ -10,12 +10,13 @@ mkdir -p build/test-reports/
 # Set up JSHint configuration for the generated sync functions
 cp "etc/jshintrc-sync-function-template.json" "$outputDir/.jshintrc"
 
-echo "Linting modules and specs with JSHint\n"
-node_modules/jshint/bin/jshint src/*.js test/*.js
+echo "Linting modules and specs with JSHint...\n"
+node_modules/jshint/bin/jshint src test/*.js
 
 sampleDocDefinitionsPath="samples/sample-sync-doc-definitions.js"
 
 # Validate the structure and sematics of the sample document definitions
+echo "Validating sample document definitions...\n"
 ./validate-document-definitions "$sampleDocDefinitionsPath"
 
 # Create a temporary sync function from the sample document definitions file
@@ -36,5 +37,5 @@ for docDefinitionPath in "$definitionsDir"/*-doc-definitions.js; do
   ./make-sync-function "$docDefinitionPath" "$outputFile"
 done
 
-echo "\nLinting generated sync functions with JSHint"
+echo "\nLinting generated sync functions with JSHint..."
 node_modules/jshint/bin/jshint "$outputDir"/*.js
