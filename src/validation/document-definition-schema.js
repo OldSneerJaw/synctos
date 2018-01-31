@@ -1,5 +1,6 @@
 var joi = require('joi');
 var propertyValidatorSchema = require('./property-validator-schema');
+var wrapDynamicConstraint = require('./dynamic-constraint-wrapper');
 
 var integer = joi.number().integer();
 var nonEmptyString = joi.string().min(1);
@@ -93,19 +94,7 @@ module.exports = exports = joi.object().keys({
   // When "attachmentConstraints" is defined, then "allowAttachments" should also be defined
   .with('attachmentConstraints', 'allowAttachments');
 
-// Generates a schema where either a function with the specified number of arguments (arity) or the specified other
-// schema are valid
-function functionOrOtherSchema(otherSchema, maxArity) {
-  return joi.any()
-    .when(
-      joi.func(),
-      { then: joi.func().maxArity(maxArity || Number.MAX_SAFE_INTEGER) })
-    .when(
-      joi.any(),
-      { then: otherSchema });
-}
-
 // Generates a schema that can be used for property validator constraints
 function constraintSchema(wrappedSchema) {
-  return functionOrOtherSchema(wrappedSchema, 2);
+  return wrapDynamicConstraint(wrappedSchema, 2);
 }

@@ -1,10 +1,14 @@
 var joi = require('joi');
+var wrapDynamicConstraint = require('./dynamic-constraint-wrapper');
 
 var integer = joi.number().integer();
-var dateOnlyConstraint = joi.alternatives().try(
-  joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/),
-  joi.date().options({ convert: false })
-);
+var dateOnly = joi.any()
+  .when(
+    joi.string(),
+    { then: joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/) })
+  .when(
+    joi.any(),
+    { then: joi.date().options({ convert: false }) });
 
 var validPropertyTypes =
   [ 'string', 'integer', 'float', 'boolean', 'datetime', 'date', 'enum', 'uuid', 'attachmentReference', 'array', 'object', 'hashtable' ];
@@ -66,8 +70,10 @@ var schema = joi.object().keys({
     joi.object().unknown().keys({ type: joi.func() }),
     { then: joi.object().unknown() });
 
-// Defined as a function rather than a plain object because it contains lazy references to allow for circular references
-// between the complex types (e.g. "array", "object", "hashtable") and the main "propertyValidators" schema
+module.exports = exports = schema;
+
+// Defined as a function rather than a plain object because it contains lazy references that result in circular
+// references between the complex types (e.g. "array", "object", "hashtable") and the main "propertyValidators" schema
 function typeSpecificConstraints() {
   return {
     string: {
@@ -100,10 +106,10 @@ function typeSpecificConstraints() {
       maximumValueExclusive: constraintSchema(joi.date())
     },
     date: {
-      minimumValue: constraintSchema(dateOnlyConstraint),
-      minimumValueExclusive: constraintSchema(dateOnlyConstraint),
-      maximumValue: constraintSchema(dateOnlyConstraint),
-      maximumValueExclusive: constraintSchema(dateOnlyConstraint)
+      minimumValue: constraintSchema(dateOnly),
+      minimumValueExclusive: constraintSchema(dateOnly),
+      maximumValue: constraintSchema(dateOnly),
+      maximumValueExclusive: constraintSchema(dateOnly)
     },
     enum: {
       predefinedValues: constraintSchema(joi.array().required().min(1).items([ integer, joi.string() ]))
@@ -170,21 +176,7 @@ function typeConstraintsSchema(typeName) {
     .without('immutableWhenSetStrict', [ 'immutable', 'immutableStrict', 'immutableWhenSet' ]);
 }
 
-// Generates a schema where either a function with the specified number of arguments (arity) or the specified other
-// schema are valid
-function functionOrOtherSchema(otherSchema, maxArity) {
-  return joi.any()
-    .when(
-      joi.func(),
-      { then: joi.func().maxArity(maxArity || Number.MAX_SAFE_INTEGER) })
-    .when(
-      joi.any(),
-      { then: otherSchema });
-}
-
 // Generates a schema that can be used for property validator constraints
 function constraintSchema(wrappedSchema) {
-  return functionOrOtherSchema(wrappedSchema, 4);
+  return wrapDynamicConstraint(wrappedSchema, 4);
 }
-
-module.exports = exports = schema;
