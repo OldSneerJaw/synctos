@@ -3,7 +3,7 @@
 var path = require('path');
 var docDefinitionsLoader = require('./src/document-definitions-loader.js');
 var environmentShellMaker = require('./src/document-definitions-shell-maker.js');
-var documentDefinitionSchema = require('./src/document-definition-schema.js');
+var documentDefinitionSchema = require('./src/validation/document-definition-schema.js');
 
 var errorStatus = 1;
 
