@@ -83,9 +83,9 @@ module.exports = exports = joi.object().keys({
   }),
 
   propertyValidators: constraintSchema(
-    joi.object().required().pattern(
+    joi.object().pattern(
       /^[^_].*$/, // Sync Gateway does not allow top-level document property names to start with an underscore
-      propertyValidatorSchema))
+      propertyValidatorSchema)).required()
 })
   // At least one of "channels", "authorizedRoles" or "authorizedUsers" must be defined
   .or('channels', 'authorizedRoles', 'authorizedUsers')
@@ -94,7 +94,7 @@ module.exports = exports = joi.object().keys({
   // When "attachmentConstraints" is defined, then "allowAttachments" should also be defined
   .with('attachmentConstraints', 'allowAttachments');
 
-// Generates a schema that can be used for property validator constraints
+// Generates a schema that can be used for top-level document definition property constraints
 function constraintSchema(wrappedSchema) {
   return wrapDynamicConstraint(wrappedSchema, 2);
 }

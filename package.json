@@ -13,8 +13,8 @@
     "nyc": "^11.4.1"
   },
   "scripts": {
-    "test": "etc/prepare-tests.sh && nyc mocha **/*.spec.js",
-    "test-report": "etc/prepare-tests.sh && nyc mocha -R xunit **/*.spec.js > build/test-reports/synctos.xml"
+    "test": "etc/prepare-tests.sh && nyc mocha \"**/*.spec.js\"",
+    "test-report": "etc/prepare-tests.sh && nyc mocha -R xunit \"**/*.spec.js\" > build/test-reports/synctos.xml"
   },
   "license": "MIT",
   "repository": {
