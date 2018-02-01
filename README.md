@@ -14,7 +14,7 @@ Synctos is distributed as an [npm](https://www.npmjs.com/) package and has sever
 
 To add synctos to your project, run `npm install synctos` from the project's root directory to install the package locally. Or, better yet, if you define a package.json file in your project, you can run `npm install synctos --savedev` to automatically install locally and insert the package into your package.json's developer dependencies.
 
-For more info on npm package management, see the official npm documentation for [Installing npm packages locally](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Using a \`package.json\`](https://docs.npmjs.com/getting-started/using-a-package.json).
+For more info on npm package management, see the official npm documentation for [How to install local packages](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Working with package.json](https://docs.npmjs.com/getting-started/using-a-package.json).
 
 #### A note on JavaScript/ECMAScript compatibility:
 
@@ -31,7 +31,15 @@ As a convenience, otto - and, by extension, Sync Gateway - does support the [Und
 Once synctos is installed, you can run it from your project's directory as follows:
 
 ```
-node_modules/synctos/make-sync-function /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js
+node_modules/.bin/synctos /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js
+```
+
+Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
+
+```
+"scripts": {
+  "build": "synctos /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js"
+}
 ```
 
 This will take the sync document definitions that are defined in `/path/to/my-document-definitions.js` and build a new sync function that is output to `/path/to/my-generated-sync-function.js`. The generated sync function contents can then be inserted into the definition of a bucket/database in a Sync Gateway [configuration file](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/config-properties/index.html#configuration-files) as a multi-line string surrounded with backquotes/backticks ( \` ).
@@ -39,6 +47,24 @@ This will take the sync document definitions that are defined in `/path/to/my-do
 Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
 **NOTE**: Due to a [known issue](https://github.com/couchbase/sync_gateway/issues/1866) in Sync Gateway versions up to and including 1.2.1, when specifying a bucket/database's sync function in a configuration file as a multi-line string, you will have to be sure to escape any literal backslash characters in the sync function body. For example, if your sync function contains a regular expression like `new RegExp('\\w+')`, you will have to escape the backslashes when inserting the sync function into the configuration file so that it becomes `new RegExp('\\\\w+')`. The issue has been resolved in Sync Gateway version 1.3.0 and later.
+
+### Validating
+
+To validate that your document definitions file is structured correctly and does not contain any obvious semantic violations, execute the built in validation script as follows:
+
+```
+node_modules/.bin/synctos-validate /path/to/my-document-definitions.js
+```
+
+Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
+
+```
+"scripts": {
+  "validate": "synctos-validate /path/to/my-document-definitions.js"
+}
+```
+
+If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard output. Otherwise, if validation was successful, the utility will exit normally and will not output anything.
 
 ### Specifications
 

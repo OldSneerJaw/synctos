@@ -20,5 +20,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Kashoo/synctos"
+  },
+  "bin": {
+    "synctos": "./make-sync-function",
+    "synctos-validate": "./validate-document-definitions"
   }
 }
