@@ -1,6 +1,6 @@
 var joi = require('joi');
 var propertyValidatorSchema = require('./property-validator-schema');
-var wrapDynamicConstraint = require('./dynamic-constraint-wrapper');
+var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integer = joi.number().integer();
 var nonEmptyString = joi.string().min(1);
@@ -99,5 +99,5 @@ module.exports = exports = joi.object().keys({
 
 // Generates a schema that can be used for top-level document definition property constraints
 function constraintSchema(wrappedSchema) {
-  return wrapDynamicConstraint(wrappedSchema, 2);
+  return makeConstraintSchemaDynamic(wrappedSchema, 2);
 }

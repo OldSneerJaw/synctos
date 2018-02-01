@@ -1,5 +1,5 @@
 var joi = require('joi');
-var wrapDynamicConstraint = require('./dynamic-constraint-wrapper');
+var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integer = joi.number().integer();
 var dateOnly = joi.any()
@@ -182,5 +182,5 @@ function typeConstraintsSchema(typeName) {
 
 // Generates a schema that can be used for property validator constraints
 function constraintSchema(wrappedSchema) {
-  return wrapDynamicConstraint(wrappedSchema, 4);
+  return makeConstraintSchemaDynamic(wrappedSchema, 4);
 }
