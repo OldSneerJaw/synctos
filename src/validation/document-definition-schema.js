@@ -18,6 +18,9 @@ var authorizationDefinition = constraintSchema(
 
 var accessAssignmentEntryProperty = constraintSchema(arrayOrSingleItem.min(1).items(nonEmptyString));
 
+/**
+ * The full schema for a single document definition object.
+ */
 module.exports = exports = joi.object().keys({
   typeFilter: joi.func().required().maxArity(3),
   allowUnknownProperties: constraintSchema(joi.boolean()),

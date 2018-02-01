@@ -70,9 +70,13 @@ var schema = joi.object().keys({
     joi.object().unknown().keys({ type: joi.func() }),
     { then: joi.object().unknown() });
 
+/**
+ * A partial schema for a single entry in a "propertyValidators" object at either the top level of a document definition
+ * or nested within an "object" validator.
+ */
 module.exports = exports = schema;
 
-// Defined as a function rather than a plain object because it contains lazy references that result in circular
+// Defined as a function rather than a plain object because it contains lazy references that result in recursive
 // references between the complex types (e.g. "array", "object", "hashtable") and the main "propertyValidators" schema
 function typeSpecificConstraints() {
   return {
