@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var joi = require('joi');
+var joi = require('../../lib/joi/joi.bundle');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 describe('Dynamic constraint schema maker:', function() {
