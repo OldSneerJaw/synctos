@@ -13,6 +13,15 @@ var dateOnly = joi.any()
 var validPropertyTypes =
   [ 'string', 'integer', 'float', 'boolean', 'datetime', 'date', 'enum', 'uuid', 'attachmentReference', 'array', 'object', 'hashtable' ];
 
+var maximumSizeConstraint = joi.any().when(
+  'minimumLength',
+  {
+    is: joi.number().exist(),
+    then: constraintSchema(integer.min(joi.ref('minimumLength'))), // Must not be less than "minimumLength"
+    otherwise: constraintSchema(integer.min(0))
+  }
+);
+
 var universalConstraints = {
   type: constraintSchema(joi.string()).required(),
   required: constraintSchema(joi.boolean()),
@@ -84,7 +93,7 @@ function typeSpecificConstraints() {
       mustNotBeEmpty: constraintSchema(joi.boolean()),
       regexPattern: constraintSchema(joi.object().type(RegExp)),
       minimumLength: constraintSchema(integer.min(0)),
-      maximumLength: constraintSchema(integer.min(0)),
+      maximumLength: maximumSizeConstraint,
       minimumValue: constraintSchema(joi.string()),
       minimumValueExclusive: constraintSchema(joi.string()),
       maximumValue: constraintSchema(joi.string()),
@@ -132,7 +141,7 @@ function typeSpecificConstraints() {
     array: {
       mustNotBeEmpty: constraintSchema(joi.boolean()),
       minimumLength: constraintSchema(integer.min(0)),
-      maximumLength: constraintSchema(integer.min(0)),
+      maximumLength: maximumSizeConstraint,
       arrayElementsValidator: constraintSchema(joi.lazy(function() { return schema; }))
     },
     object: {
@@ -141,7 +150,7 @@ function typeSpecificConstraints() {
     },
     hashtable: {
       minimumSize: constraintSchema(integer.min(0)),
-      maximumSize: constraintSchema(integer.min(0)),
+      maximumSize: maximumSizeConstraint,
       hashtableKeysValidator: constraintSchema(joi.object().keys({
         mustNotBeEmpty: constraintSchema(joi.boolean()),
         regexPattern: constraintSchema(joi.object().type(RegExp))

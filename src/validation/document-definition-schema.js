@@ -28,14 +28,30 @@ module.exports = exports = joi.object().keys({
   cannotReplace: constraintSchema(joi.boolean()),
   cannotDelete: constraintSchema(joi.boolean()),
 
-  allowAttachments: constraintSchema(joi.boolean()),
+  allowAttachments: joi.any().when(
+    // "allowAttachments" must be true or a function if "attachmentConstraints" is defined
+    'attachmentConstraints',
+    {
+      is: joi.any().exist(),
+      then: constraintSchema(joi.boolean().only(true)).required(),
+      otherwise: constraintSchema(joi.boolean())
+    }
+  ),
   attachmentConstraints: constraintSchema(
     joi.object().min(1).keys(
       {
         requireAttachmentReferences: constraintSchema(joi.boolean()),
         maximumAttachmentCount: constraintSchema(integer.min(1)),
         maximumIndividualSize: constraintSchema(integer.min(1).max(20971520)),
-        maximumTotalSize: constraintSchema(integer.min(1)),
+        maximumTotalSize: constraintSchema(
+          integer.when(
+            'maximumIndividualSize',
+            {
+              is: integer.exist(),
+              then: integer.min(joi.ref('maximumIndividualSize')),
+              otherwise: integer.min(1)
+            }
+          )),
         supportedExtensions: constraintSchema(joi.array().min(1).items(joi.string())),
         supportedContentTypes: constraintSchema(joi.array().min(1).items(nonEmptyString))
       })),
@@ -77,7 +93,7 @@ module.exports = exports = joi.object().keys({
           }).or('roles', 'users') // At least one of "roles" or "users" must be provided
         })),
 
-  customActions: joi.object().keys({
+  customActions: joi.object().min(1).keys({
     onTypeIdentificationSucceeded: customActionEvent,
     onAuthorizationSucceeded: customActionEvent,
     onValidationSucceeded: customActionEvent,
@@ -93,9 +109,7 @@ module.exports = exports = joi.object().keys({
   // At least one of "channels", "authorizedRoles" or "authorizedUsers" must be defined
   .or('channels', 'authorizedRoles', 'authorizedUsers')
   // It makes no sense to set "immutable" with either of "cannotReplace" or "cannotDelete"
-  .without('immutable', [ 'cannotReplace', 'cannotDelete' ])
-  // When "attachmentConstraints" is defined, then "allowAttachments" should also be defined
-  .with('attachmentConstraints', 'allowAttachments');
+  .without('immutable', [ 'cannotReplace', 'cannotDelete' ]);
 
 // Generates a schema that can be used for top-level document definition property constraints
 function constraintSchema(wrappedSchema) {
