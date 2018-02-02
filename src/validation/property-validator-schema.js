@@ -76,16 +76,6 @@ var schema = joi.object().keys({
  */
 module.exports = exports = schema;
 
-function maximumSizeConstraint(minimumSizePropertyName) {
-  return joi.any().when(
-    minimumSizePropertyName,
-    {
-      is: joi.number().exist(),
-      then: constraintSchema(integer.min(joi.ref(minimumSizePropertyName))),
-      otherwise: constraintSchema(integer.min(0))
-    });
-}
-
 // Defined as a function rather than a plain object because it contains lazy references that result in recursive
 // references between the complex types (e.g. "array", "object", "hashtable") and the main "propertyValidators" schema
 function typeSpecificConstraints() {
@@ -103,14 +93,14 @@ function typeSpecificConstraints() {
     integer: {
       minimumValue: constraintSchema(integer),
       minimumValueExclusive: constraintSchema(integer),
-      maximumValue: constraintSchema(integer),
-      maximumValueExclusive: constraintSchema(integer)
+      maximumValue: maximumValueInclusiveNumberConstraint(integer),
+      maximumValueExclusive: maximumValueExclusiveNumberConstraint(integer)
     },
     float: {
       minimumValue: constraintSchema(joi.number()),
       minimumValueExclusive: constraintSchema(joi.number()),
-      maximumValue: constraintSchema(joi.number()),
-      maximumValueExclusive: constraintSchema(joi.number())
+      maximumValue: maximumValueInclusiveNumberConstraint(joi.number()),
+      maximumValueExclusive: maximumValueExclusiveNumberConstraint(joi.number())
     },
     boolean: { },
     datetime: {
@@ -188,6 +178,46 @@ function typeConstraintsSchema(typeName) {
     .without('immutableStrict', [ 'immutable', 'immutableWhenSet', 'immutableWhenSetStrict' ])
     .without('immutableWhenSet', [ 'immutable', 'immutableStrict', 'immutableWhenSetStrict' ])
     .without('immutableWhenSetStrict', [ 'immutable', 'immutableStrict', 'immutableWhenSet' ]);
+}
+
+function maximumSizeConstraint(minimumSizePropertyName) {
+  return joi.any().when(
+    minimumSizePropertyName,
+    {
+      is: joi.number().exist(),
+      then: constraintSchema(integer.min(joi.ref(minimumSizePropertyName))),
+      otherwise: constraintSchema(integer.min(0))
+    });
+}
+
+function maximumValueInclusiveNumberConstraint(numberType) {
+  return joi.any().when(
+    'minimumValue',
+    {
+      is: joi.number().exist(),
+      then: constraintSchema(numberType.min(joi.ref('minimumValue'))),
+      otherwise: joi.any().when(
+        'minimumValueExclusive',
+        {
+          is: joi.number().exist(),
+          then: constraintSchema(numberType.greater(joi.ref('minimumValueExclusive')))
+        })
+    });
+}
+
+function maximumValueExclusiveNumberConstraint(numberType) {
+  return joi.any().when(
+    'minimumValue',
+    {
+      is: joi.number().exist(),
+      then: constraintSchema(numberType.greater(joi.ref('minimumValue'))),
+      otherwise: joi.any().when(
+        'minimumValueExclusive',
+        {
+          is: joi.number().exist(),
+          then: constraintSchema(numberType.greater(joi.ref('minimumValueExclusive')))
+        })
+    });
 }
 
 // Generates a schema that can be used for property validator constraints

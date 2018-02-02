@@ -35,8 +35,7 @@ module.exports = exports = joi.object().keys({
       is: joi.any().exist(),
       then: constraintSchema(joi.boolean().only(true)).required(),
       otherwise: constraintSchema(joi.boolean())
-    }
-  ),
+    }),
   attachmentConstraints: constraintSchema(
     joi.object().min(1).keys(
       {
@@ -50,8 +49,7 @@ module.exports = exports = joi.object().keys({
               is: integer.exist(),
               then: integer.min(joi.ref('maximumIndividualSize')),
               otherwise: integer.min(1)
-            }
-          )),
+            })),
         supportedExtensions: constraintSchema(joi.array().min(1).items(joi.string())),
         supportedContentTypes: constraintSchema(joi.array().min(1).items(nonEmptyString))
       })),
