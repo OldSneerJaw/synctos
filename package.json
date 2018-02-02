@@ -12,7 +12,7 @@
   },
   "scripts": {
     "test": "etc/prepare-tests.sh && nyc mocha **/*.spec.js",
-    "test-report": "etc/prepare-tests.sh && nyc mocha -R xunit **/*.spec.js > build/test-reports/synctos.xml"
+    "test-report": "etc/prepare-tests.sh && mkdir -p build/test-reports/ && nyc mocha -R xunit **/*.spec.js > build/test-reports/synctos.xml"
   },
   "license": "MIT",
   "repository": {
