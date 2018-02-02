@@ -24,7 +24,7 @@ var universalConstraints = {
   immutableWhenSetStrict: constraintSchema(joi.boolean()),
   mustEqual: constraintSchema(joi.any()),
   mustEqualStrict: constraintSchema(joi.any()),
-  customValidation: joi.func().maxArity(4)
+  customValidation: joi.func().maxArity(4) // Function parameters: doc, oldDoc, currentItemElement, validationItemStack
 };
 
 var schema = joi.object().keys({
@@ -137,7 +137,7 @@ function typeSpecificConstraints() {
     },
     object: {
       allowUnknownProperties: constraintSchema(joi.boolean()),
-      propertyValidators: constraintSchema(joi.object().pattern(/^.+$/, joi.lazy(function() { return schema; })))
+      propertyValidators: constraintSchema(joi.object().min(1).pattern(/^.+$/, joi.lazy(function() { return schema; })))
     },
     hashtable: {
       minimumSize: constraintSchema(integer.min(0)),
@@ -182,5 +182,6 @@ function typeConstraintsSchema(typeName) {
 
 // Generates a schema that can be used for property validator constraints
 function constraintSchema(wrappedSchema) {
+  // The function schema this creates will support no more than four parameters (doc, oldDoc, value, oldValue)
   return makeConstraintSchemaDynamic(wrappedSchema, 4);
 }

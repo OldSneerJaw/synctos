@@ -5,10 +5,10 @@ var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 var integer = joi.number().integer();
 var nonEmptyString = joi.string().min(1);
 var arrayOrSingleItem = joi.array().single();
-var customActionEvent = joi.func().maxArity(3);
+var customActionEvent = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
 
 var authorizationDefinition = constraintSchema(
-  joi.object().keys(
+  joi.object().min(1).keys(
     {
       add: arrayOrSingleItem.items(nonEmptyString),
       replace: arrayOrSingleItem.items(nonEmptyString),
@@ -22,7 +22,7 @@ var accessAssignmentEntryProperty = constraintSchema(arrayOrSingleItem.min(1).it
  * The full schema for a single document definition object.
  */
 module.exports = exports = joi.object().keys({
-  typeFilter: joi.func().required().maxArity(3),
+  typeFilter: joi.func().required().maxArity(3), // Function parameters: doc, oldDoc, docType
   allowUnknownProperties: constraintSchema(joi.boolean()),
   immutable: constraintSchema(joi.boolean()),
   cannotReplace: constraintSchema(joi.boolean()),
@@ -30,18 +30,18 @@ module.exports = exports = joi.object().keys({
 
   allowAttachments: constraintSchema(joi.boolean()),
   attachmentConstraints: constraintSchema(
-    joi.object().keys(
+    joi.object().min(1).keys(
       {
         requireAttachmentReferences: constraintSchema(joi.boolean()),
-        maximumAttachmentCount: constraintSchema(integer.min(0)),
-        maximumIndividualSize: constraintSchema(integer.min(0).max(20971520)),
-        maximumTotalSize: constraintSchema(integer.min(0)),
-        supportedExtensions: constraintSchema(joi.array().items(joi.string())),
-        supportedContentTypes: constraintSchema(joi.array().items(nonEmptyString))
+        maximumAttachmentCount: constraintSchema(integer.min(1)),
+        maximumIndividualSize: constraintSchema(integer.min(1).max(20971520)),
+        maximumTotalSize: constraintSchema(integer.min(1)),
+        supportedExtensions: constraintSchema(joi.array().min(1).items(joi.string())),
+        supportedContentTypes: constraintSchema(joi.array().min(1).items(nonEmptyString))
       })),
 
   channels: constraintSchema(
-    joi.object().keys(
+    joi.object().min(1).keys(
       {
         view: arrayOrSingleItem.items(nonEmptyString), // The other auth types deliberately omit this permission type
         add: arrayOrSingleItem.items(nonEmptyString),
@@ -99,5 +99,6 @@ module.exports = exports = joi.object().keys({
 
 // Generates a schema that can be used for top-level document definition property constraints
 function constraintSchema(wrappedSchema) {
+  // The function schema this creates will support no more than two parameters (doc, oldDoc)
   return makeConstraintSchemaDynamic(wrappedSchema, 2);
 }

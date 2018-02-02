@@ -25,7 +25,6 @@ describe('Document definitions validator:', function() {
         'myDoc1.typeFilter: "typeFilter" is required',
         'myDoc1.propertyValidators: "propertyValidators" is required'
       ]);
-    expect(results.length).to.equal(3);
   });
 
   it('performs validation on a document definitions function', function() {
@@ -33,13 +32,17 @@ describe('Document definitions validator:', function() {
       return {
         myDoc1: {
           typeFilter: function() { },
-          channels: {
-            write: 'write'
-          },
+          channels: { }, // Must have at least one permission type
+          authorizedRoles: { }, // Must have at least one permission type
+          authorizedUsers: { }, // Must have at least one permission type
           attachmentConstraints: { // Should only be specified in conjunction with the "allowAttachments" property
-            maximumAttachmentCount: function(doc, oldDoc, invalidParam) { // Has too many params
-              return invalidParam;
-            }
+            maximumAttachmentCount: 0, // Must be at least 1
+            maximumIndividualSize: 20971521, // Must be no greater than 20971520 (the max Sync Gateway attachment size)
+            maximumTotalSize: -3, // Must be at least 1
+            supportedExtensions: function(doc, oldDoc, extraParam) { // Has too many params
+              return [ extraParam ];
+            },
+            supportedContentTypes: [ ] // Must have at least one element
           },
           propertyValidators: {
             _invalidName: { // Sync Gateway does not allow top-level property validators to start with underscore
@@ -52,6 +55,7 @@ describe('Document definitions validator:', function() {
                 dateProperty: {
                   type: 'date',
                   required: true,
+                  immutable: false,
                   minimumValue: '2018-01-31T17:31:27.283-08:00' // Should not include time and time zone components
                 },
                 hashtableProperty: {
@@ -88,6 +92,10 @@ describe('Document definitions validator:', function() {
                       },
                       noTypeProperty: { // The required "type" property is required
                         required: true
+                      },
+                      emptyPropertyValidatorsProperty: {
+                        type: 'object',
+                        propertyValidators: { } // Must specify at least one property validator
                       }
                     }
                   }
@@ -106,8 +114,15 @@ describe('Document definitions validator:', function() {
 
     expect(results).to.have.members(
       [
+        'myDoc1.channels: \"channels\" must have at least 1 children',
+        'myDoc1.authorizedRoles: \"authorizedRoles\" must have at least 1 children',
+        'myDoc1.authorizedUsers: \"authorizedUsers\" must have at least 1 children',
         'myDoc1.attachmentConstraints: "attachmentConstraints" missing required peer "allowAttachments"',
-        'myDoc1.attachmentConstraints.maximumAttachmentCount: "maximumAttachmentCount" must have an arity lesser or equal to 2',
+        'myDoc1.attachmentConstraints.maximumAttachmentCount: \"maximumAttachmentCount\" must be larger than or equal to 1',
+        'myDoc1.attachmentConstraints.maximumIndividualSize: \"maximumIndividualSize\" must be less than or equal to 20971520',
+        'myDoc1.attachmentConstraints.maximumTotalSize: \"maximumTotalSize\" must be larger than or equal to 1',
+        'myDoc1.attachmentConstraints.supportedExtensions: "supportedExtensions" must have an arity lesser or equal to 2',
+        'myDoc1.attachmentConstraints.supportedContentTypes: \"supportedContentTypes\" must contain at least 1 items',
         'myDoc1.propertyValidators._invalidName: "_invalidName" is not allowed',
         'myDoc1.propertyValidators.nestedObject.unrecognizedConstraint: "unrecognizedConstraint" is not allowed',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.minimumValue: "minimumValue" with value "2018-01-31T17:31:27.283-08:00" fails to match the required pattern: /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/',
@@ -116,9 +131,9 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.maximumValueExclusive: "maximumValueExclusive" conflict with forbidden peer "mustEqual"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.minimumLength: "minimumLength" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.uuidProperty.maximumValue: "maximumValue" must be a valid GUID',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.noTypeProperty.type: "type" is required',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [string, integer, float, boolean, datetime, date, enum, uuid, attachmentReference, array, object, hashtable]'
       ]);
-    expect(results.length).to.equal(12);
   });
 });
