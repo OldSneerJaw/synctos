@@ -9,8 +9,9 @@
 exports.init = init;
 
 var fs = require('fs');
-var path = require('path');
 var vm = require('vm');
+var underscore = require('../../lib/underscore/underscore-min');
+var simpleMock = require('../../lib/simple-mock/index');
 
 function init(rawSyncFunction, syncFunctionFile) {
   var options = {
@@ -18,7 +19,7 @@ function init(rawSyncFunction, syncFunctionFile) {
     displayErrors: true
   };
 
-  var environmentTemplate = fs.readFileSync(path.resolve(__dirname, '../templates/test-environment-template.js'), 'utf8').trim();
+  var environmentTemplate = fs.readFileSync('templates/test-environment-template.js', 'utf8').trim();
 
   // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
   // the sync function
@@ -34,7 +35,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   // "channel", "customActionStub", etc. stubs with the test-helper module
   var environmentFunction = vm.runInThisContext(environmentStatement, options);
 
-  return environmentFunction(require);
+  return environmentFunction(underscore, simpleMock);
 }
 
 // Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function

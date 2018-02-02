@@ -1,7 +1,4 @@
-function makeTestEnvironment(require) {
-  var _ = require('../lib/underscore/underscore-min.js');
-  var simple = require('../lib/simple-mock/index.js');
-
+function makeTestEnvironment(_, simple) {
   var requireAccess = simple.stub();
   var requireRole = simple.stub();
   var requireUser = simple.stub();

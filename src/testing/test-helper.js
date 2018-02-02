@@ -233,7 +233,7 @@ exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 // Implementation begins here
 var assert = require('assert');
 var fs = require('fs');
-var syncFunctionLoader = require('./sync-function-loader.js');
+var syncFunctionLoader = require('../sync-function-loader.js');
 var testEnvironmentMaker = require('./test-environment-maker.js');
 
 var defaultWriteChannel = 'write';
