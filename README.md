@@ -8,6 +8,28 @@ With this utility, you define all your JSON document types in a declarative Java
 
 To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/index.html). And, for a comprehensive introduction to synctos, see the post [Validating your Sync Gateway documents with synctos](https://blog.couchbase.com/validating-your-sync-gateway-documents-with-synctos/) on the official Couchbase blog.
 
+# Table of Contents
+
+- [Introduction](#introduction)
+- [Table of Contents](#table-of-contents)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Running](#running)
+    - [Specifications](#specifications)
+      - [Document type definitions](#document-type-definitions)
+        - [Essential document properties](#essential-document-properties)
+        - [Advanced document properties](#advanced-document-properties)
+      - [Content validation](#content-validation)
+        - [Simple type validation](#simple-type-validation)
+        - [Complex type validation](#complex-type-validation)
+        - [Universal constraint validation](#universal-constraint-validation)
+        - [Predefined validators](#predefined-validators)
+        - [Dynamic constraint validation](#dynamic-constraint-validation)
+    - [Definition file](#definition-file)
+      - [Modularity](#modularity)
+    - [Helper functions](#helper-functions)
+- [Testing](#testing)
+
 # Installation
 
 Synctos is distributed as an [npm](https://www.npmjs.com/) package and has several npm development dependencies. As such, it requires that [Node.js](https://nodejs.org/) is installed in order to run. For best results use, at a minimum, the most recent Long Term Support (LTS) release.
@@ -16,7 +38,7 @@ To add synctos to your project, run `npm install synctos` from the project's roo
 
 For more info on npm package management, see the official npm documentation for [Installing npm packages locally](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Using a \`package.json\`](https://docs.npmjs.com/getting-started/using-a-package.json).
 
-#### A note on JavaScript/ECMAScript compatibility:
+**A note on JavaScript/ECMAScript compatibility:**
 
 Sync Gateway 1.x uses the [otto](https://github.com/robertkrimen/otto) JavaScript engine to execute sync functions from within its [Go](https://golang.org/) codebase. Specifically, Sync Gateway is pinned to commit [5282a5a](https://github.com/robertkrimen/otto/tree/5282a5a45ba989692b3ae22f730fa6b9dd67662f) of otto, which does not support any of the features introduced in ECMAScript 2015 (aka ES6/ES2015). In fact, it does not promise compatibility with ECMAScript 5, offering only that "For now, otto is a hybrid ECMA3/ECMA5 interpreter. Parts of the specification are still works in progress."
 
@@ -65,7 +87,7 @@ At the top level, the document definitions object contains a property for each d
 
 Each document type is defined as an object with a number of properties that control authorization, content validation and access control.
 
-##### Essential document properties:
+##### Essential document properties
 
 The following properties include the basics necessary to build a document definition:
 
@@ -161,7 +183,7 @@ propertyValidators: function(doc, oldDoc) {
 }
 ```
 
-##### Advanced document properties:
+##### Advanced document properties
 
 Additional properties that provide finer grained control over documents:
 
@@ -315,7 +337,7 @@ customActions: {
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
 
-##### Simple type validation:
+##### Simple type validation
 
 Validation for simple data types (e.g. integers, floating point numbers, strings, dates/times, etc.):
 
@@ -353,7 +375,7 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-wide `supportedContentTypes` constraint for the referenced attachment. No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Takes precedence over the document-wide `maximumIndividualSize` constraint for the referenced attachment. Unlimited by default.
 
-##### Complex type validation:
+##### Complex type validation
 
 Validation for complex data types (e.g. objects, arrays, hashtables):
 
@@ -421,7 +443,7 @@ myHash1: {
 }
 ```
 
-##### Universal constraint validation:
+##### Universal constraint validation
 
 Validation for all simple and complex data types support the following additional parameters:
 
@@ -474,7 +496,7 @@ propertyValidators: {
 }
 ```
 
-##### Predefined validators:
+##### Predefined validators
 
 The following predefined item validators may also be useful:
 
@@ -489,7 +511,7 @@ propertyValidators: {
 }
 ```
 
-##### Dynamic constraint validation:
+##### Dynamic constraint validation
 
 In addition to defining any of the item validation constraints above, including `type`, as static values (e.g. `maximumValue: 99`, `mustNotBeEmpty: true`), it is possible to specify them dynamically via function (e.g. `regexPattern: function(doc, oldDoc, value, oldValue) { ... }`). This is useful if, for example, the constraint should be based on the value of another property/element in the document or computed based on the previous stored value of the current property/element. The function should expect to receive the following parameters:
 

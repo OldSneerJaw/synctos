@@ -55,7 +55,7 @@ To execute the full test suite and lint the project's JS files with JSHint, run 
 
 ### Documentation
 
-The project includes comprehensive end user documentation and, to ensure it stays that way over time, every new feature must be described in detail in the project's `README.md`. In many cases (e.g. when adding a new validation type) you should be able to simply follow the documentation examples provided for existing features. Be sure to include code/configuration samples wherever it is appropriate to do so.
+The project includes comprehensive end user documentation and, to ensure it stays that way over time, every new feature must be described in detail in the project's `README.md`. In many cases (e.g. when adding a new validation type) you should be able to simply follow the documentation examples provided for existing features. Be sure to update the table of contents whenever new headings are added and include code/configuration samples wherever it is appropriate to do so.
 
 Bugs do not generally need to be documented in `README.md` unless there is some caveat that users should be aware of. For example, the need to double-escape backslashes in document definitions for older versions of Sync Gateway (see sync_gateway issue [#1866](https://github.com/couchbase/sync_gateway/issues/1866)).
 
