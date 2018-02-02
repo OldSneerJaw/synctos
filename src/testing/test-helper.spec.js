@@ -28,7 +28,7 @@ describe('Test helper:', function() {
 
     syncFunctionLoaderMock = { load: simpleMock.stub() };
     syncFunctionLoaderMock.load.returnWith(fakeSyncFunctionContents);
-    mockRequire('../sync-function-loader', syncFunctionLoaderMock);
+    mockRequire('../loading/sync-function-loader', syncFunctionLoaderMock);
 
     testEnvironmentMakerMock = { init: simpleMock.stub() };
     testEnvironmentMakerMock.init.returnWith(fakeTestEnvironment);

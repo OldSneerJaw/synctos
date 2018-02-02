@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var simpleMock = require('../lib/simple-mock/index.js');
+var simpleMock = require('../../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Document definitions loader', function() {
