@@ -85,8 +85,8 @@ describe('Document definitions validator:', function() {
                 },
                 hashtableProperty: {
                   type: 'hashtable',
-                  minimumSize: 3.5, // Must be an integer
-                  maximumSize: 3.5, // Must be an integer
+                  minimumSize: 2,
+                  maximumSize: 1, // Must not be less than "minimumSize"
                   hashtableKeysValidator: {
                     regexPattern: '^[a-z]+$' // Must actually be either a literal regex or a RegExp object
                   },
@@ -98,8 +98,8 @@ describe('Document definitions validator:', function() {
                 },
                 arrayProperty: {
                   type: 'array',
-                  minimumLength: 2,
-                  maximumLength: 1, // Must not be less than "minimumLength"
+                  minimumLength: 3.5, // Must be an integer
+                  maximumLength: 3.5, // Must be an integer
                   arrayElementsValidator: {
                     type: 'object',
                     allowUnknownProperties: true,
@@ -158,11 +158,11 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutableWhenSet: \"immutableWhenSet\" conflict with forbidden peer \"immutable\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutable: \"immutable\" conflict with forbidden peer \"immutableWhenSet\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.minimumValue: "minimumValue" with value "2018-01-31T17:31:27.283-08:00" fails to match the required pattern: /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.minimumSize: \"minimumSize\" must be an integer',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.maximumSize: \"maximumSize\" must be an integer',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.maximumSize: \"maximumSize\" must be larger than or equal to 2',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableKeysValidator.regexPattern: "regexPattern" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.maximumValueExclusive: "maximumValueExclusive" conflict with forbidden peer "mustEqual"',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.maximumLength: \"maximumLength\" must be larger than or equal to 2',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.minimumLength: \"minimumLength\" must be an integer',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.maximumLength: \"maximumLength\" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.maximumLength: \"maximumLength\" must be larger than or equal to 0',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.uuidProperty.maximumValue: "maximumValue" must be a valid GUID',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
