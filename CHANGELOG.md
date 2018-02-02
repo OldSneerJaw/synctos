@@ -2,7 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-Nothing yet
+### Fixed
+- [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
 
 ## [1.10.0] - 2018-01-24
 ### Added
