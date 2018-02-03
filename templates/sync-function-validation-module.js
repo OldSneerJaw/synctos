@@ -377,7 +377,7 @@ function validationModule() {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var currentItemValue = currentItemEntry.itemValue;
       if (!checkItemEquality(currentItemValue, expectedItemValue, treatNullAsUndefined)) {
-        validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + JSON.stringify(expectedItemValue));
+        validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + jsonStringify(expectedItemValue));
       }
     }
 

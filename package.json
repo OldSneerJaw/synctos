@@ -1,6 +1,15 @@
 {
   "name": "synctos",
   "version": "1.10.0",
+  "description": "The Syncmaker. A tool to build comprehensive sync functions for Couchbase Sync Gateway.",
+  "keywords": [
+    "couchbase",
+    "couchbase-sync-gateway",
+    "couchbase-mobile",
+    "sync-gateway",
+    "synchronization",
+    "synctos"
+  ],
   "main": "src/index.js",
   "dependencies": {
     "joi": "^13.1.1"

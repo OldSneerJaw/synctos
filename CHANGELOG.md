@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Added
 - [#43](https://github.com/Kashoo/synctos/issues/43): Tool to validate structure and semantics of a document definitions file
 
+### Fixed
+- [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
+
 ## [1.10.0] - 2018-01-24
 ### Added
 - [#146](https://github.com/Kashoo/synctos/issues/146): Underscore.js support
