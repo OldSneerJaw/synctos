@@ -4,18 +4,7 @@ var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integerSchema = joi.number().integer();
 var nonEmptyStringSchema = joi.string().min(1);
-function arrayOrSingleItem(singleItemType, minimumLength) {
-  return joi.any()
-    .when(
-      joi.array(),
-      {
-        then: joi.array().min(minimumLength || 0).items(singleItemType),
-        otherwise: singleItemType
-      }
-    );
-}
 var customActionEventSchema = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
-
 var authorizationSchema = constraintSchema(
   joi.object().min(1).keys(
     {
@@ -24,7 +13,6 @@ var authorizationSchema = constraintSchema(
       remove: arrayOrSingleItem(nonEmptyStringSchema),
       write: arrayOrSingleItem(nonEmptyStringSchema)
     }));
-
 var accessAssignmentEntryPropertySchema = constraintSchema(arrayOrSingleItem(nonEmptyStringSchema, 1));
 
 /**
@@ -38,7 +26,7 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
   cannotDelete: constraintSchema(joi.boolean()),
 
   allowAttachments: joi.any().when(
-    // "allowAttachments" must be true or a function if "attachmentConstraints" is defined
+    // This property must be true or a function if "attachmentConstraints" is defined
     'attachmentConstraints',
     {
       is: joi.any().exist(),
@@ -53,6 +41,7 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
         maximumIndividualSize: constraintSchema(integerSchema.min(1).max(20971520)),
         maximumTotalSize: constraintSchema(
           integerSchema.when(
+            // This property must be greater or equal to "maximumIndividualSize" if it's defined
             'maximumIndividualSize',
             {
               is: integerSchema.exist(),
@@ -117,6 +106,17 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
   .or('channels', 'authorizedRoles', 'authorizedUsers')
   // It makes no sense to set "immutable" with either of "cannotReplace" or "cannotDelete"
   .without('immutable', [ 'cannotReplace', 'cannotDelete' ]);
+
+function arrayOrSingleItem(singleItemSchema, minimumLength) {
+  return joi.any()
+    .when(
+      joi.array(),
+      {
+        then: joi.array().min(minimumLength || 0).items(singleItemSchema),
+        otherwise: singleItemSchema
+      }
+    );
+}
 
 // Generates a schema that can be used for top-level document definition property constraints
 function constraintSchema(wrappedSchema) {
