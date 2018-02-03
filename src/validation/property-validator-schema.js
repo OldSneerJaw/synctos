@@ -2,13 +2,13 @@ var joi = require('joi');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integer = joi.number().integer();
-var dateOnly = joi.any()
-  .when(
-    joi.string(),
-    { then: joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/) })
-  .when(
-    joi.any(),
-    { then: joi.date().options({ convert: false }) });
+var datetime = joi.date().options({ convert: true });
+var dateOnly = joi.any().when(
+  joi.string(),
+  {
+    then: joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/),
+    otherwise: joi.date().options({ convert: false })
+  });
 
 var validPropertyTypes =
   [ 'string', 'integer', 'float', 'boolean', 'datetime', 'date', 'enum', 'uuid', 'attachmentReference', 'array', 'object', 'hashtable' ];
@@ -104,10 +104,10 @@ function typeSpecificConstraints() {
     },
     boolean: { },
     datetime: {
-      minimumValue: constraintSchema(joi.date()),
-      minimumValueExclusive: constraintSchema(joi.date()),
-      maximumValue: constraintSchema(joi.date()),
-      maximumValueExclusive: constraintSchema(joi.date())
+      minimumValue: constraintSchema(datetime),
+      minimumValueExclusive: constraintSchema(datetime),
+      maximumValue: constraintSchema(datetime),
+      maximumValueExclusive: constraintSchema(datetime)
     },
     date: {
       minimumValue: constraintSchema(dateOnly),
@@ -200,7 +200,8 @@ function maximumValueInclusiveNumberConstraint(numberType) {
         'minimumValueExclusive',
         {
           is: joi.number().exist(),
-          then: constraintSchema(numberType.greater(joi.ref('minimumValueExclusive')))
+          then: constraintSchema(numberType.greater(joi.ref('minimumValueExclusive'))),
+          otherwise: constraintSchema(numberType)
         })
     });
 }
@@ -215,7 +216,8 @@ function maximumValueExclusiveNumberConstraint(numberType) {
         'minimumValueExclusive',
         {
           is: joi.number().exist(),
-          then: constraintSchema(numberType.greater(joi.ref('minimumValueExclusive')))
+          then: constraintSchema(numberType.greater(joi.ref('minimumValueExclusive'))),
+          otherwise: constraintSchema(numberType)
         })
     });
 }

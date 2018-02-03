@@ -4,24 +4,33 @@ var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integer = joi.number().integer();
 var nonEmptyString = joi.string().min(1);
-var arrayOrSingleItem = joi.array().single();
+function arrayOrSingleItem(singleItemType, minimumLength) {
+  return joi.any()
+    .when(
+      joi.array(),
+      {
+        then: joi.array().min(minimumLength || 0).items(singleItemType),
+        otherwise: singleItemType
+      }
+    );
+}
 var customActionEvent = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
 
 var authorizationDefinition = constraintSchema(
   joi.object().min(1).keys(
     {
-      add: arrayOrSingleItem.items(nonEmptyString),
-      replace: arrayOrSingleItem.items(nonEmptyString),
-      remove: arrayOrSingleItem.items(nonEmptyString),
-      write: arrayOrSingleItem.items(nonEmptyString)
+      add: arrayOrSingleItem(nonEmptyString),
+      replace: arrayOrSingleItem(nonEmptyString),
+      remove: arrayOrSingleItem(nonEmptyString),
+      write: arrayOrSingleItem(nonEmptyString)
     }));
 
-var accessAssignmentEntryProperty = constraintSchema(arrayOrSingleItem.min(1).items(nonEmptyString));
+var accessAssignmentEntryProperty = constraintSchema(arrayOrSingleItem(nonEmptyString, 1));
 
 /**
  * The full schema for a single document definition object.
  */
-module.exports = exports = joi.object().keys({
+module.exports = exports = joi.object().options({ convert: false }).keys({
   typeFilter: joi.func().required().maxArity(3), // Function parameters: doc, oldDoc, docType
   allowUnknownProperties: constraintSchema(joi.boolean()),
   immutable: constraintSchema(joi.boolean()),
@@ -57,11 +66,11 @@ module.exports = exports = joi.object().keys({
   channels: constraintSchema(
     joi.object().min(1).keys(
       {
-        view: arrayOrSingleItem.items(nonEmptyString), // The other auth types deliberately omit this permission type
-        add: arrayOrSingleItem.items(nonEmptyString),
-        replace: arrayOrSingleItem.items(nonEmptyString),
-        remove: arrayOrSingleItem.items(nonEmptyString),
-        write: arrayOrSingleItem.items(nonEmptyString)
+        view: arrayOrSingleItem(nonEmptyString), // The other auth types deliberately omit this permission type
+        add: arrayOrSingleItem(nonEmptyString),
+        replace: arrayOrSingleItem(nonEmptyString),
+        remove: arrayOrSingleItem(nonEmptyString),
+        write: arrayOrSingleItem(nonEmptyString)
       })),
   authorizedRoles: authorizationDefinition,
   authorizedUsers: authorizationDefinition,

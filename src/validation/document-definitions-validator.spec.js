@@ -96,7 +96,7 @@ describe('Document definitions validator:', function() {
                   hashtableValuesValidator: {
                     type: 'datetime',
                     maximumValueExclusive: new Date(2018, 0, 31, 17, 31, 27, 283),
-                    mustEqual: '2018-01-31T17:31:27.283-08:00' // Should not be defined in conjunction with maximumValueExclusive
+                    mustEqual: '2018-01-31T17:31:27.283-08:00' // Must not be defined in conjunction with "maximumValueExclusive"
                   }
                 },
                 arrayProperty: {
@@ -126,16 +126,18 @@ describe('Document definitions validator:', function() {
                         required: true,
                         mustNotBeMissing: true, // Must not be defined if "required" is defined
                         minimumValueExclusive: 1,
-                        maximumValue: 1 // Must be greater than "minimumValueExclusive"
+                        maximumValue: 1, // Must be greater than "minimumValueExclusive"
+                        maximumValueExclusive: 1 // Must be greater than "minimumValueExclusive"
                       },
                       validFloatProperty: {
                         type: 'float',
                         minimumValueExclusive: 1,
-                        maximumValue: 1 + Number.EPSILON
+                        maximumValue: 1.0001
                       },
                       invalidFloatProperty: {
                         type: 'float',
                         minimumValue: 31.9,
+                        maximumValue: 31.89998, // Must be at least "minimumValue"
                         maximumValueExclusive: 31.9 // Must be greater than "minimumValue"
                       },
                       uuidProperty: {
@@ -193,7 +195,13 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.required: \"required\" conflict with forbidden peer \"mustNotBeMissing\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.mustNotBeMissing: \"mustNotBeMissing\" conflict with forbidden peer \"required\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValue: \"maximumValue\" must be greater than 1',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"maximumValueExclusive\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValueExclusive: \"maximumValueExclusive\" must be greater than 1',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValueExclusive: \"maximumValueExclusive\" conflict with forbidden peer \"maximumValue\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidFloatProperty.maximumValueExclusive: \"maximumValueExclusive\" must be greater than 31.9',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidFloatProperty.maximumValue: \"maximumValue\" must be larger than or equal to 31.9',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidFloatProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"maximumValueExclusive\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidFloatProperty.maximumValueExclusive: \"maximumValueExclusive\" conflict with forbidden peer \"maximumValue\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.uuidProperty.maximumValue: "maximumValue" must be a valid GUID',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.noTypeProperty.type: "type" is required',
