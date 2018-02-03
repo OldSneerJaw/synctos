@@ -2,8 +2,8 @@ var joi = require('joi');
 var propertyValidatorSchema = require('./property-validator-schema');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
-var integer = joi.number().integer();
-var nonEmptyString = joi.string().min(1);
+var integerSchema = joi.number().integer();
+var nonEmptyStringSchema = joi.string().min(1);
 function arrayOrSingleItem(singleItemType, minimumLength) {
   return joi.any()
     .when(
@@ -14,18 +14,18 @@ function arrayOrSingleItem(singleItemType, minimumLength) {
       }
     );
 }
-var customActionEvent = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
+var customActionEventSchema = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
 
-var authorizationDefinition = constraintSchema(
+var authorizationSchema = constraintSchema(
   joi.object().min(1).keys(
     {
-      add: arrayOrSingleItem(nonEmptyString),
-      replace: arrayOrSingleItem(nonEmptyString),
-      remove: arrayOrSingleItem(nonEmptyString),
-      write: arrayOrSingleItem(nonEmptyString)
+      add: arrayOrSingleItem(nonEmptyStringSchema),
+      replace: arrayOrSingleItem(nonEmptyStringSchema),
+      remove: arrayOrSingleItem(nonEmptyStringSchema),
+      write: arrayOrSingleItem(nonEmptyStringSchema)
     }));
 
-var accessAssignmentEntryProperty = constraintSchema(arrayOrSingleItem(nonEmptyString, 1));
+var accessAssignmentEntryPropertySchema = constraintSchema(arrayOrSingleItem(nonEmptyStringSchema, 1));
 
 /**
  * The full schema for a single document definition object.
@@ -49,31 +49,31 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
     joi.object().min(1).keys(
       {
         requireAttachmentReferences: constraintSchema(joi.boolean()),
-        maximumAttachmentCount: constraintSchema(integer.min(1)),
-        maximumIndividualSize: constraintSchema(integer.min(1).max(20971520)),
+        maximumAttachmentCount: constraintSchema(integerSchema.min(1)),
+        maximumIndividualSize: constraintSchema(integerSchema.min(1).max(20971520)),
         maximumTotalSize: constraintSchema(
-          integer.when(
+          integerSchema.when(
             'maximumIndividualSize',
             {
-              is: integer.exist(),
-              then: integer.min(joi.ref('maximumIndividualSize')),
-              otherwise: integer.min(1)
+              is: integerSchema.exist(),
+              then: integerSchema.min(joi.ref('maximumIndividualSize')),
+              otherwise: integerSchema.min(1)
             })),
         supportedExtensions: constraintSchema(joi.array().min(1).items(joi.string())),
-        supportedContentTypes: constraintSchema(joi.array().min(1).items(nonEmptyString))
+        supportedContentTypes: constraintSchema(joi.array().min(1).items(nonEmptyStringSchema))
       })),
 
   channels: constraintSchema(
     joi.object().min(1).keys(
       {
-        view: arrayOrSingleItem(nonEmptyString), // The other auth types deliberately omit this permission type
-        add: arrayOrSingleItem(nonEmptyString),
-        replace: arrayOrSingleItem(nonEmptyString),
-        remove: arrayOrSingleItem(nonEmptyString),
-        write: arrayOrSingleItem(nonEmptyString)
+        view: arrayOrSingleItem(nonEmptyStringSchema), // The other auth types deliberately omit this permission type
+        add: arrayOrSingleItem(nonEmptyStringSchema),
+        replace: arrayOrSingleItem(nonEmptyStringSchema),
+        remove: arrayOrSingleItem(nonEmptyStringSchema),
+        write: arrayOrSingleItem(nonEmptyStringSchema)
       })),
-  authorizedRoles: authorizationDefinition,
-  authorizedUsers: authorizationDefinition,
+  authorizedRoles: authorizationSchema,
+  authorizedUsers: authorizationSchema,
 
   accessAssignments: joi.array().items(
     joi.object().keys({ type: joi.string().only([ 'channel', 'role', null ]) })
@@ -83,8 +83,8 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
         {
           then: joi.object().keys({
             type: joi.string(),
-            roles: accessAssignmentEntryProperty.required(),
-            users: accessAssignmentEntryProperty.required()
+            roles: accessAssignmentEntryPropertySchema.required(),
+            users: accessAssignmentEntryPropertySchema.required()
           })
         })
 
@@ -94,18 +94,18 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
         {
           then: joi.object().keys({
             type: joi.string(),
-            channels: accessAssignmentEntryProperty.required(),
-            roles: accessAssignmentEntryProperty,
-            users: accessAssignmentEntryProperty
+            channels: accessAssignmentEntryPropertySchema.required(),
+            roles: accessAssignmentEntryPropertySchema,
+            users: accessAssignmentEntryPropertySchema
           }).or('roles', 'users') // At least one of "roles" or "users" must be provided
         })),
 
   customActions: joi.object().min(1).keys({
-    onTypeIdentificationSucceeded: customActionEvent,
-    onAuthorizationSucceeded: customActionEvent,
-    onValidationSucceeded: customActionEvent,
-    onAccessAssignmentsSucceeded: customActionEvent,
-    onDocumentChannelAssignmentSucceeded: customActionEvent
+    onTypeIdentificationSucceeded: customActionEventSchema,
+    onAuthorizationSucceeded: customActionEventSchema,
+    onValidationSucceeded: customActionEventSchema,
+    onAccessAssignmentsSucceeded: customActionEventSchema,
+    onDocumentChannelAssignmentSucceeded: customActionEventSchema
   }),
 
   propertyValidators: constraintSchema(

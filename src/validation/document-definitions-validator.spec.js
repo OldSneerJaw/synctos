@@ -86,6 +86,16 @@ describe('Document definitions validator:', function() {
                     return extraParam;
                   }
                 },
+                enumProperty: {
+                  type: 'enum',
+                  predefinedValues: [
+                    'foo',
+                    'bar',
+                    3,
+                    1.9 // Must include only strings and integers
+                  ],
+                  mustEqual: 3
+                },
                 hashtableProperty: {
                   type: 'hashtable',
                   minimumSize: 2,
@@ -112,9 +122,14 @@ describe('Document definitions validator:', function() {
                     propertyValidators: {
                       stringProperty: {
                         type: 'string',
+                        mustEqual: null, // Must not be defined in conjunction with "regexPattern"
                         regexPattern: /^[a-z]+$/,
                         minimumLength: function() { return 9; },
                         maximumLength: -1 // Must be at least 0
+                      },
+                      booleanProperty: {
+                        type: 'boolean',
+                        mustEqual: 'true' // Must be a boolean
                       },
                       validIntegerProperty: {
                         type: 'integer',
@@ -145,11 +160,16 @@ describe('Document definitions validator:', function() {
                         minimumValue: '4050b662-4383-4d2E-8771-54d380d11C41',
                         maximumValue: '1234' // Not a valid UUID
                       },
-                      noTypeProperty: { // The required "type" property is required
+                      noTypeProperty: { // The "type" property is required
                         required: true
+                      },
+                      invalidMustEqualConstraintProperty: {
+                        type: 'object',
+                        mustEqual: [ ] // Must be an object
                       },
                       emptyPropertyValidatorsProperty: {
                         type: 'object',
+                        mustEqual: function(a, b, c, d) { return d; },
                         propertyValidators: { } // Must specify at least one property validator
                       }
                     }
@@ -186,12 +206,14 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutable: \"immutable\" conflict with forbidden peer \"immutableWhenSet\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.minimumValue: "minimumValue" with value "2018-01-31T17:31:27.283-08:00" fails to match the required pattern: /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.customValidation: \"customValidation\" must have an arity lesser or equal to 4',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.predefinedValues.3: \"predefinedValues\" at position 3 does not match any of the allowed types',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.maximumSize: \"maximumSize\" must be larger than or equal to 2',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableKeysValidator.regexPattern: "regexPattern" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.maximumValueExclusive: "maximumValueExclusive" conflict with forbidden peer "mustEqual"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.minimumLength: \"minimumLength\" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.maximumLength: \"maximumLength\" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.maximumLength: \"maximumLength\" must be larger than or equal to 0',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.booleanProperty.mustEqual: \"mustEqual\" must be a boolean',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.required: \"required\" conflict with forbidden peer \"mustNotBeMissing\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.mustNotBeMissing: \"mustNotBeMissing\" conflict with forbidden peer \"required\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValue: \"maximumValue\" must be greater than 1',
@@ -203,6 +225,7 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidFloatProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"maximumValueExclusive\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidFloatProperty.maximumValueExclusive: \"maximumValueExclusive\" conflict with forbidden peer \"maximumValue\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.uuidProperty.maximumValue: "maximumValue" must be a valid GUID',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidMustEqualConstraintProperty.mustEqual: \"mustEqual\" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.noTypeProperty.type: "type" is required',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [string, integer, float, boolean, datetime, date, enum, uuid, attachmentReference, array, object, hashtable]'
