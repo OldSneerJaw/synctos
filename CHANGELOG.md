@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Added
 - [#189](https://github.com/Kashoo/synctos/issues/189): Automatically create the output sync function file directory if it does not exist
 
+### Fixed
+- [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
+
 ## [1.10.0] - 2018-01-24
 ### Added
 - [#146](https://github.com/Kashoo/synctos/issues/146): Underscore.js support
