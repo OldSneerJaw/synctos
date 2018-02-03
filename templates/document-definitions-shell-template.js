@@ -9,6 +9,8 @@ function makeDocumentDefinitionsShell(require) {
   var isDocumentMissingOrDeleted = simple.stub();
   var isValueNullOrUndefined = simple.stub();
   var getEffectiveOldDoc = simple.stub();
+  var jsonStringify = simple.stub();
+  var getDocumentType = simple.stub();
   var requireAccess = simple.stub();
   var requireRole = simple.stub();
   var requireUser = simple.stub();
@@ -27,6 +29,8 @@ function makeDocumentDefinitionsShell(require) {
     isDocumentMissingOrDeleted: isDocumentMissingOrDeleted,
     isValueNullOrUndefined: isValueNullOrUndefined,
     getEffectiveOldDoc: getEffectiveOldDoc,
+    jsonStringify: jsonStringify,
+    getDocumentType: getDocumentType,
     requireAccess: requireAccess,
     requireRole: requireRole,
     requireUser: requireUser,

@@ -11,7 +11,7 @@
     "importSyncFunctionFragment": false,
     "isDocumentMissingOrDeleted": false,
     "isValueNullOrUndefined": false,
-    "JSON": false,
+    "jsonStringify": false,
     "requireAccess": false,
     "requireRole": false,
     "requireUser": false,
