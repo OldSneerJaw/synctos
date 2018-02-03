@@ -5,41 +5,41 @@ var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 var integerSchema = joi.number().integer();
 var nonEmptyStringSchema = joi.string().min(1);
 var customActionEventSchema = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
-var authorizationSchema = constraintSchema(
+var authorizationSchema = dynamicConstraintSchema(
   joi.object().min(1).keys(
     {
-      add: arrayOrSingleItem(nonEmptyStringSchema),
-      replace: arrayOrSingleItem(nonEmptyStringSchema),
-      remove: arrayOrSingleItem(nonEmptyStringSchema),
-      write: arrayOrSingleItem(nonEmptyStringSchema)
+      add: arrayOrSingleItemSchema(nonEmptyStringSchema),
+      replace: arrayOrSingleItemSchema(nonEmptyStringSchema),
+      remove: arrayOrSingleItemSchema(nonEmptyStringSchema),
+      write: arrayOrSingleItemSchema(nonEmptyStringSchema)
     }));
-var accessAssignmentEntryPropertySchema = constraintSchema(arrayOrSingleItem(nonEmptyStringSchema, 1));
+var accessAssignmentEntryPropertySchema = dynamicConstraintSchema(arrayOrSingleItemSchema(nonEmptyStringSchema, 1));
 
 /**
  * The full schema for a single document definition object.
  */
 module.exports = exports = joi.object().options({ convert: false }).keys({
   typeFilter: joi.func().required().maxArity(3), // Function parameters: doc, oldDoc, docType
-  allowUnknownProperties: constraintSchema(joi.boolean()),
-  immutable: constraintSchema(joi.boolean()),
-  cannotReplace: constraintSchema(joi.boolean()),
-  cannotDelete: constraintSchema(joi.boolean()),
+  allowUnknownProperties: dynamicConstraintSchema(joi.boolean()),
+  immutable: dynamicConstraintSchema(joi.boolean()),
+  cannotReplace: dynamicConstraintSchema(joi.boolean()),
+  cannotDelete: dynamicConstraintSchema(joi.boolean()),
 
   allowAttachments: joi.any().when(
     // This property must be true or a function if "attachmentConstraints" is defined
     'attachmentConstraints',
     {
       is: joi.any().exist(),
-      then: constraintSchema(joi.boolean().only(true)).required(),
-      otherwise: constraintSchema(joi.boolean())
+      then: dynamicConstraintSchema(joi.boolean().only(true)).required(),
+      otherwise: dynamicConstraintSchema(joi.boolean())
     }),
-  attachmentConstraints: constraintSchema(
+  attachmentConstraints: dynamicConstraintSchema(
     joi.object().min(1).keys(
       {
-        requireAttachmentReferences: constraintSchema(joi.boolean()),
-        maximumAttachmentCount: constraintSchema(integerSchema.min(1)),
-        maximumIndividualSize: constraintSchema(integerSchema.min(1).max(20971520)),
-        maximumTotalSize: constraintSchema(
+        requireAttachmentReferences: dynamicConstraintSchema(joi.boolean()),
+        maximumAttachmentCount: dynamicConstraintSchema(integerSchema.min(1)),
+        maximumIndividualSize: dynamicConstraintSchema(integerSchema.min(1).max(20971520)),
+        maximumTotalSize: dynamicConstraintSchema(
           integerSchema.when(
             // This property must be greater or equal to "maximumIndividualSize" if it's defined
             'maximumIndividualSize',
@@ -48,18 +48,18 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
               then: integerSchema.min(joi.ref('maximumIndividualSize')),
               otherwise: integerSchema.min(1)
             })),
-        supportedExtensions: constraintSchema(joi.array().min(1).items(joi.string())),
-        supportedContentTypes: constraintSchema(joi.array().min(1).items(nonEmptyStringSchema))
+        supportedExtensions: dynamicConstraintSchema(joi.array().min(1).items(joi.string())),
+        supportedContentTypes: dynamicConstraintSchema(joi.array().min(1).items(nonEmptyStringSchema))
       })),
 
-  channels: constraintSchema(
+  channels: dynamicConstraintSchema(
     joi.object().min(1).keys(
       {
-        view: arrayOrSingleItem(nonEmptyStringSchema), // The other auth types deliberately omit this permission type
-        add: arrayOrSingleItem(nonEmptyStringSchema),
-        replace: arrayOrSingleItem(nonEmptyStringSchema),
-        remove: arrayOrSingleItem(nonEmptyStringSchema),
-        write: arrayOrSingleItem(nonEmptyStringSchema)
+        view: arrayOrSingleItemSchema(nonEmptyStringSchema), // The other auth types deliberately omit this permission type
+        add: arrayOrSingleItemSchema(nonEmptyStringSchema),
+        replace: arrayOrSingleItemSchema(nonEmptyStringSchema),
+        remove: arrayOrSingleItemSchema(nonEmptyStringSchema),
+        write: arrayOrSingleItemSchema(nonEmptyStringSchema)
       })),
   authorizedRoles: authorizationSchema,
   authorizedUsers: authorizationSchema,
@@ -97,7 +97,7 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
     onDocumentChannelAssignmentSucceeded: customActionEventSchema
   }),
 
-  propertyValidators: constraintSchema(
+  propertyValidators: dynamicConstraintSchema(
     joi.object().pattern(
       /^[^_].*$/, // Sync Gateway does not allow top-level document property names to start with an underscore
       propertyValidatorSchema)).required()
@@ -107,19 +107,17 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
   // It makes no sense to set "immutable" with either of "cannotReplace" or "cannotDelete"
   .without('immutable', [ 'cannotReplace', 'cannotDelete' ]);
 
-function arrayOrSingleItem(singleItemSchema, minimumLength) {
-  return joi.any()
-    .when(
-      joi.array(),
-      {
-        then: joi.array().min(minimumLength || 0).items(singleItemSchema),
-        otherwise: singleItemSchema
-      }
-    );
+function arrayOrSingleItemSchema(singleItemSchema, minimumLength) {
+  return joi.any().when(
+    joi.array(),
+    {
+      then: joi.array().min(minimumLength || 0).items(singleItemSchema),
+      otherwise: singleItemSchema
+    });
 }
 
 // Generates a schema that can be used for top-level document definition property constraints
-function constraintSchema(wrappedSchema) {
+function dynamicConstraintSchema(wrappedSchema) {
   // The function schema this creates will support no more than two parameters (doc, oldDoc)
   return makeConstraintSchemaDynamic(wrappedSchema, 2);
 }

@@ -94,7 +94,8 @@ describe('Document definitions validator:', function() {
                     3,
                     1.9 // Must include only strings and integers
                   ],
-                  mustEqual: 3
+                  mustEqual: true, // Must be an integer or string
+                  mustEqualStrict: 3 // Must not be defined in conjunction with "mustEqual"
                 },
                 hashtableProperty: {
                   type: 'hashtable',
@@ -105,6 +106,7 @@ describe('Document definitions validator:', function() {
                   },
                   hashtableValuesValidator: {
                     type: 'datetime',
+                    minimumValue: 'Mon, 25 Dec 1995 13:30:00 +0430', // Must be an ISO 8601 date string
                     maximumValueExclusive: new Date(2018, 0, 31, 17, 31, 27, 283),
                     mustEqual: '2018-01-31T17:31:27.283-08:00' // Must not be defined in conjunction with "maximumValueExclusive"
                   }
@@ -207,8 +209,13 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.minimumValue: "minimumValue" with value "2018-01-31T17:31:27.283-08:00" fails to match the required pattern: /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.customValidation: \"customValidation\" must have an arity lesser or equal to 4',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.predefinedValues.3: \"predefinedValues\" at position 3 does not match any of the allowed types',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" conflict with forbidden peer \"mustEqualStrict\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a string',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a number',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.maximumSize: \"maximumSize\" must be larger than or equal to 2',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableKeysValidator.regexPattern: "regexPattern" must be an object',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.minimumValue: \"minimumValue\" must be a valid ISO 8601 date',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.minimumValue: \"minimumValue\" conflict with forbidden peer \"mustEqual\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.maximumValueExclusive: "maximumValueExclusive" conflict with forbidden peer "mustEqual"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.minimumLength: \"minimumLength\" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.maximumLength: \"maximumLength\" must be an integer',
