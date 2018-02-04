@@ -2,7 +2,12 @@ var joi = require('joi');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integerSchema = joi.number().integer();
-var datetimeSchema = joi.date().iso().options({ convert: true });
+var datetimeSchema = joi.any().when(
+  joi.string(),
+  {
+    then: joi.string().regex(/^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/),
+    otherwise: joi.date().options({ convert: false })
+  });
 var dateOnlySchema = joi.any().when(
   joi.string(),
   {
