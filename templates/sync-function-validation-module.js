@@ -8,14 +8,16 @@ function validationModule() {
   function isIso8601DateTimeString(value) {
     var regex = /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))([T ]([01][0-9]|2[0-4])(:[0-5][0-9])?(:[0-5][0-9])?([\.,][0-9]{1,3})?)?([zZ]|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9])?)?$/;
 
-    return regex.test(value);
+    // Verify that it's in ISO 8601 format (via the regex) and that it represents a valid point in time (via Date.parse)
+    return regex.test(value) && !isNaN(Date.parse(value));
   }
 
   // Check that a given value is a valid ISO 8601 date string without time and time zone components
   function isIso8601DateString(value) {
     var regex = /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/;
 
-    return regex.test(value);
+    // Verify that it's in ISO 8601 format (via the regex) and that it represents a valid day (via Date.parse)
+    return regex.test(value) && !isNaN(Date.parse(value));
   }
 
   function isUuid(value) {
@@ -286,12 +288,12 @@ function validationModule() {
             }
             break;
           case 'datetime':
-            if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue) || isNaN(Date.parse(itemValue))) {
+            if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with optional time and time zone components');
             }
             break;
           case 'date':
-            if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue) || isNaN(Date.parse(itemValue))) {
+            if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with no time or time zone components');
             }
             break;
