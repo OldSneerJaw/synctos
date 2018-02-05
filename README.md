@@ -694,6 +694,7 @@ Custom code (e.g. type filters, custom validation functions, custom actions) wit
 
 * `isDocumentMissingOrDeleted(candidate)`: Determines whether the given `candidate` document is either missing (i.e. `null` or `undefined`) or deleted (i.e. its `_deleted` property is `true`). Useful in cases where, for example, the old document (i.e. `oldDoc` parameter) is non-existant or deleted and you want to treat both cases as equivalent.
 * `isValueNullOrUndefined(value)`: Determines whether the given `value` parameter is either `null` or `undefined`. In many cases, it is useful to treat both states the same.
+* `jsonStringify(value)`: Converts a value into a JSON string. May be useful in a `customValidation` constraint for formatting a custom error message, for example. Serves as a direct replacement for [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) since Sync Gateway does not support the global `JSON` object.
 
 # Testing
 
