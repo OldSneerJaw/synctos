@@ -321,6 +321,15 @@ exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, exp
 };
 
 /**
+ * Formats a message for the error that occurs when the format for a time without date and timezone (i.e. a time) is invalid.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].timeProp")
+ */
+exports.timeFormatInvalid = function(itemPath) {
+  return 'item "' + itemPath + '" must be an ISO 8601 time string with no date or time zone components';
+};
+
+/**
  * Formats a message for the error that occurs when a property or element's type does not match what is defined by the validator.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[2].datetimeProp")
@@ -376,6 +385,8 @@ function getTypeDescription(type) {
       return 'an ISO 8601 date string with no time or time zone components';
     case 'datetime':
       return 'an ISO 8601 date string with optional time and time zone components';
+    case 'time':
+      return 'an ISO 8601 time string with no date or time zone components';
     case 'enum':
       return 'an integer or a string';
     case 'float':

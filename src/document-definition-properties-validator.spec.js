@@ -24,6 +24,9 @@ describe('Document definition properties validator', function() {
       dateTypeProp: {
         type: 'date'
       },
+      timeTypeProp: {
+        type: 'time'
+      },
       enumTypeProp: {
         type: 'enum'
       },

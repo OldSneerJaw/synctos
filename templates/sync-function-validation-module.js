@@ -20,6 +20,13 @@ function validationModule() {
     return regex.test(value) && !isNaN(Date.parse(value));
   }
 
+  // Check that a given value is a valid ISO 8601 time string without date and time zone components
+  function isIso8601TimeString(value) {
+    var regex = /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9]([,.][0-9]{1,3})?)?$/;
+
+    return regex.test(value);
+  }
+
   function isUuid(value) {
     var regex = /^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$/;
 
@@ -295,6 +302,11 @@ function validationModule() {
           case 'date':
             if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with no time or time zone components');
+            }
+            break;
+          case 'time':
+            if (typeof itemValue !== 'string' || !isIso8601TimeString(itemValue)) {
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 time string with no date or time zone components');
             }
             break;
           case 'enum':
