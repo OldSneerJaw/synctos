@@ -8,7 +8,8 @@
     "couchbase-mobile",
     "sync-gateway",
     "synchronization",
-    "synctos"
+    "synctos",
+    "validation"
   ],
   "main": "src/index.js",
   "dependencies": {},
