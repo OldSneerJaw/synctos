@@ -19,7 +19,7 @@ describe('Date/time validation type', function() {
     it('accepts a valid date/time with a time component but no time zone', function() {
       var doc = {
         _id: 'datetimeDoc',
-        formatValidationProp: '2016-07-17T15:20:09.123456789'
+        formatValidationProp: '2016-07-17T15:20:09.348'
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -133,10 +133,10 @@ describe('Date/time validation type', function() {
       testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a date/time with too many millisecond digits', function() {
+    it('rejects a date/time with invalid milliseconds', function() {
       var doc = {
         _id: 'datetimeDoc',
-        formatValidationProp: '2016-07-17T15:20:09.1234567890-07:00'
+        formatValidationProp: '2016-07-17T15:20:09.1000-07:00'
       };
 
       testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));

@@ -36,7 +36,7 @@ describe('Sample notification transport processing summary doc definition', func
     var doc = {
       _id: 'biz.109.notification.ABC.processedTransport.XYZ',
       processedBy: [ ],
-      sentAt: '2016-06-04T21Z'  // Minutes and seconds are missing
+      sentAt: '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
     };
 
     verifyProcessingSummaryNotWritten(
