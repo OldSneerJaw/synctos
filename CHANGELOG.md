@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [Unreleased]
 ### Fixed
 - [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
+- [#199](https://github.com/Kashoo/synctos/issues/199): Date and date-time validation types permit dates that are invalid
 
 ## [1.10.0] - 2018-01-24
 ### Added

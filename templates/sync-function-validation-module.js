@@ -286,12 +286,12 @@ function validationModule() {
             }
             break;
           case 'datetime':
-            if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue)) {
+            if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue) || isNaN(Date.parse(itemValue))) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with optional time and time zone components');
             }
             break;
           case 'date':
-            if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
+            if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue) || isNaN(Date.parse(itemValue))) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with no time or time zone components');
             }
             break;
