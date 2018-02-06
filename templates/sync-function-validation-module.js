@@ -27,6 +27,144 @@ function validationModule() {
     return regex.test(value);
   }
 
+  // Converts an ISO 8601 time into an array of its component pieces
+  function extractIso8601TimePieces(value) {
+    var timePieces = value.split(/[:.,]/);
+
+    var hour = timePieces[0] ? parseInt(timePieces[0], 10) : 0;
+    var minute = timePieces[1] ? parseInt(timePieces[1], 10) : 0;
+    var second = timePieces[2] ? parseInt(timePieces[2], 10) : 0;
+    var millisecond = timePieces[3] ? parseInt(timePieces[3], 10) : 0;
+
+    return [ hour, minute, second, millisecond ];
+  }
+
+  // Compares the given time strings. Returns a negative number if a is less than b, a positive number if a is greater
+  // than b, or zero if a and b are equal.
+  function compareTimes(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') {
+      return NaN;
+    }
+
+    var aTimePieces = extractIso8601TimePieces(a);
+    var bTimePieces = extractIso8601TimePieces(b);
+
+    for (var timePieceIndex = 0; timePieceIndex < aTimePieces.length; timePieceIndex++) {
+      if (aTimePieces[timePieceIndex] < bTimePieces[timePieceIndex]) {
+        return -1;
+      } else if (aTimePieces[timePieceIndex] > bTimePieces[timePieceIndex]) {
+        return 1;
+      }
+    }
+
+    // If we got here, the two parameters represent the same time of day
+    return 0;
+  }
+
+  // Converts the given date representation to a timestamp that represents the number of ms since the Unix epoch
+  function convertToTimestamp(value) {
+    if (value instanceof Date) {
+      return value.getTime();
+    } else if (typeof value === 'string' || typeof value === 'number') {
+      return new Date(value).getTime();
+    } else {
+      return NaN;
+    }
+  }
+
+  // Compares the given date representations. Returns a negative number if a is less than b, a positive number if a is
+  // greater than b, or zero if a and b are equal.
+  function compareDates(a, b) {
+    var aTimestamp = convertToTimestamp(a);
+    var bTimestamp = convertToTimestamp(b);
+
+    if (isNaN(aTimestamp) || isNaN(bTimestamp)) {
+      return NaN;
+    } else {
+      return aTimestamp - bTimestamp;
+    }
+  }
+
+  function minValueInclusiveViolationComparator(validatorType) {
+    switch (validatorType) {
+      case 'time':
+        return function(candidateValue, constraintValue) {
+          return compareTimes(candidateValue, constraintValue) < 0;
+        };
+      case 'date':
+      case 'datetime':
+        return function(candidateValue, constraintValue) {
+          return compareDates(candidateValue, constraintValue) < 0;
+        };
+      default:
+        return function(candidateValue, constraintValue) {
+          return candidateValue < constraintValue;
+        };
+    }
+  }
+
+  function minValueExclusiveViolationComparator(validatorType) {
+    switch (validatorType) {
+      case 'time':
+        return function(candidateValue, constraintValue) {
+          return compareTimes(candidateValue, constraintValue) <= 0;
+        };
+      case 'date':
+      case 'datetime':
+        return function(candidateValue, constraintValue) {
+          return compareDates(candidateValue, constraintValue) <= 0;
+        };
+      default:
+        return function(candidateValue, constraintValue) {
+          return candidateValue <= constraintValue;
+        };
+    }
+  }
+
+  function maxValueInclusiveViolationComparator(validatorType) {
+    switch (validatorType) {
+      case 'time':
+        return function(candidateValue, constraintValue) {
+          return compareTimes(candidateValue, constraintValue) > 0;
+        };
+      case 'date':
+      case 'datetime':
+        return function(candidateValue, constraintValue) {
+          return compareDates(candidateValue, constraintValue) > 0;
+        };
+      default:
+        return function(candidateValue, constraintValue) {
+          return candidateValue > constraintValue;
+        };
+    }
+  }
+
+  function maxValueExclusiveViolationComparator(validatorType) {
+    switch (validatorType) {
+      case 'time':
+        return function(candidateValue, constraintValue) {
+          return compareTimes(candidateValue, constraintValue) >= 0;
+        };
+      case 'date':
+      case 'datetime':
+        return function(candidateValue, constraintValue) {
+          return compareDates(candidateValue, constraintValue) >= 0;
+        };
+      default:
+        return function(candidateValue, constraintValue) {
+          return candidateValue >= constraintValue;
+        };
+    }
+  }
+
+  function convertToString(value) {
+    if (value instanceof Date) {
+      return value.toISOString();
+    } else {
+      return !isValueNullOrUndefined(value) ? value.toString() : 'null';
+    }
+  }
+
   function isUuid(value) {
     var regex = /^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$/;
 
@@ -230,34 +368,30 @@ function validationModule() {
 
         var minimumValue = resolveValidationConstraint(validator.minimumValue);
         if (!isValueNullOrUndefined(minimumValue)) {
-          var minComparator = function(left, right) {
-            return left < right;
-          };
-          validateRangeConstraint(minimumValue, validatorType, minComparator, 'less than');
+          validateRangeConstraint(minimumValue, validatorType, minValueInclusiveViolationComparator(validatorType), 'less than');
         }
 
         var minimumValueExclusive = resolveValidationConstraint(validator.minimumValueExclusive);
         if (!isValueNullOrUndefined(minimumValueExclusive)) {
-          var minExclusiveComparator = function(left, right) {
-            return left <= right;
-          };
-          validateRangeConstraint(minimumValueExclusive, validatorType, minExclusiveComparator, 'less than or equal to');
+          validateRangeConstraint(
+            minimumValueExclusive,
+            validatorType,
+            minValueExclusiveViolationComparator(validatorType),
+            'less than or equal to');
         }
 
         var maximumValue = resolveValidationConstraint(validator.maximumValue);
         if (!isValueNullOrUndefined(maximumValue)) {
-          var maxComparator = function(left, right) {
-            return left > right;
-          };
-          validateRangeConstraint(maximumValue, validatorType, maxComparator, 'greater than');
+          validateRangeConstraint(maximumValue, validatorType, maxValueInclusiveViolationComparator(validatorType), 'greater than');
         }
 
         var maximumValueExclusive = resolveValidationConstraint(validator.maximumValueExclusive);
         if (!isValueNullOrUndefined(maximumValueExclusive)) {
-          var maxExclusiveComparator = function(left, right) {
-            return left >= right;
-          };
-          validateRangeConstraint(maximumValueExclusive, validatorType, maxExclusiveComparator, 'greater than or equal to');
+          validateRangeConstraint(
+            maximumValueExclusive,
+            validatorType,
+            maxValueExclusiveViolationComparator(validatorType),
+            'greater than or equal to');
         }
 
         var minimumLength = resolveValidationConstraint(validator.minimumLength);
@@ -466,27 +600,15 @@ function validationModule() {
       return true;
     }
 
-    function validateRangeConstraint(rangeLimit, validationType, comparator, violationDescription) {
+    function validateRangeConstraint(rangeConstraint, validationType, violationComparator, violationDescription) {
       var itemValue = itemStack[itemStack.length - 1].itemValue;
-      if (validationType === 'datetime' || rangeLimit instanceof Date) {
-        // Date/times require special handling because their time and time zone components are optional and time zones may differ
-        try {
-          var itemDate = new Date(itemValue);
-          var constraintDate = (rangeLimit instanceof Date) ? rangeLimit : new Date(rangeLimit);
-          if (comparator(itemDate.getTime(), constraintDate.getTime())) {
-            var formattedRangeLimit = (rangeLimit instanceof Date) ? rangeLimit.toISOString() : rangeLimit;
-            addOutOfRangeValidationError(formattedRangeLimit, violationDescription);
-          }
-        } catch (ex) {
-          // The date/time's format may be invalid but it isn't technically in violation of the range constraint
-        }
-      } else if (comparator(itemValue, rangeLimit)) {
-        addOutOfRangeValidationError(rangeLimit, violationDescription);
+      if (violationComparator(itemValue, rangeConstraint)) {
+        addOutOfRangeValidationError(rangeConstraint, violationDescription);
       }
     }
 
-    function addOutOfRangeValidationError(rangeLimit, violationDescription) {
-      validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationDescription + ' ' + rangeLimit);
+    function addOutOfRangeValidationError(rangeConstraint, violationDescription) {
+      validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationDescription + ' ' + convertToString(rangeConstraint));
     }
 
     function validateArray(elementValidator) {

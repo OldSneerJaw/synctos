@@ -585,6 +585,8 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
     actualErrorMessages = [ exception.forbidden ];
   }
 
+  // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), verify
+  // that neither list of validation errors contains an element that does not exist in the other
   for (var expectedErrorIndex = 0; expectedErrorIndex < expectedErrorMessages.length; expectedErrorIndex++) {
     var expectedErrorMsg = expectedErrorMessages[expectedErrorIndex];
     assert.ok(
@@ -592,12 +594,10 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
       'Document validation errors do not include expected error message: "' + expectedErrorMsg  + '". Actual error: ' + exception.forbidden);
   }
 
-  // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
-  // that neither list of validation errors contains an element that does not exist in the other
   for (var actualErrorIndex = 0; actualErrorIndex < actualErrorMessages.length; actualErrorIndex++) {
     var errorMessage = actualErrorMessages[actualErrorIndex];
     if (expectedErrorMessages.indexOf(errorMessage) < 0) {
-      assert.fail('Unexpected document validation error: "' + errorMessage + '"');
+      assert.fail('Unexpected document validation error: "' + errorMessage + '". Expected error: Invalid ' + docType + ' document: ' + expectedErrorMessages.join('; '));
     }
   }
 }

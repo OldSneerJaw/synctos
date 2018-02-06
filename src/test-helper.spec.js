@@ -188,16 +188,17 @@ describe('Test helper:', function() {
     it('fails if an unexpected validation error is encountered', function() {
       var docType = 'my-doc-type';
       var actualErrors = [ 'my-error-1', 'my-error-2' ];
+      var actualErrorMessage = 'Invalid ' + docType + ' document: ' + actualErrors[0] + '; ' + actualErrors[1];
       var expectedErrors = [ actualErrors[0] ];
-      var errorMessage = 'Invalid ' + docType + ' document: ' + actualErrors[0] + '; ' + actualErrors[1];
+      var expectedErrorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
 
       testHelper.syncFunction = function() {
-        throw { forbidden: errorMessage };
+        throw { forbidden: actualErrorMessage };
       };
 
       expect(function() {
         testHelper.verifyDocumentRejected({ }, void 0, docType, expectedErrors, { });
-      }).to.throw('Unexpected document validation error: "' + actualErrors[1] + '"');
+      }).to.throw('Unexpected document validation error: "' + actualErrors[1] + '". Expected error: ' + expectedErrorMessage);
     });
   });
 
