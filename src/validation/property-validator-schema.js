@@ -2,28 +2,32 @@ var joi = require('joi');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integerSchema = joi.number().integer();
-var datetimeSchema = joi.any().when(
-  joi.string(),
-  {
-    then: joi.string().regex(/^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/),
-    otherwise: joi.date().options({ convert: false })
-  });
-var dateOnlySchema = joi.any().when(
-  joi.string(),
-  {
-    then: joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/),
-    otherwise: joi.date().options({ convert: false })
-  });
 var uuidSchema = joi.string().uuid();
 var regexSchema = joi.object().type(RegExp);
 
-var typeComparisonSchemas = {
+var datetimeStringSchema = joi.string()
+  .regex(/^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/);
+var datetimeSchema = joi.any().when(
+  joi.string(),
+  {
+    then: datetimeStringSchema,
+    otherwise: joi.date().options({ convert: false })
+  });
+var dateOnlyStringSchema = joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/);
+var dateOnlySchema = joi.any().when(
+  joi.string(),
+  {
+    then: dateOnlyStringSchema,
+    otherwise: joi.date().options({ convert: false })
+  });
+
+var typeEqualitySchemas = {
   string: joi.string(),
   integer: integerSchema,
   float: joi.number(),
   boolean: joi.boolean(),
-  datetime: datetimeSchema,
-  date: dateOnlySchema,
+  datetime: datetimeStringSchema,
+  date: dateOnlyStringSchema,
   enum: joi.alternatives().try([ joi.string(), integerSchema ]),
   uuid: uuidSchema,
   attachmentReference: joi.string(),
@@ -32,7 +36,7 @@ var typeComparisonSchemas = {
   hashtable: joi.object().unknown()
 };
 
-var validPropertyTypes = Object.keys(typeComparisonSchemas).map(function(key) { return key; });
+var validPropertyTypes = Object.keys(typeEqualitySchemas).map(function(key) { return key; });
 
 var schema = joi.object().keys({
   type: dynamicConstraintSchema(joi.string().only(validPropertyTypes)).required()
@@ -161,7 +165,7 @@ function typeSpecificConstraintSchemas() {
 // Creates a validation schema for the constraints of the specified type
 function makeTypeConstraintsSchema(typeName) {
   var allTypeConstraints = typeSpecificConstraintSchemas();
-  var constraints = Object.assign({ }, universalConstraintSchemas(typeComparisonSchemas[typeName]), allTypeConstraints[typeName]);
+  var constraints = Object.assign({ }, universalConstraintSchemas(typeEqualitySchemas[typeName]), allTypeConstraints[typeName]);
 
   return joi.object().keys(constraints)
     // Prevent the use of more than one constraint from the "required value" category
@@ -191,7 +195,7 @@ function mustEqualConstraintSchema(comparisonSchema) {
   return joi.any().when(joi.any().only(null), { otherwise: comparisonSchema });
 }
 
-function universalConstraintSchemas(comparisonSchema) {
+function universalConstraintSchemas(typeEqualitySchema) {
   return {
     type: dynamicConstraintSchema(joi.string()).required(),
     required: dynamicConstraintSchema(joi.boolean()),
@@ -201,8 +205,8 @@ function universalConstraintSchemas(comparisonSchema) {
     immutableStrict: dynamicConstraintSchema(joi.boolean()),
     immutableWhenSet: dynamicConstraintSchema(joi.boolean()),
     immutableWhenSetStrict: dynamicConstraintSchema(joi.boolean()),
-    mustEqual: dynamicConstraintSchema(mustEqualConstraintSchema(comparisonSchema)),
-    mustEqualStrict: dynamicConstraintSchema(mustEqualConstraintSchema(comparisonSchema)),
+    mustEqual: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
+    mustEqualStrict: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
     customValidation: joi.func().maxArity(4) // Function parameters: doc, oldDoc, currentItemElement, validationItemStack
   };
 }
