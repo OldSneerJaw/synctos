@@ -13,8 +13,8 @@
       },
       minAndMaxExclusiveValuesProp: {
         type: 'time',
-        minimumValueExclusive: '13:42',
-        maximumValueExclusive: '13:42:00.002'
+        minimumValueExclusive: '13:42:00.999',
+        maximumValueExclusive: '13:42:01.002'
       }
     }
   }

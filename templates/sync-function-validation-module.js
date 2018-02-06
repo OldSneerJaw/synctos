@@ -34,7 +34,9 @@ function validationModule() {
     var hour = timePieces[0] ? parseInt(timePieces[0], 10) : 0;
     var minute = timePieces[1] ? parseInt(timePieces[1], 10) : 0;
     var second = timePieces[2] ? parseInt(timePieces[2], 10) : 0;
-    var millisecond = timePieces[3] ? parseInt(timePieces[3], 10) : 0;
+
+    // The millisecond component has a variable length; normalize the length by padding it with zeros
+    var millisecond = timePieces[3] ? parseInt(padRight(timePieces[3], 3, '0'), 10) : 0;
 
     return [ hour, minute, second, millisecond ];
   }

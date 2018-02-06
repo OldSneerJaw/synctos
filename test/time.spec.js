@@ -7,7 +7,7 @@ describe('Time validation type:', function() {
   });
 
   describe('format', function() {
-    it('accepts a valid time with all components and period as a decimal separator', function() {
+    it('accepts a valid time with all components', function() {
       var doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -86,6 +86,16 @@ describe('Time validation type:', function() {
 
       testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'time'));
     });
+
+    it('rejects a time with a comma for a decimal separator', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        formatValidationProp: '23:59:59,999'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
   });
 
   describe('inclusive range constraints', function() {
@@ -147,11 +157,21 @@ describe('Time validation type:', function() {
   });
 
   describe('exclusive range constraints', function() {
-    it('allow a time that is within the minimum and maximum value range', function() {
+    it('allow a time with all components that is within the minimum and maximum value range', function() {
       var doc = {
         _id: 'my-doc',
         type: 'timeDoc',
-        minAndMaxExclusiveValuesProp: '13:42:00.001'
+        minAndMaxExclusiveValuesProp: '13:42:01.001'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allow a time without milliseconds that is within the minimum and maximum value range', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        minAndMaxExclusiveValuesProp: '13:42:01'
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -161,52 +181,52 @@ describe('Time validation type:', function() {
       var doc = {
         _id: 'my-doc',
         type: 'timeDoc',
-        minAndMaxExclusiveValuesProp: '13:41:59.999'
+        minAndMaxExclusiveValuesProp: '13:42:00.9'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'timeDoc',
-        errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42'));
+        errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.999'));
     });
 
     it('reject a time that is equal to the minimum value constraint', function() {
       var doc = {
         _id: 'my-doc',
         type: 'timeDoc',
-        minAndMaxExclusiveValuesProp: '13:42:00'
+        minAndMaxExclusiveValuesProp: '13:42:00.999'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'timeDoc',
-        errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42'));
+        errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.999'));
     });
 
     it('reject a time that is greater than the maximum value constraint', function() {
       var doc = {
         _id: 'my-doc',
         type: 'timeDoc',
-        minAndMaxExclusiveValuesProp: '13:42:00.003'
+        minAndMaxExclusiveValuesProp: '13:42:01.01'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'timeDoc',
-        errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.002'));
+        errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:01.002'));
     });
 
     it('reject a time that is equal to the maximum value constraint', function() {
       var doc = {
         _id: 'my-doc',
         type: 'timeDoc',
-        minAndMaxExclusiveValuesProp: '13:42:00.002'
+        minAndMaxExclusiveValuesProp: '13:42:01.002'
       };
 
       testHelper.verifyDocumentNotCreated(
         doc,
         'timeDoc',
-        errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.002'));
+        errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:01.002'));
     });
   });
 });
