@@ -76,6 +76,11 @@ describe('Validation error formatter', function() {
         .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 date string with optional time and time zone components');
     });
 
+    it('produces invalid time format messages', function() {
+      expect(errorFormatter.timeFormatInvalid(fakeItemPath))
+        .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 time string with no date or time zone components');
+    });
+
     it('produces invalid enum value messages', function() {
       var fakeEnumValues = [ 'foo', 'bar', -5 ];
       expect(errorFormatter.enumPredefinedValueViolation(fakeItemPath, fakeEnumValues))
@@ -206,6 +211,7 @@ describe('Validation error formatter', function() {
           'boolean': 'a boolean',
           'date': 'an ISO 8601 date string with no time or time zone components',
           'datetime': 'an ISO 8601 date string with optional time and time zone components',
+          'time': 'an ISO 8601 time string with no date or time zone components',
           'enum': 'an integer or a string',
           'float': 'a floating point or integer number',
           'hashtable': 'an object/hashtable',
