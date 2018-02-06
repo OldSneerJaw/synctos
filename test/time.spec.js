@@ -7,21 +7,11 @@ describe('Time validation type:', function() {
   });
 
   describe('format', function() {
-    it('accepts a valid time with all components', function() {
+    it('accepts a valid time with all components and period as a decimal separator', function() {
       var doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '23:59:59.999'
-      };
-
-      testHelper.verifyDocumentCreated(doc);
-    });
-
-    it('accepts a valid time with all components and comma as a decimal separator', function() {
-      var doc = {
-        _id: 'my-doc',
-        type: 'timeDoc',
-        formatValidationProp: '00:00:00,000'
       };
 
       testHelper.verifyDocumentCreated(doc);
@@ -94,7 +84,7 @@ describe('Time validation type:', function() {
         formatValidationProp: '23:59:59,999'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'time'));
     });
   });
 

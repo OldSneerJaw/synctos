@@ -22,7 +22,7 @@ function validationModule() {
 
   // Check that a given value is a valid ISO 8601 time string without date and time zone components
   function isIso8601TimeString(value) {
-    var regex = /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9]([,.][0-9]{1,3})?)?$/;
+    var regex = /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?$/;
 
     return regex.test(value);
   }
