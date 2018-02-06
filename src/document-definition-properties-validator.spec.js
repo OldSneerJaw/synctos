@@ -27,6 +27,9 @@ describe('Document definition properties validator', function() {
       timeTypeProp: {
         type: 'time'
       },
+      timezoneTypeProp: {
+        type: 'timezone'
+      },
       enumTypeProp: {
         type: 'enum'
       },

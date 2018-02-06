@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [Unreleased]
 ### Added
 - [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
+- [#202](https://github.com/Kashoo/synctos/issues/202): Time zone data validation type
 
 ### Fixed
 - [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated

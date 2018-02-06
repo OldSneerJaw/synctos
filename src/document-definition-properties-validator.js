@@ -54,6 +54,8 @@ function validate(docDefinition, docPropertyValidatorDefinitions) {
         break;
       case 'time':
         break;
+      case 'timezone':
+        break;
       case 'enum':
         break;
       case 'uuid':
