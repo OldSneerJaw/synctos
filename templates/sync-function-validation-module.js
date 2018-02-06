@@ -94,6 +94,38 @@ function validationModule() {
     }
   }
 
+  // Converts an ISO 8601 time zone into the number of minutes offset from UTC
+  function normalizeIso8601TimeZone(value) {
+    if (value === 'Z') {
+      return 0;
+    }
+
+    var regex = /^([+-])(\d\d):?([0-5]\d)$/;
+    var matches = regex.exec(value);
+    if (matches === null) {
+      return NaN;
+    } else {
+      var multiplicationFactor = (matches[1] === '+') ? 1 : -1;
+      var hour = parseInt(matches[2], 10);
+      var minute = parseInt(matches[3], 10);
+
+      return multiplicationFactor * ((hour * 60) + minute);
+    }
+  }
+
+  // Compares the given time zone representations. Returns a negative number if a is less than b, a positive number if
+  // a is greater than b, or zero if a and b are equal.
+  function compareTimeZones(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') {
+      return NaN;
+    }
+
+    var aNormalized = normalizeIso8601TimeZone(a);
+    var bNormalized = normalizeIso8601TimeZone(b);
+
+    return aNormalized - bNormalized;
+  }
+
   function minValueInclusiveViolationComparator(validatorType) {
     switch (validatorType) {
       case 'time':
@@ -104,6 +136,10 @@ function validationModule() {
       case 'datetime':
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) < 0;
+        };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) < 0;
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -123,6 +159,10 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) <= 0;
         };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) <= 0;
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue <= constraintValue;
@@ -141,6 +181,10 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) > 0;
         };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) > 0;
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue > constraintValue;
@@ -158,6 +202,10 @@ function validationModule() {
       case 'datetime':
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) >= 0;
+        };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) >= 0;
         };
       default:
         return function(candidateValue, constraintValue) {

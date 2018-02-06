@@ -372,7 +372,11 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `minimumValueExclusive`: Reject times that are less than or equal to this. Must be an ECMAScript ISO 8601 time string without date and time zone components.
   * `maximumValue`: Reject times that are greater than this. Must be an ECMAScript ISO 8601 time string without date and time zone components.
   * `maximumValueExclusive`: Reject times that are greater than or equal to this. Must be an ECMAScript ISO 8601 time string without date and time zone components.
-* `timezone`: The value is a simplified [ECMAScript ISO 8601](https://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.15) time zone string _without_ date and zone components (e.g. "Z" or "-05:00"). No additional parameters.
+* `timezone`: The value is a simplified [ECMAScript ISO 8601](https://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.15) time zone string _without_ date and zone components (e.g. "Z" or "-05:00"). Additional parameters:
+  * `minimumValue`: Reject time zones that are less than this. Must be an ECMAScript ISO 8601 time zone string.
+  * `minimumValueExclusive`: Reject time zones that are less than or equal to this. Must be an ECMAScript ISO 8601 time zone string.
+  * `maximumValue`: Reject time zones that are greater than this. Must be an ECMAScript ISO 8601 time zone string.
+  * `maximumValueExclusive`: Reject time zones that are greater than or equal to this. Must be an ECMAScript ISO 8601 time zone string.
 * `enum`: The value must be one of the specified predefined string and/or integer values. Additional parameters:
   * `predefinedValues`: A list of strings and/or integers that are to be accepted. If this parameter is omitted from an `enum` property's configuration, that property will not accept a value of any kind. For example: `[ 1, 2, 3, 'a', 'b', 'c' ]`
 * `uuid`: The value must be a string representation of a [universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID). A UUID may contain either uppercase or lowercase letters so that, for example, both "1511fba4-e039-42cc-9ac2-9f2fa29eecfc" and "DFF421EA-0AB2-45C9-989C-12C76E7282B8" are valid.
