@@ -1,1 +1,5 @@
-test/resources
+/build/coverage
+/lib
+/node_modules
+/samples
+/test/resources
