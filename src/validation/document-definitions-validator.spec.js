@@ -69,13 +69,23 @@ describe('Document definitions validator:', function() {
           },
           customActions: { }, // Must have at least one property
           propertyValidators: {
-            _invalidName: { // Sync Gateway does not allow top-level property validators to start with underscore
+            timeProperty: {
+              type: 'time',
+              immutable: 1, // Must be a boolean
+              minimumValue: '15', // Must have at least hour and minute components
+              maximumValue: '23:49:52.1234', // Must not have more than 3 fractional digits
+              mustEqual: 'foobar' // Must be a valid time string
+            },
+            _invalidName: { // Sync Gateway does not allow top-level property names to start with underscore
               type: 'string'
             },
             nestedObject: {
               type: 'object',
               unrecognizedConstraint: true, // Invalid property constraint
               propertyValidators: {
+                _validName: {
+                  type: 'boolean'
+                },
                 dateProperty: {
                   type: 'date',
                   required: true,
@@ -203,6 +213,12 @@ describe('Document definitions validator:', function() {
         'myDoc1.attachmentConstraints.supportedExtensions: "supportedExtensions" must have an arity lesser or equal to 2',
         'myDoc1.attachmentConstraints.supportedContentTypes: \"supportedContentTypes\" must contain at least 1 items',
         'myDoc1.customActions: \"customActions\" must have at least 1 children',
+        'myDoc1.propertyValidators.timeProperty.immutable: \"immutable\" must be a boolean',
+        'myDoc1.propertyValidators.timeProperty.minimumValue: \"minimumValue\" with value \"15\" fails to match the required pattern: /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\\.[0-9]{1,3})?)?$/',
+        'myDoc1.propertyValidators.timeProperty.maximumValue: \"maximumValue\" with value \"23:49:52.1234\" fails to match the required pattern: /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\\.[0-9]{1,3})?)?$/',
+        'myDoc1.propertyValidators.timeProperty.mustEqual: \"mustEqual\" with value \"foobar\" fails to match the required pattern: /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\\.[0-9]{1,3})?)?$/',
+        'myDoc1.propertyValidators.timeProperty.minimumValue: \"minimumValue\" conflict with forbidden peer \"mustEqual\"',
+        'myDoc1.propertyValidators.timeProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"mustEqual\"',
         'myDoc1.propertyValidators._invalidName: "_invalidName" is not allowed',
         'myDoc1.propertyValidators.nestedObject.unrecognizedConstraint: "unrecognizedConstraint" is not allowed',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutableWhenSet: \"immutableWhenSet\" conflict with forbidden peer \"immutable\"',
@@ -239,7 +255,7 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidMustEqualConstraintProperty.mustEqual: \"mustEqual\" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.noTypeProperty.type: "type" is required',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [string, integer, float, boolean, datetime, date, enum, uuid, attachmentReference, array, object, hashtable]'
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [array, attachmentReference, boolean, date, datetime, enum, float, hashtable, integer, object, string, time, uuid]'
       ]);
   });
 });
