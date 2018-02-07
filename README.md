@@ -15,6 +15,7 @@ To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com
 - [Installation](#installation)
 - [Usage](#usage)
     - [Running](#running)
+    - [Validating](#validating)
     - [Specifications](#specifications)
       - [Document type definitions](#document-type-definitions)
         - [Essential document properties](#essential-document-properties)
@@ -36,7 +37,7 @@ Synctos is distributed as an [npm](https://www.npmjs.com/) package and has sever
 
 To add synctos to your project, run `npm install synctos` from the project's root directory to install the package locally. Or, better yet, if you define a package.json file in your project, you can run `npm install synctos --savedev` to automatically install locally and insert the package into your package.json's developer dependencies.
 
-For more info on npm package management, see the official npm documentation for [Installing npm packages locally](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Using a \`package.json\`](https://docs.npmjs.com/getting-started/using-a-package.json).
+For more info on npm package management, see the official npm documentation for [How to install local packages](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Working with package.json](https://docs.npmjs.com/getting-started/using-a-package.json).
 
 **A note on JavaScript/ECMAScript compatibility:**
 
@@ -53,7 +54,15 @@ As a convenience, otto - and, by extension, Sync Gateway - does support the [Und
 Once synctos is installed, you can run it from your project's directory as follows:
 
 ```
-node_modules/synctos/make-sync-function /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js
+node_modules/.bin/synctos /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js
+```
+
+Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
+
+```
+"scripts": {
+  "build": "synctos /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js"
+}
 ```
 
 This will take the sync document definitions that are defined in `/path/to/my-document-definitions.js` and build a new sync function that is output to `/path/to/my-generated-sync-function.js`. The generated sync function contents can then be inserted into the definition of a bucket/database in a Sync Gateway [configuration file](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/config-properties/index.html#configuration-files) as a multi-line string surrounded with backquotes/backticks ( \` ).
@@ -61,6 +70,24 @@ This will take the sync document definitions that are defined in `/path/to/my-do
 Generated sync functions are compatible with all Sync Gateway 1.x versions.
 
 **NOTE**: Due to a [known issue](https://github.com/couchbase/sync_gateway/issues/1866) in Sync Gateway versions up to and including 1.2.1, when specifying a bucket/database's sync function in a configuration file as a multi-line string, you will have to be sure to escape any literal backslash characters in the sync function body. For example, if your sync function contains a regular expression like `new RegExp('\\w+')`, you will have to escape the backslashes when inserting the sync function into the configuration file so that it becomes `new RegExp('\\\\w+')`. The issue has been resolved in Sync Gateway version 1.3.0 and later.
+
+### Validating
+
+To validate that your document definitions file is structured correctly and does not contain any obvious semantic violations, execute the built in validation script as follows:
+
+```
+node_modules/.bin/synctos-validate /path/to/my-document-definitions.js
+```
+
+Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
+
+```
+"scripts": {
+  "validate": "synctos-validate /path/to/my-document-definitions.js"
+}
+```
+
+If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard output. Otherwise, if validation was successful, the utility will exit normally and will not output anything.
 
 ### Specifications
 
@@ -343,9 +370,13 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
 
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
-  * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')`). Undefined by default.
-  * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. Undefined by default.
-  * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. Undefined by default.
+  * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')` or `/[A-Za-z]+/`). No restriction by default.
+  * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. No restriction by default.
+  * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. No restriction by default.
+  * `minimumValue`: Reject strings with an alphanumeric sort order that is less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject strings with an alphanumeric sort order that is less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject strings with an alphanumeric sort order that is greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject strings with an alphanumeric sort order that is greater than or equal to this. No restriction by default.
 * `integer`: The value is a number with no fractional component. Additional parameters:
   * `minimumValue`: Reject values that are less than this. No restriction by default.
   * `minimumValueExclusive`: Reject values that are less than or equal to this. No restriction by default.
@@ -379,7 +410,11 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `maximumValueExclusive`: Reject time zones that are greater than or equal to this. Must be an ECMAScript ISO 8601 time zone string.
 * `enum`: The value must be one of the specified predefined string and/or integer values. Additional parameters:
   * `predefinedValues`: A list of strings and/or integers that are to be accepted. If this parameter is omitted from an `enum` property's configuration, that property will not accept a value of any kind. For example: `[ 1, 2, 3, 'a', 'b', 'c' ]`
-* `uuid`: The value must be a string representation of a [universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID). A UUID may contain either uppercase or lowercase letters so that, for example, both "1511fba4-e039-42cc-9ac2-9f2fa29eecfc" and "DFF421EA-0AB2-45C9-989C-12C76E7282B8" are valid.
+* `uuid`: The value must be a string representation of a [universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID). A UUID may contain either uppercase or lowercase letters so that, for example, both "1511fba4-e039-42cc-9ac2-9f2fa29eecfc" and "DFF421EA-0AB2-45C9-989C-12C76E7282B8" are valid. Additional parameters:
+  * `minimumValue`: Reject UUIDs that are less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject UUIDs that are less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject UUIDs that are greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject UUIDs that are greater than or equal to this. No restriction by default.
 * `attachmentReference`: The value is the name of one of the document's file attachments. Note that, because the addition of an attachment is often a separate Sync Gateway API operation from the creation/replacement of the associated document, this validation type is only applied if the attachment is actually present in the document. However, since the sync function is run twice in such situations (i.e. once when the _document_ is created/replaced and once when the _attachment_ is created/replaced), the validation will be performed eventually. The top-level `allowAttachments` property should be `true` so that documents of this type can actually store attachments. Additional parameters:
   * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). Takes precedence over the document-wide `supportedExtensions` constraint for the referenced attachment. No restriction by default.
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-wide `supportedContentTypes` constraint for the referenced attachment. No restriction by default.

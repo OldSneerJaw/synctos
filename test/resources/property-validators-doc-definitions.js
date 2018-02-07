@@ -41,10 +41,10 @@ function() {
     dynamicPropertiesValidationDoc: {
       typeFilter: simpleTypeFilter,
       channels: docChannels,
-      allowUnknownProperties: function(doc, oldDoc, value, oldValue) {
+      allowUnknownProperties: function(doc, oldDoc) {
         return doc.unknownPropertiesAllowed;
       },
-      propertyValidators: function(doc, oldDoc, value, oldValue) {
+      propertyValidators: function(doc, oldDoc) {
         var props = {
           unknownPropertiesAllowed: { type: 'boolean' }
         };
