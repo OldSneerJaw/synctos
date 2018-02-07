@@ -4,7 +4,7 @@
  *
  * @param {string} docDefinitionsFile The path to the document definitions file
  *
- * @returns The full contents of the document definitions as a string
+ * @returns {string} The full contents of the document definitions as a string
  */
 exports.load = loadFromFile;
 

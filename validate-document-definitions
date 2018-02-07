@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 var path = require('path');
-var docDefinitionsLoader = require('./src/document-definitions-loader.js');
-var environmentShellMaker = require('./src/document-definitions-shell-maker.js');
-var docDefinitionsValidator = require('./src/document-definitions-validator.js');
+var docDefinitionsLoader = require('./src/document-definitions-loader');
+var docDefinitionsValidator = require('./src/validation/document-definitions-validator');
 
 var errorStatus = 1;
 
@@ -18,26 +17,13 @@ var docDefinitionsFilename = process.argv[2];
 
 var rawDocDefinitionsString = docDefinitionsLoader.load(docDefinitionsFilename);
 
-var environmentShell = environmentShellMaker.createShell(rawDocDefinitionsString, docDefinitionsFilename);
+var validationErrors = docDefinitionsValidator.validate(rawDocDefinitionsString, docDefinitionsFilename);
 
-var validationErrors = docDefinitionsValidator.validate(environmentShell.documentDefinitions);
+validationErrors.forEach(function(validationError) {
+  console.log(validationError);
+});
 
-var exitStatus = 0;
-if (typeof validationErrors === 'string') {
-  console.log('ERROR: ' + validationErrors);
-
-  exitStatus = errorStatus;
-} else {
-  for (var docType in validationErrors) {
-    var docTypeErrors = validationErrors[docType];
-    if (docTypeErrors.length > 0) {
-      console.log('Document type "' + docType + '":\n- ' + docTypeErrors.join('\n- '));
-
-      exitStatus = errorStatus;
-    }
-  }
-}
-
+var exitStatus = (validationErrors.length > 0) ? 1 : 0;
 process.exit(exitStatus);
 
 function showUsage() {

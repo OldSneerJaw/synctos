@@ -11,7 +11,6 @@
       // A map of notification types -> enabled notification transports
       type: 'hashtable',
       hashtableKeysValidator: {
-        type: 'string',
         mustNotBeEmpty: true,
         regexPattern: /^[a-zA-Z]+$/
       },

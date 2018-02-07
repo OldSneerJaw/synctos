@@ -3,7 +3,7 @@ function() {
     return doc._id === docType;
   }
 
-  function isImmutable(doc, oldDoc, value, oldValue) {
+  function isImmutable(doc, oldDoc) {
     return oldDoc ? oldDoc.applyImmutability : doc.applyImmutability;
   }
 
