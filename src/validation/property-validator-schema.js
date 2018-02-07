@@ -5,6 +5,10 @@ var integerSchema = joi.number().integer();
 var uuidSchema = joi.string().uuid();
 var regexSchema = joi.object().type(RegExp);
 
+// NOTE: When Joi runs, it does so in a Node.js process, which may support a different subset of the ISO 8601 date-time
+// string format than Sync Gateway's JavaScript interpreter does. To prevent the validator from allowing date or
+// date-time strings that cannot be parsed when a generated sync function is used in Sync Gateway, strings with explicit
+// regular expression definitions are used for the "date" and "datetime" types rather than `joi.date().iso()`.
 var datetimeStringSchema = joi.string()
   .regex(/^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/);
 var datetimeSchema = joi.any().when(
