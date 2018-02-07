@@ -8,6 +8,29 @@ With this utility, you define all your JSON document types in a declarative Java
 
 To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/index.html). And, for a comprehensive introduction to synctos, see the post [Validating your Sync Gateway documents with synctos](https://blog.couchbase.com/validating-your-sync-gateway-documents-with-synctos/) on the official Couchbase blog.
 
+# Table of Contents
+
+- [Introduction](#introduction)
+- [Table of Contents](#table-of-contents)
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Running](#running)
+    - [Validating](#validating)
+    - [Specifications](#specifications)
+      - [Document type definitions](#document-type-definitions)
+        - [Essential document properties](#essential-document-properties)
+        - [Advanced document properties](#advanced-document-properties)
+      - [Content validation](#content-validation)
+        - [Simple type validation](#simple-type-validation)
+        - [Complex type validation](#complex-type-validation)
+        - [Universal constraint validation](#universal-constraint-validation)
+        - [Predefined validators](#predefined-validators)
+        - [Dynamic constraint validation](#dynamic-constraint-validation)
+    - [Definition file](#definition-file)
+      - [Modularity](#modularity)
+    - [Helper functions](#helper-functions)
+- [Testing](#testing)
+
 # Installation
 
 Synctos is distributed as an [npm](https://www.npmjs.com/) package and has several npm development dependencies. As such, it requires that [Node.js](https://nodejs.org/) is installed in order to run. For best results use, at a minimum, the most recent Long Term Support (LTS) release.
@@ -16,7 +39,7 @@ To add synctos to your project, run `npm install synctos` from the project's roo
 
 For more info on npm package management, see the official npm documentation for [How to install local packages](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Working with package.json](https://docs.npmjs.com/getting-started/using-a-package.json).
 
-#### A note on JavaScript/ECMAScript compatibility:
+**A note on JavaScript/ECMAScript compatibility:**
 
 Sync Gateway 1.x uses the [otto](https://github.com/robertkrimen/otto) JavaScript engine to execute sync functions from within its [Go](https://golang.org/) codebase. Specifically, Sync Gateway is pinned to commit [5282a5a](https://github.com/robertkrimen/otto/tree/5282a5a45ba989692b3ae22f730fa6b9dd67662f) of otto, which does not support any of the features introduced in ECMAScript 2015 (aka ES6/ES2015). In fact, it does not promise compatibility with ECMAScript 5, offering only that "For now, otto is a hybrid ECMA3/ECMA5 interpreter. Parts of the specification are still works in progress."
 
@@ -91,7 +114,7 @@ At the top level, the document definitions object contains a property for each d
 
 Each document type is defined as an object with a number of properties that control authorization, content validation and access control.
 
-##### Essential document properties:
+##### Essential document properties
 
 The following properties include the basics necessary to build a document definition:
 
@@ -187,7 +210,7 @@ propertyValidators: function(doc, oldDoc) {
 }
 ```
 
-##### Advanced document properties:
+##### Advanced document properties
 
 Additional properties that provide finer grained control over documents:
 
@@ -341,15 +364,19 @@ customActions: {
 
 There are a number of validation types that can be used to define each property/element/key's expected format in a document.
 
-##### Simple type validation:
+##### Simple type validation
 
 Validation for simple data types (e.g. integers, floating point numbers, strings, dates/times, etc.):
 
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
-  * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')`). Undefined by default.
-  * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. Undefined by default.
-  * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. Undefined by default.
+  * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')` or `/[A-Za-z]+/`). No restriction by default.
+  * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. No restriction by default.
+  * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. No restriction by default.
+  * `minimumValue`: Reject strings with an alphanumeric sort order that is less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject strings with an alphanumeric sort order that is less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject strings with an alphanumeric sort order that is greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject strings with an alphanumeric sort order that is greater than or equal to this. No restriction by default.
 * `integer`: The value is a number with no fractional component. Additional parameters:
   * `minimumValue`: Reject values that are less than this. No restriction by default.
   * `minimumValueExclusive`: Reject values that are less than or equal to this. No restriction by default.
@@ -361,25 +388,29 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `maximumValue`: Reject values that are greater than this. No restriction by default.
   * `maximumValueExclusive`: Reject values that are greater than or equal to this. No restriction by default.
 * `boolean`: The value is either `true` or `false`. No additional parameters.
-* `datetime`: The value is an [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date string with optional time and time zone components (e.g. "2016-06-18T18:57:35.328-08:00"). The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. Additional parameters:
-  * `minimumValue`: Reject date/times that are less than this. May be either an ISO 8601 date string with optional time and time zone components OR a JavaScript [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
-  * `minimumValueExclusive`: Reject date/times that are less than or equal to this. May be either an ISO 8601 date string with optional time and time zone components OR a JavaScript `Date` object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
-  * `maximumValue`: Reject date/times that are greater than this. May be either an ISO 8601 date string with optional time and time zone components OR a JavaScript `Date` object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
-  * `maximumValueExclusive`: Reject date/times that are greater than or equal to this. May be either an ISO 8601 date string with optional time and time zone components OR a JavaScript `Date` object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
-* `date`: The value is an ISO 8601 date string _without_ time and time zone components (e.g. "2016-06-18"). For the purposes of date comparisons (e.g. by way of the `minimumValue`, `maximumValue`, etc. parameters), the time is assumed to be midnight and the time zone is assumed to be UTC. Additional parameters:
-  * `minimumValue`: Reject dates that are less than this. May be either an ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
-  * `minimumValueExclusive`: Reject dates that are less than or equal to this. May be either an ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
-  * `maximumValue`: Reject dates that are greater than this. May be either an ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
-  * `maximumValueExclusive`: Reject dates that are greater than or equal to this. May be either an ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
+* `datetime`: The value is a simplified [ECMAScript ISO 8601](https://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.15) date string with optional time and time zone components (e.g. "2016-06-18T18:57:35.328-08:00"). The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. Additional parameters:
+  * `minimumValue`: Reject date/times that are less than this. May be either an ECMAScript ISO 8601 date string with optional time and time zone components OR a JavaScript [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
+  * `minimumValueExclusive`: Reject date/times that are less than or equal to this. May be either an ECMAScript ISO 8601 date string with optional time and time zone components OR a JavaScript `Date` object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
+  * `maximumValue`: Reject date/times that are greater than this. May be either an ECMAScript ISO 8601 date string with optional time and time zone components OR a JavaScript `Date` object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
+  * `maximumValueExclusive`: Reject date/times that are greater than or equal to this. May be either an ECMAScript ISO 8601 date string with optional time and time zone components OR a JavaScript `Date` object. The time is assumed to be midnight if the time component is omitted and the time zone is assumed to be UTC if the time zone component is omitted. No restriction by default.
+* `date`: The value is a simplified [ECMAScript ISO 8601](https://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.15) date string _without_ time and time zone components (e.g. "2016-06-18"). For the purposes of date comparisons (e.g. by way of the `minimumValue`, `maximumValue`, etc. parameters), the time is assumed to be midnight and the time zone is assumed to be UTC. Additional parameters:
+  * `minimumValue`: Reject dates that are less than this. May be either an ECMAScript ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
+  * `minimumValueExclusive`: Reject dates that are less than or equal to this. May be either an ECMAScript ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
+  * `maximumValue`: Reject dates that are greater than this. May be either an ECMAScript ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
+  * `maximumValueExclusive`: Reject dates that are greater than or equal to this. May be either an ECMAScript ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
 * `enum`: The value must be one of the specified predefined string and/or integer values. Additional parameters:
   * `predefinedValues`: A list of strings and/or integers that are to be accepted. If this parameter is omitted from an `enum` property's configuration, that property will not accept a value of any kind. For example: `[ 1, 2, 3, 'a', 'b', 'c' ]`
-* `uuid`: The value must be a string representation of a [universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID). A UUID may contain either uppercase or lowercase letters so that, for example, both "1511fba4-e039-42cc-9ac2-9f2fa29eecfc" and "DFF421EA-0AB2-45C9-989C-12C76E7282B8" are valid.
+* `uuid`: The value must be a string representation of a [universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID). A UUID may contain either uppercase or lowercase letters so that, for example, both "1511fba4-e039-42cc-9ac2-9f2fa29eecfc" and "DFF421EA-0AB2-45C9-989C-12C76E7282B8" are valid. Additional parameters:
+  * `minimumValue`: Reject UUIDs that are less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject UUIDs that are less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject UUIDs that are greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject UUIDs that are greater than or equal to this. No restriction by default.
 * `attachmentReference`: The value is the name of one of the document's file attachments. Note that, because the addition of an attachment is often a separate Sync Gateway API operation from the creation/replacement of the associated document, this validation type is only applied if the attachment is actually present in the document. However, since the sync function is run twice in such situations (i.e. once when the _document_ is created/replaced and once when the _attachment_ is created/replaced), the validation will be performed eventually. The top-level `allowAttachments` property should be `true` so that documents of this type can actually store attachments. Additional parameters:
   * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). Takes precedence over the document-wide `supportedExtensions` constraint for the referenced attachment. No restriction by default.
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-wide `supportedContentTypes` constraint for the referenced attachment. No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Takes precedence over the document-wide `maximumIndividualSize` constraint for the referenced attachment. Unlimited by default.
 
-##### Complex type validation:
+##### Complex type validation
 
 Validation for complex data types (e.g. objects, arrays, hashtables):
 
@@ -447,7 +478,7 @@ myHash1: {
 }
 ```
 
-##### Universal constraint validation:
+##### Universal constraint validation
 
 Validation for all simple and complex data types support the following additional parameters:
 
@@ -500,7 +531,7 @@ propertyValidators: {
 }
 ```
 
-##### Predefined validators:
+##### Predefined validators
 
 The following predefined item validators may also be useful:
 
@@ -515,7 +546,7 @@ propertyValidators: {
 }
 ```
 
-##### Dynamic constraint validation:
+##### Dynamic constraint validation
 
 In addition to defining any of the item validation constraints above, including `type`, as static values (e.g. `maximumValue: 99`, `mustNotBeEmpty: true`), it is possible to specify them dynamically via function (e.g. `regexPattern: function(doc, oldDoc, value, oldValue) { ... }`). This is useful if, for example, the constraint should be based on the value of another property/element in the document or computed based on the previous stored value of the current property/element. The function should expect to receive the following parameters:
 
@@ -698,6 +729,7 @@ Custom code (e.g. type filters, custom validation functions, custom actions) wit
 
 * `isDocumentMissingOrDeleted(candidate)`: Determines whether the given `candidate` document is either missing (i.e. `null` or `undefined`) or deleted (i.e. its `_deleted` property is `true`). Useful in cases where, for example, the old document (i.e. `oldDoc` parameter) is non-existant or deleted and you want to treat both cases as equivalent.
 * `isValueNullOrUndefined(value)`: Determines whether the given `value` parameter is either `null` or `undefined`. In many cases, it is useful to treat both states the same.
+* `jsonStringify(value)`: Converts a value into a JSON string. May be useful in a `customValidation` constraint for formatting a custom error message, for example. Serves as a direct replacement for [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) since Sync Gateway does not support the global `JSON` object.
 
 # Testing
 

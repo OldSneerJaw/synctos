@@ -4,8 +4,8 @@ var documentDefinitionSchema = require('./document-definition-schema');
 /**
  * Performs validation of the specified document definitions.
  *
- * @param {*} documentDefinitions The document definitions as a string, an object or a function that returns an
- *                                     object
+ * @param {*} documentDefinitions The document definitions as a string (e.g. contents of a file), an object or a
+ *                                function that returns an object
  * @param {string} [docDefinitionsFilename] The path to the document definitions file
  *
  * @returns {string[]} A list of validation error messages. Will be empty if no validation errors found.

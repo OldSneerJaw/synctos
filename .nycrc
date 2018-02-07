@@ -3,7 +3,7 @@
   "per-file": true,
   "statements": 100,
   "branches": 100,
-  "functions": 0,
+  "functions": 100,
   "lines": 0,
   "include": [
     "src/**/*.js"

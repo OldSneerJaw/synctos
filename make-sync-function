@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var mkdirp = require('./lib/mkdirp/index');
 var syncFunctionLoader = require('./src/loading/sync-function-loader.js');
 
 var errorStatus = 1;
@@ -20,6 +21,17 @@ var syncFunc;
 try {
   syncFunc = syncFunctionLoader.load(syncDocDefnFilename);
 } catch (ex) {
+  process.exit(errorStatus);
+}
+
+try {
+  var outputDirectory = path.dirname(outputFilename);
+  if (!fs.existsSync(outputDirectory)) {
+    mkdirp.sync(outputDirectory);
+  }
+} catch (ex) {
+  console.log('ERROR: Unable to create the sync function output directory: ' + ex);
+
   process.exit(errorStatus);
 }
 

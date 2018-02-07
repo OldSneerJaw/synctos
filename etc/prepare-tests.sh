@@ -19,7 +19,8 @@ sampleDocDefinitionsPath="samples/sample-sync-doc-definitions.js"
 echo "Validating sample document definitions...\n"
 ./validate-document-definitions "$sampleDocDefinitionsPath"
 
-# Create a temporary sync function from the sample document definitions file
+# Create a sync function from the sample document definitions file
+echo "Generating sync functions...\n"
 ./make-sync-function "$sampleDocDefinitionsPath" "$outputDir"/test-sample-sync-function.js
 
 # Automatically validate and create a sync function from each document definitions file in the test resources directory
@@ -37,5 +38,10 @@ for docDefinitionPath in "$definitionsDir"/*-doc-definitions.js; do
   ./make-sync-function "$docDefinitionPath" "$outputFile"
 done
 
-echo "\nLinting generated sync functions with JSHint..."
+# Set up JSHint configuration for the generated sync functions
+cp "etc/jshintrc-sync-function-template.json" "$outputDir/.jshintrc"
+
+echo "\nLinting generated sync functions with JSHint...\n"
 node_modules/jshint/bin/jshint "$outputDir"/*.js
+
+echo "Done"

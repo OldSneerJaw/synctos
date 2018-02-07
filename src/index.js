@@ -1,6 +1,11 @@
 // This module comprises the public API for synctos.
 
 /**
+ * The document-definitions-validator module. Reports violations of the document definitions schema.
+ */
+exports.documentDefinitionsValidator = require('./validation/document-definitions-validator');
+
+/**
  * The sync-function-loader module. Reads sync functions from files.
  */
 exports.syncFunctionLoader = require('./loading/sync-function-loader.js');

@@ -1,71 +1,86 @@
-var joi = require('joi');
+var joi = require('../../lib/joi/joi.bundle');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
-var integer = joi.number().integer();
-var dateOnly = joi.any()
-  .when(
-    joi.string(),
-    { then: joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/) })
-  .when(
-    joi.any(),
-    { then: joi.date().options({ convert: false }) });
+var integerSchema = joi.number().integer();
+var uuidSchema = joi.string().uuid();
+var regexSchema = joi.object().type(RegExp);
 
-var validPropertyTypes =
-  [ 'string', 'integer', 'float', 'boolean', 'datetime', 'date', 'enum', 'uuid', 'attachmentReference', 'array', 'object', 'hashtable' ];
+// NOTE: When Joi runs, it does so in a Node.js process, which may support a different subset of the ISO 8601 date-time
+// string format than Sync Gateway's JavaScript interpreter does. To prevent the validator from allowing date or
+// date-time strings that cannot be parsed when a generated sync function is used in Sync Gateway, strings with explicit
+// regular expression definitions are used for the "date" and "datetime" types rather than `joi.date().iso()`.
+var datetimeStringSchema = joi.string()
+  .regex(/^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/);
+var datetimeSchema = joi.any().when(
+  joi.string(),
+  {
+    then: datetimeStringSchema,
+    otherwise: joi.date().options({ convert: false })
+  });
+var dateOnlyStringSchema = joi.string().regex(/^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/);
+var dateOnlySchema = joi.any().when(
+  joi.string(),
+  {
+    then: dateOnlyStringSchema,
+    otherwise: joi.date().options({ convert: false })
+  });
 
-var universalConstraints = {
-  type: constraintSchema(joi.string()).required(),
-  required: constraintSchema(joi.boolean()),
-  mustNotBeMissing: constraintSchema(joi.boolean()),
-  mustNotBeNull: constraintSchema(joi.boolean()),
-  immutable: constraintSchema(joi.boolean()),
-  immutableStrict: constraintSchema(joi.boolean()),
-  immutableWhenSet: constraintSchema(joi.boolean()),
-  immutableWhenSetStrict: constraintSchema(joi.boolean()),
-  mustEqual: constraintSchema(joi.any()),
-  mustEqualStrict: constraintSchema(joi.any()),
-  customValidation: joi.func().maxArity(4)
+var typeEqualitySchemas = {
+  string: joi.string(),
+  integer: integerSchema,
+  float: joi.number(),
+  boolean: joi.boolean(),
+  datetime: datetimeStringSchema,
+  date: dateOnlyStringSchema,
+  enum: joi.alternatives().try([ joi.string(), integerSchema ]),
+  uuid: uuidSchema,
+  attachmentReference: joi.string(),
+  array: joi.array(),
+  object: joi.object().unknown(),
+  hashtable: joi.object().unknown()
 };
 
+var validPropertyTypes = Object.keys(typeEqualitySchemas).map(function(key) { return key; });
+
 var schema = joi.object().keys({
-  type: constraintSchema(joi.string().only(validPropertyTypes)).required()
+  type: dynamicConstraintSchema(joi.string().only(validPropertyTypes)).required()
 })
   .when(
     joi.object().unknown().keys({ type: 'string' }),
-    { then: typeConstraintsSchema('string') })
+    { then: makeTypeConstraintsSchema('string') })
   .when(
     joi.object().unknown().keys({ type: 'integer' }),
-    { then: typeConstraintsSchema('integer') })
+    { then: makeTypeConstraintsSchema('integer') })
   .when(
     joi.object().unknown().keys({ type: 'float' }),
-    { then: typeConstraintsSchema('float') })
+    { then: makeTypeConstraintsSchema('float') })
   .when(
     joi.object().unknown().keys({ type: 'boolean' }),
-    { then: typeConstraintsSchema('boolean') })
+    { then: makeTypeConstraintsSchema('boolean') })
   .when(
     joi.object().unknown().keys({ type: 'datetime' }),
-    { then: typeConstraintsSchema('datetime') })
+    { then: makeTypeConstraintsSchema('datetime') })
   .when(
     joi.object().unknown().keys({ type: 'date' }),
-    { then: typeConstraintsSchema('date') })
+    { then: makeTypeConstraintsSchema('date') })
   .when(
     joi.object().unknown().keys({ type: 'enum' }),
-    { then: typeConstraintsSchema('enum') })
+    { then: makeTypeConstraintsSchema('enum') })
   .when(
     joi.object().unknown().keys({ type: 'uuid' }),
-    { then: typeConstraintsSchema('uuid') })
+    { then: makeTypeConstraintsSchema('uuid') })
   .when(
     joi.object().unknown().keys({ type: 'attachmentReference' }),
-    { then: typeConstraintsSchema('attachmentReference') })
+    { then: makeTypeConstraintsSchema('attachmentReference') })
   .when(
     joi.object().unknown().keys({ type: 'array' }),
-    { then: typeConstraintsSchema('array') })
+    { then: makeTypeConstraintsSchema('array') })
   .when(
     joi.object().unknown().keys({ type: 'object' }),
-    { then: typeConstraintsSchema('object') })
+    { then: makeTypeConstraintsSchema('object') })
   .when(
     joi.object().unknown().keys({ type: 'hashtable' }),
-    { then: typeConstraintsSchema('hashtable') })
+    { then: makeTypeConstraintsSchema('hashtable') })
   .when(
     joi.object().unknown().keys({ type: joi.func() }),
     { then: joi.object().unknown() });
@@ -78,83 +93,83 @@ module.exports = exports = schema;
 
 // Defined as a function rather than a plain object because it contains lazy references that result in recursive
 // references between the complex types (e.g. "array", "object", "hashtable") and the main "propertyValidators" schema
-function typeSpecificConstraints() {
+function typeSpecificConstraintSchemas() {
   return {
     string: {
-      mustNotBeEmpty: constraintSchema(joi.boolean()),
-      regexPattern: constraintSchema(joi.object().type(RegExp)),
-      minimumLength: constraintSchema(integer.min(0)),
-      maximumLength: constraintSchema(integer.min(0)),
-      minimumValue: constraintSchema(joi.string()),
-      minimumValueExclusive: constraintSchema(joi.string()),
-      maximumValue: constraintSchema(joi.string()),
-      maximumValueExclusive: constraintSchema(joi.string())
+      mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
+      regexPattern: dynamicConstraintSchema(regexSchema),
+      minimumLength: dynamicConstraintSchema(integerSchema.min(0)),
+      maximumLength: maximumSizeConstraintSchema('minimumLength'),
+      minimumValue: dynamicConstraintSchema(joi.string()),
+      minimumValueExclusive: dynamicConstraintSchema(joi.string()),
+      maximumValue: dynamicConstraintSchema(joi.string()),
+      maximumValueExclusive: dynamicConstraintSchema(joi.string())
     },
     integer: {
-      minimumValue: constraintSchema(integer),
-      minimumValueExclusive: constraintSchema(integer),
-      maximumValue: constraintSchema(integer),
-      maximumValueExclusive: constraintSchema(integer)
+      minimumValue: dynamicConstraintSchema(integerSchema),
+      minimumValueExclusive: dynamicConstraintSchema(integerSchema),
+      maximumValue: maximumValueInclusiveNumberConstraintSchema(integerSchema),
+      maximumValueExclusive: maximumValueExclusiveNumberConstraintSchema(integerSchema)
     },
     float: {
-      minimumValue: constraintSchema(joi.number()),
-      minimumValueExclusive: constraintSchema(joi.number()),
-      maximumValue: constraintSchema(joi.number()),
-      maximumValueExclusive: constraintSchema(joi.number())
+      minimumValue: dynamicConstraintSchema(joi.number()),
+      minimumValueExclusive: dynamicConstraintSchema(joi.number()),
+      maximumValue: maximumValueInclusiveNumberConstraintSchema(joi.number()),
+      maximumValueExclusive: maximumValueExclusiveNumberConstraintSchema(joi.number())
     },
     boolean: { },
     datetime: {
-      minimumValue: constraintSchema(joi.date()),
-      minimumValueExclusive: constraintSchema(joi.date()),
-      maximumValue: constraintSchema(joi.date()),
-      maximumValueExclusive: constraintSchema(joi.date())
+      minimumValue: dynamicConstraintSchema(datetimeSchema),
+      minimumValueExclusive: dynamicConstraintSchema(datetimeSchema),
+      maximumValue: dynamicConstraintSchema(datetimeSchema),
+      maximumValueExclusive: dynamicConstraintSchema(datetimeSchema)
     },
     date: {
-      minimumValue: constraintSchema(dateOnly),
-      minimumValueExclusive: constraintSchema(dateOnly),
-      maximumValue: constraintSchema(dateOnly),
-      maximumValueExclusive: constraintSchema(dateOnly)
+      minimumValue: dynamicConstraintSchema(dateOnlySchema),
+      minimumValueExclusive: dynamicConstraintSchema(dateOnlySchema),
+      maximumValue: dynamicConstraintSchema(dateOnlySchema),
+      maximumValueExclusive: dynamicConstraintSchema(dateOnlySchema)
     },
     enum: {
-      predefinedValues: constraintSchema(joi.array().required().min(1).items([ integer, joi.string() ]))
+      predefinedValues: dynamicConstraintSchema(joi.array().required().min(1).items([ integerSchema, joi.string() ]))
     },
     uuid: {
-      minimumValue: constraintSchema(joi.string().uuid()),
-      minimumValueExclusive: constraintSchema(joi.string().uuid()),
-      maximumValue: constraintSchema(joi.string().uuid()),
-      maximumValueExclusive: constraintSchema(joi.string().uuid())
+      minimumValue: dynamicConstraintSchema(uuidSchema),
+      minimumValueExclusive: dynamicConstraintSchema(uuidSchema),
+      maximumValue: dynamicConstraintSchema(uuidSchema),
+      maximumValueExclusive: dynamicConstraintSchema(uuidSchema)
     },
     attachmentReference: {
-      maximumSize: constraintSchema(integer.min(1).max(20971520)),
-      supportedExtensions: constraintSchema(joi.array().min(1).items(joi.string())),
-      supportedContentTypes: constraintSchema(joi.array().min(1).items(joi.string().min(1)))
+      maximumSize: dynamicConstraintSchema(integerSchema.min(1).max(20971520)),
+      supportedExtensions: dynamicConstraintSchema(joi.array().min(1).items(joi.string())),
+      supportedContentTypes: dynamicConstraintSchema(joi.array().min(1).items(joi.string().min(1)))
     },
     array: {
-      mustNotBeEmpty: constraintSchema(joi.boolean()),
-      minimumLength: constraintSchema(integer.min(0)),
-      maximumLength: constraintSchema(integer.min(0)),
-      arrayElementsValidator: constraintSchema(joi.lazy(function() { return schema; }))
+      mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
+      minimumLength: dynamicConstraintSchema(integerSchema.min(0)),
+      maximumLength: maximumSizeConstraintSchema('minimumLength'),
+      arrayElementsValidator: dynamicConstraintSchema(joi.lazy(function() { return schema; }))
     },
     object: {
-      allowUnknownProperties: constraintSchema(joi.boolean()),
-      propertyValidators: constraintSchema(joi.object().pattern(/^.+$/, joi.lazy(function() { return schema; })))
+      allowUnknownProperties: dynamicConstraintSchema(joi.boolean()),
+      propertyValidators: dynamicConstraintSchema(joi.object().min(1).pattern(/^.+$/, joi.lazy(function() { return schema; })))
     },
     hashtable: {
-      minimumSize: constraintSchema(integer.min(0)),
-      maximumSize: constraintSchema(integer.min(0)),
-      hashtableKeysValidator: constraintSchema(joi.object().keys({
-        mustNotBeEmpty: constraintSchema(joi.boolean()),
-        regexPattern: constraintSchema(joi.object().type(RegExp))
+      minimumSize: dynamicConstraintSchema(integerSchema.min(0)),
+      maximumSize: maximumSizeConstraintSchema('minimumSize'),
+      hashtableKeysValidator: dynamicConstraintSchema(joi.object().keys({
+        mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
+        regexPattern: dynamicConstraintSchema(regexSchema)
       })),
-      hashtableValuesValidator: constraintSchema(joi.lazy(function() { return schema; }))
+      hashtableValuesValidator: dynamicConstraintSchema(joi.lazy(function() { return schema; }))
     }
   };
 }
 
 // Creates a validation schema for the constraints of the specified type
-function typeConstraintsSchema(typeName) {
-  var allTypeConstraints = typeSpecificConstraints();
-  var constraints = Object.assign({ }, universalConstraints, allTypeConstraints[typeName]);
+function makeTypeConstraintsSchema(typeName) {
+  var allTypeConstraints = typeSpecificConstraintSchemas();
+  var constraints = Object.assign({ }, universalConstraintSchemas(typeEqualitySchemas[typeName]), allTypeConstraints[typeName]);
 
   return joi.object().keys(constraints)
     // Prevent the use of more than one constraint from the "required value" category
@@ -180,7 +195,70 @@ function typeConstraintsSchema(typeName) {
     .without('immutableWhenSetStrict', [ 'immutable', 'immutableStrict', 'immutableWhenSet' ]);
 }
 
+function mustEqualConstraintSchema(comparisonSchema) {
+  return joi.any().when(joi.any().only(null), { otherwise: comparisonSchema });
+}
+
+function universalConstraintSchemas(typeEqualitySchema) {
+  return {
+    type: dynamicConstraintSchema(joi.string()).required(),
+    required: dynamicConstraintSchema(joi.boolean()),
+    mustNotBeMissing: dynamicConstraintSchema(joi.boolean()),
+    mustNotBeNull: dynamicConstraintSchema(joi.boolean()),
+    immutable: dynamicConstraintSchema(joi.boolean()),
+    immutableStrict: dynamicConstraintSchema(joi.boolean()),
+    immutableWhenSet: dynamicConstraintSchema(joi.boolean()),
+    immutableWhenSetStrict: dynamicConstraintSchema(joi.boolean()),
+    mustEqual: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
+    mustEqualStrict: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
+    customValidation: joi.func().maxArity(4) // Function parameters: doc, oldDoc, currentItemElement, validationItemStack
+  };
+}
+
+function maximumSizeConstraintSchema(minimumSizePropertyName) {
+  return joi.any().when(
+    minimumSizePropertyName,
+    {
+      is: joi.number().exist(),
+      then: dynamicConstraintSchema(integerSchema.min(joi.ref(minimumSizePropertyName))),
+      otherwise: dynamicConstraintSchema(integerSchema.min(0))
+    });
+}
+
+function maximumValueInclusiveNumberConstraintSchema(numberType) {
+  return joi.any().when(
+    'minimumValue',
+    {
+      is: joi.number().exist(),
+      then: dynamicConstraintSchema(numberType.min(joi.ref('minimumValue'))),
+      otherwise: joi.any().when(
+        'minimumValueExclusive',
+        {
+          is: joi.number().exist(),
+          then: dynamicConstraintSchema(numberType.greater(joi.ref('minimumValueExclusive'))),
+          otherwise: dynamicConstraintSchema(numberType)
+        })
+    });
+}
+
+function maximumValueExclusiveNumberConstraintSchema(numberType) {
+  return joi.any().when(
+    'minimumValue',
+    {
+      is: joi.number().exist(),
+      then: dynamicConstraintSchema(numberType.greater(joi.ref('minimumValue'))),
+      otherwise: joi.any().when(
+        'minimumValueExclusive',
+        {
+          is: joi.number().exist(),
+          then: dynamicConstraintSchema(numberType.greater(joi.ref('minimumValueExclusive'))),
+          otherwise: dynamicConstraintSchema(numberType)
+        })
+    });
+}
+
 // Generates a schema that can be used for property validator constraints
-function constraintSchema(wrappedSchema) {
+function dynamicConstraintSchema(wrappedSchema) {
+  // The function schema this creates will support no more than four parameters (doc, oldDoc, value, oldValue)
   return makeConstraintSchemaDynamic(wrappedSchema, 4);
 }
