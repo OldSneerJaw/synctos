@@ -38,6 +38,8 @@ function synctos(doc, oldDoc) {
     return !isDocumentMissingOrDeleted(oldDoc) ? oldDoc : null;
   }
 
+  var jsonStringify = importSyncFunctionFragment('json-stringify-module.js');
+
   // Load the document authorization module
   var authorizationModule = importSyncFunctionFragment('sync-function-authorization-module.js')();
 

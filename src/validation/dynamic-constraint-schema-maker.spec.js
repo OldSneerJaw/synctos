@@ -26,7 +26,7 @@ describe('Dynamic constraint schema maker:', function() {
       });
   });
 
-  it('produces a schema that accepts an object', function() {
+  it('produces a schema that accepts the fallback type', function() {
     var result = makeConstraintSchemaDynamic(testSchema, 3);
 
     var input = { property: -1 }; // Notice that the property's value is less than the minimum amount (0)
@@ -41,7 +41,7 @@ describe('Dynamic constraint schema maker:', function() {
       });
   });
 
-  it('produces a schema that rejects values other than objects and functions', function() {
+  it('produces a schema that rejects values other than functions and the fallback type', function() {
     var result = makeConstraintSchemaDynamic(testSchema, 3);
 
     var input = 'my-input';

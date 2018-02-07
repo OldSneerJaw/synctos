@@ -1,6 +1,16 @@
 {
   "name": "synctos",
   "version": "1.10.0",
+  "description": "The Syncmaker. A tool to build comprehensive sync functions for Couchbase Sync Gateway.",
+  "keywords": [
+    "couchbase",
+    "couchbase-sync-gateway",
+    "couchbase-mobile",
+    "sync-gateway",
+    "synchronization",
+    "synctos",
+    "validation"
+  ],
   "main": "src/index.js",
   "dependencies": {},
   "devDependencies": {
@@ -12,7 +22,7 @@
   },
   "scripts": {
     "test": "etc/prepare-tests.sh && nyc mocha \"**/*.spec.js\"",
-    "test-report": "etc/prepare-tests.sh && nyc mocha -R xunit \"**/*.spec.js\" > build/test-reports/synctos.xml"
+    "test-report": "etc/prepare-tests.sh && mkdir -p build/test-reports/ && nyc mocha -R xunit \"**/*.spec.js\" > build/test-reports/synctos.xml"
   },
   "license": "MIT",
   "repository": {
