@@ -1,13 +1,13 @@
 var path = require('path');
 var expect = require('chai').expect;
-var simpleMock = require('../lib/simple-mock/index.js');
+var simpleMock = require('../../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Sync function loader', function() {
   var syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
   var expectedMacroName = 'importSyncFunctionFragment';
-  var syncFuncTemplateDir = path.resolve(__dirname, '../templates');
+  var syncFuncTemplateDir = path.resolve(__dirname, '../../templates');
   var syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
 
   beforeEach(function() {
@@ -16,7 +16,7 @@ describe('Sync function loader', function() {
     mockRequire('fs', fsMock);
 
     indentMock = { js: simpleMock.stub() };
-    mockRequire('../lib/indent.js/indent.min.js', indentMock);
+    mockRequire('../../lib/indent.js/indent.min.js', indentMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
     mockRequire('./file-fragment-loader.js', fileFragmentLoaderMock);

@@ -3,7 +3,7 @@
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('./lib/mkdirp/index');
-var syncFunctionLoader = require('./src/sync-function-loader');
+var syncFunctionLoader = require('./src/loading/sync-function-loader.js');
 
 var errorStatus = 1;
 

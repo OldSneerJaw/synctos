@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var testHelper = require('../src/test-helper.js');
+var testHelper = require('../src/testing/test-helper.js');
 
 describe('User and role access assignment:', function() {
   beforeEach(function() {

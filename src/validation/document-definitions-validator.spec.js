@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var docDefinitionsLoader = require('../document-definitions-loader');
+var docDefinitionsLoader = require('../loading/document-definitions-loader');
 var validator = require('./document-definitions-validator');
 
 describe('Document definitions validator:', function() {
