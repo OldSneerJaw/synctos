@@ -5,10 +5,15 @@
       return doc._id === 'dateDoc';
     },
     propertyValidators: {
-      rangeValidationProp: {
+      inclusiveRangeValidationProp: {
         type: 'date',
-        minimumValue: '2016-06-23',
-        maximumValue: new Date(Date.UTC(2016, 5, 23, 23, 59, 59, 999))
+        minimumValue: '2015-12-31T23:59:59.999Z',
+        maximumValue: new Date(Date.UTC(2016, 0, 1, 23, 59, 59, 999))
+      },
+      exclusiveRangeValidationProp: {
+        type: 'date',
+        minimumValueExclusive: '2018',
+        maximumValueExclusive: '2018-02-02'
       },
       formatValidationProp: {
         type: 'date'
