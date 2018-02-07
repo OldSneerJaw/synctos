@@ -1,7 +1,4 @@
-function makeDocumentDefinitionsShell(require) {
-  var _ = require('../lib/underscore/underscore-min.js');
-  var simple = require('../lib/simple-mock/index.js');
-
+function makeValidationEnvironment(_, simple) {
   var doc = { };
   var oldDoc = { };
   var typeIdValidator = { type: 'string' };
