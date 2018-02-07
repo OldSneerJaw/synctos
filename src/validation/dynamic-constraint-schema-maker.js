@@ -11,8 +11,8 @@ module.exports = exports = function makeConstraintSchemaDynamic(otherSchema, max
   return joi.any()
     .when(
       joi.func(),
-      { then: joi.func().maxArity(maxArity) })
-    .when(
-      joi.any(),
-      { then: otherSchema });
+      {
+        then: joi.func().maxArity(maxArity),
+        otherwise: otherSchema
+      });
 };
