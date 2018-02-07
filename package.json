@@ -12,7 +12,9 @@
     "validation"
   ],
   "main": "src/index.js",
-  "dependencies": {},
+  "dependencies": {
+    "joi": "^13.1.1"
+  },
   "devDependencies": {
     "chai": "^4.1.2",
     "jshint": "^2.9.5",
@@ -21,12 +23,16 @@
     "nyc": "^11.4.1"
   },
   "scripts": {
-    "test": "etc/prepare-tests.sh && nyc mocha **/*.spec.js",
-    "test-report": "etc/prepare-tests.sh && mkdir -p build/test-reports/ && nyc mocha -R xunit **/*.spec.js > build/test-reports/synctos.xml"
+    "test": "etc/prepare-tests.sh && nyc mocha \"**/*.spec.js\"",
+    "test-report": "etc/prepare-tests.sh && mkdir -p build/test-reports/ && nyc mocha -R xunit \"**/*.spec.js\" > build/test-reports/synctos.xml"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Kashoo/synctos"
+  },
+  "bin": {
+    "synctos": "./make-sync-function",
+    "synctos-validate": "./validate-document-definitions"
   }
 }
