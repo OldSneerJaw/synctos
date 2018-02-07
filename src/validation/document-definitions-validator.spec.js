@@ -76,6 +76,12 @@ describe('Document definitions validator:', function() {
               maximumValue: '23:49:52.1234', // Must not have more than 3 fractional digits
               mustEqual: 'foobar' // Must be a valid time string
             },
+            timezoneProperty: {
+              type: 'timezone',
+              minimumValueExclusive: '-15', // Must include minute component
+              maximumValueExclusive: '19:00', // Must have a positive or negative sign
+              mustEqualStrict: 'barfoo' // Must be a valid timezone string
+            },
             _invalidName: { // Sync Gateway does not allow top-level property names to start with underscore
               type: 'string'
             },
@@ -219,6 +225,11 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.timeProperty.mustEqual: \"mustEqual\" with value \"foobar\" fails to match the required pattern: /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\\.[0-9]{1,3})?)?$/',
         'myDoc1.propertyValidators.timeProperty.minimumValue: \"minimumValue\" conflict with forbidden peer \"mustEqual\"',
         'myDoc1.propertyValidators.timeProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"mustEqual\"',
+        'myDoc1.propertyValidators.timezoneProperty.minimumValueExclusive: \"minimumValueExclusive\" with value \"-15\" fails to match the required pattern: /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/',
+        'myDoc1.propertyValidators.timezoneProperty.maximumValueExclusive: \"maximumValueExclusive\" with value \"19:00\" fails to match the required pattern: /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/',
+        'myDoc1.propertyValidators.timezoneProperty.mustEqualStrict: \"mustEqualStrict\" with value \"barfoo\" fails to match the required pattern: /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/',
+        'myDoc1.propertyValidators.timezoneProperty.minimumValueExclusive: \"minimumValueExclusive\" conflict with forbidden peer \"mustEqualStrict\"',
+        'myDoc1.propertyValidators.timezoneProperty.maximumValueExclusive: \"maximumValueExclusive\" conflict with forbidden peer \"mustEqualStrict\"',
         'myDoc1.propertyValidators._invalidName: "_invalidName" is not allowed',
         'myDoc1.propertyValidators.nestedObject.unrecognizedConstraint: "unrecognizedConstraint" is not allowed',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutableWhenSet: \"immutableWhenSet\" conflict with forbidden peer \"immutable\"',
@@ -255,7 +266,7 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidMustEqualConstraintProperty.mustEqual: \"mustEqual\" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.noTypeProperty.type: "type" is required',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [array, attachmentReference, boolean, date, datetime, enum, float, hashtable, integer, object, string, time, uuid]'
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [array, attachmentReference, boolean, date, datetime, enum, float, hashtable, integer, object, string, time, timezone, uuid]'
       ]);
   });
 });
