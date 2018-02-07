@@ -1,4 +1,4 @@
-var joi = require('joi');
+var joi = require('../../lib/joi/joi.bundle');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integerSchema = joi.number().integer();

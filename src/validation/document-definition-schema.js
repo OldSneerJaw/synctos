@@ -1,4 +1,4 @@
-var joi = require('joi');
+var joi = require('../../lib/joi/joi.bundle');
 var propertyValidatorSchema = require('./property-validator-schema');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
