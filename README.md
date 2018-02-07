@@ -15,6 +15,7 @@ To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com
 - [Installation](#installation)
 - [Usage](#usage)
     - [Running](#running)
+    - [Validating](#validating)
     - [Specifications](#specifications)
       - [Document type definitions](#document-type-definitions)
         - [Essential document properties](#essential-document-properties)
@@ -369,9 +370,13 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
 
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
-  * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')`). Undefined by default.
-  * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. Undefined by default.
-  * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. Undefined by default.
+  * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')` or `/[A-Za-z]+/`). No restriction by default.
+  * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. No restriction by default.
+  * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. No restriction by default.
+  * `minimumValue`: Reject strings with an alphanumeric sort order that is less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject strings with an alphanumeric sort order that is less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject strings with an alphanumeric sort order that is greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject strings with an alphanumeric sort order that is greater than or equal to this. No restriction by default.
 * `integer`: The value is a number with no fractional component. Additional parameters:
   * `minimumValue`: Reject values that are less than this. No restriction by default.
   * `minimumValueExclusive`: Reject values that are less than or equal to this. No restriction by default.
@@ -395,7 +400,11 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `maximumValueExclusive`: Reject dates that are greater than or equal to this. May be either an ECMAScript ISO 8601 date string without time and time zone components OR a JavaScript `Date` object. No restriction by default.
 * `enum`: The value must be one of the specified predefined string and/or integer values. Additional parameters:
   * `predefinedValues`: A list of strings and/or integers that are to be accepted. If this parameter is omitted from an `enum` property's configuration, that property will not accept a value of any kind. For example: `[ 1, 2, 3, 'a', 'b', 'c' ]`
-* `uuid`: The value must be a string representation of a [universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID). A UUID may contain either uppercase or lowercase letters so that, for example, both "1511fba4-e039-42cc-9ac2-9f2fa29eecfc" and "DFF421EA-0AB2-45C9-989C-12C76E7282B8" are valid.
+* `uuid`: The value must be a string representation of a [universally unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) (UUID). A UUID may contain either uppercase or lowercase letters so that, for example, both "1511fba4-e039-42cc-9ac2-9f2fa29eecfc" and "DFF421EA-0AB2-45C9-989C-12C76E7282B8" are valid. Additional parameters:
+  * `minimumValue`: Reject UUIDs that are less than this. No restriction by default.
+  * `minimumValueExclusive`: Reject UUIDs that are less than or equal to this. No restriction by default.
+  * `maximumValue`: Reject UUIDs that are greater than this. No restriction by default.
+  * `maximumValueExclusive`: Reject UUIDs that are greater than or equal to this. No restriction by default.
 * `attachmentReference`: The value is the name of one of the document's file attachments. Note that, because the addition of an attachment is often a separate Sync Gateway API operation from the creation/replacement of the associated document, this validation type is only applied if the attachment is actually present in the document. However, since the sync function is run twice in such situations (i.e. once when the _document_ is created/replaced and once when the _attachment_ is created/replaced), the validation will be performed eventually. The top-level `allowAttachments` property should be `true` so that documents of this type can actually store attachments. Additional parameters:
   * `supportedExtensions`: An array of case-insensitive file extensions that are allowed for the attachment's filename (e.g. "txt", "jpg", "pdf"). Takes precedence over the document-wide `supportedExtensions` constraint for the referenced attachment. No restriction by default.
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-wide `supportedContentTypes` constraint for the referenced attachment. No restriction by default.
