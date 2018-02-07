@@ -7,7 +7,7 @@
     propertyValidators: {
       inclusiveRangeValidationProp: {
         type: 'date',
-        minimumValue: '2015-12-31T23:59:59.999Z',
+        minimumValue: new Date(Date.UTC(2015, 11, 31, 23, 59, 59, 999)),
         maximumValue: new Date(Date.UTC(2016, 0, 1, 23, 59, 59, 999))
       },
       exclusiveRangeValidationProp: {
