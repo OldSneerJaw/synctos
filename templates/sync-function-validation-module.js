@@ -109,11 +109,11 @@ function validationModule() {
       resolvedPropertyValidators.type = typeIdValidator;
     }
 
-    // Execute each of the document's property validators while ignoring the specified whitelisted properties at the root level
+    // Execute each of the document's property validators while ignoring internal document properties at the root level
     validateProperties(
       resolvedPropertyValidators,
       resolveDocConstraint(doc, oldDoc, docDefinition.allowUnknownProperties),
-      [ '_id', '_rev', '_deleted', '_revisions', '_attachments' ]);
+      true);
 
     if (doc._attachments) {
       validateAttachments();
@@ -131,7 +131,7 @@ function validationModule() {
       }
     }
 
-    function validateProperties(propertyValidators, allowUnknownProperties, whitelistedProperties) {
+    function validateProperties(propertyValidators, allowUnknownProperties, ignoreInternalProperties) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var objectValue = currentItemEntry.itemValue;
       var oldObjectValue = currentItemEntry.oldItemValue;
@@ -167,7 +167,7 @@ function validationModule() {
       // Verify there are no unsupported properties in the object
       if (!allowUnknownProperties) {
         for (var propertyName in objectValue) {
-          if (whitelistedProperties && whitelistedProperties.indexOf(propertyName) >= 0) {
+          if (ignoreInternalProperties && propertyName.indexOf('_') === 0) {
             // These properties are special cases that should always be allowed - generally only applied at the root level of the document
             continue;
           }
