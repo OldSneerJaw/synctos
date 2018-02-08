@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#207](https://github.com/Kashoo/synctos/issues/207): Ignore all top-level document properties that start with an underscore
 - [#204](https://github.com/Kashoo/synctos/issues/204): Constraint that requires string values to be trimmed
 - [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
+- [#203](https://github.com/Kashoo/synctos/issues/203): Date range validation fails for values far in the past or future
 - [#215](https://github.com/Kashoo/synctos/issues/215): Allow document definition fragments to be nested
 
 ### Changed
