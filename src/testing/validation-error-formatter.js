@@ -46,7 +46,7 @@ exports.datetimeFormatInvalid = function(itemPath) {
  * @param {(string[]|integer[])} expectedPredefinedValues A list of predefined values that are allowed for the item in question
  */
 exports.enumPredefinedValueViolation = function(itemPath, expectedPredefinedValues) {
-  return 'item "' + itemPath + '" must be one of the predefined values: ' + expectedPredefinedValues.toString();
+  return 'item "' + itemPath + '" must be one of the predefined values: ' + expectedPredefinedValues.join(',');
 };
 
 /**
@@ -55,7 +55,7 @@ exports.enumPredefinedValueViolation = function(itemPath, expectedPredefinedValu
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  */
 exports.hashtableKeyEmpty = function(hashtablePath) {
-  return 'empty hashtable key in item "' + hashtablePath + '" is not allowed';
+  return 'hashtable "' + hashtablePath + '" must not have an empty key';
 };
 
 /**
@@ -92,7 +92,7 @@ exports.immutableDocViolation = function() {
  *                          (e.g. "arrayProp[1].hashtableProp[my-key].integerProp")
  */
 exports.immutableItemViolation = function(itemPath) {
-  return 'value of item "' + itemPath + '" may not be modified';
+  return 'item "' + itemPath + '" cannot be modified';
 };
 
 /**
@@ -101,7 +101,7 @@ exports.immutableItemViolation = function(itemPath) {
  * @param {integer} maxCount The maximum number of attachments that are allowed
  */
 exports.maximumAttachmentCountViolation = function(maxCount) {
-  return 'the total number of attachments must not exceed ' + maxCount;
+  return 'documents of this type must not have more than ' + maxCount + ' attachments';
 };
 
 /**
@@ -141,7 +141,7 @@ exports.maximumSizeAttachmentViolation = function(itemPath, maxSize) {
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
 exports.maximumTotalAttachmentSizeViolation = function(maxSize) {
-  return 'the total size of all attachments must not exceed ' + maxSize + ' bytes';
+  return 'documents of this type must not have a combined attachment size greater than ' + maxSize + ' bytes';
 };
 
 /**
@@ -240,7 +240,7 @@ exports.mustNotBeNullValueViolation = function(itemPath) {
  * @param {RegExp} expectedRegex The regular expression pattern that is expected
  */
 exports.regexPatternHashtableKeyViolation = function(hashtableKeyPath, expectedRegex) {
-  return 'hashtable key "' + hashtableKeyPath + '" does not conform to expected format ' + expectedRegex;
+  return 'hashtable key "' + hashtableKeyPath + '" must conform to expected format ' + expectedRegex;
 };
 
 /**
@@ -269,7 +269,7 @@ exports.requireAttachmentReferencesViolation = function(attachmentName) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
  */
 exports.requiredValueViolation = function(itemPath) {
-  return 'required item "' + itemPath + '" is missing';
+  return 'item "' + itemPath + '" must not be null or missing';
 };
 
 /**
@@ -293,7 +293,9 @@ exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, e
  *                                        Element order must match that set in the validator in the document definition.
  */
 exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, expectedContentTypes) {
-  return 'attachment "' + attachmentName + '" must have a supported content type (' + expectedContentTypes + ')';
+  var contentTypesString = expectedContentTypes.join(',');
+
+  return 'attachment "' + attachmentName + '" must have a supported content type (' + contentTypesString + ')';
 };
 
 /**
@@ -304,7 +306,9 @@ exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, e
  *                                          Element order must match that set in the validator in the document definition.
  */
 exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, expectedFileExtensions) {
-  return 'attachment reference "' + itemPath + '" must have a supported file extension (' + expectedFileExtensions + ')';
+  var extensionsString = expectedFileExtensions.join(',');
+
+  return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
 };
 
 /**
@@ -328,13 +332,7 @@ exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, exp
  *                              "float", "hashtable", "integer", "object", "string"). Throws an exception if the type is not recognized.
  */
 exports.typeConstraintViolation = function(itemPath, expectedType) {
-  var typeDescription = getTypeDescription(expectedType);
-  if (expectedType === 'attachmentReference') {
-    // Attachment references have a slightly different error message format
-    return 'attachment reference "' + itemPath + '" must be ' + typeDescription;
-  } else {
-    return 'item "' + itemPath + '" must be ' + typeDescription;
-  }
+  return 'item "' + itemPath + '" must be ' + getTypeDescription(expectedType);
 };
 
 /**
@@ -361,7 +359,7 @@ exports.unsupportedProperty = function(propertyPath) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[10].uuidProp")
  */
 exports.uuidFormatInvalid = function(itemPath) {
-  return 'item "' + itemPath + '" is not a valid UUID';
+  return 'item "' + itemPath + '" must be ' + getTypeDescription('uuid');
 };
 
 function getTypeDescription(type) {
@@ -369,7 +367,7 @@ function getTypeDescription(type) {
     case 'array':
       return 'an array';
     case 'attachmentReference':
-      return 'a string';
+      return 'an attachment reference string';
     case 'boolean':
       return 'a boolean';
     case 'date':
@@ -389,7 +387,7 @@ function getTypeDescription(type) {
     case 'string':
       return 'a string';
     case 'uuid':
-      return 'a string';
+      return 'a UUID string';
     default:
       throw new Error('Unrecognized validation type: ' + type);
   }
