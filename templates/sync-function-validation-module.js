@@ -502,7 +502,7 @@ function validationModule() {
             break;
           case 'timezone':
             if (typeof itemValue !== 'string' || !isIso8601TimeZoneString(itemValue)) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 time zone string');
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ECMAScript simplified ISO 8601 time zone string');
             }
             break;
           case 'enum':

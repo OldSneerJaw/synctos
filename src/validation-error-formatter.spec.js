@@ -83,7 +83,7 @@ describe('Validation error formatter', function() {
 
     it('produces invalid time zone format messages', function() {
       expect(errorFormatter.timezoneFormatInvalid(fakeItemPath))
-        .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 time zone string');
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 time zone string');
     });
 
     it('produces invalid enum value messages', function() {
@@ -217,13 +217,13 @@ describe('Validation error formatter', function() {
           'date': 'an ISO 8601 date string with no time or time zone components',
           'datetime': 'an ISO 8601 date string with optional time and time zone components',
           'time': 'an ISO 8601 time string with no date or time zone components',
-          'timezone': 'an ISO 8601 time zone string',
           'enum': 'an integer or a string',
           'float': 'a floating point or integer number',
           'hashtable': 'an object/hashtable',
           'integer': 'an integer',
           'object': 'an object',
           'string': 'a string',
+          'timezone': 'an ECMAScript simplified ISO 8601 time zone string',
           'uuid': 'a string'
         };
 
