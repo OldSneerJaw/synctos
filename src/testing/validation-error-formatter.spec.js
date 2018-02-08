@@ -22,7 +22,7 @@ describe('Validation error formatter', function() {
     it('produces maximumAttachmentCount violation messages', function() {
       var maximumAttachmentCount = 2;
       expect(errorFormatter.maximumAttachmentCountViolation(maximumAttachmentCount))
-        .to.equal('the total number of attachments must not exceed ' + maximumAttachmentCount);
+        .to.equal('documents of this type must not have more than ' + maximumAttachmentCount + ' attachments');
     });
 
     it('produces attachments maximumIndividualSize violation messages', function() {
@@ -35,7 +35,7 @@ describe('Validation error formatter', function() {
     it('produces attachments maximumTotalSize violation messages', function() {
       var maximumSize = 2;
       expect(errorFormatter.maximumTotalAttachmentSizeViolation(maximumSize))
-        .to.equal('the total size of all attachments must not exceed ' + maximumSize + ' bytes');
+        .to.equal('documents of this type must not have a combined attachment size greater than ' + maximumSize + ' bytes');
     });
 
     it('produces requireAttachmentReferences violation messages', function() {
@@ -79,12 +79,12 @@ describe('Validation error formatter', function() {
     it('produces invalid enum value messages', function() {
       var fakeEnumValues = [ 'foo', 'bar', -5 ];
       expect(errorFormatter.enumPredefinedValueViolation(fakeItemPath, fakeEnumValues))
-        .to.equal('item "' + fakeItemPath + '" must be one of the predefined values: ' + fakeEnumValues.join(','));
+        .to.equal('item "' + fakeItemPath + '" must be one of the predefined values: ' + fakeEnumValues);
     });
 
     it('produces empty hashtable key violation messages', function() {
       expect(errorFormatter.hashtableKeyEmpty(fakeItemPath))
-        .to.equal('empty hashtable key in item "' + fakeItemPath + '" is not allowed');
+        .to.equal('hashtable "' + fakeItemPath + '" must not have an empty key');
     });
 
     it('produces hashtable maximumSize violation messages', function() {
@@ -100,7 +100,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces immutable value violation messages', function() {
-      expect(errorFormatter.immutableItemViolation(fakeItemPath)).to.equal('value of item "' + fakeItemPath + '" may not be modified');
+      expect(errorFormatter.immutableItemViolation(fakeItemPath)).to.equal('value of item "' + fakeItemPath + '" cannot be modified');
     });
 
     it('produces maximumLength violation messages', function() {
@@ -166,7 +166,7 @@ describe('Validation error formatter', function() {
     it('produces hashtable key regexPattern violation messages', function() {
       var regex = /^foo-bar$/;
       expect(errorFormatter.regexPatternHashtableKeyViolation(fakeItemPath, regex))
-        .to.equal('hashtable key "' + fakeItemPath + '" does not conform to expected format ' + regex);
+        .to.equal('hashtable key "' + fakeItemPath + '" must conform to expected format ' + regex);
     });
 
     it('produces regexPattern violation messages', function() {
@@ -176,7 +176,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces required value violation messages', function() {
-      expect(errorFormatter.requiredValueViolation(fakeItemPath)).to.equal('required item "' + fakeItemPath + '" is missing');
+      expect(errorFormatter.requiredValueViolation(fakeItemPath)).to.equal('item "' + fakeItemPath + '" must not be null or missing');
     });
 
     it('produces attachment reference supportedContentTypes violation messages', function() {

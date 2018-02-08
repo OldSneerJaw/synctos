@@ -302,7 +302,7 @@ function validationModule() {
             if (!(enumPredefinedValues instanceof Array)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" belongs to an enum that has no predefined values');
             } else if (enumPredefinedValues.indexOf(itemValue) < 0) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + enumPredefinedValues.toString());
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + enumPredefinedValues.join(','));
             }
             break;
           case 'uuid':
@@ -333,7 +333,7 @@ function validationModule() {
         }
       } else if (resolveValidationConstraint(validator.required)) {
         // The item has no value (either it's null or undefined), but the validator indicates it is required
-        validationErrors.push('required item "' + buildItemPath(itemStack) + '" is missing');
+        validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be null or missing');
       } else if (resolveValidationConstraint(validator.mustNotBeMissing) && typeof itemValue === 'undefined') {
         // The item is missing (i.e. it's undefined), but the validator indicates it must not be
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be missing');
@@ -370,7 +370,7 @@ function validationModule() {
         }
 
         if (!constraintSatisfied) {
-          validationErrors.push('value of item "' + buildItemPath(itemStack) + '" may not be modified');
+          validationErrors.push('value of item "' + buildItemPath(itemStack) + '" cannot be modified');
         }
       }
     }
@@ -528,11 +528,11 @@ function validationModule() {
               validationErrors.push('hashtable key "' + fullKeyPath + '" is not a string');
             } else {
               if (resolveValidationConstraint(keyValidator.mustNotBeEmpty) && elementKey.length < 1) {
-                validationErrors.push('empty hashtable key in item "' + buildItemPath(itemStack) + '" is not allowed');
+                validationErrors.push('hashtable "' + buildItemPath(itemStack) + '" must not have an empty key');
               }
               var regexPattern = resolveValidationConstraint(keyValidator.regexPattern);
               if (regexPattern && !regexPattern.test(elementKey)) {
-                validationErrors.push('hashtable key "' + fullKeyPath + '" does not conform to expected format ' + regexPattern);
+                validationErrors.push('hashtable key "' + fullKeyPath + '" must conform to expected format ' + regexPattern);
               }
             }
           }
@@ -665,11 +665,11 @@ function validationModule() {
       }
 
       if (isInteger(maximumTotalAttachmentSize) && totalSize > maximumTotalAttachmentSize) {
-        validationErrors.push('the total size of all attachments must not exceed ' + maximumTotalAttachmentSize + ' bytes');
+        validationErrors.push('documents of this type must not have a combined attachment size greater than ' + maximumTotalAttachmentSize + ' bytes');
       }
 
       if (isInteger(maximumAttachmentCount) && attachmentCount > maximumAttachmentCount) {
-        validationErrors.push('the total number of attachments must not exceed ' + maximumAttachmentCount);
+        validationErrors.push('documents of this type must not have more than ' + maximumAttachmentCount + ' attachments');
       }
 
       if (!resolveDocConstraint(doc, oldDoc, docDefinition.allowAttachments) && attachmentCount > 0) {
