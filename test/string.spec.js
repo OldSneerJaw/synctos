@@ -170,4 +170,86 @@ describe('String validation type', function() {
       });
     });
   });
+
+  describe('must be trimmed constraint', function() {
+    describe('with static validation', function() {
+      it('allows an empty string', function() {
+        var doc = {
+          _id: 'stringDoc',
+          staticMustBeTrimmedValidationProp: ''
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('allows a string that has no leading or trailing whitespace', function() {
+        var doc = {
+          _id: 'stringDoc',
+          staticMustBeTrimmedValidationProp: 'foo bar'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a string that has leading whitespace', function() {
+        var doc = {
+          _id: 'stringDoc',
+          staticMustBeTrimmedValidationProp: '\tfoo bar'
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('staticMustBeTrimmedValidationProp'));
+      });
+
+      it('blocks a string that has trailing whitespace', function() {
+        var doc = {
+          _id: 'stringDoc',
+          staticMustBeTrimmedValidationProp: 'foo bar\n'
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('staticMustBeTrimmedValidationProp'));
+      });
+    });
+
+    describe('with dynamic validation', function() {
+      it('allows a string that has no leading or trailing whitespace', function() {
+        var doc = {
+          _id: 'stringDoc',
+          dynamicMustBeTrimmedValidationProp: 'bar',
+          dynamicMustBeTrimmedState: true
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('allows a string that has leading whitespace if the constraint is disabled', function() {
+        var doc = {
+          _id: 'stringDoc',
+          dynamicMustBeTrimmedValidationProp: ' foobar',
+          dynamicMustBeTrimmedState: false
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('allows a string that has trailing whitespace if the constraint is disabled', function() {
+        var doc = {
+          _id: 'stringDoc',
+          dynamicMustBeTrimmedValidationProp: 'foobar ',
+          dynamicMustBeTrimmedState: false
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('blocks a string that has leading and trailing whitespace if the constraint is enabled', function() {
+        var doc = {
+          _id: 'stringDoc',
+          dynamicMustBeTrimmedValidationProp: ' foobar ',
+          dynamicMustBeTrimmedState: true
+        };
+
+        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('dynamicMustBeTrimmedValidationProp'));
+      });
+    });
+  });
 });

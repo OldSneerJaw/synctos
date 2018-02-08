@@ -195,6 +195,15 @@ exports.minimumValueExclusiveViolation = function(itemPath, minValue) {
 };
 
 /**
+ * Formats a message for the error that occurs when a string has leading or trailing whitespace even though it is forbidden.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
+ */
+exports.mustBeTrimmedViolation = function(itemPath) {
+  return 'item "' + itemPath + '" must not have any leading or trailing whitespace';
+};
+
+/**
  * Formats a message for the error that occurs when a value does not equal the expected value.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.integerProp")

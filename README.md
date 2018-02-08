@@ -370,6 +370,7 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
 
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
+  * `mustBeTrimmed`: If `true`, a string that has leading or trailing whitespace characters is not allowed. Defaults to `false`.
   * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')` or `/[A-Za-z]+/`). No restriction by default.
   * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. No restriction by default.
   * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. No restriction by default.

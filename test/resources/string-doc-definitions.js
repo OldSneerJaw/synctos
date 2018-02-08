@@ -15,6 +15,10 @@ function() {
     return new RegExp(doc.dynamicRegex);
   }
 
+  function dynamicMustBeTrimmed(doc, oldDoc, value, oldValue) {
+    return doc.dynamicMustBeTrimmedState;
+  }
+
   return {
     stringDoc: {
       channels: { write: 'write' },
@@ -56,6 +60,17 @@ function() {
         dynamicRegexPatternValidationProp: {
           type: 'string',
           regexPattern: dynamicRegexPattern
+        },
+        staticMustBeTrimmedValidationProp: {
+          type: 'string',
+          mustBeTrimmed: true
+        },
+        dynamicMustBeTrimmedState: {
+          type: 'boolean'
+        },
+        dynamicMustBeTrimmedValidationProp: {
+          type: 'string',
+          mustBeTrimmed: dynamicMustBeTrimmed
         }
       }
     }

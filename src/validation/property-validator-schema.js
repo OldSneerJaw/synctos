@@ -97,6 +97,7 @@ function typeSpecificConstraintSchemas() {
   return {
     string: {
       mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
+      mustBeTrimmed: dynamicConstraintSchema(joi.boolean()),
       regexPattern: dynamicConstraintSchema(regexSchema),
       minimumLength: dynamicConstraintSchema(integerSchema.min(0)),
       maximumLength: maximumSizeConstraintSchema('minimumLength'),
