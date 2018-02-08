@@ -738,7 +738,7 @@ Custom code (e.g. type filters, custom validation functions, custom actions) wit
 
 # Testing
 
-The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`src/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
+The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`src/testing/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
 
 The post [Testing your Sync Gateway functions with synctos](https://blog.couchbase.com/testing-sync-gateway-functions-synctos/) on the official Couchbase blog provides a detailed walkthrough, with examples, for setting up and running tests. The following section also provides a brief overview of the process.
 

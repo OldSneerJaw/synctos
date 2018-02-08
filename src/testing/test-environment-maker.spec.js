@@ -1,6 +1,5 @@
-var path = require('path');
 var expect = require('chai').expect;
-var simpleMock = require('../lib/simple-mock/index.js');
+var simpleMock = require('../../lib/simple-mock/index.js');
 var mockRequire = require('mock-require');
 
 describe('Test environment maker', function() {
@@ -49,7 +48,7 @@ describe('Test environment maker', function() {
     expect(result).to.eql(expectedResult);
 
     expect(fsMock.readFileSync.callCount).to.equal(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(__dirname, '../templates/test-environment-template.js'), 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ 'templates/test-environment-template.js', 'utf8' ]);
 
     expect(vmMock.runInThisContext.callCount).to.equal(1);
     expect(vmMock.runInThisContext.calls[0].args).to.eql([

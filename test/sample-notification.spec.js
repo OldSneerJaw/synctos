@@ -1,5 +1,5 @@
-var sampleSpecHelper = require('./modules/sample-spec-helper.js');
-var testHelper = require('../src/test-helper.js');
+var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
+var testHelper = require('../src/testing/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Sample business notification doc definition', function() {

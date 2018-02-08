@@ -1,10 +1,9 @@
-var path = require('path');
 var expect = require('chai').expect;
-var simpleMock = require('../lib/simple-mock/index.js');
+var simpleMock = require('../../lib/simple-mock/index');
 var mockRequire = require('mock-require');
 
-describe('Document definitions shell maker', function() {
-  var environmentShellMaker, fsMock, vmMock;
+describe('Validation environment maker', function() {
+  var environmentMaker, fsMock, vmMock;
 
   beforeEach(function() {
     // Mock out the "require" calls in the module under test
@@ -14,7 +13,7 @@ describe('Document definitions shell maker', function() {
     vmMock = { runInThisContext: simpleMock.stub() };
     mockRequire('vm', vmMock);
 
-    environmentShellMaker = mockRequire.reRequire('./document-definitions-shell-maker.js');
+    environmentMaker = mockRequire.reRequire('./validation-environment-maker');
   });
 
   afterEach(function() {
@@ -23,10 +22,10 @@ describe('Document definitions shell maker', function() {
   });
 
   function verifyParse(rawDocumentDefinitions, originalFilename) {
-    var shellTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
-    fsMock.readFileSync.returnWith(shellTemplateFileContents);
+    var envTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
+    fsMock.readFileSync.returnWith(envTemplateFileContents);
 
-    var expectedShellString = shellTemplateFileContents.replace(
+    var expectedEnvString = envTemplateFileContents.replace(
       '%DOC_DEFINITIONS_PLACEHOLDER%',
       function() { return rawDocumentDefinitions; });
 
@@ -36,16 +35,16 @@ describe('Document definitions shell maker', function() {
 
     vmMock.runInThisContext.returnWith(mockVmEnvironment);
 
-    var result = environmentShellMaker.createShell(rawDocumentDefinitions, originalFilename);
+    var result = environmentMaker.init(rawDocumentDefinitions, originalFilename);
 
     expect(result).to.eql(expectedResult);
 
     expect(fsMock.readFileSync.callCount).to.equal(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ path.resolve(__dirname, '../templates/document-definitions-shell-template.js'), 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ 'templates/validation-environment-template.js', 'utf8' ]);
 
     expect(vmMock.runInThisContext.callCount).to.equal(1);
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
-      '(' + expectedShellString + ');',
+      '(' + expectedEnvString + ');',
       {
         filename: originalFilename,
         displayErrors: true
@@ -55,11 +54,11 @@ describe('Document definitions shell maker', function() {
     expect(mockVmEnvironment.callCount).to.equal(1);
   }
 
-  it('creates a shell from the input with a filename for stack traces', function() {
+  it('creates an environment from the input with a filename for stack traces', function() {
     verifyParse('my-doc-definitions-1', 'my-original-filename');
   });
 
-  it('creates a shell from the input but without a filename', function() {
+  it('creates an environment from the input but without a filename', function() {
     verifyParse('my-doc-definitions-2');
   });
 });

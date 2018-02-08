@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var testHelper = require('../src/test-helper.js');
+var testHelper = require('../src/testing/test-helper.js');
 
 describe('Test helper module initialization', function() {
   describe('when initialized from a generated sync function file', function() {

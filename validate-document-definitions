@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var path = require('path');
-var docDefinitionsLoader = require('./src/document-definitions-loader');
+var docDefinitionsLoader = require('./src/loading/document-definitions-loader');
 var docDefinitionsValidator = require('./src/validation/document-definitions-validator');
 
 var errorStatus = 1;

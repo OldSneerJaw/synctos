@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var simpleMock = require('../lib/simple-mock/index');
+var simpleMock = require('../../lib/simple-mock/index');
 var mockRequire = require('mock-require');
 
 describe('Test helper:', function() {
@@ -28,7 +28,7 @@ describe('Test helper:', function() {
 
     syncFunctionLoaderMock = { load: simpleMock.stub() };
     syncFunctionLoaderMock.load.returnWith(fakeSyncFunctionContents);
-    mockRequire('./sync-function-loader', syncFunctionLoaderMock);
+    mockRequire('../loading/sync-function-loader', syncFunctionLoaderMock);
 
     testEnvironmentMakerMock = { init: simpleMock.stub() };
     testEnvironmentMakerMock.init.returnWith(fakeTestEnvironment);

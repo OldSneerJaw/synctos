@@ -1,4 +1,4 @@
-var testHelper = require('../src/test-helper.js');
+var testHelper = require('../src/testing/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Range constraints:', function() {

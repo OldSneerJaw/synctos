@@ -11,7 +11,7 @@ mkdir -p build/test-reports/
 cp "etc/jshintrc-sync-function-template.json" "$outputDir/.jshintrc"
 
 echo "Linting modules and specs with JSHint...\n"
-node_modules/jshint/bin/jshint src test/*.js
+node_modules/jshint/bin/jshint src test
 
 sampleDocDefinitionsPath="samples/sample-sync-doc-definitions.js"
 
