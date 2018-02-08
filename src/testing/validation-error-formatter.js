@@ -92,7 +92,7 @@ exports.immutableDocViolation = function() {
  *                          (e.g. "arrayProp[1].hashtableProp[my-key].integerProp")
  */
 exports.immutableItemViolation = function(itemPath) {
-  return 'value of item "' + itemPath + '" cannot be modified';
+  return 'item "' + itemPath + '" cannot be modified';
 };
 
 /**

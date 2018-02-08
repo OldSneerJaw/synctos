@@ -370,7 +370,7 @@ function validationModule() {
         }
 
         if (!constraintSatisfied) {
-          validationErrors.push('value of item "' + buildItemPath(itemStack) + '" cannot be modified');
+          validationErrors.push('item "' + buildItemPath(itemStack) + '" cannot be modified');
         }
       }
     }

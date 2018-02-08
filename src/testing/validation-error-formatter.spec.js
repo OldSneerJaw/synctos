@@ -100,7 +100,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces immutable value violation messages', function() {
-      expect(errorFormatter.immutableItemViolation(fakeItemPath)).to.equal('value of item "' + fakeItemPath + '" cannot be modified');
+      expect(errorFormatter.immutableItemViolation(fakeItemPath)).to.equal('item "' + fakeItemPath + '" cannot be modified');
     });
 
     it('produces maximumLength violation messages', function() {
