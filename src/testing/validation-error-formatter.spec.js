@@ -203,6 +203,7 @@ describe('Validation error formatter', function() {
       it('formats messages for general types', function() {
         var typeDescriptions = {
           'array': 'an array',
+          'attachmentReference': 'an attachment reference string',
           'boolean': 'a boolean',
           'date': 'an ISO 8601 date string with no time or time zone components',
           'datetime': 'an ISO 8601 date string with optional time and time zone components',
@@ -219,12 +220,6 @@ describe('Validation error formatter', function() {
           expect(errorFormatter.typeConstraintViolation(fakeItemPath, typeName))
             .to.equal('item "' + fakeItemPath + '" must be ' + typeDescriptions[typeName]);
         }
-      });
-
-      it('formats messages for attachment references', function() {
-        // Attachment reference type violations have a custom format
-        expect(errorFormatter.typeConstraintViolation(fakeItemPath, 'attachmentReference'))
-          .to.equal('attachment reference "' + fakeItemPath + '" must be a string');
       });
 
       it('throws an error if an unrecognized type is encountered', function() {

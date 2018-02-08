@@ -572,7 +572,7 @@ function validationModule() {
       var itemValue = currentItemEntry.itemValue;
 
       if (typeof itemValue !== 'string') {
-        validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must be a string');
+        validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an attachment reference string');
       } else {
         attachmentReferenceValidators[itemValue] = validator;
 

@@ -328,13 +328,7 @@ exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, exp
  *                              "float", "hashtable", "integer", "object", "string"). Throws an exception if the type is not recognized.
  */
 exports.typeConstraintViolation = function(itemPath, expectedType) {
-  var typeDescription = getTypeDescription(expectedType);
-  if (expectedType === 'attachmentReference') {
-    // Attachment references have a slightly different error message format
-    return 'attachment reference "' + itemPath + '" must be ' + typeDescription;
-  } else {
-    return 'item "' + itemPath + '" must be ' + typeDescription;
-  }
+  return 'item "' + itemPath + '" must be ' + getTypeDescription(expectedType);
 };
 
 /**
@@ -369,7 +363,7 @@ function getTypeDescription(type) {
     case 'array':
       return 'an array';
     case 'attachmentReference':
-      return 'a string';
+      return 'an attachment reference string';
     case 'boolean':
       return 'a boolean';
     case 'date':
