@@ -355,7 +355,7 @@ exports.unsupportedProperty = function(propertyPath) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[10].uuidProp")
  */
 exports.uuidFormatInvalid = function(itemPath) {
-  return 'item "' + itemPath + '" is not a valid UUID';
+  return 'item "' + itemPath + '" must be ' + getTypeDescription('uuid');
 };
 
 function getTypeDescription(type) {
@@ -383,7 +383,7 @@ function getTypeDescription(type) {
     case 'string':
       return 'a string';
     case 'uuid':
-      return 'a string';
+      return 'a UUID string';
     default:
       throw new Error('Unrecognized validation type: ' + type);
   }

@@ -307,7 +307,7 @@ function validationModule() {
             break;
           case 'uuid':
             if (!isUuid(itemValue)) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" is not a valid UUID');
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be a UUID string');
             }
             break;
           case 'object':

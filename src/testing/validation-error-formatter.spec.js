@@ -196,7 +196,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces invalid UUID format messages', function() {
-      expect(errorFormatter.uuidFormatInvalid(fakeItemPath)).to.equal('item "' + fakeItemPath + '" is not a valid UUID');
+      expect(errorFormatter.uuidFormatInvalid(fakeItemPath)).to.equal('item "' + fakeItemPath + '" must be a UUID string');
     });
 
     describe('type constraint violations', function() {
@@ -213,7 +213,7 @@ describe('Validation error formatter', function() {
           'integer': 'an integer',
           'object': 'an object',
           'string': 'a string',
-          'uuid': 'a string'
+          'uuid': 'a UUID string'
         };
 
         for (var typeName in typeDescriptions) {
