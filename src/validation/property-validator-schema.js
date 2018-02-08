@@ -1,4 +1,4 @@
-var joi = require('joi');
+var joi = require('../../lib/joi/joi.bundle');
 var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 var integerSchema = joi.number().integer();
@@ -108,6 +108,7 @@ function typeSpecificConstraintSchemas() {
   return {
     string: {
       mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
+      mustBeTrimmed: dynamicConstraintSchema(joi.boolean()),
       regexPattern: dynamicConstraintSchema(regexSchema),
       minimumLength: dynamicConstraintSchema(integerSchema.min(0)),
       maximumLength: maximumSizeConstraintSchema('minimumLength'),

@@ -3,9 +3,11 @@ var index = require('./index');
 
 describe('Main package module', function() {
   it('exposes the public API', function() {
-    expect(index.documentDefinitionsValidator).to.equal(require('./validation/document-definitions-validator'));
-    expect(index.syncFunctionLoader).to.equal(require('./sync-function-loader'));
-    expect(index.testHelper).to.equal(require('./test-helper'));
-    expect(index.validationErrorFormatter).to.equal(require('./validation-error-formatter'));
+    expect(index).to.eql({
+      documentDefinitionsValidator: require('./validation/document-definitions-validator'),
+      syncFunctionLoader: require('./loading/sync-function-loader'),
+      testHelper: require('./testing/test-helper'),
+      validationErrorFormatter: require('./testing/validation-error-formatter')
+    });
   });
 });

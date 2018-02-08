@@ -89,6 +89,8 @@ Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `
 
 If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard output. Otherwise, if validation was successful, the utility will exit normally and will not output anything.
 
+See the [Testing](#testing) section for information on writing test cases for custom code in document definitions.
+
 ### Specifications
 
 Document definitions must conform to the following specification. See the `samples/` directory and Kashoo's official [document definitions](https://github.com/Kashoo/kashoo-document-definitions) repository for some examples.
@@ -370,6 +372,7 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
 
 * `string`: The value is a string of characters. Additional parameters:
   * `mustNotBeEmpty`: If `true`, an empty string is not allowed. Defaults to `false`.
+  * `mustBeTrimmed`: If `true`, a string that has leading or trailing whitespace characters is not allowed. Defaults to `false`.
   * `regexPattern`: A regular expression pattern that must be satisfied for values to be accepted (e.g. `new RegExp('\\d+')` or `/[A-Za-z]+/`). No restriction by default.
   * `minimumLength`: The minimum number of characters (inclusive) allowed in the string. No restriction by default.
   * `maximumLength`: The maximum number of characters (inclusive) allowed in the string. No restriction by default.
@@ -743,7 +746,7 @@ Custom code (e.g. type filters, custom validation functions, custom actions) wit
 
 # Testing
 
-The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`src/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
+The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`src/testing/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
 
 The post [Testing your Sync Gateway functions with synctos](https://blog.couchbase.com/testing-sync-gateway-functions-synctos/) on the official Couchbase blog provides a detailed walkthrough, with examples, for setting up and running tests. The following section also provides a brief overview of the process.
 
@@ -837,3 +840,5 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/validation-error-formatter.js` module in this project for documentation.
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).
+
+See the [Validating](#validating) section for information on using the validation utility to verify the structure and semantics of a document definitions file.

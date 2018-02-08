@@ -233,7 +233,7 @@ exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 // Implementation begins here
 var assert = require('assert');
 var fs = require('fs');
-var syncFunctionLoader = require('./sync-function-loader.js');
+var syncFunctionLoader = require('../loading/sync-function-loader.js');
 var testEnvironmentMaker = require('./test-environment-maker.js');
 
 var defaultWriteChannel = 'write';
@@ -304,14 +304,14 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
   for (var expectedAuthIndex = 0; expectedAuthIndex < expectedAuthorizations.length; expectedAuthIndex++) {
     var expectedAuth = expectedAuthorizations[expectedAuthIndex];
     if (actualAuthorizations.indexOf(expectedAuth) < 0) {
-      assert.fail('Expected ' + authorizationType + ' was not encountered: ' + expectedAuth);
+      assert.fail('Expected ' + authorizationType + ' was not encountered: ' + expectedAuth + '. Actual ' + authorizationType + 's: ' + actualAuthorizations);
     }
   }
 
   for (var actualAuthIndex = 0; actualAuthIndex < actualAuthorizations.length; actualAuthIndex++) {
     var actualAuth = actualAuthorizations[actualAuthIndex];
     if (expectedAuthorizations.indexOf(actualAuth) < 0) {
-      assert.fail('Unexpected ' + authorizationType + ' encountered: ' + actualAuth);
+      assert.fail('Unexpected ' + authorizationType + ' encountered: ' + actualAuth + '. Expected ' + authorizationType + 's: ' + expectedAuthorizations);
     }
   }
 }

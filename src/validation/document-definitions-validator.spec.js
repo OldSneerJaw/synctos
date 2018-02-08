@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var docDefinitionsLoader = require('../document-definitions-loader');
+var docDefinitionsLoader = require('../loading/document-definitions-loader');
 var validator = require('./document-definitions-validator');
 
 describe('Document definitions validator:', function() {
@@ -142,6 +142,7 @@ describe('Document definitions validator:', function() {
                       stringProperty: {
                         type: 'string',
                         mustEqual: null, // Must not be defined in conjunction with "regexPattern"
+                        mustBeTrimmed: 0, // Must be a boolean
                         regexPattern: /^[a-z]+$/,
                         minimumLength: function() { return 9; },
                         maximumLength: -1 // Must be at least 0
@@ -250,6 +251,7 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.mustEqual: \"mustEqual\" must be a string',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.minimumLength: \"minimumLength\" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.maximumLength: \"maximumLength\" must be an integer',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.mustBeTrimmed: \"mustBeTrimmed\" must be a boolean',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.maximumLength: \"maximumLength\" must be larger than or equal to 0',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.booleanProperty.mustEqual: \"mustEqual\" must be a boolean',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.required: \"required\" conflict with forbidden peer \"mustNotBeMissing\"',

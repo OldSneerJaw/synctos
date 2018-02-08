@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var testHelper = require('../src/test-helper.js');
+var testHelper = require('../src/testing/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Functionality that is common to all documents:', function() {
@@ -212,40 +212,55 @@ describe('Functionality that is common to all documents:', function() {
     });
   });
 
-  it('cannot specify whitelisted properties below the root level of the document', function() {
-    var doc = {
-      _id: 'generalDoc',
-      objectProp: {
-        foo: 'bar',
-        _id: 'my-id',
+  describe('internal document property validation', function() {
+    it('allows internal properties at the root level of the document', function() {
+      var doc = {
+        _id: 'generalDoc',
         _rev: 'my-rev',
-        _deleted: true,
+        _deleted: false,
         _revisions: { },
-        _attachments: { }
-      }
-    };
+        _attachments: { },
+        _someOtherProperty: 'my-value'
+      };
 
-    var syncFuncError = null;
-    expect(function() {
-      try {
-        testHelper.syncFunction(doc);
-      } catch (ex) {
-        syncFuncError = ex;
+      testHelper.verifyDocumentCreated(doc, [ 'add' ]);
+    });
 
-        throw ex;
-      }
-    }).to.throw();
+    it('rejects internal properties below the root level of the document', function() {
+      var doc = {
+        _id: 'generalDoc',
+        objectProp: {
+          foo: 'bar',
+          _id: 'my-id',
+          _rev: 'my-rev',
+          _deleted: true,
+          _revisions: { },
+          _attachments: { }
+        }
+      };
 
-    testHelper.verifyValidationErrors(
-      'generalDoc',
-      [
-        errorFormatter.unsupportedProperty('objectProp._id'),
-        errorFormatter.unsupportedProperty('objectProp._rev'),
-        errorFormatter.unsupportedProperty('objectProp._deleted'),
-        errorFormatter.unsupportedProperty('objectProp._revisions'),
-        errorFormatter.unsupportedProperty('objectProp._attachments')
-      ],
-      syncFuncError);
+      var syncFuncError = null;
+      expect(function() {
+        try {
+          testHelper.syncFunction(doc);
+        } catch (ex) {
+          syncFuncError = ex;
+
+          throw ex;
+        }
+      }).to.throw();
+
+      testHelper.verifyValidationErrors(
+        'generalDoc',
+        [
+          errorFormatter.unsupportedProperty('objectProp._id'),
+          errorFormatter.unsupportedProperty('objectProp._rev'),
+          errorFormatter.unsupportedProperty('objectProp._deleted'),
+          errorFormatter.unsupportedProperty('objectProp._revisions'),
+          errorFormatter.unsupportedProperty('objectProp._attachments')
+        ],
+        syncFuncError);
+    });
   });
 
   it('cannot include attachments in documents that do not explicitly allow them', function() {

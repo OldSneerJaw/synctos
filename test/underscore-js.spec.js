@@ -1,4 +1,4 @@
-var testHelper = require('../src/test-helper.js');
+var testHelper = require('../src/testing/test-helper.js');
 
 describe('Array validation type', function() {
   beforeEach(function() {

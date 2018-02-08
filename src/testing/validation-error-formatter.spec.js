@@ -22,7 +22,7 @@ describe('Validation error formatter', function() {
     it('produces maximumAttachmentCount violation messages', function() {
       var maximumAttachmentCount = 2;
       expect(errorFormatter.maximumAttachmentCountViolation(maximumAttachmentCount))
-        .to.equal('the total number of attachments must not exceed ' + maximumAttachmentCount);
+        .to.equal('documents of this type must not have more than ' + maximumAttachmentCount + ' attachments');
     });
 
     it('produces attachments maximumIndividualSize violation messages', function() {
@@ -35,7 +35,7 @@ describe('Validation error formatter', function() {
     it('produces attachments maximumTotalSize violation messages', function() {
       var maximumSize = 2;
       expect(errorFormatter.maximumTotalAttachmentSizeViolation(maximumSize))
-        .to.equal('the total size of all attachments must not exceed ' + maximumSize + ' bytes');
+        .to.equal('documents of this type must not have a combined attachment size greater than ' + maximumSize + ' bytes');
     });
 
     it('produces requireAttachmentReferences violation messages', function() {
@@ -68,17 +68,17 @@ describe('Validation error formatter', function() {
 
     it('produces invalid date format messages', function() {
       expect(errorFormatter.dateFormatInvalid(fakeItemPath))
-        .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 date string with no time or time zone components');
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 date string with no time or time zone components');
     });
 
     it('produces invalid date/time format messages', function() {
       expect(errorFormatter.datetimeFormatInvalid(fakeItemPath))
-        .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 date string with optional time and time zone components');
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 date string with optional time and time zone components');
     });
 
     it('produces invalid time format messages', function() {
       expect(errorFormatter.timeFormatInvalid(fakeItemPath))
-        .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 time string with no date or time zone components');
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 time string with no date or time zone components');
     });
 
     it('produces invalid time zone format messages', function() {
@@ -89,12 +89,12 @@ describe('Validation error formatter', function() {
     it('produces invalid enum value messages', function() {
       var fakeEnumValues = [ 'foo', 'bar', -5 ];
       expect(errorFormatter.enumPredefinedValueViolation(fakeItemPath, fakeEnumValues))
-        .to.equal('item "' + fakeItemPath + '" must be one of the predefined values: ' + fakeEnumValues.join(','));
+        .to.equal('item "' + fakeItemPath + '" must be one of the predefined values: ' + fakeEnumValues);
     });
 
     it('produces empty hashtable key violation messages', function() {
       expect(errorFormatter.hashtableKeyEmpty(fakeItemPath))
-        .to.equal('empty hashtable key in item "' + fakeItemPath + '" is not allowed');
+        .to.equal('hashtable "' + fakeItemPath + '" must not have an empty key');
     });
 
     it('produces hashtable maximumSize violation messages', function() {
@@ -110,7 +110,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces immutable value violation messages', function() {
-      expect(errorFormatter.immutableItemViolation(fakeItemPath)).to.equal('value of item "' + fakeItemPath + '" may not be modified');
+      expect(errorFormatter.immutableItemViolation(fakeItemPath)).to.equal('item "' + fakeItemPath + '" cannot be modified');
     });
 
     it('produces maximumLength violation messages', function() {
@@ -155,6 +155,11 @@ describe('Validation error formatter', function() {
         .to.equal('item "' + fakeItemPath + '" must not be less than or equal to ' + minimumValue);
     });
 
+    it('produces mustBeTrimmed violation messages', function() {
+      expect(errorFormatter.mustBeTrimmedViolation(fakeItemPath))
+        .to.equal('item "' + fakeItemPath + '" must not have any leading or trailing whitespace');
+    });
+
     it('produces mustEqual violation messages', function() {
       var value = { foo: [ 'bar' ] };
       expect(errorFormatter.mustEqualViolation(fakeItemPath, value))
@@ -176,7 +181,7 @@ describe('Validation error formatter', function() {
     it('produces hashtable key regexPattern violation messages', function() {
       var regex = /^foo-bar$/;
       expect(errorFormatter.regexPatternHashtableKeyViolation(fakeItemPath, regex))
-        .to.equal('hashtable key "' + fakeItemPath + '" does not conform to expected format ' + regex);
+        .to.equal('hashtable key "' + fakeItemPath + '" must conform to expected format ' + regex);
     });
 
     it('produces regexPattern violation messages', function() {
@@ -186,7 +191,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces required value violation messages', function() {
-      expect(errorFormatter.requiredValueViolation(fakeItemPath)).to.equal('required item "' + fakeItemPath + '" is missing');
+      expect(errorFormatter.requiredValueViolation(fakeItemPath)).to.equal('item "' + fakeItemPath + '" must not be null or missing');
     });
 
     it('produces attachment reference supportedContentTypes violation messages', function() {
@@ -206,37 +211,32 @@ describe('Validation error formatter', function() {
     });
 
     it('produces invalid UUID format messages', function() {
-      expect(errorFormatter.uuidFormatInvalid(fakeItemPath)).to.equal('item "' + fakeItemPath + '" is not a valid UUID');
+      expect(errorFormatter.uuidFormatInvalid(fakeItemPath)).to.equal('item "' + fakeItemPath + '" must be a UUID string');
     });
 
     describe('type constraint violations', function() {
       it('formats messages for general types', function() {
         var typeDescriptions = {
           'array': 'an array',
+          'attachmentReference': 'an attachment reference string',
           'boolean': 'a boolean',
-          'date': 'an ISO 8601 date string with no time or time zone components',
-          'datetime': 'an ISO 8601 date string with optional time and time zone components',
-          'time': 'an ISO 8601 time string with no date or time zone components',
+          'date': 'an ECMAScript simplified ISO 8601 date string with no time or time zone components',
+          'datetime': 'an ECMAScript simplified ISO 8601 date string with optional time and time zone components',
           'enum': 'an integer or a string',
           'float': 'a floating point or integer number',
           'hashtable': 'an object/hashtable',
           'integer': 'an integer',
           'object': 'an object',
           'string': 'a string',
+          'time': 'an ECMAScript simplified ISO 8601 time string with no date or time zone components',
           'timezone': 'an ECMAScript simplified ISO 8601 time zone string',
-          'uuid': 'a string'
+          'uuid': 'a UUID string'
         };
 
         for (var typeName in typeDescriptions) {
           expect(errorFormatter.typeConstraintViolation(fakeItemPath, typeName))
             .to.equal('item "' + fakeItemPath + '" must be ' + typeDescriptions[typeName]);
         }
-      });
-
-      it('formats messages for attachment references', function() {
-        // Attachment reference type violations have a custom format
-        expect(errorFormatter.typeConstraintViolation(fakeItemPath, 'attachmentReference'))
-          .to.equal('attachment reference "' + fakeItemPath + '" must be a string');
       });
 
       it('throws an error if an unrecognized type is encountered', function() {

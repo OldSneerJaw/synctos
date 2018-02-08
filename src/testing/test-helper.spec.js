@@ -1,5 +1,5 @@
 var expect = require('chai').expect;
-var simpleMock = require('../lib/simple-mock/index');
+var simpleMock = require('../../lib/simple-mock/index');
 var mockRequire = require('mock-require');
 
 describe('Test helper:', function() {
@@ -28,7 +28,7 @@ describe('Test helper:', function() {
 
     syncFunctionLoaderMock = { load: simpleMock.stub() };
     syncFunctionLoaderMock.load.returnWith(fakeSyncFunctionContents);
-    mockRequire('./sync-function-loader', syncFunctionLoaderMock);
+    mockRequire('../loading/sync-function-loader', syncFunctionLoaderMock);
 
     testEnvironmentMakerMock = { init: simpleMock.stub() };
     testEnvironmentMakerMock.init.returnWith(fakeTestEnvironment);
@@ -97,7 +97,7 @@ describe('Test helper:', function() {
 
       expect(function() {
         testHelper.verifyAccessDenied({ }, void 0, expectedChannels);
-      }).to.throw('Unexpected channel encountered: my-channel-2');
+      }).to.throw('Unexpected channel encountered: my-channel-2. Expected channels: ' + expectedChannels.join(','));
     });
 
     it('fails if it does not encounter a channel that was expected', function() {
@@ -110,7 +110,7 @@ describe('Test helper:', function() {
 
       expect(function() {
         testHelper.verifyAccessDenied({ }, void 0, expectedChannels);
-      }).to.throw('Expected channel was not encountered: my-channel-2');
+      }).to.throw('Expected channel was not encountered: my-channel-2. Actual channels: ' + actualChannels.join(','));
     });
 
     it('fails if the sync function does not throw an error', function() {

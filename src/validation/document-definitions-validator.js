@@ -1,4 +1,4 @@
-var environmentShellMaker = require('../document-definitions-shell-maker');
+var validationEnvironmentMaker = require('./validation-environment-maker');
 var documentDefinitionSchema = require('./document-definition-schema');
 
 /**
@@ -19,9 +19,9 @@ exports.validate = function(documentDefinitions, docDefinitionsFilename) {
 };
 
 function validateDocumentDefinitionsString(rawDocDefinitionsString, docDefinitionsFilename) {
-  var environmentShell = environmentShellMaker.createShell(rawDocDefinitionsString, docDefinitionsFilename);
+  var validationEnv = validationEnvironmentMaker.init(rawDocDefinitionsString, docDefinitionsFilename);
 
-  return validateDocumentDefinitionsObjectOrFunction(environmentShell.documentDefinitions);
+  return validateDocumentDefinitionsObjectOrFunction(validationEnv.documentDefinitions);
 }
 
 function validateDocumentDefinitionsObjectOrFunction(documentDefinitions) {
