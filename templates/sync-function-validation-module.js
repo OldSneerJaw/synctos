@@ -432,17 +432,17 @@ function validationModule() {
             break;
           case 'datetime':
             if (typeof itemValue !== 'string' || !isIso8601DateTimeString(itemValue)) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with optional time and time zone components');
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ECMAScript simplified ISO 8601 date string with optional time and time zone components');
             }
             break;
           case 'date':
             if (typeof itemValue !== 'string' || !isIso8601DateString(itemValue)) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 date string with no time or time zone components');
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ECMAScript simplified ISO 8601 date string with no time or time zone components');
             }
             break;
           case 'time':
             if (typeof itemValue !== 'string' || !isIso8601TimeString(itemValue)) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ISO 8601 time string with no date or time zone components');
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ECMAScript simplified ISO 8601 time string with no date or time zone components');
             }
             break;
           case 'enum':
