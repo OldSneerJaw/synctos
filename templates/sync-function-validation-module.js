@@ -265,11 +265,10 @@ function validationModule() {
 
         switch (validatorType) {
           case 'string':
-            var regexPattern = resolveValidationConstraint(validator.regexPattern);
             if (typeof itemValue !== 'string') {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be a string');
-            } else if (regexPattern && !regexPattern.test(itemValue)) {
-              validationErrors.push('item "' + buildItemPath(itemStack) + '" must conform to expected format ' + regexPattern);
+            } else {
+              validateString(validator);
             }
             break;
           case 'integer':
@@ -345,6 +344,29 @@ function validationModule() {
 
     function hasNoValue(value, treatNullAsUndefined) {
       return treatNullAsUndefined ? isValueNullOrUndefined(value) : typeof value === 'undefined';
+    }
+
+    function validateString(validator) {
+      var currentItemEntry = itemStack[itemStack.length - 1];
+      var itemValue = currentItemEntry.itemValue;
+
+      var regexPattern = resolveValidationConstraint(validator.regexPattern);
+      if (regexPattern && !regexPattern.test(itemValue)) {
+        validationErrors.push('item "' + buildItemPath(itemStack) + '" must conform to expected format ' + regexPattern);
+      }
+
+      var mustBeTrimmed = resolveValidationConstraint(validator.mustBeTrimmed);
+      if (mustBeTrimmed && isStringUntrimmed(itemValue)) {
+        validationErrors.push('item "' + buildItemPath(itemStack) + '" must not have any leading or trailing whitespace');
+      }
+    }
+
+    function isStringUntrimmed(value) {
+      if (isValueNullOrUndefined(value)) {
+        return false;
+      } else {
+        return value !== value.trim();
+      }
     }
 
     function validateImmutable(onlyEnforceIfHasValue, treatNullAsUndefined) {

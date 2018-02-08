@@ -145,6 +145,11 @@ describe('Validation error formatter', function() {
         .to.equal('item "' + fakeItemPath + '" must not be less than or equal to ' + minimumValue);
     });
 
+    it('produces mustBeTrimmed violation messages', function() {
+      expect(errorFormatter.mustBeTrimmedViolation(fakeItemPath))
+        .to.equal('item "' + fakeItemPath + '" must not have any leading or trailing whitespace');
+    });
+
     it('produces mustEqual violation messages', function() {
       var value = { foo: [ 'bar' ] };
       expect(errorFormatter.mustEqualViolation(fakeItemPath, value))
