@@ -8,6 +8,7 @@ function() {
 
   return {
     singleQuotedFragmentDoc: importDocumentDefinitionFragment( 'fragment-string\'s-doc-definition.js' ),
-    doubleQuotedFragmentDoc: importDocumentDefinitionFragment( "fragment-boolean\'s-doc-definition.js" )
+    doubleQuotedFragmentDoc: importDocumentDefinitionFragment( "fragment-boolean\'s-doc-definition.js" ),
+    nestedImportDoc: importDocumentDefinitionFragment('fragment-object-doc-definition.js')
   };
 }

@@ -22,4 +22,14 @@ describe('Document definition fragments:', function() {
 
     testHelper.verifyDocumentCreated(doc);
   });
+
+  it('can create documents with nested imports', function() {
+    var doc = {
+      _id: 'objectFragmentDoc',
+      type: 'nestedImportDoc',
+      objectProp: { nestedProperty: -58 }
+    };
+
+    testHelper.verifyDocumentCreated(doc);
+  });
 });
