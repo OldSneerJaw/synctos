@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#189](https://github.com/Kashoo/synctos/issues/189): Automatically create the output sync function file directory if it does not exist
 - [#207](https://github.com/Kashoo/synctos/issues/207): Ignore all top-level document properties that start with an underscore
 - [#204](https://github.com/Kashoo/synctos/issues/204): Constraint that requires string values to be trimmed
+- [#215](https://github.com/Kashoo/synctos/issues/215): Allow document definition fragments to be nested
 
 ### Changed
 - [#212](https://github.com/Kashoo/synctos/issues/212): Improve document validation error messages
