@@ -13,7 +13,12 @@ var fs = require('fs');
 
 function load(baseDir, macroName, rawText) {
   function replacer(fullMatch, fragmentFilename) {
-    return readFileFragment(fragmentFilename, baseDir);
+    var rawFileContents = readFileFragment(fragmentFilename, baseDir);
+
+    // Recursively replace macros nested an arbitrary number of levels deep. Recursion terminates when it encounters a
+    // template file that does not contain the specified macro (i.e. this replacer will not run when `rawText.replace`
+    // is called without an instance of the macro in the file contents).
+    return load(baseDir, macroName, rawFileContents);
   }
 
   return rawText.replace(new RegExp('\\b' + macroName + '\\s*\\(\\s*"((?:\\\\"|[^"])+)"\\s*\\)', 'g'), replacer)
