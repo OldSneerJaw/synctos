@@ -18,6 +18,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#196](https://github.com/Kashoo/synctos/issues/196): Date-time validation type supports invalid time components
 - [#199](https://github.com/Kashoo/synctos/issues/199): Date and date-time validation types permit dates that are invalid
 
+### Removed
+- [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules
+
 ## [1.10.0] - 2018-01-24
 ### Added
 - [#146](https://github.com/Kashoo/synctos/issues/146): Underscore.js support
