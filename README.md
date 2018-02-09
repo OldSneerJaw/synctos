@@ -33,7 +33,7 @@ To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com
 
 # Installation
 
-Synctos is distributed as an [npm](https://www.npmjs.com/) package and has several npm development dependencies. As such, it requires that [Node.js](https://nodejs.org/) is installed in order to run. For best results use, at a minimum, the most recent Long Term Support (LTS) release.
+Synctos is distributed as an [npm](https://www.npmjs.com/) package and it requires that [Node.js](https://nodejs.org/) is installed in order to run. NOTE: The minimum officially supported version of Node.js is v8.9.0.
 
 To add synctos to your project, run `npm install synctos` from the project's root directory to install the package locally. Or, better yet, if you define a package.json file in your project, you can run `npm install synctos --savedev` to automatically install locally and insert the package into your package.json's developer dependencies.
 

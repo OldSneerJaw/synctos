@@ -32,5 +32,8 @@
   "bin": {
     "synctos": "./make-sync-function",
     "synctos-validate": "./validate-document-definitions"
+  },
+  "engines": {
+    "node": ">=8.9.0"
   }
 }
