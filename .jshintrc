@@ -2,6 +2,7 @@
   "bitwise": true,
   "curly": true,
   "eqeqeq": true,
+  "esversion": 6,
   "freeze": true,
   "futurehostile": true,
   "latedef": "nofunc",
