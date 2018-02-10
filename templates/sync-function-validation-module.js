@@ -14,7 +14,7 @@ function validationModule() {
 
   // Check that a given value is a valid ISO 8601 date string without time and time zone components
   function isIso8601DateString(value) {
-    var regex = /^(([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01]))$/;
+    var regex = /^([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$/;
 
     // Verify that it's in ISO 8601 format (via the regex) and that it represents a valid day (via Date.parse)
     return regex.test(value) && !isNaN(Date.parse(value));
