@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#189](https://github.com/Kashoo/synctos/issues/189): Automatically create the output sync function file directory if it does not exist
 - [#207](https://github.com/Kashoo/synctos/issues/207): Ignore all top-level document properties that start with an underscore
 - [#204](https://github.com/Kashoo/synctos/issues/204): Constraint that requires string values to be trimmed
+- [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
 - [#215](https://github.com/Kashoo/synctos/issues/215): Allow document definition fragments to be nested
 - [#197](https://github.com/Kashoo/synctos/issues/197): Make month and day components of date validation type optional
 

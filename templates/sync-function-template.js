@@ -38,6 +38,15 @@ function synctos(doc, oldDoc) {
     return !isDocumentMissingOrDeleted(oldDoc) ? oldDoc : null;
   }
 
+  // Add the specified padding to the right of the given string value until its length matches the desired length
+  function padRight(value, desiredLength, padding) {
+    while (value.length < desiredLength) {
+      value += padding;
+    }
+
+    return value;
+  }
+
   var jsonStringify = importSyncFunctionFragment('json-stringify-module.js');
 
   // Load the document authorization module

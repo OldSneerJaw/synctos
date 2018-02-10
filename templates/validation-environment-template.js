@@ -7,6 +7,7 @@ function makeValidationEnvironment(_, simple) {
   var isValueNullOrUndefined = simple.stub();
   var getEffectiveOldDoc = simple.stub();
   var jsonStringify = simple.stub();
+  var padRight = simple.stub();
   var getDocumentType = simple.stub();
   var requireAccess = simple.stub();
   var requireRole = simple.stub();
@@ -27,6 +28,7 @@ function makeValidationEnvironment(_, simple) {
     isValueNullOrUndefined: isValueNullOrUndefined,
     getEffectiveOldDoc: getEffectiveOldDoc,
     jsonStringify: jsonStringify,
+    padRight: padRight,
     getDocumentType: getDocumentType,
     requireAccess: requireAccess,
     requireRole: requireRole,

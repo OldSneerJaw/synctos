@@ -25,6 +25,8 @@ var dateOnlySchema = joi.any().when(
     otherwise: joi.date().options({ convert: false })
   });
 
+var timeOnlySchema = joi.string().regex(/^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?$/);
+
 var typeEqualitySchemas = {
   string: joi.string(),
   integer: integerSchema,
@@ -32,6 +34,7 @@ var typeEqualitySchemas = {
   boolean: joi.boolean(),
   datetime: datetimeStringSchema,
   date: dateOnlyStringSchema,
+  time: timeOnlySchema,
   enum: joi.alternatives().try([ joi.string(), integerSchema ]),
   uuid: uuidSchema,
   attachmentReference: joi.string(),
@@ -40,7 +43,7 @@ var typeEqualitySchemas = {
   hashtable: joi.object().unknown()
 };
 
-var validPropertyTypes = Object.keys(typeEqualitySchemas).map(function(key) { return key; });
+var validPropertyTypes = Object.keys(typeEqualitySchemas).sort().map(function(key) { return key; });
 
 var schema = joi.object().keys({
   type: dynamicConstraintSchema(joi.string().only(validPropertyTypes)).required()
@@ -63,6 +66,9 @@ var schema = joi.object().keys({
   .when(
     joi.object().unknown().keys({ type: 'date' }),
     { then: makeTypeConstraintsSchema('date') })
+  .when(
+    joi.object().unknown().keys({ type: 'time' }),
+    { then: makeTypeConstraintsSchema('time') })
   .when(
     joi.object().unknown().keys({ type: 'enum' }),
     { then: makeTypeConstraintsSchema('enum') })
@@ -130,6 +136,12 @@ function typeSpecificConstraintSchemas() {
       minimumValueExclusive: dynamicConstraintSchema(dateOnlySchema),
       maximumValue: dynamicConstraintSchema(dateOnlySchema),
       maximumValueExclusive: dynamicConstraintSchema(dateOnlySchema)
+    },
+    time: {
+      minimumValue: dynamicConstraintSchema(timeOnlySchema),
+      minimumValueExclusive: dynamicConstraintSchema(timeOnlySchema),
+      maximumValue: dynamicConstraintSchema(timeOnlySchema),
+      maximumValueExclusive: dynamicConstraintSchema(timeOnlySchema)
     },
     enum: {
       predefinedValues: dynamicConstraintSchema(joi.array().required().min(1).items([ integerSchema, joi.string() ]))

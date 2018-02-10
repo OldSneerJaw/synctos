@@ -12,6 +12,7 @@
     "isDocumentMissingOrDeleted": false,
     "isValueNullOrUndefined": false,
     "jsonStringify": false,
+    "padRight": false,
     "requireAccess": false,
     "requireRole": false,
     "requireUser": false,

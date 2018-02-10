@@ -68,12 +68,17 @@ describe('Validation error formatter', function() {
 
     it('produces invalid date format messages', function() {
       expect(errorFormatter.dateFormatInvalid(fakeItemPath))
-        .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 date string with no time or time zone components');
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 date string with no time or time zone components');
     });
 
     it('produces invalid date/time format messages', function() {
       expect(errorFormatter.datetimeFormatInvalid(fakeItemPath))
-        .to.equal('item "' + fakeItemPath + '" must be an ISO 8601 date string with optional time and time zone components');
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 date string with optional time and time zone components');
+    });
+
+    it('produces invalid time format messages', function() {
+      expect(errorFormatter.timeFormatInvalid(fakeItemPath))
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 time string with no date or time zone components');
     });
 
     it('produces invalid enum value messages', function() {
@@ -210,14 +215,15 @@ describe('Validation error formatter', function() {
           'array': 'an array',
           'attachmentReference': 'an attachment reference string',
           'boolean': 'a boolean',
-          'date': 'an ISO 8601 date string with no time or time zone components',
-          'datetime': 'an ISO 8601 date string with optional time and time zone components',
+          'date': 'an ECMAScript simplified ISO 8601 date string with no time or time zone components',
+          'datetime': 'an ECMAScript simplified ISO 8601 date string with optional time and time zone components',
           'enum': 'an integer or a string',
           'float': 'a floating point or integer number',
           'hashtable': 'an object/hashtable',
           'integer': 'an integer',
           'object': 'an object',
           'string': 'a string',
+          'time': 'an ECMAScript simplified ISO 8601 time string with no date or time zone components',
           'uuid': 'a UUID string'
         };
 
