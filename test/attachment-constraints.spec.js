@@ -540,8 +540,8 @@ describe('File attachment constraints:', () => {
         maximumIndividualSize: 15,
         maximumTotalSize: 30,
         maximumAttachmentCount: 2,
-        supportedExtensions: supportedExtensions,
-        supportedContentTypes: supportedContentTypes,
+        supportedExtensions,
+        supportedContentTypes,
         requireAttachmentReferences: true,
         attachmentReferences: [ 'foo.pdf', 'bar.html' ]
       };

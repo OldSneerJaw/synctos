@@ -6,7 +6,7 @@ function getExpectedAuthorization(expectedChannels) {
   return {
     expectedRoles: [ 'SERVICE' ],
     expectedUsers: [ 'ADMIN' ],
-    expectedChannels: expectedChannels
+    expectedChannels
   };
 }
 
