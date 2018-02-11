@@ -302,13 +302,13 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
   // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
   // that neither list of channels/roles/users contains an element that does not exist in the other
   expectedAuthorizations.forEach((expectedAuth) => {
-    if (actualAuthorizations.indexOf(expectedAuth) < 0) {
+    if (!actualAuthorizations.includes(expectedAuth)) {
       assert.fail(`Expected ${authorizationType} was not encountered: ${expectedAuth}. Actual ${authorizationType}s: ${actualAuthorizations}`);
     }
   });
 
   actualAuthorizations.forEach((actualAuth) => {
-    if (expectedAuthorizations.indexOf(actualAuth) < 0) {
+    if (!expectedAuthorizations.includes(actualAuth)) {
       assert.fail(`Unexpected ${authorizationType} encountered: ${actualAuth}. Expected ${authorizationType}s: ${expectedAuthorizations}`);
     }
   });
@@ -428,12 +428,12 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
   if (expectedChannels instanceof Array) {
     expectedChannels.forEach((expectedChannel) => {
       assert.ok(
-        actualChannels.indexOf(expectedChannel) >= 0,
+        actualChannels.includes(expectedChannel),
         `Document was not assigned to expected channel: ${expectedChannel}. Actual: ${actualChannels}`);
     });
   } else {
      assert.ok(
-      actualChannels.indexOf(expectedChannels) >= 0,
+      actualChannels.includes(expectedChannels),
       `Document was not assigned to expected channel: "${expectedChannels}. Actual: ${actualChannels}`);
   }
 }
@@ -555,12 +555,12 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   // that neither list of validation errors contains an element that does not exist in the other
   expectedErrorMessages.forEach((expectedErrorMsg) => {
     assert.ok(
-      actualErrorMessages.indexOf(expectedErrorMsg) >= 0,
+      actualErrorMessages.includes(expectedErrorMsg),
       `Document validation errors do not include expected error message: "${expectedErrorMsg}". Actual error: ${exception.forbidden}`);
   });
 
   actualErrorMessages.forEach((errorMessage) => {
-    if (expectedErrorMessages.indexOf(errorMessage) < 0) {
+    if (!expectedErrorMessages.includes(errorMessage)) {
       assert.fail(`Unexpected document validation error: "${errorMessage}". Expected error: Invalid ${docType} document: ${expectedErrorMessages.join('; ')}`);
     }
   });
