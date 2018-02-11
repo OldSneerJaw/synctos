@@ -30,7 +30,7 @@ try {
     mkdirp.sync(outputDirectory);
   }
 } catch (ex) {
-  console.log(`ERROR: Unable to create the sync function output directory: ${ex}`);
+  console.error(`ERROR: Unable to create the sync function output directory: ${ex}`);
 
   process.exit(errorStatus);
 }
@@ -38,19 +38,19 @@ try {
 try {
   fs.writeFileSync(outputFilename, syncFunc, 'utf8');
 } catch (ex) {
-  console.log(`ERROR: Unable to write the sync function to the output file: ${ex}`);
+  console.error(`ERROR: Unable to write the sync function to the output file: ${ex}`);
 
   process.exit(errorStatus);
 }
 
-console.log(`Sync function written to ${outputFilename}`);
+console.info(`Sync function written to ${outputFilename}`);
 
 
 function showUsage() {
   const nodeBinary = path.basename(process.argv[0]);
   const scriptName = path.basename(process.argv[1]);
 
-  console.log(
+  console.info(
 `A utility for generating sync functions for Couchbase Sync Gateway.
 
 Usage:  ${scriptName} <document_definitions_file> <output_file>

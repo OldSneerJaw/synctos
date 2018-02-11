@@ -37,7 +37,7 @@ function readFileFragment(fragmentFilename, baseDir) {
       // It's possible the fragment file path was not relative so try again as an absolute path
       return fs.readFileSync(sanitizedFragmentFilename, 'utf8').trim();
     } catch (absolutePathEx) {
-      console.log(`ERROR: Unable to read fragment file "${sanitizedFragmentFilename}": ${absolutePathEx}`);
+      console.error(`ERROR: Unable to read fragment file "${sanitizedFragmentFilename}": ${absolutePathEx}`);
 
       throw absolutePathEx;
     }

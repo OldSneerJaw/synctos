@@ -20,7 +20,7 @@ const rawDocDefinitionsString = docDefinitionsLoader.load(docDefinitionsFilename
 const validationErrors = docDefinitionsValidator.validate(rawDocDefinitionsString, docDefinitionsFilename);
 
 validationErrors.forEach((validationError) => {
-  console.log(validationError);
+  console.error(validationError);
 });
 
 const exitStatus = (validationErrors.length > 0) ? 1 : 0;
@@ -30,7 +30,7 @@ function showUsage() {
   const nodeBinary = path.basename(process.argv[0]);
   const scriptName = path.basename(process.argv[1]);
 
-  console.log(
+  console.info(
 `A utility for validating the structure and semantics of a synctos document definitions file.
 
 Usage:  ${scriptName} <document_definitions_file>
