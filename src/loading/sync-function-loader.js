@@ -9,9 +9,9 @@ exports.load = loadFromFile;
 
 const fs = require('fs');
 const path = require('path');
-const indent = require('../../lib/indent.js/indent.min.js');
-const docDefinitionsLoader = require('./document-definitions-loader.js');
-const fileFragmentLoader = require('./file-fragment-loader.js');
+const indent = require('../../lib/indent.js/indent.min');
+const docDefinitionsLoader = require('./document-definitions-loader');
+const fileFragmentLoader = require('./file-fragment-loader');
 
 function loadFromFile(docDefinitionsFile) {
   const syncFuncTemplateDir = path.resolve(__dirname, '../../templates');

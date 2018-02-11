@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const simpleMock = require('../../lib/simple-mock/index.js');
+const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
 describe('Document definitions loader', function() {
@@ -21,7 +21,7 @@ describe('Document definitions loader', function() {
     fileFragmentLoaderMock = { load: simpleMock.stub() };
     mockRequire('./file-fragment-loader.js', fileFragmentLoaderMock);
 
-    docDefinitionsLoader = mockRequire.reRequire('./document-definitions-loader.js');
+    docDefinitionsLoader = mockRequire.reRequire('./document-definitions-loader');
   });
 
   afterEach(function() {

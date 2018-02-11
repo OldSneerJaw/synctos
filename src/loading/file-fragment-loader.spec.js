@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const simpleMock = require('../../lib/simple-mock/index.js');
+const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
 describe('File fragment loader', function() {
@@ -9,7 +9,7 @@ describe('File fragment loader', function() {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
-    fileFragmentLoader = mockRequire.reRequire('./file-fragment-loader.js');
+    fileFragmentLoader = mockRequire.reRequire('./file-fragment-loader');
   });
 
   afterEach(function() {

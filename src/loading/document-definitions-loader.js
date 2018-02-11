@@ -10,7 +10,7 @@ exports.load = loadFromFile;
 
 const fs = require('fs');
 const path = require('path');
-const fileFragmentLoader = require('./file-fragment-loader.js');
+const fileFragmentLoader = require('./file-fragment-loader');
 
 function loadFromFile(docDefinitionsFile) {
   let docDefinitions;

@@ -1,5 +1,5 @@
 const expect = require('chai').expect;
-const simpleMock = require('../../lib/simple-mock/index.js');
+const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
 describe('Test environment maker', function() {
@@ -13,7 +13,7 @@ describe('Test environment maker', function() {
     vmMock = { runInThisContext: simpleMock.stub() };
     mockRequire('vm', vmMock);
 
-    testEnvironmentMaker = mockRequire.reRequire('./test-environment-maker.js');
+    testEnvironmentMaker = mockRequire.reRequire('./test-environment-maker');
   });
 
   afterEach(function() {

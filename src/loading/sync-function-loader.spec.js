@@ -1,6 +1,6 @@
 const path = require('path');
 const expect = require('chai').expect;
-const simpleMock = require('../../lib/simple-mock/index.js');
+const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
 describe('Sync function loader', function() {
@@ -24,7 +24,7 @@ describe('Sync function loader', function() {
     docDefinitionsLoaderMock = { load: simpleMock.stub() };
     mockRequire('./document-definitions-loader.js', docDefinitionsLoaderMock);
 
-    syncFunctionLoader = mockRequire.reRequire('./sync-function-loader.js');
+    syncFunctionLoader = mockRequire.reRequire('./sync-function-loader');
   });
 
   afterEach(function() {
