@@ -53,12 +53,12 @@ function showUsage() {
   console.log(
 `A utility for generating sync functions for Couchbase Sync Gateway.
 
-Usage:  ${scriptName} <sync_document_definitions_file> <output_file>
-   or:  ${nodeBinary} ${scriptName} <sync_document_definitions_file> <output_file>
+Usage:  ${scriptName} <document_definitions_file> <output_file>
+   or:  ${nodeBinary} ${scriptName} <document_definitions_file> <output_file>
 
 Arguments:
-    sync_document_definitions_file
-        Path to the JavaScript file that defines the document types to use in the sync function
+    document_definitions_file
+        Path to the JavaScript file that defines the document types to use in the generated sync function
     output_file
         Path to the file in which to output the sync function
 
