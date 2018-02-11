@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const errorFormatter = require('./validation-error-formatter');
 
 describe('Validation error formatter', () => {

@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const joi = require('../../lib/joi/joi.bundle');
 const makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 

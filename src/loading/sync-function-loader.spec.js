@@ -1,5 +1,5 @@
 const path = require('path');
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 

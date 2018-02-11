@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const { expect } = require('chai');
 const docDefinitionsLoader = require('../loading/document-definitions-loader');
 const validator = require('./document-definitions-validator');
 
