@@ -3,14 +3,14 @@ const expect = require('chai').expect;
 const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
-describe('Sync function loader', function() {
+describe('Sync function loader', () => {
   let syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
   const expectedMacroName = 'importSyncFunctionFragment';
   const syncFuncTemplateDir = path.resolve(__dirname, '../../templates');
   const syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
 
-  beforeEach(function() {
+  beforeEach(() => {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
@@ -27,12 +27,12 @@ describe('Sync function loader', function() {
     syncFunctionLoader = mockRequire.reRequire('./sync-function-loader');
   });
 
-  afterEach(function() {
+  afterEach(() => {
     // Restore "require" calls to their original behaviour after each test case
     mockRequire.stopAll();
   });
 
-  it('should load a sync function', function() {
+  it('should load a sync function', () => {
     const docDefinitionsFile = 'my/doc-definitions.js';
     const docDefinitionsContent = 'my-doc-definitions';
     const originalSyncFuncTemplate = 'my-original-sync-fync-template';
@@ -62,7 +62,7 @@ describe('Sync function loader', function() {
       [ 'function my-sync-func-template() { ' + docDefinitionsContent + '; }', { tabString: '  ' } ]);
   });
 
-  it('should throw an exception if the sync function template file does not exist', function() {
+  it('should throw an exception if the sync function template file does not exist', () => {
     const docDefinitionsFile = 'my/doc-definitions.js';
     const expectedException = new Error('my-expected-exception');
 
@@ -71,7 +71,7 @@ describe('Sync function loader', function() {
     docDefinitionsLoaderMock.load.returnWith('');
     indentMock.js.returnWith('');
 
-    expect(function() {
+    expect(() => {
       syncFunctionLoader.load(docDefinitionsFile);
     }).to.throw(expectedException.message);
 

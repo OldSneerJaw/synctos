@@ -32,12 +32,12 @@ function loadFromFile(docDefinitionsFile) {
   const docDefinitions = docDefinitionsLoader.load(docDefinitionsFile);
 
   // Load the document definitions into the sync function template
-  const syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return docDefinitions; });
+  const syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', () => docDefinitions);
 
   // Normalize code block indentation, normalize line endings, replace blank lines with empty lines and then escape any occurrence of the
   // backtick character so the sync function can be used in a Sync Gateway configuration file multiline string
   return indent.js(syncFunc, { tabString: '  ' })
-    .replace(/(?:\r\n)|(?:\r)/g, function() { return '\n'; })
-    .replace(/^\s+$/gm, function() { return ''; })
-    .replace(/`/g, function() { return '\\`'; });
+    .replace(/(?:\r\n)|(?:\r)/g, () => '\n')
+    .replace(/^\s+$/gm, () => '')
+    .replace(/`/g, () => '\\`');
 }

@@ -19,7 +19,7 @@ const rawDocDefinitionsString = docDefinitionsLoader.load(docDefinitionsFilename
 
 const validationErrors = docDefinitionsValidator.validate(rawDocDefinitionsString, docDefinitionsFilename);
 
-validationErrors.forEach(function(validationError) {
+validationErrors.forEach((validationError) => {
   console.log(validationError);
 });
 

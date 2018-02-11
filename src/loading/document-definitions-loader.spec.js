@@ -2,12 +2,12 @@ const expect = require('chai').expect;
 const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
-describe('Document definitions loader', function() {
+describe('Document definitions loader', () => {
   let docDefinitionsLoader, fsMock, pathMock, vmMock, fileFragmentLoaderMock;
 
   const expectedMacroName = 'importDocumentDefinitionFragment';
 
-  beforeEach(function() {
+  beforeEach(() => {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
@@ -24,12 +24,12 @@ describe('Document definitions loader', function() {
     docDefinitionsLoader = mockRequire.reRequire('./document-definitions-loader');
   });
 
-  afterEach(function() {
+  afterEach(() => {
     // Restore "require" calls to their original behaviour after each test case
     mockRequire.stopAll();
   });
 
-  it('should load the contents of a document definitions file that exists', function() {
+  it('should load the contents of a document definitions file that exists', () => {
     const docDefinitionsFile = 'my/doc-definitions.js';
     const expectedDir = '/an/arbitrary/directory';
     const originalFileContents = '\tmy-original-doc-definitions\n';
@@ -53,7 +53,7 @@ describe('Document definitions loader', function() {
     expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalFileContents.trim() ]);
   });
 
-  it('should throw an exception if the document definitions file does not exist', function() {
+  it('should throw an exception if the document definitions file does not exist', () => {
     const docDefinitionsFile = 'my/doc-definitions.js';
     const expectedException = new Error('my-expected-exception');
 
@@ -61,7 +61,7 @@ describe('Document definitions loader', function() {
     pathMock.dirname.returnWith('');
     fileFragmentLoaderMock.load.returnWith('');
 
-    expect(function() {
+    expect(() => {
       docDefinitionsLoader.load(docDefinitionsFile);
     }).to.throw(expectedException.message);
 

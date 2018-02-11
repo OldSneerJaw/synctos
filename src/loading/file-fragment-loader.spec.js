@@ -2,22 +2,22 @@ const expect = require('chai').expect;
 const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
-describe('File fragment loader', function() {
+describe('File fragment loader', () => {
   let fileFragmentLoader, fsMock;
 
-  beforeEach(function() {
+  beforeEach(() => {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
     fileFragmentLoader = mockRequire.reRequire('./file-fragment-loader');
   });
 
-  afterEach(function() {
+  afterEach(() => {
     // Restore "require" calls to their original behaviour after each test case
     mockRequire.stopAll();
   });
 
-  it('should replace instances of the macro with the correct file contents', function() {
+  it('should replace instances of the macro with the correct file contents', () => {
     const baseDir = '/my/base/dir';
     const macroName = 'myFileFragmentMacro';
     const rawText = 'doSomething();\nnotmyFileFragmentMacro("foo.js");myFileFragmentMacro("bar.js");\tmyFileFragmentMacro(\'foo\\ baz.js\');';
@@ -40,7 +40,7 @@ describe('File fragment loader', function() {
     expect(fsMock.readFileSync.calls[2].args).to.eql([ 'foo baz.js', 'utf8' ]);
   });
 
-  it('should throw an exception if the file fragment cannot be found', function() {
+  it('should throw an exception if the file fragment cannot be found', () => {
     const baseDir = '/my/base/dir';
     const macroName = 'myFileFragmentMacro';
     const rawText = 'doSomething();\nmyFileFragmentMacro("foo.js");';
@@ -48,7 +48,7 @@ describe('File fragment loader', function() {
     const expectedException = new Error('my-expected-exception');
     fsMock.readFileSync.throwWith(expectedException);
 
-    expect(function() {
+    expect(() => {
       fileFragmentLoader.load(baseDir, macroName, rawText);
     }).to.throw(expectedException.message);
 

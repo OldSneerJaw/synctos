@@ -25,7 +25,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   // the sync function
   const environmentString = environmentTemplate.replace(
     '%SYNC_FUNC_PLACEHOLDER%',
-    function() { return unescapeBackticks(rawSyncFunction); });
+    () => unescapeBackticks(rawSyncFunction));
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.
@@ -43,5 +43,5 @@ function init(rawSyncFunction, syncFunctionFile) {
 // However, when loaded by the test helper, a sync function is not inserted into a Sync Gateway configuration file so we must "unescape"
 // backtick characters to preserve the original intention.
 function unescapeBackticks(originalString) {
-  return originalString.replace(/\\`/g, function() { return '`'; });
+  return originalString.replace(/\\`/g, () => '`');
 }

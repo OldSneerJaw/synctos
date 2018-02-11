@@ -45,7 +45,7 @@ const typeEqualitySchemas = {
   hashtable: joi.object().unknown()
 };
 
-const validPropertyTypes = Object.keys(typeEqualitySchemas).sort().map(function(key) { return key; });
+const validPropertyTypes = Object.keys(typeEqualitySchemas).sort().map((key) => key);
 
 const schema = joi.object().keys({
   type: dynamicConstraintSchema(joi.string().only(validPropertyTypes)).required()
@@ -172,11 +172,11 @@ function typeSpecificConstraintSchemas() {
       mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
       minimumLength: dynamicConstraintSchema(integerSchema.min(0)),
       maximumLength: maximumSizeConstraintSchema('minimumLength'),
-      arrayElementsValidator: dynamicConstraintSchema(joi.lazy(function() { return schema; }))
+      arrayElementsValidator: dynamicConstraintSchema(joi.lazy(() => schema))
     },
     object: {
       allowUnknownProperties: dynamicConstraintSchema(joi.boolean()),
-      propertyValidators: dynamicConstraintSchema(joi.object().min(1).pattern(/^.+$/, joi.lazy(function() { return schema; })))
+      propertyValidators: dynamicConstraintSchema(joi.object().min(1).pattern(/^.+$/, joi.lazy(() => schema)))
     },
     hashtable: {
       minimumSize: dynamicConstraintSchema(integerSchema.min(0)),
@@ -185,7 +185,7 @@ function typeSpecificConstraintSchemas() {
         mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
         regexPattern: dynamicConstraintSchema(regexSchema)
       })),
-      hashtableValuesValidator: dynamicConstraintSchema(joi.lazy(function() { return schema; }))
+      hashtableValuesValidator: dynamicConstraintSchema(joi.lazy(() => schema))
     }
   };
 }

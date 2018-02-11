@@ -2,13 +2,13 @@ const expect = require('chai').expect;
 const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
-describe('Test helper:', function() {
+describe('Test helper:', () => {
   let testHelper, fsMock, syncFunctionLoaderMock, testEnvironmentMakerMock, fakeTestEnvironment;
 
   const fakeFilePath = 'my-file-path';
   const fakeSyncFunctionContents = 'my-sync-function';
 
-  beforeEach(function() {
+  beforeEach(() => {
     fakeTestEnvironment = {
       _: simpleMock.stub(),
       requireAccess: simpleMock.stub(),
@@ -37,12 +37,12 @@ describe('Test helper:', function() {
     testHelper = mockRequire.reRequire('./test-helper');
   });
 
-  afterEach(function() {
+  afterEach(() => {
     mockRequire.stopAll();
   });
 
-  describe('when initializing a test environment', function() {
-    it('can initialize from a sync function', function() {
+  describe('when initializing a test environment', () => {
+    it('can initialize from a sync function', () => {
       fsMock.readFileSync.returnWith(fakeSyncFunctionContents);
 
       testHelper.initSyncFunction(fakeFilePath);
@@ -56,7 +56,7 @@ describe('Test helper:', function() {
       verifyTestEnvironment();
     });
 
-    it('can initialize directly from document definitions', function() {
+    it('can initialize directly from document definitions', () => {
       syncFunctionLoaderMock.load.returnWith(fakeSyncFunctionContents);
 
       testHelper.initDocumentDefinitions(fakeFilePath);
@@ -82,161 +82,161 @@ describe('Test helper:', function() {
     }
   });
 
-  describe('when verifying that document authorization is denied', function() {
-    beforeEach(function() {
+  describe('when verifying that document authorization is denied', () => {
+    beforeEach(() => {
       testHelper.initDocumentDefinitions(fakeFilePath);
     });
 
-    it('fails if it encounters a required channel that was not expected', function() {
+    it('fails if it encounters a required channel that was not expected', () => {
       const actualChannels = [ 'my-channel-1', 'my-channel-2' ];
       const expectedChannels = [ 'my-channel-1' ];
 
-      testHelper.syncFunction = function() {
+      testHelper.syncFunction = () => {
         testHelper.requireAccess(actualChannels);
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyAccessDenied({ }, void 0, expectedChannels);
       }).to.throw('Unexpected channel encountered: my-channel-2. Expected channels: ' + expectedChannels.join(','));
     });
 
-    it('fails if it does not encounter a channel that was expected', function() {
+    it('fails if it does not encounter a channel that was expected', () => {
       const actualChannels = [ 'my-channel-1' ];
       const expectedChannels = [ 'my-channel-1', 'my-channel-2' ];
 
-      testHelper.syncFunction = function() {
+      testHelper.syncFunction = () => {
         testHelper.requireAccess(actualChannels);
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyAccessDenied({ }, void 0, expectedChannels);
       }).to.throw('Expected channel was not encountered: my-channel-2. Actual channels: ' + actualChannels.join(','));
     });
 
-    it('fails if the sync function does not throw an error', function() {
-      testHelper.syncFunction = function() { };
+    it('fails if the sync function does not throw an error', () => {
+      testHelper.syncFunction = () => { };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyAccessDenied({ }, void 0, [ ]);
       }).to.throw('Document authorization succeeded when it was expected to fail');
     });
 
-    it('succeeds if there are no expected channels, roles or users allowed', function() {
-      testHelper.syncFunction = function() {
+    it('succeeds if there are no expected channels, roles or users allowed', () => {
+      testHelper.syncFunction = () => {
         testHelper.requireAccess([ ]);
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyAccessDenied({ }, void 0, { });
       }).not.to.throw();
     });
   });
 
-  describe('when verifying that a document type is unknown', function() {
-    beforeEach(function() {
+  describe('when verifying that a document type is unknown', () => {
+    beforeEach(() => {
       testHelper.initDocumentDefinitions(fakeFilePath);
     });
 
-    it('fails if the document type is recognized', function() {
-      testHelper.syncFunction = function() { };
+    it('fails if the document type is recognized', () => {
+      testHelper.syncFunction = () => { };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyUnknownDocumentType({ });
       }).to.throw('Document type was successfully identified when it was expected to be unknown');
     });
   });
 
-  describe('when verifying that document contents are invalid', function() {
-    beforeEach(function() {
+  describe('when verifying that document contents are invalid', () => {
+    beforeEach(() => {
       testHelper.initDocumentDefinitions(fakeFilePath);
     });
 
-    it('fails if the sync function does not throw an error', function() {
-      testHelper.syncFunction = function() { };
+    it('fails if the sync function does not throw an error', () => {
+      testHelper.syncFunction = () => { };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentRejected({ }, void 0, 'my-doc-type', [ ], { });
       }).to.throw('Document validation succeeded when it was expected to fail');
     });
 
-    it('fails if the validation error message format is invalid', function() {
+    it('fails if the validation error message format is invalid', () => {
       const errorMessage = 'Foo: bar';
 
-      testHelper.syncFunction = function() {
+      testHelper.syncFunction = () => {
         throw { forbidden: errorMessage };
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentRejected({ }, void 0, 'my-doc-type', [ ], { });
       }).to.throw('Unrecognized document validation error message format: "' + errorMessage + '"');
     });
 
-    it('fails if an expected validation error is missing', function() {
+    it('fails if an expected validation error is missing', () => {
       const docType = 'my-doc-type';
       const expectedErrors = [ 'my-error-1', 'my-error-2' ];
       const errorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
 
-      testHelper.syncFunction = function() {
+      testHelper.syncFunction = () => {
         throw { forbidden: errorMessage };
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentRejected({ }, void 0, docType, expectedErrors, { });
       }).to.throw('Document validation errors do not include expected error message: "' + expectedErrors[1] + '". Actual error: ' + errorMessage);
     });
 
-    it('fails if an unexpected validation error is encountered', function() {
+    it('fails if an unexpected validation error is encountered', () => {
       const docType = 'my-doc-type';
       const actualErrors = [ 'my-error-1', 'my-error-2' ];
       const actualErrorMessage = 'Invalid ' + docType + ' document: ' + actualErrors[0] + '; ' + actualErrors[1];
       const expectedErrors = [ actualErrors[0] ];
       const expectedErrorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
 
-      testHelper.syncFunction = function() {
+      testHelper.syncFunction = () => {
         throw { forbidden: actualErrorMessage };
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentRejected({ }, void 0, docType, expectedErrors, { });
       }).to.throw('Unexpected document validation error: "' + actualErrors[1] + '". Expected error: ' + expectedErrorMessage);
     });
   });
 
-  describe('when verifying that document contents are correct', function() {
-    beforeEach(function() {
+  describe('when verifying that document contents are correct', () => {
+    beforeEach(() => {
       testHelper.initDocumentDefinitions(fakeFilePath);
     });
 
-    it('fails if the channel assignment function was not called', function() {
-      testHelper.syncFunction = function() {
+    it('fails if the channel assignment function was not called', () => {
+      testHelper.syncFunction = () => {
         testHelper.requireAccess([ ]);
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ]);
       }).to.throw('Document channels were not assigned');
     });
   });
 
-  describe('when verifying access assignments', function() {
-    beforeEach(function() {
+  describe('when verifying access assignments', () => {
+    beforeEach(() => {
       testHelper.initDocumentDefinitions(fakeFilePath);
     });
 
-    it('fails if a different set of channel access is assigned than what was expected', function() {
+    it('fails if a different set of channel access is assigned than what was expected', () => {
       const actualChannels = [ 'my-channel-1' ];
       const expectedChannelAccessAssignment = {
         expectedType: 'channel',
         expectedRoles: [ 'my-role-1' ],
         foo: [ 'bar' ] // This should be ignored
       };
-      const expectedEffectiveRoles = expectedChannelAccessAssignment.expectedRoles.map(function(role) { return 'role:' + role; });
+      const expectedEffectiveRoles = expectedChannelAccessAssignment.expectedRoles.map((role) => 'role:' + role);
 
-      testHelper.syncFunction = function() {
+      testHelper.syncFunction = () => {
         testHelper.access(expectedEffectiveRoles, actualChannels);
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ expectedChannelAccessAssignment ]);
       }).to.throw('Missing expected call to assign channel access (' +
         JSON.stringify([ ]) +
@@ -245,20 +245,20 @@ describe('Test helper:', function() {
         ')');
     });
 
-    it('fails if a different set of role access is assigned than what was expected', function() {
+    it('fails if a different set of role access is assigned than what was expected', () => {
       const expectedRoleAccessAssignment = {
         expectedType: 'role',
         expectedRoles: [ 'my-role-1', 'my-role-2' ],
         expectedUsers: [ 'my-user-1', 'my-user-2', 'my-user-3' ]
       };
-      const expectedEffectiveRoles = expectedRoleAccessAssignment.expectedRoles.map(function(role) { return 'role:' + role; });
+      const expectedEffectiveRoles = expectedRoleAccessAssignment.expectedRoles.map((role) => 'role:' + role);
       const actualUsers = [ 'my-user-1', 'my-user-2', 'my-user-2' ];
 
-      testHelper.syncFunction = function() {
+      testHelper.syncFunction = () => {
         testHelper.role(actualUsers, expectedEffectiveRoles);
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ expectedRoleAccessAssignment ]);
       }).to.throw(
         'Missing expected call to assign role access (' +
@@ -268,36 +268,36 @@ describe('Test helper:', function() {
         ')');
     });
 
-    it('fails if there is a call to assign channel access when none is expected', function() {
-      testHelper.syncFunction = function() {
+    it('fails if there is a call to assign channel access when none is expected', () => {
+      testHelper.syncFunction = () => {
         testHelper.access();
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ ]);
       }).to.throw('Number of calls to assign channel access (1) does not match expected (0)');
     });
 
-    it('fails if there is a call to assign role access when none is expected', function() {
-      testHelper.syncFunction = function() {
+    it('fails if there is a call to assign role access when none is expected', () => {
+      testHelper.syncFunction = () => {
         testHelper.role();
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ ]);
       }).to.throw('Number of calls to assign role access (1) does not match expected (0)');
     });
 
-    it('fails if there is an unrecognized access assignment type', function() {
+    it('fails if there is an unrecognized access assignment type', () => {
       const expectedInvalidAccessAssignment = {
         expectedType: 'invalid-type',
         expectedRoles: [ 'my-role-1' ],
         expectedUsers: [ 'my-user-1' ]
       };
 
-      testHelper.syncFunction = function() { };
+      testHelper.syncFunction = () => { };
 
-      expect(function() {
+      expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ expectedInvalidAccessAssignment ]);
       }).to.throw('Unrecognized expected access assignment type ("' + expectedInvalidAccessAssignment.expectedType + '")');
     });

@@ -2,8 +2,8 @@ const expect = require('chai').expect;
 const docDefinitionsLoader = require('../loading/document-definitions-loader');
 const validator = require('./document-definitions-validator');
 
-describe('Document definitions validator:', function() {
-  it('performs validation on the sample document definitions file', function() {
+describe('Document definitions validator:', () => {
+  it('performs validation on the sample document definitions file', () => {
     const filePath = 'samples/sample-sync-doc-definitions.js';
     const sampleDocDefinitions = docDefinitionsLoader.load(filePath);
 
@@ -12,15 +12,15 @@ describe('Document definitions validator:', function() {
     expect(results.length).to.equal(0);
   });
 
-  it('performs validation on a document definitions object', function() {
+  it('performs validation on a document definitions object', () => {
     const fakeDocDefinitions = {
       myDoc1: {
         allowUnknownProperties: 1, // Must be a boolean
         immutable: true,
         cannotDelete: true, // Must not be defined if "immutable" is also defined
-        attachmentConstraints: function(a, b) { return b; }, // "allowAttachments" must also be defined,
+        attachmentConstraints: (a, b) => b, // "allowAttachments" must also be defined,
         customActions: {
-          onTypeIdentificationSucceeded: function(a, b, c, extraParam) { // Too many parameters
+          onTypeIdentificationSucceeded: (a, b, c, extraParam) => { // Too many parameters
             return extraParam;
           },
           onAuthorizationSucceeded: 5, // Must be a function
@@ -47,11 +47,11 @@ describe('Document definitions validator:', function() {
       ]);
   });
 
-  it('performs validation on a document definitions function', function() {
-    const fakeDocDefinitions = function() {
+  it('performs validation on a document definitions function', () => {
+    const fakeDocDefinitions = () => {
       return {
         myDoc1: {
-          typeFilter: function() { },
+          typeFilter: () => { },
           channels: { }, // Must have at least one permission type
           authorizedRoles: { }, // Must have at least one permission type
           authorizedUsers: { }, // Must have at least one permission type
@@ -62,7 +62,7 @@ describe('Document definitions validator:', function() {
             maximumAttachmentCount: 0, // Must be at least 1
             maximumIndividualSize: 20971521, // Must be no greater than 20971520 (the max Sync Gateway attachment size)
             maximumTotalSize: 20971520, // Must be greater or equal to "maximumIndividualSize"
-            supportedExtensions: function(doc, oldDoc, extraParam) { // Has too many params
+            supportedExtensions: (doc, oldDoc, extraParam) => { // Has too many params
               return [ extraParam ];
             },
             supportedContentTypes: [ ] // Must have at least one element
@@ -99,7 +99,7 @@ describe('Document definitions validator:', function() {
                   immutableWhenSet: false, // Must not be defined in conjunction with "immutable"
                   maximumValue: '2018-01-31T17:31:27.283-08:00', // Should not include time and time zone components
                   mustEqualStrict: new Date('1578-11-30'), // Must be a date string for equality
-                  customValidation: function(a, b, c, d, extraParam) { // Too many parameters
+                  customValidation: (a, b, c, d, extraParam) => { // Too many parameters
                     return extraParam;
                   }
                 },
@@ -135,7 +135,7 @@ describe('Document definitions validator:', function() {
                   arrayElementsValidator: {
                     type: 'object',
                     allowUnknownProperties: true,
-                    required: function(doc, oldDoc, value, oldValue) {
+                    required: (doc, oldDoc, value, oldValue) => {
                       return oldValue === true;
                     },
                     propertyValidators: {
@@ -144,7 +144,7 @@ describe('Document definitions validator:', function() {
                         mustEqual: null, // Must not be defined in conjunction with "regexPattern"
                         mustBeTrimmed: 0, // Must be a boolean
                         regexPattern: /^[a-z]+$/,
-                        minimumLength: function() { return 9; },
+                        minimumLength: () => 9,
                         maximumLength: -1 // Must be at least 0
                       },
                       booleanProperty: {
@@ -189,7 +189,7 @@ describe('Document definitions validator:', function() {
                       },
                       emptyPropertyValidatorsProperty: {
                         type: 'object',
-                        mustEqual: function(a, b, c, d) { return d; },
+                        mustEqual: (a, b, c, d) => d,
                         propertyValidators: { } // Must specify at least one property validator
                       }
                     }

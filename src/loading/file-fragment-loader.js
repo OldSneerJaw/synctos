@@ -27,7 +27,7 @@ function load(baseDir, macroName, rawText) {
 
 function readFileFragment(fragmentFilename, baseDir) {
   // The filename may have been defined with escape sequences (e.g. \\, \', \") in it, so unescape them
-  const sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, function(escapeSequence, escapedChar) { return escapedChar; });
+  const sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, (escapeSequence, escapedChar) => escapedChar);
 
   try {
     // Attempt to import the fragment file with a path that is relative to the base directory

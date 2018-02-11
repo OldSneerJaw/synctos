@@ -3,21 +3,21 @@
 /**
  * Formats a message for the error that occurs when a document includes an attachment when they are not allowed for the document type.
  */
-exports.allowAttachmentsViolation = function() {
+exports.allowAttachmentsViolation = () => {
   return 'document type does not support attachments';
 };
 
 /**
  * Formats a message for the error that occurs when there is an attempt to delete a document that cannot be deleted.
  */
-exports.cannotDeleteDocViolation = function() {
+exports.cannotDeleteDocViolation = () => {
   return 'documents of this type cannot be deleted';
 };
 
 /**
  * Formats a message for the error that occurs when there is an attempt to replace a document that cannot be replaced.
  */
-exports.cannotReplaceDocViolation = function() {
+exports.cannotReplaceDocViolation = () => {
   return 'documents of this type cannot be replaced';
 };
 
@@ -26,7 +26,7 @@ exports.cannotReplaceDocViolation = function() {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].dateProp")
  */
-exports.dateFormatInvalid = function(itemPath) {
+exports.dateFormatInvalid = (itemPath) => {
   return 'item "' + itemPath + '" must be ' + getTypeDescription('date');
 };
 
@@ -35,7 +35,7 @@ exports.dateFormatInvalid = function(itemPath) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].datetimeProp")
  */
-exports.datetimeFormatInvalid = function(itemPath) {
+exports.datetimeFormatInvalid = (itemPath) => {
   return 'item "' + itemPath + '" must be ' + getTypeDescription('datetime');
 };
 
@@ -45,7 +45,7 @@ exports.datetimeFormatInvalid = function(itemPath) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[3].enumProp")
  * @param {(string[]|integer[])} expectedPredefinedValues A list of predefined values that are allowed for the item in question
  */
-exports.enumPredefinedValueViolation = function(itemPath, expectedPredefinedValues) {
+exports.enumPredefinedValueViolation = (itemPath, expectedPredefinedValues) => {
   return 'item "' + itemPath + '" must be one of the predefined values: ' + expectedPredefinedValues.join(',');
 };
 
@@ -54,7 +54,7 @@ exports.enumPredefinedValueViolation = function(itemPath, expectedPredefinedValu
  *
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  */
-exports.hashtableKeyEmpty = function(hashtablePath) {
+exports.hashtableKeyEmpty = (hashtablePath) => {
   return 'hashtable "' + hashtablePath + '" must not have an empty key';
 };
 
@@ -64,7 +64,7 @@ exports.hashtableKeyEmpty = function(hashtablePath) {
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  * @param {integer} expectedMaximumSize The maximum number of elements
  */
-exports.hashtableMaximumSizeViolation = function(hashtablePath, expectedMaximumSize) {
+exports.hashtableMaximumSizeViolation = (hashtablePath, expectedMaximumSize) => {
   return 'hashtable "' + hashtablePath + '" must not be larger than ' + expectedMaximumSize + ' elements';
 };
 
@@ -74,14 +74,14 @@ exports.hashtableMaximumSizeViolation = function(hashtablePath, expectedMaximumS
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  * @param {integer} expectedMinimumSize The minimum number of elements
  */
-exports.hashtableMinimumSizeViolation = function(hashtablePath, expectedMinimumSize) {
+exports.hashtableMinimumSizeViolation = (hashtablePath, expectedMinimumSize) => {
   return 'hashtable "' + hashtablePath + '" must not be smaller than ' + expectedMinimumSize + ' elements';
 };
 
 /**
  * Formats a message for the error that occurs when there is an attempt to replace or delete an immutable document.
  */
-exports.immutableDocViolation = function() {
+exports.immutableDocViolation = () => {
   return 'documents of this type cannot be replaced or deleted';
 };
 
@@ -91,7 +91,7 @@ exports.immutableDocViolation = function() {
  * @param {string} itemPath The full path of the property or element in which the error occurs
  *                          (e.g. "arrayProp[1].hashtableProp[my-key].integerProp")
  */
-exports.immutableItemViolation = function(itemPath) {
+exports.immutableItemViolation = (itemPath) => {
   return 'item "' + itemPath + '" cannot be modified';
 };
 
@@ -100,7 +100,7 @@ exports.immutableItemViolation = function(itemPath) {
  *
  * @param {integer} maxCount The maximum number of attachments that are allowed
  */
-exports.maximumAttachmentCountViolation = function(maxCount) {
+exports.maximumAttachmentCountViolation = (maxCount) => {
   return 'documents of this type must not have more than ' + maxCount + ' attachments';
 };
 
@@ -110,7 +110,7 @@ exports.maximumAttachmentCountViolation = function(maxCount) {
  * @param {string} attachmentName The name of the attachment in question
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
-exports.maximumIndividualAttachmentSizeViolation = function(attachmentName, maxSize) {
+exports.maximumIndividualAttachmentSizeViolation = (attachmentName, maxSize) => {
   return 'attachment ' + attachmentName + ' must not exceed ' + maxSize + ' bytes';
 };
 
@@ -120,7 +120,7 @@ exports.maximumIndividualAttachmentSizeViolation = function(attachmentName, maxS
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].stringProp")
  * @param {integer} maxLength The maximum length that is allowed
  */
-exports.maximumLengthViolation = function(itemPath, maxLength) {
+exports.maximumLengthViolation = (itemPath, maxLength) => {
   return 'length of item "' + itemPath + '" must not be greater than ' + maxLength;
 };
 
@@ -131,7 +131,7 @@ exports.maximumLengthViolation = function(itemPath, maxLength) {
  *                          (e.g. "hashtableProp[my-key].attachmentRefProp")
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
-exports.maximumSizeAttachmentViolation = function(itemPath, maxSize) {
+exports.maximumSizeAttachmentViolation = (itemPath, maxSize) => {
   return 'attachment reference "' + itemPath + '" must not be larger than ' + maxSize + ' bytes';
 };
 
@@ -140,7 +140,7 @@ exports.maximumSizeAttachmentViolation = function(itemPath, maxSize) {
  *
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
-exports.maximumTotalAttachmentSizeViolation = function(maxSize) {
+exports.maximumTotalAttachmentSizeViolation = (maxSize) => {
   return 'documents of this type must not have a combined attachment size greater than ' + maxSize + ' bytes';
 };
 
@@ -150,7 +150,7 @@ exports.maximumTotalAttachmentSizeViolation = function(maxSize) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].integerProp")
  * @param {(float|integer|string)} maxValue The maximum value that is allowed
  */
-exports.maximumValueViolation = function(itemPath, maxValue) {
+exports.maximumValueViolation = (itemPath, maxValue) => {
   return 'item "' + itemPath + '" must not be greater than ' + maxValue;
 };
 
@@ -160,7 +160,7 @@ exports.maximumValueViolation = function(itemPath, maxValue) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.dateProp")
  * @param {(float|integer|string)} maxValue The maximum value (exclusive) that is allowed
  */
-exports.maximumValueExclusiveViolation = function(itemPath, maxValue) {
+exports.maximumValueExclusiveViolation = (itemPath, maxValue) => {
   return 'item "' + itemPath + '" must not be greater than or equal to ' + maxValue;
 };
 
@@ -170,7 +170,7 @@ exports.maximumValueExclusiveViolation = function(itemPath, maxValue) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp")
  * @param {integer} minLength The minimum length that is allowed
  */
-exports.minimumLengthViolation = function(itemPath, minLength) {
+exports.minimumLengthViolation = (itemPath, minLength) => {
   return 'length of item "' + itemPath + '" must not be less than ' + minLength;
 };
 
@@ -180,7 +180,7 @@ exports.minimumLengthViolation = function(itemPath, minLength) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].floatProp")
  * @param {(float|integer|string)} minValue The minimum value that is allowed
  */
-exports.minimumValueViolation = function(itemPath, minValue) {
+exports.minimumValueViolation = (itemPath, minValue) => {
   return 'item "' + itemPath + '" must not be less than ' + minValue;
 };
 
@@ -190,7 +190,7 @@ exports.minimumValueViolation = function(itemPath, minValue) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[0].datetimeProp")
  * @param {(float|integer|string)} minValue The minimum value (exclusive) that is allowed
  */
-exports.minimumValueExclusiveViolation = function(itemPath, minValue) {
+exports.minimumValueExclusiveViolation = (itemPath, minValue) => {
   return 'item "' + itemPath + '" must not be less than or equal to ' + minValue;
 };
 
@@ -199,7 +199,7 @@ exports.minimumValueExclusiveViolation = function(itemPath, minValue) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  */
-exports.mustBeTrimmedViolation = function(itemPath) {
+exports.mustBeTrimmedViolation = (itemPath) => {
   return 'item "' + itemPath + '" must not have any leading or trailing whitespace';
 };
 
@@ -209,7 +209,7 @@ exports.mustBeTrimmedViolation = function(itemPath) {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.integerProp")
  * @param {*} expectedItemValue The value that is expected
  */
-exports.mustEqualViolation = function(itemPath, expectedItemValue) {
+exports.mustEqualViolation = (itemPath, expectedItemValue) => {
   return 'value of item "' + itemPath + '" must equal ' + JSON.stringify(expectedItemValue);
 };
 
@@ -219,7 +219,7 @@ exports.mustEqualViolation = function(itemPath, expectedItemValue) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  */
-exports.mustNotBeEmptyViolation = function(itemPath) {
+exports.mustNotBeEmptyViolation = (itemPath) => {
   return 'item "' + itemPath + '" must not be empty';
 };
 
@@ -228,7 +228,7 @@ exports.mustNotBeEmptyViolation = function(itemPath) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
  */
-exports.mustNotBeMissingValueViolation = function(itemPath) {
+exports.mustNotBeMissingValueViolation = (itemPath) => {
   return 'item "' + itemPath + '" must not be missing';
 };
 
@@ -237,7 +237,7 @@ exports.mustNotBeMissingValueViolation = function(itemPath) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].integerProp")
  */
-exports.mustNotBeNullValueViolation = function(itemPath) {
+exports.mustNotBeNullValueViolation = (itemPath) => {
   return 'item "' + itemPath + '" must not be null';
 };
 
@@ -248,7 +248,7 @@ exports.mustNotBeNullValueViolation = function(itemPath) {
  *                                  (e.g. "objectProp.hashtableProp[my-key]")
  * @param {RegExp} expectedRegex The regular expression pattern that is expected
  */
-exports.regexPatternHashtableKeyViolation = function(hashtableKeyPath, expectedRegex) {
+exports.regexPatternHashtableKeyViolation = (hashtableKeyPath, expectedRegex) => {
   return 'hashtable key "' + hashtableKeyPath + '" must conform to expected format ' + expectedRegex;
 };
 
@@ -258,7 +258,7 @@ exports.regexPatternHashtableKeyViolation = function(hashtableKeyPath, expectedR
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  * @param {RegExp} expectedRegex The regular expression pattern that is expected
  */
-exports.regexPatternItemViolation = function(itemPath, expectedRegex) {
+exports.regexPatternItemViolation = (itemPath, expectedRegex) => {
   return 'item "' + itemPath + '" must conform to expected format ' + expectedRegex;
 };
 
@@ -268,7 +268,7 @@ exports.regexPatternItemViolation = function(itemPath, expectedRegex) {
  *
  * @param {string} attachmentName The name of the attachment in question
  */
-exports.requireAttachmentReferencesViolation = function(attachmentName) {
+exports.requireAttachmentReferencesViolation = (attachmentName) => {
   return 'attachment ' + attachmentName + ' must have a corresponding attachment reference property';
 };
 
@@ -277,7 +277,7 @@ exports.requireAttachmentReferencesViolation = function(attachmentName) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
  */
-exports.requiredValueViolation = function(itemPath) {
+exports.requiredValueViolation = (itemPath) => {
   return 'item "' + itemPath + '" must not be null or missing';
 };
 
@@ -288,7 +288,7 @@ exports.requiredValueViolation = function(itemPath) {
  * @param {string[]} expectedContentTypes An array of content types that are expected (e.g. [ 'image/png', 'image/gif', 'image/jpeg' ]).
  *                                        Element order must match that set in the validator in the document definition.
  */
-exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, expectedContentTypes) {
+exports.supportedContentTypesAttachmentReferenceViolation = (itemPath, expectedContentTypes) => {
   const contentTypesString = expectedContentTypes.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported content type (' + contentTypesString + ')';
@@ -301,7 +301,7 @@ exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, e
  * @param {string[]} expectedContentTypes An array of content types that are expected (e.g. [ 'image/png', 'image/gif', 'image/jpeg' ]).
  *                                        Element order must match that set in the validator in the document definition.
  */
-exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, expectedContentTypes) {
+exports.supportedContentTypesRawAttachmentViolation = (attachmentName, expectedContentTypes) => {
   const contentTypesString = expectedContentTypes.join(',');
 
   return 'attachment "' + attachmentName + '" must have a supported content type (' + contentTypesString + ')';
@@ -314,7 +314,7 @@ exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, e
  * @param {string[]} expectedFileExtensions An array of file extensions that are expected (e.g. [ 'png', 'gif', 'jpg', 'jpeg' ]).
  *                                          Element order must match that set in the validator in the document definition.
  */
-exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, expectedFileExtensions) {
+exports.supportedExtensionsAttachmentReferenceViolation = (itemPath, expectedFileExtensions) => {
   const extensionsString = expectedFileExtensions.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
@@ -327,7 +327,7 @@ exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, exp
  * @param {string[]} expectedFileExtensions An array of file extensions that are expected (e.g. [ 'png', 'gif', 'jpg', 'jpeg' ]).
  *                                          Element order must match that set in the validator in the document definition.
  */
-exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, expectedFileExtensions) {
+exports.supportedExtensionsRawAttachmentViolation = (attachmentName, expectedFileExtensions) => {
   const extensionsString = expectedFileExtensions.join(',');
 
   return 'attachment "' + attachmentName + '" must have a supported file extension (' + extensionsString + ')';
@@ -338,7 +338,7 @@ exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, exp
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].timeProp")
  */
-exports.timeFormatInvalid = function(itemPath) {
+exports.timeFormatInvalid = (itemPath) => {
   return 'item "' + itemPath + '" must be ' + getTypeDescription('time');
 };
 
@@ -347,7 +347,7 @@ exports.timeFormatInvalid = function(itemPath) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.timezoneProp")
  */
-exports.timezoneFormatInvalid = function(itemPath) {
+exports.timezoneFormatInvalid = (itemPath) => {
   return 'item "' + itemPath + '" must be ' + getTypeDescription('timezone');
 };
 
@@ -358,14 +358,14 @@ exports.timezoneFormatInvalid = function(itemPath) {
  * @param {string} expectedType The validation type that was expected (e.g. "array", "attachmentReference", "boolean", "date", "datetime",
  *                              "float", "hashtable", "integer", "object", "string"). Throws an exception if the type is not recognized.
  */
-exports.typeConstraintViolation = function(itemPath, expectedType) {
+exports.typeConstraintViolation = (itemPath, expectedType) => {
   return 'item "' + itemPath + '" must be ' + getTypeDescription(expectedType);
 };
 
 /**
  * Formats a message for the error that occurs when the document type is unrecognized.
  */
-exports.unknownDocumentType = function() {
+exports.unknownDocumentType = () => {
   return 'Unknown document type';
 };
 
@@ -376,7 +376,7 @@ exports.unknownDocumentType = function() {
  * @param {string} propertyPath The full path of the property or element in which the error occurs
  *                              (e.g. "arrayProp[1].objectProp.unknownProp")
  */
-exports.unsupportedProperty = function(propertyPath) {
+exports.unsupportedProperty = (propertyPath) => {
   return 'property "' + propertyPath + '" is not supported';
 };
 
@@ -385,7 +385,7 @@ exports.unsupportedProperty = function(propertyPath) {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[10].uuidProp")
  */
-exports.uuidFormatInvalid = function(itemPath) {
+exports.uuidFormatInvalid = (itemPath) => {
   return 'item "' + itemPath + '" must be ' + getTypeDescription('uuid');
 };
 

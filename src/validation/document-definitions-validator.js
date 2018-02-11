@@ -10,7 +10,7 @@ const documentDefinitionSchema = require('./document-definition-schema');
  *
  * @returns {string[]} A list of validation error messages. Will be empty if no validation errors found.
  */
-exports.validate = function(documentDefinitions, docDefinitionsFilename) {
+exports.validate = (documentDefinitions, docDefinitionsFilename) => {
   if (typeof documentDefinitions === 'string') {
     return validateDocumentDefinitionsString(documentDefinitions, docDefinitionsFilename);
   } else {
@@ -35,13 +35,13 @@ function validateDocumentDefinitionsObjectOrFunction(documentDefinitions) {
 function validateDocumentDefinitionsObject(documentDefinitions) {
   const validationErrors = [ ];
 
-  Object.keys(documentDefinitions).forEach(function(documentType) {
+  Object.keys(documentDefinitions).forEach((documentType) => {
     documentDefinitionSchema.validate(
       documentDefinitions[documentType],
       { abortEarly: false },
-      function(error) {
+      (error) => {
         if (error) {
-          error.details.forEach(function(errorDetails) {
+          error.details.forEach((errorDetails) => {
             const path = [ documentType ].concat(errorDetails.path);
             validationErrors.push(path.join('.') + ': ' + errorDetails.message);
           });
