@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.11.0] - 2018-02-11
+### Deprecated
+- `mustEqualStrict` constraint
+
 ## [1.10.0] - 2018-01-24
 ### Added
 - [#146](https://github.com/Kashoo/synctos/issues/146): Underscore.js support
@@ -15,22 +19,27 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - [#118](https://github.com/Kashoo/synctos/issues/118): Embed indent.js as a static dependency
 - [#174](https://github.com/Kashoo/synctos/issues/174): Reorganize project source structure
 
-## [1.9.4] - 2018-01-04
+### Deprecated
+- `etc/test-helper.js` module
+- `etc/validation-error-message-formatter.js` module
 
+## [1.9.4] - 2018-01-04
 ### Changed
 - [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
 - [#163](https://github.com/Kashoo/synctos/issues/163): Embed simple-mock as a static development dependency
 
 ### Fixed
-- [#156](https://github.com/Kashoo/synctos/issues/156): Users with a replace role may erroneously gain the privilege of removing a document under certain conditions
 - [#160](https://github.com/Kashoo/synctos/issues/160): Unable to import document if it was deleted via Couchbase SDK
+
+### Security
+- [#156](https://github.com/Kashoo/synctos/issues/156): Users with a replace role may erroneously gain the privilege of removing a document under certain conditions
 
 ## [1.9.3] - 2017-10-23
 ### Fixed
 - [#152](https://github.com/Kashoo/synctos/issues/152): Cannot append a new object with immutable properties to an array
 
 ## [1.9.2] - 2017-10-02
-### Fixed
+### Security
 - [#149](https://github.com/Kashoo/synctos/issues/149): Permissions for add operations sometimes applied to other operation types
 
 ## [1.9.1] - 2017-05-01
@@ -112,7 +121,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/Kashoo/synctos/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Kashoo/synctos/compare/v1.9.4...v1.10.0
 [1.9.4]: https://github.com/Kashoo/synctos/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/Kashoo/synctos/compare/v1.9.2...v1.9.3
