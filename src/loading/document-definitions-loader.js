@@ -29,5 +29,12 @@ function loadFromFile(docDefinitionsFile) {
   var docDefinitionsDir = path.dirname(docDefinitionsFile);
 
   // Automatically replace instances of the "importDocumentDefinitionFragment" macro with the contents of the file that is specified by each
-  return fileFragmentLoader.load(docDefinitionsDir, 'importDocumentDefinitionFragment', docDefinitions);
+  var result = fileFragmentLoader.load(docDefinitionsDir, 'importDocumentDefinitionFragment', docDefinitions);
+
+  /* istanbul ignore if */
+  if (result.match(/\bmustEqualStrict\b/)) {
+    console.log('WARNING: The "mustEqualStrict" constraint has been deprecated');
+  }
+
+  return result;
 }
