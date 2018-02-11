@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Equality constraint:', function() {
   beforeEach(function() {
@@ -7,10 +7,10 @@ describe('Equality constraint:', function() {
   });
 
   describe('array type with static property validation', function() {
-    var expectedArrayValue = [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ];
+    const expectedArrayValue = [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ];
 
     it('allows a document when the array elements match', function() {
-      var doc = {
+      const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], void 0, { foo: 'bar' }, [ ] ]
       };
@@ -19,7 +19,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the array is null', function() {
-      var doc = {
+      const doc = {
         _id: 'staticArrayDoc',
         arrayProp: null
       };
@@ -28,13 +28,13 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the array is missing', function() {
-      var doc = { _id: 'staticArrayDoc' };
+      const doc = { _id: 'staticArrayDoc' };
 
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
     it('rejects a document when a top-level array element is not equal', function() {
-      var doc = {
+      const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 0, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ]
       };
@@ -43,7 +43,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when a nested array element is not equal', function() {
-      var doc = {
+      const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'baz' }, [ ] ]
       };
@@ -52,7 +52,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the array is a subset of the expected elements', function() {
-      var doc = {
+      const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' } ]
       };
@@ -61,7 +61,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when nested complex type elements are not of the same type', function() {
-      var doc = {
+      const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, { } ]
       };
@@ -73,7 +73,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the array element order has changed', function() {
-      var doc = {
+      const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], [ ], { foo: 'bar' }, null ]
       };
@@ -84,7 +84,7 @@ describe('Equality constraint:', function() {
 
   describe('array type with dynamic property validation', function() {
     it('allows a document when the array elements match', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicArrayDoc',
         expectedDynamicValue: [ 'barfoo', -72.0, true, 3.9 ],
         arrayProp: [ 'barfoo', -72.0, true, 3.9 ]
@@ -94,7 +94,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the array elements are different', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicArrayDoc',
         expectedDynamicValue: [ '#4', 'foo' ],
         arrayProp: [ '#4' ]
@@ -105,7 +105,7 @@ describe('Equality constraint:', function() {
   });
 
   describe('object type with static property validation', function() {
-    var expectedObjectValue = {
+    const expectedObjectValue = {
       myStringProp: 'foobar',
       myIntegerProp: 8,
       myBooleanProp: true,
@@ -115,7 +115,7 @@ describe('Equality constraint:', function() {
     };
 
     it('allows a document when the object properties match', function() {
-      var doc = {
+      const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
           myArrayProp: [ 'foobar', 3, false, 45.9, [ void 0 ], { } ],
@@ -131,7 +131,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the object is null', function() {
-      var doc = {
+      const doc = {
         _id: 'staticObjectDoc',
         objectProp: null
       };
@@ -140,13 +140,13 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the object is missing', function() {
-      var doc = { _id: 'staticObjectDoc' };
+      const doc = { _id: 'staticObjectDoc' };
 
       testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
     it('rejects a document when the top-level properties do not match', function() {
-      var doc = {
+      const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
           myStringProp: 'foobar',
@@ -162,7 +162,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the nested properties of the object do not match', function() {
-      var doc = {
+      const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
           myStringProp: 'foobar',
@@ -178,7 +178,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when a nested object property is missing', function() {
-      var doc = {
+      const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
           myStringProp: 'foobar',
@@ -196,7 +196,7 @@ describe('Equality constraint:', function() {
 
   describe('object type with dynamic property validation', function() {
     it('allows a document when the object properties match', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicObjectDoc',
         expectedDynamicValue: { myFloatProp: 88.92 },
         objectProp: { myFloatProp: 88.92, foo: null }
@@ -206,7 +206,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the object properties do not match', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicObjectDoc',
         expectedDynamicValue: { myStringProp: 'foo' },
         objectProp: { myStringProp: 'foo', bar: 0 }
@@ -217,7 +217,7 @@ describe('Equality constraint:', function() {
   });
 
   describe('hashtable type with static validation', function() {
-    var expectedHashtableValue = {
+    const expectedHashtableValue = {
       myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: 18 } ],
       myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
       myStringProp: 'foobar',
@@ -227,7 +227,7 @@ describe('Equality constraint:', function() {
     };
 
     it('allows a document when the hashtable properties match', function() {
-      var doc = {
+      const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
           myStringProp: 'foobar',
@@ -243,7 +243,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the hashtable is null', function() {
-      var doc = {
+      const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: null
       };
@@ -255,7 +255,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the hashtable is missing', function() {
-      var doc = { _id: 'staticHashtableDoc' };
+      const doc = { _id: 'staticHashtableDoc' };
 
       testHelper.verifyDocumentNotCreated(
         doc,
@@ -264,7 +264,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when a top-level hashtable property does not match', function() {
-      var doc = {
+      const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
           myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: 18 } ],
@@ -283,7 +283,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when a nested hashtable property does not match', function() {
-      var doc = {
+      const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
           myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: -1 } ],
@@ -302,7 +302,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when a nested hashtable property is missing', function() {
-      var doc = {
+      const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
           myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { } ],
@@ -323,7 +323,7 @@ describe('Equality constraint:', function() {
 
   describe('hashtable type with dynamic property validation', function() {
     it('allows a document when the hashtable property matches', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicHashtableDoc',
         expectedDynamicValue: { myDateProp: '2017-04-07' },
         hashtableProp: { myDateProp: '2017-04-07' }
@@ -333,7 +333,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects a document when the hashtable property does not match', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicHashtableDoc',
         expectedDynamicValue: { myStringProp: 'foo', myIntegerProp: -1 },
         hashtableProp: { myStringProp: 'foo', myIntegerProp: null }
@@ -348,7 +348,7 @@ describe('Equality constraint:', function() {
 
   describe('when applied to array elements', function() {
     it('allows array element values that match', function() {
-      var doc = {
+      const doc = {
         _id: 'arrayElementConstraintDoc',
         arrayProp: [ 'foobar', 'foobar' ]
       };
@@ -357,7 +357,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects array element values that do not match', function() {
-      var doc = {
+      const doc = {
         _id: 'arrayElementConstraintDoc',
         arrayProp: [ 'foobar', 'foobar', 'fubar' ]
       };
@@ -371,7 +371,7 @@ describe('Equality constraint:', function() {
 
   describe('when applied to hashtable element values', function() {
     it('allows hashtable element values that match', function() {
-      var doc = {
+      const doc = {
         _id: 'hashtableElementConstraintDoc',
         hashtableProp: {
           a: -15,
@@ -383,7 +383,7 @@ describe('Equality constraint:', function() {
     });
 
     it('rejects hashtable element values that do not match', function() {
-      var doc = {
+      const doc = {
         _id: 'hashtableElementConstraintDoc',
         hashtableProp: {
           a: -15,
@@ -401,7 +401,7 @@ describe('Equality constraint:', function() {
 
   describe('with an expected value of null', function() {
     it('allows a document with a value of null', function() {
-      var doc = {
+      const doc = {
         _id: 'nullExpectedValueDoc',
         stringProp: null
       };
@@ -410,7 +410,7 @@ describe('Equality constraint:', function() {
     });
 
     it('allows a document with a missing value', function() {
-      var doc = {
+      const doc = {
         _id: 'nullExpectedValueDoc'
       };
 
@@ -418,7 +418,7 @@ describe('Equality constraint:', function() {
     });
 
     it('blocks a document with a value that is neither null nor undefined', function() {
-      var doc = {
+      const doc = {
         _id: 'nullExpectedValueDoc',
         stringProp: 'foobar'
       };

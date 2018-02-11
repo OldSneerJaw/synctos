@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Type identifier validator', function() {
   beforeEach(function() {
@@ -7,7 +7,7 @@ describe('Type identifier validator', function() {
   });
 
   it('allows a valid string value', function() {
-    var doc = {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: 'my-doc-type'
     };
@@ -16,7 +16,7 @@ describe('Type identifier validator', function() {
   });
 
   it('rejects a non-string value', function() {
-    var doc = {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: 15
     };
@@ -25,7 +25,7 @@ describe('Type identifier validator', function() {
   });
 
   it('rejects an empty string value', function() {
-    var doc = {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: ''
     };
@@ -34,7 +34,7 @@ describe('Type identifier validator', function() {
   });
 
   it('rejects a null value', function() {
-    var doc = {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: null
     };
@@ -43,11 +43,11 @@ describe('Type identifier validator', function() {
   });
 
   it('rejects a value that has been modified', function() {
-    var doc = {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: 'my-modified-doc-type'
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'typeIdDoc',
       typeIdProp: 'my-doc-type'
     };

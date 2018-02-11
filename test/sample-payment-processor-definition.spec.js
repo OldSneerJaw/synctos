@@ -1,17 +1,17 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelper = require('./helpers/sample-spec-helper.js');
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Sample payment processor definition doc definition', function() {
   beforeEach(function() {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
-  var expectedDocType = 'paymentProcessorDefinition';
-  var expectedBasePrivilege = 'CUSTOMER_PAYMENT_PROCESSORS';
+  const expectedDocType = 'paymentProcessorDefinition';
+  const expectedBasePrivilege = 'CUSTOMER_PAYMENT_PROCESSORS';
 
   it('successfully creates a valid payment processor document', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.3.paymentProcessor.2',
       provider: 'foo',
       spreedlyGatewayToken: 'bar',
@@ -24,7 +24,7 @@ describe('Sample payment processor definition doc definition', function() {
   });
 
   it('cannot create a payment processor document when the properties are invalid', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.1.paymentProcessor.2',
       provider: '',
       spreedlyGatewayToken: '',
@@ -50,26 +50,26 @@ describe('Sample payment processor definition doc definition', function() {
   });
 
   it('successfully replaces a valid payment processor document', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.5.paymentProcessor.2',
       provider: 'foobar',
       spreedlyGatewayToken: 'barfoo',
       accountId: 1
     };
-    var oldDoc = { _id: 'biz.5.paymentProcessor.2', provider: 'bar' };
+    const oldDoc = { _id: 'biz.5.paymentProcessor.2', provider: 'bar' };
 
     sampleSpecHelper.verifyDocumentReplaced(expectedBasePrivilege, 5, doc, oldDoc);
   });
 
   it('cannot replace a payment processor document when the properties are invalid', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.2.paymentProcessor.2',
       accountId: 555.9,
       displayName: [ ],
       supportedCurrencyCodes: [ '666', 'CAD' ],
       'unrecognized-property4': 'bar'
     };
-    var oldDoc = { _id: 'biz.2.paymentProcessor.2', provider: 'foo' };
+    const oldDoc = { _id: 'biz.2.paymentProcessor.2', provider: 'foo' };
 
     sampleSpecHelper.verifyDocumentNotReplaced(
       expectedBasePrivilege,
@@ -88,7 +88,7 @@ describe('Sample payment processor definition doc definition', function() {
   });
 
   it('successfully deletes a payment processor document', function() {
-    var oldDoc = { _id: 'biz.8.paymentProcessor.2' };
+    const oldDoc = { _id: 'biz.8.paymentProcessor.2' };
 
     sampleSpecHelper.verifyDocumentDeleted(expectedBasePrivilege, 8, oldDoc);
   });

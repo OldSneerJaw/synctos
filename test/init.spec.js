@@ -1,12 +1,12 @@
-var { expect } = require('chai');
-var testHelper = require('../src/testing/test-helper.js');
+const { expect } = require('chai');
+const testHelper = require('../src/testing/test-helper.js');
 
 describe('Test helper module initialization', function() {
   describe('when initialized from a generated sync function file', function() {
     it('loads the sync function successfully for a valid path', function() {
       testHelper.initSyncFunction('build/sync-functions/test-init-sync-function.js');
 
-      var doc = {
+      const doc = {
         _id: 'foobar',
         type: 'initDoc',
         testProp: 174.6
@@ -16,7 +16,7 @@ describe('Test helper module initialization', function() {
     });
 
     it('fails to load the sync function for a file that does not exist', function() {
-      var syncFuncError = null;
+      let syncFuncError = null;
       expect(function() {
         try {
           testHelper.initSyncFunction('build/sync-functions/test-nonexistant-sync-function.js');
@@ -35,7 +35,7 @@ describe('Test helper module initialization', function() {
     it('loads the sync function successfully for a valid path', function() {
       testHelper.initDocumentDefinitions('test/resources/init-doc-definitions.js');
 
-      var doc = {
+      const doc = {
         _id: 'barfoo',
         type: 'initDoc',
         testProp: -97.99
@@ -45,7 +45,7 @@ describe('Test helper module initialization', function() {
     });
 
     it('fails to load the sync function for a file that does not exist', function() {
-      var syncFuncError = null;
+      let syncFuncError = null;
       expect(function() {
         try {
           testHelper.initDocumentDefinitions('test/resources/nonexistant-doc-definitions.js');

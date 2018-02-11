@@ -1,6 +1,6 @@
-var { expect } = require('chai');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const { expect } = require('chai');
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Functionality that is common to all documents:', function() {
   beforeEach(function() {
@@ -9,9 +9,9 @@ describe('Functionality that is common to all documents:', function() {
 
   describe('the document type identifier', function() {
     it('rejects document creation with an unrecognized doc type', function() {
-      var doc = { _id: 'my-invalid-doc' };
+      const doc = { _id: 'my-invalid-doc' };
 
-      var syncFuncError = null;
+      let syncFuncError = null;
       expect(function() {
         try {
           testHelper.syncFunction(doc);
@@ -26,10 +26,10 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects document replacement with an unrecognized doc type', function() {
-      var doc = { _id: 'my-invalid-doc', foo: 'bar' };
-      var oldDoc = { _id: 'my-invalid-doc' };
+      const doc = { _id: 'my-invalid-doc', foo: 'bar' };
+      const oldDoc = { _id: 'my-invalid-doc' };
 
-      var syncFuncError = null;
+      let syncFuncError = null;
       expect(function() {
         try {
           testHelper.syncFunction(doc, oldDoc);
@@ -44,7 +44,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('allows a missing document to be "deleted" even if the type is unrecognized', function() {
-      var doc = { _id: 'my-invalid-doc', _deleted: true };
+      const doc = { _id: 'my-invalid-doc', _deleted: true };
 
       // When deleting a document that does not exist and the document's type cannot be determined, the fallback
       // behaviour is to allow it to be deleted and assign the public channel to it
@@ -52,8 +52,8 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('allows a deleted document to be deleted again even if the type is unrecognized', function() {
-      var doc = { _id: 'my-invalid-doc', _deleted: true };
-      var oldDoc = { _id: 'my-invalid-doc', _deleted: true };
+      const doc = { _id: 'my-invalid-doc', _deleted: true };
+      const oldDoc = { _id: 'my-invalid-doc', _deleted: true };
 
       // When deleting a document that was already deleted and the document's type cannot be determined, the fallback
       // behaviour is to allow it to be deleted and assign the public channel to it
@@ -67,7 +67,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects an array property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         arrayProp: { }
       };
@@ -76,7 +76,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects an attachment reference property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         attachmentReferenceProp: { }
       };
@@ -89,7 +89,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a boolean property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         booleanProp: 0
       };
@@ -98,7 +98,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a date property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         dateProp: 1468713600000
       };
@@ -107,7 +107,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a date/time property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         datetimeProp: 1468795446123
       };
@@ -116,7 +116,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a floating point number property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         floatProp: false
       };
@@ -125,7 +125,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a hashtable property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         hashtableProp: [ ]
       };
@@ -134,7 +134,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects an integer property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         integerProp: -15.9
       };
@@ -143,7 +143,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects an object property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         objectProp: [ ]
       };
@@ -152,7 +152,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a string property value that is not the right type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         stringProp: 99
       };
@@ -161,7 +161,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('allows a value of the right type for a dynamic property type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         dynamicTypeProp: -56,
         expectedDynamicType: 'integer',
@@ -175,7 +175,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a value that falls outside the minimum and maximum values for a dynamic property type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         dynamicTypeProp: 0,
         expectedDynamicType: 'integer',
@@ -198,7 +198,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects a value of the wrong type for a dynamic property type', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         dynamicTypeProp: 9.5,
         expectedDynamicType: 'string'
@@ -214,7 +214,7 @@ describe('Functionality that is common to all documents:', function() {
 
   describe('internal document property validation', function() {
     it('allows internal properties at the root level of the document', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         _rev: 'my-rev',
         _deleted: false,
@@ -227,7 +227,7 @@ describe('Functionality that is common to all documents:', function() {
     });
 
     it('rejects internal properties below the root level of the document', function() {
-      var doc = {
+      const doc = {
         _id: 'generalDoc',
         objectProp: {
           foo: 'bar',
@@ -239,7 +239,7 @@ describe('Functionality that is common to all documents:', function() {
         }
       };
 
-      var syncFuncError = null;
+      let syncFuncError = null;
       expect(function() {
         try {
           testHelper.syncFunction(doc);
@@ -264,7 +264,7 @@ describe('Functionality that is common to all documents:', function() {
   });
 
   it('cannot include attachments in documents that do not explicitly allow them', function() {
-    var doc = {
+    const doc = {
       '_id': 'generalDoc',
       '_attachments': {
         'foo.pdf': {
@@ -274,7 +274,7 @@ describe('Functionality that is common to all documents:', function() {
       }
     };
 
-    var syncFuncError = null;
+    let syncFuncError = null;
     expect(function() {
       try {
         testHelper.syncFunction(doc);

@@ -1,9 +1,9 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
-var { expect } = require('chai');
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
+const { expect } = require('chai');
 
 describe('Custom actions:', function() {
-  var expectedAuthorization = {
+  const expectedAuthorization = {
     expectedChannels: [ 'write-channel' ],
     expectedRoles: [ 'write-role' ],
     expectedUsers: [ 'write-user' ]
@@ -14,9 +14,9 @@ describe('Custom actions:', function() {
   });
 
   describe('the onTypeIdentificationSucceeded event', function() {
-    var docType = 'onTypeIdentifiedDoc';
-    var doc = { _id: docType };
-    var oldDoc = { _id: docType };
+    const docType = 'onTypeIdentifiedDoc';
+    const doc = { _id: docType };
+    const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
@@ -34,10 +34,10 @@ describe('Custom actions:', function() {
     });
 
     it('does not execute a custom action if the type cannot be identified', function() {
-      var unknownDocType = 'foo';
-      var doc = { _id: unknownDocType };
+      const unknownDocType = 'foo';
+      const doc = { _id: unknownDocType };
 
-      var syncFuncError = null;
+      let syncFuncError = null;
       expect(function() {
         try {
           testHelper.syncFunction(doc, expectedAuthorization);
@@ -54,9 +54,9 @@ describe('Custom actions:', function() {
   });
 
   describe('the onAuthorizationSucceeded event', function() {
-    var docType = 'onAuthorizationDoc';
-    var doc = { _id: docType };
-    var oldDoc = { _id: docType };
+    const docType = 'onAuthorizationDoc';
+    const doc = { _id: docType };
+    const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
@@ -80,9 +80,9 @@ describe('Custom actions:', function() {
   });
 
   describe('the onValidationSucceeded event', function() {
-    var docType = 'onValidationDoc';
-    var doc = { _id: docType };
-    var oldDoc = { _id: docType };
+    const docType = 'onValidationDoc';
+    const doc = { _id: docType };
+    const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
@@ -100,7 +100,7 @@ describe('Custom actions:', function() {
     });
 
     it('does not execute a custom action if the document contents are invalid', function() {
-      var doc = {
+      const doc = {
         _id: docType,
         unsupportedProperty: 'foobar'
       };
@@ -111,9 +111,9 @@ describe('Custom actions:', function() {
   });
 
   describe('the onAccessAssignmentsSucceeded event', function() {
-    var docType = 'onAccessAssignmentsDoc';
-    var doc = { _id: docType };
-    var oldDoc = { _id: docType };
+    const docType = 'onAccessAssignmentsDoc';
+    const doc = { _id: docType };
+    const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
@@ -131,14 +131,14 @@ describe('Custom actions:', function() {
     });
 
     it('does not execute a custom action if the document definition does not define access assignments', function() {
-      var doc = { _id: 'missingAccessAssignmentsDoc' };
+      const doc = { _id: 'missingAccessAssignmentsDoc' };
 
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
       verifyCustomActionNotExecuted();
     });
 
     it('does not execute a custom action if the document definition has an empty access assignments definition', function() {
-      var doc = { _id: 'emptyAccessAssignmentsDoc' };
+      const doc = { _id: 'emptyAccessAssignmentsDoc' };
 
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
       verifyCustomActionNotExecuted();
@@ -146,9 +146,9 @@ describe('Custom actions:', function() {
   });
 
   describe('the onDocumentChannelAssignmentSucceeded event', function() {
-    var docType = 'onDocChannelsAssignedDoc';
-    var doc = { _id: docType };
-    var oldDoc = { _id: docType };
+    const docType = 'onDocChannelsAssignedDoc';
+    const doc = { _id: docType };
+    const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', function() {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
@@ -167,7 +167,7 @@ describe('Custom actions:', function() {
     });
 
     it('does not execute a custom action if doc channel assignment fails', function() {
-      var expectedError = new Error('bad channels!');
+      const expectedError = new Error('bad channels!');
       testHelper.channel.throwWith(expectedError);
 
       expect(function() {
@@ -205,7 +205,7 @@ function verifyTypeMetadata(actualMetadata, docType) {
 }
 
 function verifyAuthorizationMetadata(actualMetadata) {
-  var expectedAuthMetadata = {
+  const expectedAuthMetadata = {
     channels: [ 'write-channel' ],
     roles: [ 'write-role' ],
     users: [ 'write-user' ]
@@ -215,15 +215,12 @@ function verifyAuthorizationMetadata(actualMetadata) {
 
 function verifyAccessAssignmentMetadata(actualMetadata) {
   if (actualMetadata.documentDefinition.accessAssignments) {
-    var expectedAssignments = [ ];
-    for (var i = 0; i < actualMetadata.documentDefinition.accessAssignments.length; i++) {
-      var assignment = actualMetadata.documentDefinition.accessAssignments[i];
-      expectedAssignments.push({
-        type: 'channel',
-        channels: [ assignment.channels ],
-        usersAndRoles: [ assignment.users, 'role:' + assignment.roles ]
-      });
-    }
+    const expectedAssignments = actualMetadata.documentDefinition.accessAssignments.map((assignment) => ({
+      type: 'channel',
+      channels: [ assignment.channels ],
+      usersAndRoles: [ assignment.users, 'role:' + assignment.roles ]
+    }));
+
     expect(actualMetadata.accessAssignments).to.eql(expectedAssignments);
   } else {
     expect(actualMetadata.accessAssignments).to.equal(void 0);

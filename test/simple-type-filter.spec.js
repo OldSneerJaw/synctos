@@ -1,4 +1,4 @@
-var testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper.js');
 
 describe('Simple type filter:', function() {
   beforeEach(function() {
@@ -7,7 +7,7 @@ describe('Simple type filter:', function() {
 
   function testSimpleTypeFilter(docTypeId) {
     it('identifies a brand new document by its type property', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: docTypeId
       };
@@ -16,11 +16,11 @@ describe('Simple type filter:', function() {
     });
 
     it('identifies a new document that is replacing a deleted document by its type property', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: docTypeId
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'my-doc',
         _deleted: true
       };
@@ -29,11 +29,11 @@ describe('Simple type filter:', function() {
     });
 
     it('identifies an updated document by its type property when it matches that of the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: docTypeId
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'my-doc',
         type: docTypeId
       };
@@ -42,7 +42,7 @@ describe('Simple type filter:', function() {
     });
 
     it('identifies a deleted document by the type property of the old document', function() {
-      var oldDoc = {
+      const oldDoc = {
         _id: 'my-doc',
         type: docTypeId
       };
@@ -51,11 +51,11 @@ describe('Simple type filter:', function() {
     });
 
     it('refuses to identify an updated document by its type property when it differs from that of the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: docTypeId
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'my-doc',
         type: 'somethingElse'
       };
@@ -64,7 +64,7 @@ describe('Simple type filter:', function() {
     });
 
     it('cannot identify a document when the type property is not set', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc'
       };
 
@@ -72,7 +72,7 @@ describe('Simple type filter:', function() {
     });
 
     it('cannot identify a document when the type property is set to an unknown type', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'somethingElse'
       };
@@ -81,7 +81,7 @@ describe('Simple type filter:', function() {
     });
 
     it('cannot identify a deleted document when the old document does not exist', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         _deleted: true
       };
@@ -92,11 +92,11 @@ describe('Simple type filter:', function() {
     });
 
     it('cannot identify a deleted document when the old document is also deleted', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         _deleted: true
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'my-doc',
         _deleted: true
       };

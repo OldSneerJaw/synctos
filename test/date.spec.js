@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Date validation type:', function() {
   beforeEach(function() {
@@ -8,7 +8,7 @@ describe('Date validation type:', function() {
 
   describe('format validation', function() {
     it('accepts a valid date with all components', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-17'
       };
@@ -17,7 +17,7 @@ describe('Date validation type:', function() {
     });
 
     it('accepts a valid date without a day', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '0000-12'
       };
@@ -26,7 +26,7 @@ describe('Date validation type:', function() {
     });
 
     it('accepts a valid date without a month or day', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '9999'
       };
@@ -35,7 +35,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date with an invalid year', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '999-07-17'
       };
@@ -44,7 +44,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date with an invalid month', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-13-17'
       };
@@ -53,7 +53,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date with an invalid day', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-32'
       };
@@ -62,7 +62,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date with time and time zone components', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-17T15:01:58.382-05:00'
       };
@@ -71,7 +71,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date with a time but no time zone', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-17T21:27:10.894'
       };
@@ -80,7 +80,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a value that is not a string', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: 20160717
       };
@@ -91,7 +91,7 @@ describe('Date validation type:', function() {
 
   describe('inclusive range constraints', function() {
     it('accepts a date with all components that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016-01-01'
       };
@@ -100,7 +100,7 @@ describe('Date validation type:', function() {
     });
 
     it('accepts a date without a day that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016-01'
       };
@@ -109,7 +109,7 @@ describe('Date validation type:', function() {
     });
 
     it('accepts a date with a month or day that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016'
       };
@@ -118,7 +118,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date that is less than the minimum value', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2015-12-31'
       };
@@ -130,7 +130,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date that is greater than the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016-01-02'
       };
@@ -144,7 +144,7 @@ describe('Date validation type:', function() {
 
   describe('exclusive range constraints', function() {
     it('accepts a date with all components that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02-01'
       };
@@ -153,7 +153,7 @@ describe('Date validation type:', function() {
     });
 
     it('accepts a date without a day that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02'
       };
@@ -162,7 +162,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date that is less than the minimum value', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2017-12-31'
       };
@@ -174,7 +174,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date that is equal to the minimum value', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018'
       };
@@ -186,7 +186,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date that is greater than the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02-03'
       };
@@ -198,7 +198,7 @@ describe('Date validation type:', function() {
     });
 
     it('rejects a date that is equal to the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02-02'
       };

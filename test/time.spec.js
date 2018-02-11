@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Time validation type:', function() {
   beforeEach(function() {
@@ -8,7 +8,7 @@ describe('Time validation type:', function() {
 
   describe('format', function() {
     it('accepts a valid time with all components and period as a decimal separator', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '23:59:59.999'
@@ -18,7 +18,7 @@ describe('Time validation type:', function() {
     });
 
     it('accepts a valid time without the millisecond component', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '23:59:59'
@@ -28,7 +28,7 @@ describe('Time validation type:', function() {
     });
 
     it('accepts a valid time without the second and millisecond components', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '23:59'
@@ -38,7 +38,7 @@ describe('Time validation type:', function() {
     });
 
     it('rejects a time without the minute, second and millisecond components', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '23'
@@ -48,7 +48,7 @@ describe('Time validation type:', function() {
     });
 
     it('rejects a time that is above the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '24:00:00.000'
@@ -58,7 +58,7 @@ describe('Time validation type:', function() {
     });
 
     it('rejects a time that is formatted incorrectly', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '235959.999'
@@ -68,7 +68,7 @@ describe('Time validation type:', function() {
     });
 
     it('rejects a time that is not a string', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: 235959.999
@@ -78,7 +78,7 @@ describe('Time validation type:', function() {
     });
 
     it('rejects a time with a comma for a decimal separator', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '23:59:59,999'
@@ -90,7 +90,7 @@ describe('Time validation type:', function() {
 
   describe('inclusive range constraints', function() {
     it('allow a time with all components that is within the minimum and maximum value range', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxInclusiveValuesProp: '01:08:53.115'
@@ -100,7 +100,7 @@ describe('Time validation type:', function() {
     });
 
     it('allow a time without milliseconds that is within the minimum and maximum value range', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxInclusiveValuesProp: '01:09:01'
@@ -110,7 +110,7 @@ describe('Time validation type:', function() {
     });
 
     it('allow a time without seconds and milliseconds that is within the minimum and maximum value range', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxInclusiveValuesProp: '01:08'
@@ -120,7 +120,7 @@ describe('Time validation type:', function() {
     });
 
     it('reject a time that is less than the minimum value constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxInclusiveValuesProp: '01:07:59.999'
@@ -133,7 +133,7 @@ describe('Time validation type:', function() {
     });
 
     it('reject a time that is greater than the maximum value constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxInclusiveValuesProp: '01:09:01.001'
@@ -148,7 +148,7 @@ describe('Time validation type:', function() {
 
   describe('exclusive range constraints', function() {
     it('allow a time with all components that is within the minimum and maximum value range', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxExclusiveValuesProp: '13:42:01.001'
@@ -158,7 +158,7 @@ describe('Time validation type:', function() {
     });
 
     it('allow a time without milliseconds that is within the minimum and maximum value range', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxExclusiveValuesProp: '13:42:01'
@@ -168,7 +168,7 @@ describe('Time validation type:', function() {
     });
 
     it('reject a time that is less than the minimum value constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxExclusiveValuesProp: '13:42:00.9'
@@ -181,7 +181,7 @@ describe('Time validation type:', function() {
     });
 
     it('reject a time that is equal to the minimum value constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxExclusiveValuesProp: '13:42:00.999'
@@ -194,7 +194,7 @@ describe('Time validation type:', function() {
     });
 
     it('reject a time that is greater than the maximum value constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxExclusiveValuesProp: '13:42:01.01'
@@ -207,7 +207,7 @@ describe('Time validation type:', function() {
     });
 
     it('reject a time that is equal to the maximum value constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         minAndMaxExclusiveValuesProp: '13:42:01.002'

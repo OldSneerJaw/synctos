@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Range constraints:', function() {
   beforeEach(function() {
@@ -8,7 +8,7 @@ describe('Range constraints:', function() {
 
   describe('static inclusive ranges', function() {
     it('allow an integer that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticIntegerProp: -5
       };
@@ -17,7 +17,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a floating point number that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticFloatProp: 7.5
       };
@@ -26,7 +26,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a datetime that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.920-0700'
       };
@@ -35,7 +35,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a date that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticDateProp: '2016-07-19',
       };
@@ -44,7 +44,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is below the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticIntegerProp: -6
       };
@@ -53,7 +53,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is above the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticIntegerProp: -4
       };
@@ -62,7 +62,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is below the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticFloatProp: 7.499
       };
@@ -71,7 +71,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is above the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticFloatProp: 7.501
       };
@@ -80,7 +80,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is below the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.919-0700'
       };
@@ -89,7 +89,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is above the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.921-0700'
       };
@@ -98,7 +98,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is below the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticDateProp: '2016-07-18'
       };
@@ -107,7 +107,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is above the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         staticDateProp: '2016-07-20'
       };
@@ -118,7 +118,7 @@ describe('Range constraints:', function() {
 
   describe('dynamic inclusive ranges', function() {
     it('allow an integer that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicIntegerProp: 95,
         dynamicPropertyValuesAllowed: true
@@ -128,7 +128,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a floating point number that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicFloatProp: -867.1,
         dynamicPropertyValuesAllowed: true
@@ -138,7 +138,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a datetime that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicDatetimeProp: '2017-04-07T18:24:38.920-0700',
         dynamicPropertyValuesAllowed: true
@@ -148,7 +148,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a date that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicDateProp: '2017-04-07',
         dynamicPropertyValuesAllowed: true
@@ -158,7 +158,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicIntegerProp: 11,
         dynamicPropertyValuesAllowed: false
@@ -171,7 +171,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicFloatProp: 89.98,
         dynamicPropertyValuesAllowed: false
@@ -184,7 +184,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicDatetimeProp: '2016-07-19T19:24:38.919-0700',
         dynamicPropertyValuesAllowed: false
@@ -200,7 +200,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'inclusiveRangeDocType',
         dynamicDateProp: '2016-07-18',
         dynamicPropertyValuesAllowed: false
@@ -218,7 +218,7 @@ describe('Range constraints:', function() {
 
   describe('static exclusive ranges', function() {
     it('allow an integer that is within the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticIntegerProp: 52
       };
@@ -227,7 +227,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a floating point number that is within the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticFloatProp: -14
       };
@@ -236,7 +236,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a datetime that is within the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.920-0700'
       };
@@ -245,7 +245,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a date that is within the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDateProp: '2016-07-19'
       };
@@ -254,7 +254,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is equal to the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticIntegerProp: 51
       };
@@ -263,7 +263,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is less than the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticIntegerProp: 50
       };
@@ -272,7 +272,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is equal to the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticIntegerProp: 53
       };
@@ -281,7 +281,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is greater than the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticIntegerProp: 54
       };
@@ -290,7 +290,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is equal to the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticFloatProp: -14.001
       };
@@ -299,7 +299,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is less than the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticFloatProp: -15
       };
@@ -308,7 +308,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is equal to the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticFloatProp: -13.999
       };
@@ -317,7 +317,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is greater than the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticFloatProp: -13
       };
@@ -326,7 +326,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is equal to the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.919-0700'
       };
@@ -338,7 +338,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is less than the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.918-0700'
       };
@@ -350,7 +350,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is equal to the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.921-0700'
       };
@@ -362,7 +362,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is greater than the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDatetimeProp: '2016-07-19T19:24:38.922-0700'
       };
@@ -374,7 +374,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is equal to the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDateProp: '2016-07-18'
       };
@@ -386,7 +386,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is less than the minimum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDateProp: '2016-07-17'
       };
@@ -398,7 +398,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is equal to the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDateProp: '2016-07-20'
       };
@@ -410,7 +410,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is greater than the maximum constraint', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         staticDateProp: '2016-07-21'
       };
@@ -424,7 +424,7 @@ describe('Range constraints:', function() {
 
   describe('dynamic exclusive ranges', function() {
     it('allow an integer that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicIntegerProp: 95,
         dynamicPropertyValuesAllowed: true
@@ -434,7 +434,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a floating point number that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicFloatProp: -867.1,
         dynamicPropertyValuesAllowed: true
@@ -444,7 +444,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a datetime that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicDatetimeProp: '2017-04-07T18:24:38.920-0700',
         dynamicPropertyValuesAllowed: true
@@ -454,7 +454,7 @@ describe('Range constraints:', function() {
     });
 
     it('allow a date that matches the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicDateProp: '2017-04-07',
         dynamicPropertyValuesAllowed: true
@@ -464,7 +464,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject an integer that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicIntegerProp: 11,
         dynamicPropertyValuesAllowed: false
@@ -480,7 +480,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a floating point number that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicFloatProp: 89.98,
         dynamicPropertyValuesAllowed: false
@@ -496,7 +496,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a datetime that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicDatetimeProp: '2016-07-19T19:24:38.919-0700',
         dynamicPropertyValuesAllowed: false
@@ -512,7 +512,7 @@ describe('Range constraints:', function() {
     });
 
     it('reject a date that is outside the minimum and maximum constraints', function() {
-      var doc = {
+      const doc = {
         _id: 'exclusiveRangeDocType',
         dynamicDateProp: '2016-07-18',
         dynamicPropertyValuesAllowed: false

@@ -1,4 +1,4 @@
-var testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper.js');
 
 describe('Document definition fragments:', function() {
   beforeEach(function() {
@@ -6,7 +6,7 @@ describe('Document definition fragments:', function() {
   });
 
   it('can create documents for a document type whose definition was imported with a single-quoted filename', function() {
-    var doc = {
+    const doc = {
       _id: 'stringFragmentDoc',
       stringProp: '2017-01-06'
     };
@@ -15,7 +15,7 @@ describe('Document definition fragments:', function() {
   });
 
   it('can create documents for a document type whose definition was imported with a double-quoted filename', function() {
-    var doc = {
+    const doc = {
       _id: 'booleanFragmentDoc',
       booleanProp: true
     };
@@ -24,7 +24,7 @@ describe('Document definition fragments:', function() {
   });
 
   it('can create documents with nested imports', function() {
-    var doc = {
+    const doc = {
       _id: 'objectFragmentDoc',
       type: 'nestedImportDoc',
       objectProp: { nestedProperty: -58 }

@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Immutable when set constraint:', function() {
   beforeEach(function() {
@@ -8,7 +8,7 @@ describe('Immutable when set constraint:', function() {
 
   describe('a property with static validation', function() {
     it('can be set to a value in a new document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
@@ -17,7 +17,7 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be left undefined in a new document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc'
       };
 
@@ -25,7 +25,7 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be set to null in a new document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: null
       };
@@ -34,11 +34,11 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be set to the same value as was already assigned in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
@@ -47,11 +47,11 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be set to a value if it was left undefined in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc'
       };
 
@@ -59,11 +59,11 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be set to a value if it was null in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: null
       };
@@ -72,11 +72,11 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be set to null if it was undefined in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: null
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc'
       };
 
@@ -84,10 +84,10 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be set to undefined if it was null in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: null
       };
@@ -96,11 +96,11 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('cannot be changed to a new value if it was set to a value in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: 'barfoo'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
@@ -109,10 +109,10 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('cannot be change to undefined if it was set to a value in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
@@ -121,11 +121,11 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('cannot be changed to null if it was set to a value in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticValidationProp: null
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
@@ -134,7 +134,7 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('does not prevent a document from being deleted if it is set to a value', function() {
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
       };
@@ -145,12 +145,12 @@ describe('Immutable when set constraint:', function() {
 
   describe('a property with dynamic validation', function() {
     it('can be set to the same value as was already assigned in the old document', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         dynamicValidationProp: 42,
         dynamicPropertiesAreImmutable: true
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         dynamicValidationProp: 42,
         dynamicPropertiesAreImmutable: true
@@ -160,12 +160,12 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('can be set to a new value if the property is not immutable', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         dynamicValidationProp: -1,
         dynamicPropertiesAreImmutable: false
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         dynamicValidationProp: 42,
         dynamicPropertiesAreImmutable: false
@@ -175,12 +175,12 @@ describe('Immutable when set constraint:', function() {
     });
 
     it('cannot be set to a new value if the property is immutable', function() {
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         dynamicValidationProp: 0,
         dynamicPropertiesAreImmutable: true
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         dynamicValidationProp: -1,
         dynamicPropertiesAreImmutable: true

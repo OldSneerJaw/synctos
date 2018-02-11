@@ -1,15 +1,15 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
-var { expect } = require('chai');
+const sampleSpecHelper = require('./helpers/sample-spec-helper.js');
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
+const { expect } = require('chai');
 
 describe('Sample business notification transport doc definition', function() {
   beforeEach(function() {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
-  var expectedDocType = 'notificationTransport';
-  var expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
+  const expectedDocType = 'notificationTransport';
+  const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
   function verifyAuthorizationCustomAction(docId, action) {
     expect(testHelper.requireAccess.callCount).to.equal(2);
@@ -21,7 +21,7 @@ describe('Sample business notification transport doc definition', function() {
   }
 
   it('successfully creates a valid notification transport document', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.82.notificationTransport.ABC',
       type: 'email',
       recipient: 'foo.bar@example.com'
@@ -32,7 +32,7 @@ describe('Sample business notification transport doc definition', function() {
   });
 
   it('cannot create a notification transport document when the properties are invalid', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.75.notificationTransport.ABC',
       recipient: ''
     };
@@ -47,12 +47,12 @@ describe('Sample business notification transport doc definition', function() {
   });
 
   it('successfully replaces a valid notification transport document', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.38.notificationTransport.ABC',
       type: 'email',
       recipient: 'different.foo.bar@example.com'
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'biz.38.notificationTransport.ABC',
       type: 'email',
       recipient: 'foo.bar@example.com'
@@ -63,11 +63,11 @@ describe('Sample business notification transport doc definition', function() {
   });
 
   it('cannot replace a notification transport document when the properties are invalid', function() {
-    var doc = {
+    const doc = {
       _id: 'biz.73.notificationTransport.ABC',
       type: 23,
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'biz.73.notificationTransport.ABC',
       type: 'email',
       recipient: 'foo.bar@example.com'
@@ -84,7 +84,7 @@ describe('Sample business notification transport doc definition', function() {
   });
 
   it('successfully deletes a notification transport document', function() {
-    var oldDoc = {
+    const oldDoc = {
       _id: 'biz.14.notificationTransport.ABC',
       type: 'email',
       recipient: 'different.foo.bar@example.com'

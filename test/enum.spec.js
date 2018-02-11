@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Enum validation type', function() {
   beforeEach(function() {
@@ -8,7 +8,7 @@ describe('Enum validation type', function() {
 
   describe('static validation', function() {
     it('accepts an allowed string', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 'value1'
       };
@@ -17,7 +17,7 @@ describe('Enum validation type', function() {
     });
 
     it('accepts an allowed integer', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 2
       };
@@ -26,7 +26,7 @@ describe('Enum validation type', function() {
     });
 
     it('rejects a string value that is not in the list of predefined values', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 'value2'
       };
@@ -38,7 +38,7 @@ describe('Enum validation type', function() {
     });
 
     it('rejects an integer value that is not in the list of predefined values', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 1
       };
@@ -50,7 +50,7 @@ describe('Enum validation type', function() {
     });
 
     it('rejects a value when the property does not declare a list of predefined values', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         invalidEnumProp: 2
       };
@@ -64,7 +64,7 @@ describe('Enum validation type', function() {
 
   describe('dynamic validation', function() {
     it('accepts an allowed string', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         dynamicEnumProp: 'value1',
         dynamicPredefinedValues: [ 'value1', 'value2' ]
@@ -74,7 +74,7 @@ describe('Enum validation type', function() {
     });
 
     it('accepts an allowed integer', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         dynamicEnumProp: 2,
         dynamicPredefinedValues: [ 1, 2 ]
@@ -84,7 +84,7 @@ describe('Enum validation type', function() {
     });
 
     it('rejects a value that is not in the list of predefined values', function() {
-      var doc = {
+      const doc = {
         _id: 'enumDoc',
         dynamicEnumProp: 'value3',
         dynamicPredefinedValues: [ 'value1', 2 ]

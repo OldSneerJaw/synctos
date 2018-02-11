@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Required value constraint', function() {
   beforeEach(function() {
@@ -8,7 +8,7 @@ describe('Required value constraint', function() {
 
   describe('with static validation', function() {
     it('allows a doc with values that are neither null nor undefined', function() {
-      var doc = {
+      const doc = {
         _id: 'staticDoc',
         stringProp: '',
         integerProp: 0,
@@ -27,7 +27,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with top-level values that are null', function() {
-      var doc = {
+      const doc = {
         _id: 'staticDoc',
         stringProp: null,
         integerProp: null,
@@ -61,7 +61,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with nested values that are null', function() {
-      var doc = {
+      const doc = {
         _id: 'staticDoc',
         stringProp: 'foobar',
         integerProp: -45,
@@ -87,7 +87,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with top-level values that are undefined', function() {
-      var doc = {
+      const doc = {
         _id: 'staticDoc',
         stringProp: void 0,
         integerProp: void 0,
@@ -121,7 +121,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with nested values that are undefined', function() {
-      var doc = {
+      const doc = {
         _id: 'staticDoc',
         stringProp: 'foobar',
         integerProp: -45,
@@ -147,7 +147,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with top-level values that are missing', function() {
-      var doc = { _id: 'staticDoc' };
+      const doc = { _id: 'staticDoc' };
 
       testHelper.verifyDocumentNotCreated(
         doc,
@@ -168,7 +168,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with nested object property values that are missing', function() {
-      var doc = {
+      const doc = {
         _id: 'staticDoc',
         stringProp: 'foobar',
         integerProp: -45,
@@ -189,7 +189,7 @@ describe('Required value constraint', function() {
 
   describe('with dynamic validation', function() {
     it('allows a doc with values that are neither null nor undefined', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: '',
@@ -209,7 +209,7 @@ describe('Required value constraint', function() {
     });
 
     it('allows a doc with top-level values that are either null or undefined if enforcement is disabled', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: false,
         stringProp: null,
@@ -229,7 +229,7 @@ describe('Required value constraint', function() {
     });
 
     it('allows a doc with nested values that are either null or undefined if enforcement is disabled', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         arrayProp: [ null ],
         objectProp: { subProp: void 0 },
@@ -240,7 +240,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with top-level values that are null', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: null,
@@ -275,7 +275,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with nested values that are null', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: 'foobar',
@@ -302,7 +302,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with top-level values that are undefined', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: void 0,
@@ -337,7 +337,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with nested values that are undefined', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: 'foobar',
@@ -364,7 +364,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with top-level values that are missing', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true
       };
@@ -388,7 +388,7 @@ describe('Required value constraint', function() {
     });
 
     it('blocks a doc with nested object property values that are missing', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: 'foobar',

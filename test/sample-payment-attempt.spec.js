@@ -1,6 +1,6 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelper = require('./helpers/sample-spec-helper.js');
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Sample invoice payment processing attempt doc definition', function() {
   beforeEach(function() {
@@ -21,7 +21,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
   }
 
   it('successfully creates a valid payment processing attempt document', function() {
-    var doc = {
+    const doc = {
       _id: 'paymentAttempt.foo-bar',
       _attachments: { },
       businessId: 20,
@@ -40,7 +40,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
   });
 
   it('cannot create a payment processing attempt document when the properties are invalid', function() {
-    var doc = {
+    const doc = {
       _id: 'paymentAttempt.foo-bar',
       businessId: 'my-business',
       paymentRequisitionId: '',
@@ -74,7 +74,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
   });
 
   it('cannot replace a payment processing attempt document because it is immutable', function() {
-    var doc = {
+    const doc = {
       _id: 'paymentAttempt.foo-bar',
       businessId: 0,
       invoiceRecordId: 0,
@@ -84,7 +84,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
       totalAmountPaidFormatted: '',
       unsupportedProperty: 'foobar'
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'paymentAttempt.foo-bar',
       businessId: 23,
       invoiceRecordId: 79,
@@ -113,8 +113,8 @@ describe('Sample invoice payment processing attempt doc definition', function() 
   });
 
   it('cannot delete a valid payment processing attempt document because it is immutable', function() {
-    var doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
-    var oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
+    const doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
+    const oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
 
     verifyPaymentAttemptNotWritten(20, doc, oldDoc, [ errorFormatter.immutableDocViolation() ]);
   });

@@ -1,5 +1,5 @@
-var { expect } = require('chai');
-var testHelper = require('../src/testing/test-helper.js');
+const { expect } = require('chai');
+const testHelper = require('../src/testing/test-helper.js');
 
 describe('User and role access assignment:', function() {
   beforeEach(function() {
@@ -7,7 +7,7 @@ describe('User and role access assignment:', function() {
   });
 
   describe('Static assignment of channels to users and roles', function() {
-    var expectedStaticAssignments = [
+    const expectedStaticAssignments = [
       {
         expectedType: 'channel',
         expectedUsers: [ 'user2', 'user1', 'user4' ],
@@ -32,26 +32,26 @@ describe('User and role access assignment:', function() {
     ];
 
     it('is applied when creating a valid document', function() {
-      var doc = { _id: 'staticAccessDoc' };
+      const doc = { _id: 'staticAccessDoc' };
 
       testHelper.verifyDocumentCreated(doc, 'write', expectedStaticAssignments);
     });
 
     it('is applied when replacing an existing valid document', function() {
-      var doc = { _id: 'staticAccessDoc' };
-      var oldDoc = { _id: 'staticAccessDoc' };
+      const doc = { _id: 'staticAccessDoc' };
+      const oldDoc = { _id: 'staticAccessDoc' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedStaticAssignments);
     });
 
     it('is applied when deleting an existing document', function() {
-      var oldDoc = { _id: 'staticAccessDoc' };
+      const oldDoc = { _id: 'staticAccessDoc' };
 
       testHelper.verifyDocumentDeleted(oldDoc, 'write', expectedStaticAssignments);
     });
 
     it('is NOT applied when creating an invalid document', function() {
-      var doc = {
+      const doc = {
         _id: 'staticAccessDoc',
         invalidProperty: 'foobar'
       };
@@ -63,11 +63,11 @@ describe('User and role access assignment:', function() {
     });
 
     it('is NOT applied when replacing an invalid document', function() {
-      var doc = {
+      const doc = {
         _id: 'staticAccessDoc',
         invalidProperty: 'foobar'
       };
-      var oldDoc = { _id: 'staticAccessDoc' };
+      const oldDoc = { _id: 'staticAccessDoc' };
 
       expect(function() {
         testHelper.syncFunction(doc, oldDoc);
@@ -77,12 +77,12 @@ describe('User and role access assignment:', function() {
   });
 
   describe('Dynamic assignment of channels to users and roles', function() {
-    var doc = {
+    const doc = {
       _id: 'dynamicAccessDoc',
       users: [ 'user1', 'user2' ],
       roles: [ 'role1', 'role2' ]
     };
-    var expectedDynamicAssignments = [
+    const expectedDynamicAssignments = [
       {
         expectedType: 'channel',
         expectedUsers: doc.users,
@@ -111,7 +111,7 @@ describe('User and role access assignment:', function() {
     });
 
     it('is applied when replacing a deleted document', function() {
-      var oldDoc = {
+      const oldDoc = {
         _id: 'dynamicAccessDoc',
         _deleted: true
       };
@@ -123,15 +123,15 @@ describe('User and role access assignment:', function() {
     });
 
     it('is applied when replacing an existing valid document', function() {
-      var oldDoc = { _id: 'dynamicAccessDoc' };
+      const oldDoc = { _id: 'dynamicAccessDoc' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
     it('is applied when deleting an existing document', function() {
-      var oldDoc = { _id: 'dynamicAccessDoc' };
+      const oldDoc = { _id: 'dynamicAccessDoc' };
 
-      var expectedDeleteAssignments = [
+      const expectedDeleteAssignments = [
         {
           expectedType: 'channel',
           expectedUsers: null,
@@ -159,7 +159,7 @@ describe('User and role access assignment:', function() {
     });
 
     it('is NOT applied when creating an invalid document', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicAccessDoc',
         users: [ 'user1' ],
         roles: [ 'role1' ],
@@ -173,13 +173,13 @@ describe('User and role access assignment:', function() {
     });
 
     it('is NOT applied when replacing an invalid document', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicAccessDoc',
         users: [ 'user1' ],
         roles: [ 'role1' ],
         invalidProperty: 'foobar'
       };
-      var oldDoc = { _id: 'dynamicAccessDoc' };
+      const oldDoc = { _id: 'dynamicAccessDoc' };
 
       expect(function() {
         testHelper.syncFunction(doc, oldDoc);

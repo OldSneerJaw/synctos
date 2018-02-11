@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('String validation type', function() {
   beforeEach(function() {
@@ -9,7 +9,7 @@ describe('String validation type', function() {
   describe('length constraints', function() {
     describe('with static validation', function() {
       it('can create a doc with a string that is within the minimum and maximum lengths', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticLengthValidationProp: 'foo'
         };
@@ -18,7 +18,7 @@ describe('String validation type', function() {
       });
 
       it('cannot create a doc with a string that is shorter than the minimum length', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticLengthValidationProp: 'fo'
         };
@@ -27,7 +27,7 @@ describe('String validation type', function() {
       });
 
       it('cannot create a doc with a string that is longer than the maximum length', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticLengthValidationProp: 'foob'
         };
@@ -38,7 +38,7 @@ describe('String validation type', function() {
 
     describe('with dynamic validation', function() {
       it('allows a doc with a string that is within the minimum and maximum lengths', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicLengthValidationProp: 'foo',
           dynamicLengthPropertyIsValid: true
@@ -48,7 +48,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a doc with a string that is shorter than the minimum length', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicLengthValidationProp: 'foobar',
           dynamicLengthPropertyIsValid: false
@@ -68,7 +68,7 @@ describe('String validation type', function() {
   describe('non-empty constraint', function() {
     describe('with static validation', function() {
       it('allows a doc with a string that is not empty', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticNonEmptyValidationProp: 'foo'
         };
@@ -77,7 +77,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a doc with an empty string', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticNonEmptyValidationProp: ''
         };
@@ -88,7 +88,7 @@ describe('String validation type', function() {
 
     describe('with dynamic validation', function() {
       it('allows a doc with a string that is not empty', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicNonEmptyValidationProp: 'bar',
           dynamicMustNotBeEmptyPropertiesEnforced: true
@@ -98,7 +98,7 @@ describe('String validation type', function() {
       });
 
       it('allows a doc with a string that is empty if the constraint is disabled', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicNonEmptyValidationProp: '',
           dynamicMustNotBeEmptyPropertiesEnforced: false
@@ -108,7 +108,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a doc with an empty string if the constraint is enabled', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicNonEmptyValidationProp: '',
           dynamicMustNotBeEmptyPropertiesEnforced: true
@@ -122,7 +122,7 @@ describe('String validation type', function() {
   describe('regular expression pattern constraint', function() {
     describe('with static validation', function() {
       it('allows a doc with a string that matches the expected pattern', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticRegexPatternValidationProp: '0472`foo'
         };
@@ -131,7 +131,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a doc with a string that does not match the expected pattern', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticRegexPatternValidationProp: 'foobar'
         };
@@ -144,10 +144,10 @@ describe('String validation type', function() {
     });
 
     describe('with dynamic validation', function() {
-      var testRegexPattern = '^[a-zA-Z]+$';
+      const testRegexPattern = '^[a-zA-Z]+$';
 
       it('allows a doc with a string that matches the expected pattern', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicRegexPatternValidationProp: 'fooBAR',
           dynamicRegex: testRegexPattern
@@ -157,7 +157,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a doc with a string that does not match the expected pattern', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicRegexPatternValidationProp: 'foobar2',
           dynamicRegex: testRegexPattern
@@ -174,7 +174,7 @@ describe('String validation type', function() {
   describe('must be trimmed constraint', function() {
     describe('with static validation', function() {
       it('allows an empty string', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: ''
         };
@@ -183,7 +183,7 @@ describe('String validation type', function() {
       });
 
       it('allows a string that has no leading or trailing whitespace', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: 'foo bar'
         };
@@ -192,7 +192,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a string that has leading whitespace', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: '\tfoo bar'
         };
@@ -201,7 +201,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a string that has trailing whitespace', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: 'foo bar\n'
         };
@@ -212,7 +212,7 @@ describe('String validation type', function() {
 
     describe('with dynamic validation', function() {
       it('allows a string that has no leading or trailing whitespace', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: 'bar',
           dynamicMustBeTrimmedState: true
@@ -222,7 +222,7 @@ describe('String validation type', function() {
       });
 
       it('allows a string that has leading whitespace if the constraint is disabled', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: ' foobar',
           dynamicMustBeTrimmedState: false
@@ -232,7 +232,7 @@ describe('String validation type', function() {
       });
 
       it('allows a string that has trailing whitespace if the constraint is disabled', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: 'foobar ',
           dynamicMustBeTrimmedState: false
@@ -242,7 +242,7 @@ describe('String validation type', function() {
       });
 
       it('blocks a string that has leading and trailing whitespace if the constraint is enabled', function() {
-        var doc = {
+        const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: ' foobar ',
           dynamicMustBeTrimmedState: true

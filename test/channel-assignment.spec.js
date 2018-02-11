@@ -1,4 +1,4 @@
-var testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper.js');
 
 describe('Channel assignment:', function() {
 
@@ -7,25 +7,25 @@ describe('Channel assignment:', function() {
   });
 
   describe('for a document with explicit channel definitions', function() {
-    var allChannels = [ 'add', 'update', 'replace', 'view', 'delete', 'remove' ];
+    const allChannels = [ 'add', 'update', 'replace', 'view', 'delete', 'remove' ];
 
     it('includes all configured channels when assigning channels to a new document', function() {
-      var doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
+      const doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
 
       testHelper.verifyDocumentCreated(doc, 'add');
       testHelper.verifyChannelAssignment(allChannels);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', function() {
-      var doc = { _id: 'explicitChannelsDoc', stringProp: 'foobaz' };
-      var oldDoc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
+      const doc = { _id: 'explicitChannelsDoc', stringProp: 'foobaz' };
+      const oldDoc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc, [ 'replace', 'update' ]);
       testHelper.verifyChannelAssignment(allChannels);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', function() {
-      var doc = { _id: 'explicitChannelsDoc', _deleted: true };
+      const doc = { _id: 'explicitChannelsDoc', _deleted: true };
 
       testHelper.verifyDocumentDeleted(doc, [ 'remove', 'delete' ]);
       testHelper.verifyChannelAssignment(allChannels);
@@ -33,25 +33,25 @@ describe('Channel assignment:', function() {
   });
 
   describe('for a document with only the write channels defined', function() {
-    var writeChannels = [ 'edit', 'modify', 'write' ];
+    const writeChannels = [ 'edit', 'modify', 'write' ];
 
     it('includes all configured channels when assigning channels to a new document', function() {
-      var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
+      const doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
       testHelper.verifyDocumentCreated(doc, writeChannels);
       testHelper.verifyChannelAssignment(writeChannels);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', function() {
-      var doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobaz' };
-      var oldDoc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
+      const doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobaz' };
+      const oldDoc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc, writeChannels);
       testHelper.verifyChannelAssignment(writeChannels);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', function() {
-      var doc = { _id: 'writeOnlyChannelsDoc', _deleted: true };
+      const doc = { _id: 'writeOnlyChannelsDoc', _deleted: true };
 
       testHelper.verifyDocumentDeleted(doc, writeChannels);
       testHelper.verifyChannelAssignment(writeChannels);
@@ -59,18 +59,18 @@ describe('Channel assignment:', function() {
   });
 
   describe('for a document with dynamically-assigned roles and channels', function() {
-    var allExpectedChannels = [ 'dynamicChannelsRolesAndUsersDoc-write', 'dynamicChannelsRolesAndUsersDoc-view' ];
-    var expectedWriteChannels = [ 'dynamicChannelsRolesAndUsersDoc-write' ];
-    var expectedWriteRoles = [ 'write-role1', 'write-role2' ];
-    var expectedWriteUsers = [ 'write-user1', 'write-user2' ];
-    var expectedAuthorization = {
+    const allExpectedChannels = [ 'dynamicChannelsRolesAndUsersDoc-write', 'dynamicChannelsRolesAndUsersDoc-view' ];
+    const expectedWriteChannels = [ 'dynamicChannelsRolesAndUsersDoc-write' ];
+    const expectedWriteRoles = [ 'write-role1', 'write-role2' ];
+    const expectedWriteUsers = [ 'write-user1', 'write-user2' ];
+    const expectedAuthorization = {
       expectedChannels: expectedWriteChannels,
       expectedRoles: expectedWriteRoles,
       expectedUsers: expectedWriteUsers
     };
 
     it('includes all configured channels when assigning channels to a new document', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicChannelsRolesAndUsersDoc',
         stringProp: 'foobar',
         roles: expectedWriteRoles,
@@ -82,11 +82,11 @@ describe('Channel assignment:', function() {
     });
 
     it('includes all configured channels when assigning channels to a replaced document', function() {
-      var doc = {
+      const doc = {
         _id: 'dynamicChannelsRolesAndUsersDoc',
         stringProp: 'foobar'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'dynamicChannelsRolesAndUsersDoc',
         roles: expectedWriteRoles,
         users: expectedWriteUsers
@@ -97,7 +97,7 @@ describe('Channel assignment:', function() {
     });
 
     it('includes all configured channels when assigning channels to a deleted document', function() {
-      var oldDoc = {
+      const oldDoc = {
         _id: 'dynamicChannelsRolesAndUsersDoc',
         roles: expectedWriteRoles,
         users: expectedWriteUsers
@@ -110,7 +110,7 @@ describe('Channel assignment:', function() {
 
   describe('for a document with statically-assigned roles and no channels', function() {
     it('includes all configured channels when assigning channels to a new document', function() {
-      var doc = {
+      const doc = {
         _id: 'noChannelsAndStaticRolesDoc',
         stringProp: 'foobar'
       };
@@ -120,11 +120,11 @@ describe('Channel assignment:', function() {
     });
 
     it('includes all configured channels when assigning channels to a replaced document', function() {
-      var doc = {
+      const doc = {
         _id: 'noChannelsAndStaticRolesDoc',
         stringProp: 'foobar'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
@@ -133,7 +133,7 @@ describe('Channel assignment:', function() {
     });
 
     it('includes all configured channels when assigning channels to a deleted document', function() {
-      var oldDoc = {
+      const oldDoc = {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
@@ -144,7 +144,7 @@ describe('Channel assignment:', function() {
 
   describe('for a document with statically-assigned users and no channels', function() {
     it('includes all configured channels when assigning channels to a new document', function() {
-      var doc = {
+      const doc = {
         _id: 'noChannelsAndStaticUsersDoc',
         stringProp: 'foobar'
       };
@@ -154,11 +154,11 @@ describe('Channel assignment:', function() {
     });
 
     it('includes all configured channels when assigning channels to a replaced document', function() {
-      var doc = {
+      const doc = {
         _id: 'noChannelsAndStaticUsersDoc',
         stringProp: 'foobar'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'noChannelsAndStaticUsersDoc'
       };
 
@@ -167,7 +167,7 @@ describe('Channel assignment:', function() {
     });
 
     it('includes all configured channels when assigning channels to a deleted document', function() {
-      var oldDoc = {
+      const oldDoc = {
         _id: 'noChannelsAndStaticUsersDoc'
       };
 

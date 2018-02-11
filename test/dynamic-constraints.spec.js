@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Dynamic constraints', function() {
   beforeEach(function() {
@@ -7,7 +7,7 @@ describe('Dynamic constraints', function() {
   });
 
   it('allows a new doc to be created when the property constraints are satisfied', function() {
-    var doc = {
+    const doc = {
       _id: 'my-doc',
       type: 'myDoc',
       dynamicReferenceId: 7,
@@ -19,14 +19,14 @@ describe('Dynamic constraints', function() {
   });
 
   it('allows an existing doc to be replaced when the property constraints are satisfied', function() {
-    var doc = {
+    const doc = {
       _id: 'my-doc',
       type: 'myDoc',
       dynamicReferenceId: 5,
       validationByDocProperty: 'foo-0-bar', // Note that the new value must be constructed from the old doc's dynamicReferenceId
       validationByValueProperty: -34 // Note that the new value must equal the old value + 1
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'my-doc',
       type: 'myDoc',
       dynamicReferenceId: 0,
@@ -38,14 +38,14 @@ describe('Dynamic constraints', function() {
   });
 
   it('allows a deleted doc to be replaced when the property constraints are satisfied', function() {
-    var doc = {
+    const doc = {
       _id: 'my-doc',
       type: 'myDoc',
       dynamicReferenceId: 34,
       validationByDocProperty: 'foo-34-bar',
       validationByValueProperty: 7
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'my-doc',
       _deleted: true,
       type: 'myDoc',
@@ -58,7 +58,7 @@ describe('Dynamic constraints', function() {
   });
 
   it('blocks a doc from being created when the property constraints are violated', function() {
-    var doc = {
+    const doc = {
       _id: 'my-doc',
       type: 'myDoc',
       dynamicReferenceId: 83,
@@ -77,14 +77,14 @@ describe('Dynamic constraints', function() {
   });
 
   it('blocks a doc from being replaced when the property constraints are violated', function() {
-    var doc = {
+    const doc = {
       _id: 'my-doc',
       type: 'myDoc',
       dynamicReferenceId: 2,
       validationByDocProperty: 'foo-2-bar', // Note that the new value must be constructed from the old doc's dynamicReferenceId
       validationByValueProperty: 20 // Note that the new value must equal the old value + 1
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'my-doc',
       type: 'myDoc',
       dynamicReferenceId: 1,

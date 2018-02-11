@@ -1,4 +1,4 @@
-var testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper.js');
 
 describe('Array validation type', function() {
   beforeEach(function() {
@@ -6,7 +6,7 @@ describe('Array validation type', function() {
   });
 
   it('allows a document that satisfies a custom validation constraint implemented with Underscore.js', function() {
-    var doc = {
+    const doc = {
       _id: 'my-doc',
       type: 'underscoreDoc',
       myProp: 'foo.bar'
@@ -16,7 +16,7 @@ describe('Array validation type', function() {
   });
 
   it('rejects a document that fails a custom validation constraint implemented with Underscore.js', function() {
-    var doc = {
+    const doc = {
       _id: 'my-doc',
       type: 'underscoreDoc',
       myProp: 'foo & bar'

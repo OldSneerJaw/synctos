@@ -1,5 +1,5 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper.js');
+const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Date/time validation type', function() {
   beforeEach(function() {
@@ -8,7 +8,7 @@ describe('Date/time validation type', function() {
 
   describe('format validation', function() {
     it('accepts a valid date/time with time and time zone components', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09.348-07:00'
       };
@@ -17,7 +17,7 @@ describe('Date/time validation type', function() {
     });
 
     it('accepts a valid date/time with a time component but no time zone', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09.348'
       };
@@ -26,7 +26,7 @@ describe('Date/time validation type', function() {
     });
 
     it('accepts a valid date/time with neither time nor time zone components', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17'
       };
@@ -35,7 +35,7 @@ describe('Date/time validation type', function() {
     });
 
     it('accepts a valid date/time without a day', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07T15:20:09.348-07:00'
       };
@@ -44,7 +44,7 @@ describe('Date/time validation type', function() {
     });
 
     it('accepts a valid date/time without month and day', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016T15:20:09.348-07:00'
       };
@@ -53,7 +53,7 @@ describe('Date/time validation type', function() {
     });
 
     it('accepts a valid date/time with only a year', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016'
       };
@@ -62,7 +62,7 @@ describe('Date/time validation type', function() {
     });
 
     it('accepts a valid date/time without milliseconds', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09-07:00'
       };
@@ -71,7 +71,7 @@ describe('Date/time validation type', function() {
     });
 
     it('accepts a valid date/time without seconds and milliseconds', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20-07:00'
       };
@@ -80,7 +80,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with an invalid year', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '10000-07-17T15:20:09.348-07:00'
       };
@@ -89,7 +89,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with an invalid month', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-00-17T15:20:09.348-07:00'
       };
@@ -98,7 +98,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with an invalid day', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-00T15:20:09.348-07:00'
       };
@@ -107,7 +107,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with an invalid hour', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T25:20:09.348-07:00'
       };
@@ -116,7 +116,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with invalid minutes', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:60:09.348-07:00'
       };
@@ -125,7 +125,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with invalid seconds', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:60.348-07:00'
       };
@@ -134,7 +134,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with invalid milliseconds', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09.1000-07:00'
       };
@@ -143,7 +143,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with an invalid time zone hour', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09.348-24:00'
       };
@@ -152,7 +152,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with invalid time zone minutes', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09.348-07:60'
       };
@@ -161,7 +161,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with a comma as the separator between seconds and milliseconds', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09,348-07:00'
       };
@@ -170,7 +170,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with a time zone of lowercase "z"', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-06-24T08:22:17.123z'
       };
@@ -179,7 +179,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time without minutes in the time zone component', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15:20:09.348-07'
       };
@@ -188,7 +188,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time where a blank space is used to separate date and time components', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17 15:20:09.348-07:00'
       };
@@ -197,7 +197,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time with a time zone component but no time', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17TZ'
       };
@@ -206,7 +206,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time without minutes', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-17T15-07:00'
       };
@@ -215,7 +215,7 @@ describe('Date/time validation type', function() {
     });
 
     it('rejects a date/time without a date component', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: 'T15:20:09.348-07:00'
       };
@@ -226,7 +226,7 @@ describe('Date/time validation type', function() {
 
   describe('range validation for min and max dates with time and time zone components', function() {
     it('can create a doc with a date/time that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatetimesProp: '2016-06-24T08:22:17.123+0230'  // Same date/time as the min and max values, different time zone
       };
@@ -235,7 +235,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date/time that is less than the minimum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatetimesProp: '2016-06-24T05:52:17.122Z'
       };
@@ -247,7 +247,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date without time and time zone components that is less than the minimum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatetimesProp: '2016-06-24'  // Treated as UTC when time zone is undefined, making it less than the min value
       };
@@ -259,7 +259,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date/time that is greater than the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatetimesProp: '2016-06-23T21:52:17.124-08:00'
       };
@@ -271,7 +271,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date without time and time zone components that is greater than the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatetimesProp: '2016-06-25'
       };
@@ -283,7 +283,7 @@ describe('Date/time validation type', function() {
     });
 
     it('does not consider an invalid date/time as out of range', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatetimesProp: 'not-a-date'
       };
@@ -295,7 +295,7 @@ describe('Date/time validation type', function() {
 
   describe('range validation for min and max dates without time and time zone components', function() {
     it('can create a doc with a date/time that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatesOnlyProp: '2016-06-23T16:30:00.000-07:30'  // When adjusted to UTC, this matches the min and max dates
       };
@@ -304,7 +304,7 @@ describe('Date/time validation type', function() {
     });
 
     it('can create a doc with a date without time and time zone components that is within the minimum and maximum values', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatesOnlyProp: '2016-06-24'
       };
@@ -313,7 +313,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date/time that is less than the minimum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatesOnlyProp: '2016-06-23T23:59:59.999Z'
       };
@@ -325,7 +325,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date without time and time zone components that is less than the minimum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatesOnlyProp: '2016-06-23'
       };
@@ -337,7 +337,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date/time that is greater than the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatesOnlyProp: '2016-06-24T00:00:00.001Z'
       };
@@ -349,7 +349,7 @@ describe('Date/time validation type', function() {
     });
 
     it('cannot create a doc with a date without time and time zone components that is greater than the maximum value', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatesOnlyProp: '2016-06-25'
       };
@@ -361,7 +361,7 @@ describe('Date/time validation type', function() {
     });
 
     it('does not consider an invalid date as out of range', function() {
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         rangeValidationAsDatesOnlyProp: 'not-a-date'
       };
