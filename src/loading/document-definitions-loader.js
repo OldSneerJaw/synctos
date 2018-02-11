@@ -20,7 +20,7 @@ function loadFromFile(docDefinitionsFile) {
     if (ex.code === 'ENOENT') {
       console.log('ERROR: Sync document definitions file does not exist');
     } else {
-      console.log('ERROR: Unable to read the sync document definitions file: ' + ex);
+      console.log(`ERROR: Unable to read the sync document definitions file: ${ex}`);
     }
 
     throw ex;

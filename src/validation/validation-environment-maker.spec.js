@@ -44,7 +44,7 @@ describe('Validation environment maker', () => {
 
     expect(vmMock.runInThisContext.callCount).to.equal(1);
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
-      '(' + expectedEnvString + ');',
+      `(${expectedEnvString});`,
       {
         filename: originalFilename,
         displayErrors: true

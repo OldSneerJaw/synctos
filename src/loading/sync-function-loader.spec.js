@@ -59,7 +59,7 @@ describe('Sync function loader', () => {
 
     expect(indentMock.js.callCount).to.equal(1);
     expect(indentMock.js.calls[0].args).to.eql(
-      [ 'function my-sync-func-template() { ' + docDefinitionsContent + '; }', { tabString: '  ' } ]);
+      [ `function my-sync-func-template() { ${docDefinitionsContent}; }`, { tabString: '  ' } ]);
   });
 
   it('should throw an exception if the sync function template file does not exist', () => {

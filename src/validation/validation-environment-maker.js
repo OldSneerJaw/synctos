@@ -30,7 +30,7 @@ function init(docDefinitionsString, originalFilename) {
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.
-  const envStatement = '(' + envString + ');';
+  const envStatement = `(${envString});`;
 
   // Compile the document definitions environment function within the current virtual machine context so it can share access to the
   // "requireAccess", "channel", "customActionStub", etc. stubs

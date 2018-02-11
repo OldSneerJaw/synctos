@@ -267,25 +267,25 @@ function init(rawSyncFunction, syncFunctionFile) {
 }
 
 function verifyRequireAccess(expectedChannels) {
-  assert.ok(exports.requireAccess.callCount > 0, 'Document does not specify required channels. Expected: ' + expectedChannels);
+  assert.ok(exports.requireAccess.callCount > 0, `Document does not specify required channels. Expected: ${expectedChannels}`);
 
   checkAuthorizations(expectedChannels, exports.requireAccess.calls[0].arg, 'channel');
 }
 
 function verifyRequireRole(expectedRoles) {
-  assert.ok(exports.requireRole.callCount > 0, 'Document does not specify required roles. Expected: ' + expectedRoles);
+  assert.ok(exports.requireRole.callCount > 0, `Document does not specify required roles. Expected: ${expectedRoles}`);
 
   checkAuthorizations(expectedRoles, exports.requireRole.calls[0].arg, 'role');
 }
 
 function verifyRequireUser(expectedUsers) {
-  assert.ok(exports.requireUser.callCount > 0, 'Document does not specify required users. Expected: ' + expectedUsers);
+  assert.ok(exports.requireUser.callCount > 0, `Document does not specify required users. Expected: ${expectedUsers}`);
 
   checkAuthorizations(expectedUsers, exports.requireUser.calls[0].arg, 'user');
 }
 
 function verifyChannelAssignment(expectedChannels) {
-  assert.equal(exports.channel.callCount, 1, 'Document was not assigned to any channels. Expected: ' + expectedChannels);
+  assert.equal(exports.channel.callCount, 1, `Document was not assigned to any channels. Expected: ${expectedChannels}`);
 
   checkAuthorizations(expectedChannels, exports.channel.calls[0].arg, 'channel');
 }
@@ -303,13 +303,13 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
   // that neither list of channels/roles/users contains an element that does not exist in the other
   expectedAuthorizations.forEach((expectedAuth) => {
     if (actualAuthorizations.indexOf(expectedAuth) < 0) {
-      assert.fail('Expected ' + authorizationType + ' was not encountered: ' + expectedAuth + '. Actual ' + authorizationType + 's: ' + actualAuthorizations);
+      assert.fail(`Expected ${authorizationType} was not encountered: ${expectedAuth}. Actual ${authorizationType}s: ${actualAuthorizations}`);
     }
   });
 
   actualAuthorizations.forEach((actualAuth) => {
     if (expectedAuthorizations.indexOf(actualAuth) < 0) {
-      assert.fail('Unexpected ' + authorizationType + ' encountered: ' + actualAuth + '. Expected ' + authorizationType + 's: ' + expectedAuthorizations);
+      assert.fail(`Unexpected ${authorizationType} encountered: ${actualAuth}. Expected ${authorizationType}s: ${expectedAuthorizations}`);
     }
   });
 }
@@ -343,7 +343,7 @@ function accessAssignmentCallExists(accessFunction, expectedAssignees, expectedP
 }
 
 function prefixRoleName(role) {
-  return 'role:' + role;
+  return `role:${role}`;
 }
 
 function verifyChannelAccessAssignment(expectedAssignment) {
@@ -378,12 +378,7 @@ function verifyChannelAccessAssignment(expectedAssignment) {
   }
 
   if (!accessAssignmentCallExists(exports.access, expectedUsersAndRoles, expectedChannels)) {
-    assert.fail(
-      'Missing expected call to assign channel access (' +
-      JSON.stringify(expectedChannels) +
-      ') to users and roles (' +
-      JSON.stringify(expectedUsersAndRoles) +
-      ')');
+    assert.fail(`Missing expected call to assign channel access (${JSON.stringify(expectedChannels)}) to users and roles (${JSON.stringify(expectedUsersAndRoles)})`);
   }
 }
 
@@ -411,12 +406,7 @@ function verifyRoleAccessAssignment(expectedAssignment) {
   }
 
   if (!accessAssignmentCallExists(exports.role, expectedUsers, expectedRoles)) {
-    assert.fail(
-      'Missing expected call to assign role access (' +
-      JSON.stringify(expectedRoles) +
-      ') to users (' +
-      JSON.stringify(expectedUsers) +
-      ')');
+    assert.fail(`Missing expected call to assign role access (${JSON.stringify(expectedRoles)}) to users (${JSON.stringify(expectedUsers)})`);
   }
 }
 
@@ -431,16 +421,16 @@ function verifyAccessAssignments(expectedAccessAssignments) {
       verifyChannelAccessAssignment(expectedAssignment);
       expectedAccessCalls++;
     } else {
-      assert.fail('Unrecognized expected access assignment type ("' + expectedAssignment.expectedType + '")');
+      assert.fail(`Unrecognized expected access assignment type ("${expectedAssignment.expectedType}")`);
     }
   });
 
   if (exports.access.callCount !== expectedAccessCalls) {
-    assert.fail('Number of calls to assign channel access (' + exports.access.callCount + ') does not match expected (' + expectedAccessCalls + ')');
+    assert.fail(`Number of calls to assign channel access (${exports.access.callCount}) does not match expected (${expectedAccessCalls})`);
   }
 
   if (exports.role.callCount !== expectedRoleCalls) {
-    assert.fail('Number of calls to assign role access (' + exports.role.callCount + ') does not match expected (' + expectedRoleCalls + ')');
+    assert.fail(`Number of calls to assign role access (${exports.role.callCount}) does not match expected (${expectedRoleCalls})`);
   }
 }
 
@@ -454,12 +444,12 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
     expectedChannels.forEach((expectedChannel) => {
       assert.ok(
         actualChannels.indexOf(expectedChannel) >= 0,
-        'Document was not assigned to expected channel: ' + expectedChannel + '. Actual: ' + actualChannels);
+        `Document was not assigned to expected channel: ${expectedChannel}. Actual: ${actualChannels}`);
     });
   } else {
      assert.ok(
       actualChannels.indexOf(expectedChannels) >= 0,
-      'Document was not assigned to expected channel: "' + expectedChannels + '. Actual: ' + actualChannels);
+      `Document was not assigned to expected channel: "${expectedChannels}. Actual: ${actualChannels}`);
   }
 }
 
@@ -470,8 +460,8 @@ function verifyAuthorization(expectedAuthorization) {
     // for authorization
     expectedOperationChannels = expectedAuthorization;
     verifyRequireAccess(expectedAuthorization);
-    assert.equal(exports.requireRole.callCount, 0, 'Unexpected document roles assigned: ' + JSON.stringify(exports.requireRole.calls));
-    assert.equal(exports.requireUser.callCount, 0, 'Unexpected document users assigned: ' + JSON.stringify(exports.requireUser.calls));
+    assert.equal(exports.requireRole.callCount, 0, `Unexpected document roles assigned: ${JSON.stringify(exports.requireRole.calls)}`);
+    assert.equal(exports.requireUser.callCount, 0, `Unexpected document users assigned: ${JSON.stringify(exports.requireUser.calls)}`);
   } else {
     if (expectedAuthorization.expectedChannels) {
       expectedOperationChannels = expectedAuthorization.expectedChannels;
@@ -481,13 +471,13 @@ function verifyAuthorization(expectedAuthorization) {
     if (expectedAuthorization.expectedRoles) {
       verifyRequireRole(expectedAuthorization.expectedRoles);
     } else {
-      assert.equal(exports.requireRole.callCount, 0, 'Unexpected document roles assigned: ' + JSON.stringify(exports.requireRole.calls));
+      assert.equal(exports.requireRole.callCount, 0, `Unexpected document roles assigned: ${JSON.stringify(exports.requireRole.calls)}`);
     }
 
     if (expectedAuthorization.expectedUsers) {
       verifyRequireUser(expectedAuthorization.expectedUsers);
     } else {
-      assert.equal(exports.requireUser.callCount, 0, 'Unexpected document users assigned: ' + JSON.stringify(exports.requireUser.calls));
+      assert.equal(exports.requireUser.callCount, 0, `Unexpected document users assigned: ${JSON.stringify(exports.requireUser.calls)}`);
     }
 
     if (!expectedAuthorization.expectedChannels && !expectedAuthorization.expectedRoles && !expectedAuthorization.expectedUsers) {
@@ -534,7 +524,7 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
     verifyValidationErrors(docType, expectedErrorMessages, syncFuncError);
     verifyAuthorization(expectedAuthorization);
 
-    assert.equal(exports.channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(exports.channel.calls));
+    assert.equal(exports.channel.callCount, 0, `Document was erroneously assigned to channels: ${JSON.stringify(exports.channel.calls)}`);
   } else {
     assert.fail('Document validation succeeded when it was expected to fail');
   }
@@ -563,13 +553,13 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   const exceptionMessageMatches = validationErrorRegex.exec(exception.forbidden);
   let actualErrorMessages;
   if (exceptionMessageMatches) {
-    assert.equal(exceptionMessageMatches.length, 3, 'Unrecognized document validation error message format: "' + exception.forbidden + '"');
+    assert.equal(exceptionMessageMatches.length, 3, `Unrecognized document validation error message format: "${exception.forbidden}"`);
 
     const invalidDocMessage = exceptionMessageMatches[1].trim();
     assert.equal(
       invalidDocMessage,
-      'Invalid ' + docType + ' document',
-      'Unrecognized document validation error message format: "' + exception.forbidden + '"');
+      `Invalid ${docType} document`,
+      `Unrecognized document validation error message format: "${exception.forbidden}"`);
 
     actualErrorMessages = exceptionMessageMatches[2].trim().split(/;\s*/);
   } else {
@@ -581,12 +571,12 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   expectedErrorMessages.forEach((expectedErrorMsg) => {
     assert.ok(
       actualErrorMessages.indexOf(expectedErrorMsg) >= 0,
-      'Document validation errors do not include expected error message: "' + expectedErrorMsg  + '". Actual error: ' + exception.forbidden);
+      `Document validation errors do not include expected error message: "${expectedErrorMsg}". Actual error: ${exception.forbidden}`);
   });
 
   actualErrorMessages.forEach((errorMessage) => {
     if (expectedErrorMessages.indexOf(errorMessage) < 0) {
-      assert.fail('Unexpected document validation error: "' + errorMessage + '". Expected error: Invalid ' + docType + ' document: ' + expectedErrorMessages.join('; '));
+      assert.fail(`Unexpected document validation error: "${errorMessage}". Expected error: Invalid ${docType} document: ${expectedErrorMessages.join('; ')}`);
     }
   });
 }
@@ -628,29 +618,29 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
       assert.equal(
         syncFuncError,
         channelAccessDeniedError,
-        'Document authorization error does not indicate channel access was denied. Actual: ' + JSON.stringify(syncFuncError));
+        `Document authorization error does not indicate channel access was denied. Actual: ${JSON.stringify(syncFuncError)}`);
     } else if (countAuthorizationTypes(expectedAuthorization) === 0) {
       verifyRequireAccess([ ]);
     } else if (countAuthorizationTypes(expectedAuthorization) > 1) {
       assert.equal(
         syncFuncError.forbidden,
         generalAuthFailedMessage,
-        'Document authorization error does not indicate that channel, role and user access were all denied. Actual: ' + JSON.stringify(syncFuncError));
+        `Document authorization error does not indicate that channel, role and user access were all denied. Actual: ${JSON.stringify(syncFuncError)}`);
     } else if (expectedAuthorization.expectedChannels) {
       assert.equal(
         syncFuncError,
         channelAccessDeniedError,
-        'Document authorization error does not indicate channel access was denied. Actual: ' + JSON.stringify(syncFuncError));
+        `Document authorization error does not indicate channel access was denied. Actual: ${JSON.stringify(syncFuncError)}`);
     } else if (expectedAuthorization.expectedRoles) {
       assert.equal(
         syncFuncError,
         roleAccessDeniedError,
-        'Document authorization error does not indicate role access was denied. Actual: ' + JSON.stringify(syncFuncError));
+        `Document authorization error does not indicate role access was denied. Actual: ${JSON.stringify(syncFuncError)}`);
     } else {
       assert.ok(
         syncFuncError,
         userAccessDeniedError,
-        'Document authorization error does not indicate user access was denied. Actual: ' + JSON.stringify(syncFuncError));
+        `Document authorization error does not indicate user access was denied. Actual: ${JSON.stringify(syncFuncError)}`);
     }
 
     verifyAuthorization(expectedAuthorization);
@@ -671,12 +661,12 @@ function verifyUnknownDocumentType(doc, oldDoc) {
     assert.equal(
       syncFuncError.forbidden,
       'Unknown document type',
-      'Document validation error does not indicate the document type is unrecognized. Actual: ' + JSON.stringify(syncFuncError));
+      `Document validation error does not indicate the document type is unrecognized. Actual: ${JSON.stringify(syncFuncError)}`);
 
-    assert.equal(exports.channel.callCount, 0, 'Document was erroneously assigned to channels: ' + JSON.stringify(exports.channel.calls));
-    assert.equal(exports.requireAccess.callCount, 0, 'Unexpected attempt to specify required channels: ' + JSON.stringify(exports.requireAccess.calls));
-    assert.equal(exports.requireRole.callCount, 0, 'Unexpected attempt to specify required roles: ' + JSON.stringify(exports.requireRole.calls));
-    assert.equal(exports.requireUser.callCount, 0, 'Unexpected attempt to specify required users: ' + JSON.stringify(exports.requireUser.calls));
+    assert.equal(exports.channel.callCount, 0, `Document was erroneously assigned to channels: ${JSON.stringify(exports.channel.calls)}`);
+    assert.equal(exports.requireAccess.callCount, 0, `Unexpected attempt to specify required channels: ${JSON.stringify(exports.requireAccess.calls)}`);
+    assert.equal(exports.requireRole.callCount, 0, `Unexpected attempt to specify required roles: ${JSON.stringify(exports.requireRole.calls)}`);
+    assert.equal(exports.requireUser.callCount, 0, `Unexpected attempt to specify required users: ${JSON.stringify(exports.requireUser.calls)}`);
   } else {
     assert.fail('Document type was successfully identified when it was expected to be unknown');
   }

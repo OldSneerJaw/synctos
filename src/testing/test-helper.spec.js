@@ -97,7 +97,7 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyAccessDenied({ }, void 0, expectedChannels);
-      }).to.throw('Unexpected channel encountered: my-channel-2. Expected channels: ' + expectedChannels.join(','));
+      }).to.throw(`Unexpected channel encountered: my-channel-2. Expected channels: ${expectedChannels.join(',')}`);
     });
 
     it('fails if it does not encounter a channel that was expected', () => {
@@ -110,7 +110,7 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyAccessDenied({ }, void 0, expectedChannels);
-      }).to.throw('Expected channel was not encountered: my-channel-2. Actual channels: ' + actualChannels.join(','));
+      }).to.throw(`Expected channel was not encountered: my-channel-2. Actual channels: ${actualChannels.join(',')}`);
     });
 
     it('fails if the sync function does not throw an error', () => {
@@ -168,13 +168,13 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyDocumentRejected({ }, void 0, 'my-doc-type', [ ], { });
-      }).to.throw('Unrecognized document validation error message format: "' + errorMessage + '"');
+      }).to.throw(`Unrecognized document validation error message format: "${errorMessage}"`);
     });
 
     it('fails if an expected validation error is missing', () => {
       const docType = 'my-doc-type';
       const expectedErrors = [ 'my-error-1', 'my-error-2' ];
-      const errorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
+      const errorMessage = `Invalid ${docType} document: ${expectedErrors[0]}`;
 
       testHelper.syncFunction = () => {
         throw { forbidden: errorMessage };
@@ -182,15 +182,15 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyDocumentRejected({ }, void 0, docType, expectedErrors, { });
-      }).to.throw('Document validation errors do not include expected error message: "' + expectedErrors[1] + '". Actual error: ' + errorMessage);
+      }).to.throw(`Document validation errors do not include expected error message: "${expectedErrors[1]}". Actual error: ${errorMessage}`);
     });
 
     it('fails if an unexpected validation error is encountered', () => {
       const docType = 'my-doc-type';
       const actualErrors = [ 'my-error-1', 'my-error-2' ];
-      const actualErrorMessage = 'Invalid ' + docType + ' document: ' + actualErrors[0] + '; ' + actualErrors[1];
+      const actualErrorMessage = `Invalid ${docType} document: ${actualErrors[0]}; ${actualErrors[1]}`;
       const expectedErrors = [ actualErrors[0] ];
-      const expectedErrorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
+      const expectedErrorMessage = `Invalid ${docType} document: ${expectedErrors[0]}`;
 
       testHelper.syncFunction = () => {
         throw { forbidden: actualErrorMessage };
@@ -198,7 +198,7 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyDocumentRejected({ }, void 0, docType, expectedErrors, { });
-      }).to.throw('Unexpected document validation error: "' + actualErrors[1] + '". Expected error: ' + expectedErrorMessage);
+      }).to.throw(`Unexpected document validation error: "${actualErrors[1]}". Expected error: ${expectedErrorMessage}`);
     });
   });
 
@@ -230,7 +230,7 @@ describe('Test helper:', () => {
         expectedRoles: [ 'my-role-1' ],
         foo: [ 'bar' ] // This should be ignored
       };
-      const expectedEffectiveRoles = expectedChannelAccessAssignment.expectedRoles.map((role) => 'role:' + role);
+      const expectedEffectiveRoles = expectedChannelAccessAssignment.expectedRoles.map((role) => `role:${role}`);
 
       testHelper.syncFunction = () => {
         testHelper.access(expectedEffectiveRoles, actualChannels);
@@ -238,11 +238,7 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ expectedChannelAccessAssignment ]);
-      }).to.throw('Missing expected call to assign channel access (' +
-        JSON.stringify([ ]) +
-        ') to users and roles (' +
-        JSON.stringify(expectedEffectiveRoles) +
-        ')');
+      }).to.throw(`Missing expected call to assign channel access (${JSON.stringify([ ])}) to users and roles (${JSON.stringify(expectedEffectiveRoles)})`);
     });
 
     it('fails if a different set of role access is assigned than what was expected', () => {
@@ -251,7 +247,7 @@ describe('Test helper:', () => {
         expectedRoles: [ 'my-role-1', 'my-role-2' ],
         expectedUsers: [ 'my-user-1', 'my-user-2', 'my-user-3' ]
       };
-      const expectedEffectiveRoles = expectedRoleAccessAssignment.expectedRoles.map((role) => 'role:' + role);
+      const expectedEffectiveRoles = expectedRoleAccessAssignment.expectedRoles.map((role) => `role:${role}`);
       const actualUsers = [ 'my-user-1', 'my-user-2', 'my-user-2' ];
 
       testHelper.syncFunction = () => {
@@ -260,12 +256,7 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ expectedRoleAccessAssignment ]);
-      }).to.throw(
-        'Missing expected call to assign role access (' +
-        JSON.stringify(expectedEffectiveRoles) +
-        ') to users (' +
-        JSON.stringify(expectedRoleAccessAssignment.expectedUsers) +
-        ')');
+      }).to.throw(`Missing expected call to assign role access (${JSON.stringify(expectedEffectiveRoles)}) to users (${JSON.stringify(expectedRoleAccessAssignment.expectedUsers)})`);
     });
 
     it('fails if there is a call to assign channel access when none is expected', () => {
@@ -299,7 +290,7 @@ describe('Test helper:', () => {
 
       expect(() => {
         testHelper.verifyDocumentAccepted({ }, void 0, [ ], [ expectedInvalidAccessAssignment ]);
-      }).to.throw('Unrecognized expected access assignment type ("' + expectedInvalidAccessAssignment.expectedType + '")');
+      }).to.throw(`Unrecognized expected access assignment type ("${expectedInvalidAccessAssignment.expectedType}")`);
     });
   });
 });

@@ -30,16 +30,18 @@ function showUsage() {
   const nodeBinary = path.basename(process.argv[0]);
   const scriptName = path.basename(process.argv[1]);
 
-  console.log('A utility for validating the structure of a synctos document definitions file.\n');
+  console.log(
+`A utility for validating the structure and semantics of a synctos document definitions file.
 
-  console.log('Usage:  ' + scriptName + ' <document_definitions_file>');
-  console.log('   or:  ' + nodeBinary + ' ' + scriptName + ' <document_definitions_file>\n');
+Usage:  ${scriptName} <document_definitions_file>
+   or:  ${nodeBinary} ${scriptName} <document_definitions_file>
 
-  console.log('Arguments:');
-  console.log('    document_definitions_file');
-  console.log('        Path to the JavaScript file that defines the document types for analysis\n');
+Arguments:
+    document_definitions_file
+        Path to the JavaScript file that defines the document types for analysis
 
-  console.log('For example:  ' + scriptName + ' /path/to/my-sync-doc-definitions.js\n');
+For example:  ${scriptName} /path/to/my-sync-doc-definitions.js
 
-  console.log('See the README for more information.');
+See the README for more information.`
+  );
 }

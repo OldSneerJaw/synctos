@@ -21,8 +21,8 @@ function load(baseDir, macroName, rawText) {
     return load(baseDir, macroName, rawFileContents);
   }
 
-  return rawText.replace(new RegExp('\\b' + macroName + '\\s*\\(\\s*"((?:\\\\"|[^"])+)"\\s*\\)', 'g'), replacer)
-    .replace(new RegExp('\\b' + macroName + '\\s*\\(\\s*\'((?:\\\\\'|[^\'])+)\'\\s*\\)', 'g'), replacer);
+  return rawText.replace(new RegExp(`\\b${macroName}\\s*\\(\\s*"((?:\\\\"|[^"])+)"\\s*\\)`, 'g'), replacer)
+    .replace(new RegExp(`\\b${macroName}\\s*\\(\\s*'((?:\\\\'|[^'])+)'\\s*\\)`, 'g'), replacer);
 }
 
 function readFileFragment(fragmentFilename, baseDir) {
@@ -31,13 +31,13 @@ function readFileFragment(fragmentFilename, baseDir) {
 
   try {
     // Attempt to import the fragment file with a path that is relative to the base directory
-    return fs.readFileSync(baseDir + '/' + sanitizedFragmentFilename, 'utf8').trim();
+    return fs.readFileSync(`${baseDir}/${sanitizedFragmentFilename}`, 'utf8').trim();
   } catch (relativePathEx) {
     try {
       // It's possible the fragment file path was not relative so try again as an absolute path
       return fs.readFileSync(sanitizedFragmentFilename, 'utf8').trim();
     } catch (absolutePathEx) {
-      console.log('ERROR: Unable to read fragment file "' + sanitizedFragmentFilename + '": ' + absolutePathEx);
+      console.log(`ERROR: Unable to read fragment file "${sanitizedFragmentFilename}": ${absolutePathEx}`);
 
       throw absolutePathEx;
     }

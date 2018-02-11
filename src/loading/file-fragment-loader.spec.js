@@ -32,11 +32,11 @@ describe('File fragment loader', () => {
 
     const result = fileFragmentLoader.load(baseDir, macroName, rawText);
 
-    expect(result).to.equal('doSomething();\nnotmyFileFragmentMacro("foo.js");' + fileFragment1Contents.trim() + ';\t' + fileFragment2Contents.trim() + ';');
+    expect(result).to.equal(`doSomething();\nnotmyFileFragmentMacro("foo.js");${fileFragment1Contents.trim()};\t${fileFragment2Contents.trim()};`);
 
     expect(fsMock.readFileSync.callCount).to.equal(3);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ baseDir + '/bar.js', 'utf8' ]);
-    expect(fsMock.readFileSync.calls[1].args).to.eql([ baseDir + '/foo baz.js', 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ `${baseDir}/bar.js`, 'utf8' ]);
+    expect(fsMock.readFileSync.calls[1].args).to.eql([ `${baseDir}/foo baz.js`, 'utf8' ]);
     expect(fsMock.readFileSync.calls[2].args).to.eql([ 'foo baz.js', 'utf8' ]);
   });
 
@@ -53,7 +53,7 @@ describe('File fragment loader', () => {
     }).to.throw(expectedException.message);
 
     expect(fsMock.readFileSync.callCount).to.equal(2);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ baseDir + '/foo.js', 'utf8' ]);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ `${baseDir}/foo.js`, 'utf8' ]);
     expect(fsMock.readFileSync.calls[1].args).to.eql([ 'foo.js', 'utf8' ]);
   });
 });

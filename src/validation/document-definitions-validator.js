@@ -43,7 +43,7 @@ function validateDocumentDefinitionsObject(documentDefinitions) {
         if (error) {
           error.details.forEach((errorDetails) => {
             const path = [ documentType ].concat(errorDetails.path);
-            validationErrors.push(path.join('.') + ': ' + errorDetails.message);
+            validationErrors.push(`${path.join('.')}: ${errorDetails.message}`);
           });
         }
       });

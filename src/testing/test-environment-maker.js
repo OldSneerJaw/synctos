@@ -29,7 +29,7 @@ function init(rawSyncFunction, syncFunctionFile) {
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.
-  const environmentStatement = '(' + environmentString + ');';
+  const environmentStatement = `(${environmentString});`;
 
   // Compile the test environment function within the current virtual machine context so it can share access to the "requireAccess",
   // "channel", "customActionStub", etc. stubs with the test-helper module

@@ -27,7 +27,7 @@ exports.cannotReplaceDocViolation = () => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].dateProp")
  */
 exports.dateFormatInvalid = (itemPath) => {
-  return 'item "' + itemPath + '" must be ' + getTypeDescription('date');
+  return `item "${itemPath}" must be ${getTypeDescription('date')}`;
 };
 
 /**
@@ -36,7 +36,7 @@ exports.dateFormatInvalid = (itemPath) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].datetimeProp")
  */
 exports.datetimeFormatInvalid = (itemPath) => {
-  return 'item "' + itemPath + '" must be ' + getTypeDescription('datetime');
+  return `item "${itemPath}" must be ${getTypeDescription('datetime')}`;
 };
 
 /**
@@ -46,7 +46,7 @@ exports.datetimeFormatInvalid = (itemPath) => {
  * @param {(string[]|integer[])} expectedPredefinedValues A list of predefined values that are allowed for the item in question
  */
 exports.enumPredefinedValueViolation = (itemPath, expectedPredefinedValues) => {
-  return 'item "' + itemPath + '" must be one of the predefined values: ' + expectedPredefinedValues.join(',');
+  return `item "${itemPath}" must be one of the predefined values: ${expectedPredefinedValues.join(',')}`;
 };
 
 /**
@@ -55,7 +55,7 @@ exports.enumPredefinedValueViolation = (itemPath, expectedPredefinedValues) => {
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  */
 exports.hashtableKeyEmpty = (hashtablePath) => {
-  return 'hashtable "' + hashtablePath + '" must not have an empty key';
+  return `hashtable "${hashtablePath}" must not have an empty key`;
 };
 
 /**
@@ -65,7 +65,7 @@ exports.hashtableKeyEmpty = (hashtablePath) => {
  * @param {integer} expectedMaximumSize The maximum number of elements
  */
 exports.hashtableMaximumSizeViolation = (hashtablePath, expectedMaximumSize) => {
-  return 'hashtable "' + hashtablePath + '" must not be larger than ' + expectedMaximumSize + ' elements';
+  return `hashtable "${hashtablePath}" must not be larger than ${expectedMaximumSize} elements`;
 };
 
 /**
@@ -75,7 +75,7 @@ exports.hashtableMaximumSizeViolation = (hashtablePath, expectedMaximumSize) => 
  * @param {integer} expectedMinimumSize The minimum number of elements
  */
 exports.hashtableMinimumSizeViolation = (hashtablePath, expectedMinimumSize) => {
-  return 'hashtable "' + hashtablePath + '" must not be smaller than ' + expectedMinimumSize + ' elements';
+  return `hashtable "${hashtablePath}" must not be smaller than ${expectedMinimumSize} elements`;
 };
 
 /**
@@ -92,7 +92,7 @@ exports.immutableDocViolation = () => {
  *                          (e.g. "arrayProp[1].hashtableProp[my-key].integerProp")
  */
 exports.immutableItemViolation = (itemPath) => {
-  return 'item "' + itemPath + '" cannot be modified';
+  return `item "${itemPath}" cannot be modified`;
 };
 
 /**
@@ -101,7 +101,7 @@ exports.immutableItemViolation = (itemPath) => {
  * @param {integer} maxCount The maximum number of attachments that are allowed
  */
 exports.maximumAttachmentCountViolation = (maxCount) => {
-  return 'documents of this type must not have more than ' + maxCount + ' attachments';
+  return `documents of this type must not have more than ${maxCount} attachments`;
 };
 
 /**
@@ -111,7 +111,7 @@ exports.maximumAttachmentCountViolation = (maxCount) => {
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
 exports.maximumIndividualAttachmentSizeViolation = (attachmentName, maxSize) => {
-  return 'attachment ' + attachmentName + ' must not exceed ' + maxSize + ' bytes';
+  return `attachment ${attachmentName} must not exceed ${maxSize} bytes`;
 };
 
 /**
@@ -121,7 +121,7 @@ exports.maximumIndividualAttachmentSizeViolation = (attachmentName, maxSize) => 
  * @param {integer} maxLength The maximum length that is allowed
  */
 exports.maximumLengthViolation = (itemPath, maxLength) => {
-  return 'length of item "' + itemPath + '" must not be greater than ' + maxLength;
+  return `length of item "${itemPath}" must not be greater than ${maxLength}`;
 };
 
 /**
@@ -132,7 +132,7 @@ exports.maximumLengthViolation = (itemPath, maxLength) => {
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
 exports.maximumSizeAttachmentViolation = (itemPath, maxSize) => {
-  return 'attachment reference "' + itemPath + '" must not be larger than ' + maxSize + ' bytes';
+  return `attachment reference "${itemPath}" must not be larger than ${maxSize} bytes`;
 };
 
 /**
@@ -141,7 +141,7 @@ exports.maximumSizeAttachmentViolation = (itemPath, maxSize) => {
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
 exports.maximumTotalAttachmentSizeViolation = (maxSize) => {
-  return 'documents of this type must not have a combined attachment size greater than ' + maxSize + ' bytes';
+  return `documents of this type must not have a combined attachment size greater than ${maxSize} bytes`;
 };
 
 /**
@@ -151,7 +151,7 @@ exports.maximumTotalAttachmentSizeViolation = (maxSize) => {
  * @param {(float|integer|string)} maxValue The maximum value that is allowed
  */
 exports.maximumValueViolation = (itemPath, maxValue) => {
-  return 'item "' + itemPath + '" must not be greater than ' + maxValue;
+  return `item "${itemPath}" must not be greater than ${maxValue}`;
 };
 
 /**
@@ -161,7 +161,7 @@ exports.maximumValueViolation = (itemPath, maxValue) => {
  * @param {(float|integer|string)} maxValue The maximum value (exclusive) that is allowed
  */
 exports.maximumValueExclusiveViolation = (itemPath, maxValue) => {
-  return 'item "' + itemPath + '" must not be greater than or equal to ' + maxValue;
+  return `item "${itemPath}" must not be greater than or equal to ${maxValue}`;
 };
 
 /**
@@ -171,7 +171,7 @@ exports.maximumValueExclusiveViolation = (itemPath, maxValue) => {
  * @param {integer} minLength The minimum length that is allowed
  */
 exports.minimumLengthViolation = (itemPath, minLength) => {
-  return 'length of item "' + itemPath + '" must not be less than ' + minLength;
+  return `length of item "${itemPath}" must not be less than ${minLength}`;
 };
 
 /**
@@ -181,7 +181,7 @@ exports.minimumLengthViolation = (itemPath, minLength) => {
  * @param {(float|integer|string)} minValue The minimum value that is allowed
  */
 exports.minimumValueViolation = (itemPath, minValue) => {
-  return 'item "' + itemPath + '" must not be less than ' + minValue;
+  return `item "${itemPath}" must not be less than ${minValue}`;
 };
 
 /**
@@ -191,7 +191,7 @@ exports.minimumValueViolation = (itemPath, minValue) => {
  * @param {(float|integer|string)} minValue The minimum value (exclusive) that is allowed
  */
 exports.minimumValueExclusiveViolation = (itemPath, minValue) => {
-  return 'item "' + itemPath + '" must not be less than or equal to ' + minValue;
+  return `item "${itemPath}" must not be less than or equal to ${minValue}`;
 };
 
 /**
@@ -200,7 +200,7 @@ exports.minimumValueExclusiveViolation = (itemPath, minValue) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  */
 exports.mustBeTrimmedViolation = (itemPath) => {
-  return 'item "' + itemPath + '" must not have any leading or trailing whitespace';
+  return `item "${itemPath}" must not have any leading or trailing whitespace`;
 };
 
 /**
@@ -210,7 +210,7 @@ exports.mustBeTrimmedViolation = (itemPath) => {
  * @param {*} expectedItemValue The value that is expected
  */
 exports.mustEqualViolation = (itemPath, expectedItemValue) => {
-  return 'value of item "' + itemPath + '" must equal ' + JSON.stringify(expectedItemValue);
+  return `value of item "${itemPath}" must equal ${JSON.stringify(expectedItemValue)}`;
 };
 
 /**
@@ -220,7 +220,7 @@ exports.mustEqualViolation = (itemPath, expectedItemValue) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  */
 exports.mustNotBeEmptyViolation = (itemPath) => {
-  return 'item "' + itemPath + '" must not be empty';
+  return `item "${itemPath}" must not be empty`;
 };
 
 /**
@@ -229,7 +229,7 @@ exports.mustNotBeEmptyViolation = (itemPath) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
  */
 exports.mustNotBeMissingValueViolation = (itemPath) => {
-  return 'item "' + itemPath + '" must not be missing';
+  return `item "${itemPath}" must not be missing`;
 };
 
 /**
@@ -238,7 +238,7 @@ exports.mustNotBeMissingValueViolation = (itemPath) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].integerProp")
  */
 exports.mustNotBeNullValueViolation = (itemPath) => {
-  return 'item "' + itemPath + '" must not be null';
+  return `item "${itemPath}" must not be null`;
 };
 
 /**
@@ -249,7 +249,7 @@ exports.mustNotBeNullValueViolation = (itemPath) => {
  * @param {RegExp} expectedRegex The regular expression pattern that is expected
  */
 exports.regexPatternHashtableKeyViolation = (hashtableKeyPath, expectedRegex) => {
-  return 'hashtable key "' + hashtableKeyPath + '" must conform to expected format ' + expectedRegex;
+  return `hashtable key "${hashtableKeyPath}" must conform to expected format ${expectedRegex}`;
 };
 
 /**
@@ -259,7 +259,7 @@ exports.regexPatternHashtableKeyViolation = (hashtableKeyPath, expectedRegex) =>
  * @param {RegExp} expectedRegex The regular expression pattern that is expected
  */
 exports.regexPatternItemViolation = (itemPath, expectedRegex) => {
-  return 'item "' + itemPath + '" must conform to expected format ' + expectedRegex;
+  return `item "${itemPath}" must conform to expected format ${expectedRegex}`;
 };
 
 /**
@@ -269,7 +269,7 @@ exports.regexPatternItemViolation = (itemPath, expectedRegex) => {
  * @param {string} attachmentName The name of the attachment in question
  */
 exports.requireAttachmentReferencesViolation = (attachmentName) => {
-  return 'attachment ' + attachmentName + ' must have a corresponding attachment reference property';
+  return `attachment ${attachmentName} must have a corresponding attachment reference property`;
 };
 
 /**
@@ -278,7 +278,7 @@ exports.requireAttachmentReferencesViolation = (attachmentName) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
  */
 exports.requiredValueViolation = (itemPath) => {
-  return 'item "' + itemPath + '" must not be null or missing';
+  return `item "${itemPath}" must not be null or missing`;
 };
 
 /**
@@ -291,7 +291,7 @@ exports.requiredValueViolation = (itemPath) => {
 exports.supportedContentTypesAttachmentReferenceViolation = (itemPath, expectedContentTypes) => {
   const contentTypesString = expectedContentTypes.join(',');
 
-  return 'attachment reference "' + itemPath + '" must have a supported content type (' + contentTypesString + ')';
+  return `attachment reference "${itemPath}" must have a supported content type (${contentTypesString})`;
 };
 
 /**
@@ -304,7 +304,7 @@ exports.supportedContentTypesAttachmentReferenceViolation = (itemPath, expectedC
 exports.supportedContentTypesRawAttachmentViolation = (attachmentName, expectedContentTypes) => {
   const contentTypesString = expectedContentTypes.join(',');
 
-  return 'attachment "' + attachmentName + '" must have a supported content type (' + contentTypesString + ')';
+  return `attachment "${attachmentName}" must have a supported content type (${contentTypesString})`;
 };
 
 /**
@@ -317,7 +317,7 @@ exports.supportedContentTypesRawAttachmentViolation = (attachmentName, expectedC
 exports.supportedExtensionsAttachmentReferenceViolation = (itemPath, expectedFileExtensions) => {
   const extensionsString = expectedFileExtensions.join(',');
 
-  return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
+  return `attachment reference "${itemPath}" must have a supported file extension (${extensionsString})`;
 };
 
 /**
@@ -330,7 +330,7 @@ exports.supportedExtensionsAttachmentReferenceViolation = (itemPath, expectedFil
 exports.supportedExtensionsRawAttachmentViolation = (attachmentName, expectedFileExtensions) => {
   const extensionsString = expectedFileExtensions.join(',');
 
-  return 'attachment "' + attachmentName + '" must have a supported file extension (' + extensionsString + ')';
+  return `attachment "${attachmentName}" must have a supported file extension (${extensionsString})`;
 };
 
 /**
@@ -339,7 +339,7 @@ exports.supportedExtensionsRawAttachmentViolation = (attachmentName, expectedFil
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].timeProp")
  */
 exports.timeFormatInvalid = (itemPath) => {
-  return 'item "' + itemPath + '" must be ' + getTypeDescription('time');
+  return `item "${itemPath}" must be ${getTypeDescription('time')}`;
 };
 
 /**
@@ -348,7 +348,7 @@ exports.timeFormatInvalid = (itemPath) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.timezoneProp")
  */
 exports.timezoneFormatInvalid = (itemPath) => {
-  return 'item "' + itemPath + '" must be ' + getTypeDescription('timezone');
+  return `item "${itemPath}" must be ${getTypeDescription('timezone')}`;
 };
 
 /**
@@ -359,7 +359,7 @@ exports.timezoneFormatInvalid = (itemPath) => {
  *                              "float", "hashtable", "integer", "object", "string"). Throws an exception if the type is not recognized.
  */
 exports.typeConstraintViolation = (itemPath, expectedType) => {
-  return 'item "' + itemPath + '" must be ' + getTypeDescription(expectedType);
+  return `item "${itemPath}" must be ${getTypeDescription(expectedType)}`;
 };
 
 /**
@@ -377,7 +377,7 @@ exports.unknownDocumentType = () => {
  *                              (e.g. "arrayProp[1].objectProp.unknownProp")
  */
 exports.unsupportedProperty = (propertyPath) => {
-  return 'property "' + propertyPath + '" is not supported';
+  return `property "${propertyPath}" is not supported`;
 };
 
 /**
@@ -386,7 +386,7 @@ exports.unsupportedProperty = (propertyPath) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[10].uuidProp")
  */
 exports.uuidFormatInvalid = (itemPath) => {
-  return 'item "' + itemPath + '" must be ' + getTypeDescription('uuid');
+  return `item "${itemPath}" must be ${getTypeDescription('uuid')}`;
 };
 
 function getTypeDescription(type) {
@@ -420,6 +420,6 @@ function getTypeDescription(type) {
     case 'uuid':
       return 'a UUID string';
     default:
-      throw new Error('Unrecognized validation type: ' + type);
+      throw new Error(`Unrecognized validation type: ${type}`);
   }
 }
