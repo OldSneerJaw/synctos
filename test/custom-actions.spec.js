@@ -1,6 +1,6 @@
 var testHelper = require('../src/testing/test-helper.js');
 var errorFormatter = testHelper.validationErrorFormatter;
-var expect = require('chai').expect;
+var { expect } = require('chai');
 
 describe('Custom actions:', function() {
   var expectedAuthorization = {
