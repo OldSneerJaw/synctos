@@ -1,12 +1,12 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Dynamic constraints', function() {
-  beforeEach(function() {
+describe('Dynamic constraints', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-dynamic-constraints-sync-function.js');
   });
 
-  it('allows a new doc to be created when the property constraints are satisfied', function() {
+  it('allows a new doc to be created when the property constraints are satisfied', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDoc',
@@ -18,7 +18,7 @@ describe('Dynamic constraints', function() {
     testHelper.verifyDocumentCreated(doc);
   });
 
-  it('allows an existing doc to be replaced when the property constraints are satisfied', function() {
+  it('allows an existing doc to be replaced when the property constraints are satisfied', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDoc',
@@ -37,7 +37,7 @@ describe('Dynamic constraints', function() {
     testHelper.verifyDocumentReplaced(doc, oldDoc);
   });
 
-  it('allows a deleted doc to be replaced when the property constraints are satisfied', function() {
+  it('allows a deleted doc to be replaced when the property constraints are satisfied', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDoc',
@@ -57,7 +57,7 @@ describe('Dynamic constraints', function() {
     testHelper.verifyDocumentReplaced(doc, oldDoc);
   });
 
-  it('blocks a doc from being created when the property constraints are violated', function() {
+  it('blocks a doc from being created when the property constraints are violated', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDoc',
@@ -76,7 +76,7 @@ describe('Dynamic constraints', function() {
       ]);
   });
 
-  it('blocks a doc from being replaced when the property constraints are violated', function() {
+  it('blocks a doc from being replaced when the property constraints are violated', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDoc',

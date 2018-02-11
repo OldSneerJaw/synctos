@@ -2,8 +2,8 @@ const sampleSpecHelper = require('./helpers/sample-spec-helper');
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample business notification doc definition', function() {
-  beforeEach(function() {
+describe('Sample business notification doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
@@ -59,7 +59,7 @@ describe('Sample business notification doc definition', function() {
       sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_' + expectedBasePrivilege ]));
   }
 
-  it('successfully creates a valid notification document', function() {
+  it('successfully creates a valid notification document', () => {
     const doc = {
       _id: 'biz.63.notification.5',
       eventId: '082979cf-6990-44a6-bb62-9b9517c3052b',
@@ -75,7 +75,7 @@ describe('Sample business notification doc definition', function() {
     verifyNotificationCreated(63, doc);
   });
 
-  it('cannot create a notification document when the properties are invalid', function() {
+  it('cannot create a notification document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.13.notification.5',
       eventId: 'not-a-uuid',
@@ -105,7 +105,7 @@ describe('Sample business notification doc definition', function() {
       ]);
   });
 
-  it('successfully replaces a valid notification document', function() {
+  it('successfully replaces a valid notification document', () => {
     const doc = {
       _id: 'biz.7.notification.3',
       eventId: '1d856cd8-a0db-473c-9ea0-20b3113e2571',
@@ -133,7 +133,7 @@ describe('Sample business notification doc definition', function() {
     verifyNotificationReplaced(7, doc, oldDoc);
   });
 
-  it('cannot replace a notification document when the properties are invalid', function() {
+  it('cannot replace a notification document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.10.notification.3',
       eventId: '692d8c84-8ff2-358-b806-edbf4c3c5813',
@@ -177,7 +177,7 @@ describe('Sample business notification doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a valid notification document', function() {
+  it('successfully deletes a valid notification document', () => {
     const oldDoc = {
       _id: 'biz.71.notification.5',
       eventId: '56be8a52-f050-4d72-b4cb-c4f6eb2ca3ed',

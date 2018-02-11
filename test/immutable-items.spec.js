@@ -1,13 +1,13 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Immutable item validation parameter', function() {
-  beforeEach(function() {
+describe('Immutable item validation parameter', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-immutable-items-sync-function.js');
   });
 
-  describe('array type with static property validation', function() {
-    it('can replace a document with an immutable array when the simple type elements have not changed', function() {
+  describe('array type with static property validation', () => {
+    it('can replace a document with an immutable array when the simple type elements have not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ 'foobar', 3, false, 46.0 ]
@@ -20,7 +20,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable array when the nested complex type elements have not changed', function() {
+    it('can replace a document with an immutable array when the nested complex type elements have not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ [ 'foobar', 3, false ], [ 45.9 ], [ ], null, { foo: 'bar' } ]
@@ -33,7 +33,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable array when it is null or undefined', function() {
+    it('can replace a document with an immutable array when it is null or undefined', () => {
       const doc = { _id: 'immutableItemsDoc' };
       const oldDoc = {
         _id: 'immutableItemsDoc',
@@ -43,7 +43,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can create a document with an immutable array when the old document does not exist', function() {
+    it('can create a document with an immutable array when the old document does not exist', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ [ 'foobar', 3, false ], [ 45.9 ], [ ], { foo: 'bar' } ]
@@ -52,7 +52,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('can create a document with an immutable array when the old document was deleted', function() {
+    it('can create a document with an immutable array when the old document was deleted', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ [ 'foobar', 3, false ], [ 45.9 ], [ ], { foo: 'bar' } ]
@@ -62,7 +62,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
-    it('can delete a document with an immutable array', function() {
+    it('can delete a document with an immutable array', () => {
       const oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ 'foobar', 3, false, 45.9 ]
@@ -71,7 +71,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentDeleted(oldDoc);
     });
 
-    it('cannot replace a document with an immutable array when the elements are not equal', function() {
+    it('cannot replace a document with an immutable array when the elements are not equal', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ 'foobar', 3, false, 15.0 ]
@@ -84,7 +84,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableArrayProp'));
     });
 
-    it('cannot replace a document with an immutable array when a nested element is not equal', function() {
+    it('cannot replace a document with an immutable array when a nested element is not equal', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ 'foobar', 3, false, 45.9, [ ], { foo: 'bar' } ]
@@ -97,7 +97,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableArrayProp'));
     });
 
-    it('cannot replace a document with an immutable array when one is a subset of the other', function() {
+    it('cannot replace a document with an immutable array when one is a subset of the other', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ 'foobar', 3, false, 45.9, { } ]
@@ -110,7 +110,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableArrayProp'));
     });
 
-    it('cannot replace a document with an immutable array when nested complex type elements are not the same type', function() {
+    it('cannot replace a document with an immutable array when nested complex type elements are not the same type', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ 'foobar', 3, false, 45.9, { } ]
@@ -123,7 +123,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableArrayProp'));
     });
 
-    it('cannot replace a document with an immutable array when the element order has changed', function() {
+    it('cannot replace a document with an immutable array when the element order has changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ [ ], 'foobar', 3, false, 45.9 ]
@@ -136,7 +136,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableArrayProp'));
     });
 
-    it('cannot replace a document with an immutable array when it is missing in the new document', function() {
+    it('cannot replace a document with an immutable array when it is missing in the new document', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: null
@@ -149,7 +149,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableArrayProp'));
     });
 
-    it('cannot replace a document with an immutable array when it is missing in the old document', function() {
+    it('cannot replace a document with an immutable array when it is missing in the old document', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableArrayProp: [ 'foobar', 3, false, 45.9, [ ] ]
@@ -160,8 +160,8 @@ describe('Immutable item validation parameter', function() {
     });
   });
 
-  describe('array type with dynamic property validation', function() {
-    it('can replace a document when the array property elements have not changed', function() {
+  describe('array type with dynamic property validation', () => {
+    it('can replace a document when the array property elements have not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableArrayProp: [ 'barfoo', -72.0, true, 3.9 ],
@@ -176,7 +176,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document when the array property is not immutable', function() {
+    it('can replace a document when the array property is not immutable', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableArrayProp: [ 2 ],
@@ -191,7 +191,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('cannot replace a document when the array property is immutable and its elements have changed', function() {
+    it('cannot replace a document when the array property is immutable and its elements have changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableArrayProp: [ '#4' ],
@@ -207,8 +207,8 @@ describe('Immutable item validation parameter', function() {
     });
   });
 
-  describe('object type with static property validation', function() {
-    it('can replace a document with an immutable object when the simple type properties have not changed', function() {
+  describe('object type with static property validation', () => {
+    it('can replace a document with an immutable object when the simple type properties have not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -231,7 +231,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable object when the nested complex type elements have not changed', function() {
+    it('can replace a document with an immutable object when the nested complex type elements have not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -250,7 +250,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable object when the property is null or undefined', function() {
+    it('can replace a document with an immutable object when the property is null or undefined', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: null
@@ -262,7 +262,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable object when the property order has changed and a null property becomes undefined', function() {
+    it('can replace a document with an immutable object when the property order has changed and a null property becomes undefined', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -282,7 +282,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can create a document with an immutable object when the old document does not exist', function() {
+    it('can create a document with an immutable object when the old document does not exist', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -294,7 +294,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('can create a document with an immutable object when the old document was deleted', function() {
+    it('can create a document with an immutable object when the old document was deleted', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -307,7 +307,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
-    it('can delete a document with an immutable object', function() {
+    it('can delete a document with an immutable object', () => {
       const oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -319,7 +319,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentDeleted(oldDoc);
     });
 
-    it('cannot replace a document with an immutable object when the nested properties are not equal', function() {
+    it('cannot replace a document with an immutable object when the nested properties are not equal', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -338,7 +338,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
     });
 
-    it('cannot replace a document with an immutable object when a nested property is missing', function() {
+    it('cannot replace a document with an immutable object when a nested property is missing', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
@@ -360,7 +360,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
     });
 
-    it('cannot replace a document with an immutable object when it is missing in the new document', function() {
+    it('cannot replace a document with an immutable object when it is missing in the new document', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: null
@@ -377,7 +377,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
     });
 
-    it('cannot replace a document with an immutable object when it is missing in the old document', function() {
+    it('cannot replace a document with an immutable object when it is missing in the old document', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: { }
@@ -388,8 +388,8 @@ describe('Immutable item validation parameter', function() {
     });
   });
 
-  describe('object type with dynamic property validation', function() {
-    it('can replace a document when the object property value has not changed', function() {
+  describe('object type with dynamic property validation', () => {
+    it('can replace a document when the object property value has not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableObjectProp: { myFloatProp: 88.92 },
@@ -404,7 +404,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document when the object property is not immutable', function() {
+    it('can replace a document when the object property is not immutable', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableObjectProp: { myIntegerProp: -33 },
@@ -419,7 +419,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('cannot replace a document when the object property is immutable and its value has changed', function() {
+    it('cannot replace a document when the object property is immutable and its value has changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableObjectProp: { myStringProp: 'foo' },
@@ -435,8 +435,8 @@ describe('Immutable item validation parameter', function() {
     });
   });
 
-  describe('hashtable type with static validation', function() {
-    it('can replace a document with an immutable hashtable when the simple type properties have not changed', function() {
+  describe('hashtable type with static validation', () => {
+    it('can replace a document with an immutable hashtable when the simple type properties have not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -459,7 +459,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable hashtable when the nested complex type elements have not changed', function() {
+    it('can replace a document with an immutable hashtable when the nested complex type elements have not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -478,7 +478,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable hashtable when the property is null or undefined', function() {
+    it('can replace a document with an immutable hashtable when the property is null or undefined', () => {
       const doc = {
         _id: 'immutableItemsDoc'
       };
@@ -490,7 +490,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document with an immutable hashtable when the property order has changed and an undefined property becomes null', function() {
+    it('can replace a document with an immutable hashtable when the property order has changed and an undefined property becomes null', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -510,7 +510,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can create a document with an immutable hashtable when the old document does not exist', function() {
+    it('can create a document with an immutable hashtable when the old document does not exist', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -522,7 +522,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('can create a document with an immutable hashtable when the old document was deleted', function() {
+    it('can create a document with an immutable hashtable when the old document was deleted', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -535,7 +535,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
-    it('can delete a document with an immutable hashtable', function() {
+    it('can delete a document with an immutable hashtable', () => {
       const oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -547,7 +547,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentDeleted(oldDoc);
     });
 
-    it('cannot replace a document with an immutable hashtable when the properties are not equal', function() {
+    it('cannot replace a document with an immutable hashtable when the properties are not equal', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -566,7 +566,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
     });
 
-    it('cannot replace a document with an immutable hashtable when a property is missing', function() {
+    it('cannot replace a document with an immutable hashtable when a property is missing', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
@@ -588,7 +588,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
     });
 
-    it('cannot replace a document with an immutable hashtable when it is missing in the new document', function() {
+    it('cannot replace a document with an immutable hashtable when it is missing in the new document', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: null
@@ -605,7 +605,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
     });
 
-    it('cannot replace a document with an immutable hashtable when it is missing in the old document', function() {
+    it('cannot replace a document with an immutable hashtable when it is missing in the old document', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: { }
@@ -616,8 +616,8 @@ describe('Immutable item validation parameter', function() {
     });
   });
 
-  describe('hashtable type with dynamic property validation', function() {
-    it('can replace a document when the hashtable property value has not changed', function() {
+  describe('hashtable type with dynamic property validation', () => {
+    it('can replace a document when the hashtable property value has not changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableHashtableProp: { myDateProp: '2017-04-07' },
@@ -632,7 +632,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can replace a document when the object property is not immutable', function() {
+    it('can replace a document when the object property is not immutable', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableHashtableProp: { myIntegerProp: -33 },
@@ -647,7 +647,7 @@ describe('Immutable item validation parameter', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('cannot replace a document when the object property is immutable and its value has changed', function() {
+    it('cannot replace a document when the object property is immutable and its value has changed', () => {
       const doc = {
         _id: 'immutableItemsDoc',
         dynamicImmutableHashtableProp: { myStringProp: 'foo' },

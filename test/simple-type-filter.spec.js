@@ -1,12 +1,12 @@
 const testHelper = require('../src/testing/test-helper');
 
-describe('Simple type filter:', function() {
-  beforeEach(function() {
+describe('Simple type filter:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-simple-type-filter-sync-function.js');
   });
 
   function testSimpleTypeFilter(docTypeId) {
-    it('identifies a brand new document by its type property', function() {
+    it('identifies a brand new document by its type property', () => {
       const doc = {
         _id: 'my-doc',
         type: docTypeId
@@ -15,7 +15,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('identifies a new document that is replacing a deleted document by its type property', function() {
+    it('identifies a new document that is replacing a deleted document by its type property', () => {
       const doc = {
         _id: 'my-doc',
         type: docTypeId
@@ -28,7 +28,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
-    it('identifies an updated document by its type property when it matches that of the old document', function() {
+    it('identifies an updated document by its type property when it matches that of the old document', () => {
       const doc = {
         _id: 'my-doc',
         type: docTypeId
@@ -41,7 +41,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('identifies a deleted document by the type property of the old document', function() {
+    it('identifies a deleted document by the type property of the old document', () => {
       const oldDoc = {
         _id: 'my-doc',
         type: docTypeId
@@ -50,7 +50,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyDocumentDeleted(oldDoc);
     });
 
-    it('refuses to identify an updated document by its type property when it differs from that of the old document', function() {
+    it('refuses to identify an updated document by its type property when it differs from that of the old document', () => {
       const doc = {
         _id: 'my-doc',
         type: docTypeId
@@ -63,7 +63,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyUnknownDocumentType(doc, oldDoc);
     });
 
-    it('cannot identify a document when the type property is not set', function() {
+    it('cannot identify a document when the type property is not set', () => {
       const doc = {
         _id: 'my-doc'
       };
@@ -71,7 +71,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyUnknownDocumentType(doc);
     });
 
-    it('cannot identify a document when the type property is set to an unknown type', function() {
+    it('cannot identify a document when the type property is set to an unknown type', () => {
       const doc = {
         _id: 'my-doc',
         type: 'somethingElse'
@@ -80,7 +80,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyUnknownDocumentType(doc);
     });
 
-    it('cannot identify a deleted document when the old document does not exist', function() {
+    it('cannot identify a deleted document when the old document does not exist', () => {
       const doc = {
         _id: 'my-doc',
         _deleted: true
@@ -91,7 +91,7 @@ describe('Simple type filter:', function() {
       testHelper.verifyDocumentAccepted(doc, void 0, [ '!' ]);
     });
 
-    it('cannot identify a deleted document when the old document is also deleted', function() {
+    it('cannot identify a deleted document when the old document is also deleted', () => {
       const doc = {
         _id: 'my-doc',
         _deleted: true
@@ -107,11 +107,11 @@ describe('Simple type filter:', function() {
     });
   }
 
-  describe('when a type property validator is explicitly defined', function() {
+  describe('when a type property validator is explicitly defined', () => {
     testSimpleTypeFilter('myExplicitTypeValidatorDoc');
   });
 
-  describe('when a type property validator is implied (i.e. not defined)', function() {
+  describe('when a type property validator is implied (i.e. not defined)', () => {
     testSimpleTypeFilter('myImplicitTypeValidatorDoc');
   });
 });

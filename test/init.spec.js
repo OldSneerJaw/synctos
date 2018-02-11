@@ -1,9 +1,9 @@
 const { expect } = require('chai');
 const testHelper = require('../src/testing/test-helper');
 
-describe('Test helper module initialization', function() {
-  describe('when initialized from a generated sync function file', function() {
-    it('loads the sync function successfully for a valid path', function() {
+describe('Test helper module initialization', () => {
+  describe('when initialized from a generated sync function file', () => {
+    it('loads the sync function successfully for a valid path', () => {
       testHelper.initSyncFunction('build/sync-functions/test-init-sync-function.js');
 
       const doc = {
@@ -15,9 +15,9 @@ describe('Test helper module initialization', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('fails to load the sync function for a file that does not exist', function() {
+    it('fails to load the sync function for a file that does not exist', () => {
       let syncFuncError = null;
-      expect(function() {
+      expect(() => {
         try {
           testHelper.initSyncFunction('build/sync-functions/test-nonexistant-sync-function.js');
         } catch (ex) {
@@ -31,8 +31,8 @@ describe('Test helper module initialization', function() {
     });
   });
 
-  describe('when initialized from a document definitions file', function() {
-    it('loads the sync function successfully for a valid path', function() {
+  describe('when initialized from a document definitions file', () => {
+    it('loads the sync function successfully for a valid path', () => {
       testHelper.initDocumentDefinitions('test/resources/init-doc-definitions.js');
 
       const doc = {
@@ -44,9 +44,9 @@ describe('Test helper module initialization', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('fails to load the sync function for a file that does not exist', function() {
+    it('fails to load the sync function for a file that does not exist', () => {
       let syncFuncError = null;
-      expect(function() {
+      expect(() => {
         try {
           testHelper.initDocumentDefinitions('test/resources/nonexistant-doc-definitions.js');
         } catch (ex) {

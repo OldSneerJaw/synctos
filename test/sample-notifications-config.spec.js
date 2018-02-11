@@ -2,15 +2,15 @@ const sampleSpecHelper = require('./helpers/sample-spec-helper');
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample business notifications config doc definition', function() {
-  beforeEach(function() {
+describe('Sample business notifications config doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
   const expectedDocType = 'notificationsConfig';
   const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
-  it('successfully creates a valid notifications config document', function() {
+  it('successfully creates a valid notifications config document', () => {
     const doc = {
       _id: 'biz.1248.notificationsConfig',
       notificationTypes: {
@@ -26,7 +26,7 @@ describe('Sample business notifications config doc definition', function() {
     sampleSpecHelper.verifyDocumentCreated(expectedBasePrivilege, 1248, doc);
   });
 
-  it('cannot create a notifications config document when the properties are invalid', function() {
+  it('cannot create a notifications config document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.72.notificationsConfig',
       notificationTypes: {
@@ -61,7 +61,7 @@ describe('Sample business notifications config doc definition', function() {
       ]);
   });
 
-  it('successfully replaces a valid notifications config document', function() {
+  it('successfully replaces a valid notifications config document', () => {
     const doc = {
       _id: 'biz.191.notificationsConfig',
       notificationTypes: {
@@ -86,7 +86,7 @@ describe('Sample business notifications config doc definition', function() {
     sampleSpecHelper.verifyDocumentReplaced(expectedBasePrivilege, 191, doc, oldDoc);
   });
 
-  it('cannot replace a notifications config document when the properties are invalid', function() {
+  it('cannot replace a notifications config document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.37.notificationsConfig',
       notificationTypes: {
@@ -120,7 +120,7 @@ describe('Sample business notifications config doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a notifications config document', function() {
+  it('successfully deletes a notifications config document', () => {
     const oldDoc = {
       _id: 'biz.333.notificationsConfig',
       notificationTypes: {

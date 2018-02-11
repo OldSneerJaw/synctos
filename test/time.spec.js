@@ -1,13 +1,13 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Time validation type:', function() {
-  beforeEach(function() {
+describe('Time validation type:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-time-sync-function.js');
   });
 
-  describe('format', function() {
-    it('accepts a valid time with all components and period as a decimal separator', function() {
+  describe('format', () => {
+    it('accepts a valid time with all components and period as a decimal separator', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -17,7 +17,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts a valid time without the millisecond component', function() {
+    it('accepts a valid time without the millisecond component', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -27,7 +27,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts a valid time without the second and millisecond components', function() {
+    it('accepts a valid time without the second and millisecond components', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -37,7 +37,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a time without the minute, second and millisecond components', function() {
+    it('rejects a time without the minute, second and millisecond components', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -47,7 +47,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time that is above the maximum value', function() {
+    it('rejects a time that is above the maximum value', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -57,7 +57,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time that is formatted incorrectly', function() {
+    it('rejects a time that is formatted incorrectly', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -67,7 +67,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time that is not a string', function() {
+    it('rejects a time that is not a string', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -77,7 +77,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'time'));
     });
 
-    it('rejects a time with a comma for a decimal separator', function() {
+    it('rejects a time with a comma for a decimal separator', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -88,8 +88,8 @@ describe('Time validation type:', function() {
     });
   });
 
-  describe('inclusive range constraints', function() {
-    it('allow a time with all components that is within the minimum and maximum value range', function() {
+  describe('inclusive range constraints', () => {
+    it('allow a time with all components that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -99,7 +99,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow a time without milliseconds that is within the minimum and maximum value range', function() {
+    it('allow a time without milliseconds that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -109,7 +109,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow a time without seconds and milliseconds that is within the minimum and maximum value range', function() {
+    it('allow a time without seconds and milliseconds that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -119,7 +119,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('reject a time that is less than the minimum value constraint', function() {
+    it('reject a time that is less than the minimum value constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -132,7 +132,7 @@ describe('Time validation type:', function() {
         errorFormatter.minimumValueViolation('minAndMaxInclusiveValuesProp', '01:08:00.000'));
     });
 
-    it('reject a time that is greater than the maximum value constraint', function() {
+    it('reject a time that is greater than the maximum value constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -146,8 +146,8 @@ describe('Time validation type:', function() {
     });
   });
 
-  describe('exclusive range constraints', function() {
-    it('allow a time with all components that is within the minimum and maximum value range', function() {
+  describe('exclusive range constraints', () => {
+    it('allow a time with all components that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -157,7 +157,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow a time without milliseconds that is within the minimum and maximum value range', function() {
+    it('allow a time without milliseconds that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -167,7 +167,7 @@ describe('Time validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('reject a time that is less than the minimum value constraint', function() {
+    it('reject a time that is less than the minimum value constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -180,7 +180,7 @@ describe('Time validation type:', function() {
         errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.999'));
     });
 
-    it('reject a time that is equal to the minimum value constraint', function() {
+    it('reject a time that is equal to the minimum value constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -193,7 +193,7 @@ describe('Time validation type:', function() {
         errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.999'));
     });
 
-    it('reject a time that is greater than the maximum value constraint', function() {
+    it('reject a time that is greater than the maximum value constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
@@ -206,7 +206,7 @@ describe('Time validation type:', function() {
         errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:01.002'));
     });
 
-    it('reject a time that is equal to the maximum value constraint', function() {
+    it('reject a time that is equal to the maximum value constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',

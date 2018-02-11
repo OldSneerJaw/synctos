@@ -1,15 +1,15 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Strict equality constraint:', function() {
-  beforeEach(function() {
+describe('Strict equality constraint:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-must-equal-strict-sync-function.js');
   });
 
-  describe('array type with static property validation', function() {
+  describe('array type with static property validation', () => {
     const expectedArrayValue = [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ];
 
-    it('allows a document when the array elements match', function() {
+    it('allows a document when the array elements match', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ]
@@ -18,7 +18,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document when the array is null', function() {
+    it('rejects a document when the array is null', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: null
@@ -27,13 +27,13 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
-    it('rejects a document when the array is missing', function() {
+    it('rejects a document when the array is missing', () => {
       const doc = { _id: 'staticArrayDoc' };
 
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
-    it('rejects a document when a top-level array element is not equal', function() {
+    it('rejects a document when a top-level array element is not equal', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 0, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ]
@@ -42,7 +42,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
-    it('rejects a document when a nested array element is not equal', function() {
+    it('rejects a document when a nested array element is not equal', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'baz' }, [ ] ]
@@ -51,7 +51,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
-    it('rejects a document when the array is a subset of the expected elements', function() {
+    it('rejects a document when the array is a subset of the expected elements', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' } ]
@@ -60,7 +60,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
-    it('rejects a document when nested complex type elements are not of the same type', function() {
+    it('rejects a document when nested complex type elements are not of the same type', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, { } ]
@@ -72,7 +72,7 @@ describe('Strict equality constraint:', function() {
         errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
-    it('rejects a document when the array element order has changed', function() {
+    it('rejects a document when the array element order has changed', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], [ ], { foo: 'bar' }, null ]
@@ -81,7 +81,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
-    it('rejects a document when an unexpected nested object property is null', function() {
+    it('rejects a document when an unexpected nested object property is null', () => {
       const doc = {
         _id: 'staticArrayDoc',
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar', baz: null }, [ ] ]
@@ -91,8 +91,8 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('array type with dynamic property validation', function() {
-    it('allows a document when the array elements match', function() {
+  describe('array type with dynamic property validation', () => {
+    it('allows a document when the array elements match', () => {
       const doc = {
         _id: 'dynamicArrayDoc',
         expectedDynamicValue: [ 'barfoo', -72.0, true, 3.9 ],
@@ -102,7 +102,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document when the array elements are different', function() {
+    it('rejects a document when the array elements are different', () => {
       const doc = {
         _id: 'dynamicArrayDoc',
         expectedDynamicValue: [ '#4', 'foo' ],
@@ -113,7 +113,7 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('object type with static property validation', function() {
+  describe('object type with static property validation', () => {
     const expectedObjectValue = {
       myStringProp: 'foobar',
       myIntegerProp: 8,
@@ -123,7 +123,7 @@ describe('Strict equality constraint:', function() {
       myObjectProp: { foo: 'bar', baz: 73, qux: [ ] }
     };
 
-    it('allows a document when the object properties match', function() {
+    it('allows a document when the object properties match', () => {
       const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
@@ -139,7 +139,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document when the object is null', function() {
+    it('rejects a document when the object is null', () => {
       const doc = {
         _id: 'staticObjectDoc',
         objectProp: null
@@ -148,13 +148,13 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
-    it('rejects a document when the object is missing', function() {
+    it('rejects a document when the object is missing', () => {
       const doc = { _id: 'staticObjectDoc' };
 
       testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
-    it('rejects a document when the top-level properties do not match', function() {
+    it('rejects a document when the top-level properties do not match', () => {
       const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
@@ -170,7 +170,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
-    it('rejects a document when the nested properties of the object do not match', function() {
+    it('rejects a document when the nested properties of the object do not match', () => {
       const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
@@ -186,7 +186,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
-    it('rejects a document when a nested object property is missing', function() {
+    it('rejects a document when a nested object property is missing', () => {
       const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
@@ -202,7 +202,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
-    it('rejects a document when an unexpected nested object property is null', function() {
+    it('rejects a document when an unexpected nested object property is null', () => {
       const doc = {
         _id: 'staticObjectDoc',
         objectProp: {
@@ -220,8 +220,8 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('object type with dynamic property validation', function() {
-    it('allows a document when the object properties match', function() {
+  describe('object type with dynamic property validation', () => {
+    it('allows a document when the object properties match', () => {
       const doc = {
         _id: 'dynamicObjectDoc',
         expectedDynamicValue: {
@@ -234,7 +234,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document when the object properties do not match', function() {
+    it('rejects a document when the object properties do not match', () => {
       const doc = {
         _id: 'dynamicObjectDoc',
         expectedDynamicValue: { myStringProp: 'foo' },
@@ -245,7 +245,7 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('hashtable type with static validation', function() {
+  describe('hashtable type with static validation', () => {
     const expectedHashtableValue = {
       myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foobar: 18 } ],
       myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
@@ -255,7 +255,7 @@ describe('Strict equality constraint:', function() {
       myFloatProp: 88.92
     };
 
-    it('allows a document when the hashtable properties match', function() {
+    it('allows a document when the hashtable properties match', () => {
       const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
@@ -271,7 +271,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document when the hashtable is null', function() {
+    it('rejects a document when the hashtable is null', () => {
       const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: null
@@ -283,7 +283,7 @@ describe('Strict equality constraint:', function() {
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
     });
 
-    it('rejects a document when the hashtable is missing', function() {
+    it('rejects a document when the hashtable is missing', () => {
       const doc = { _id: 'staticHashtableDoc' };
 
       testHelper.verifyDocumentNotCreated(
@@ -292,7 +292,7 @@ describe('Strict equality constraint:', function() {
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
     });
 
-    it('rejects a document when a top-level hashtable property does not match', function() {
+    it('rejects a document when a top-level hashtable property does not match', () => {
       const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
@@ -311,7 +311,7 @@ describe('Strict equality constraint:', function() {
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
     });
 
-    it('rejects a document when a nested hashtable property does not match', function() {
+    it('rejects a document when a nested hashtable property does not match', () => {
       const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
@@ -330,7 +330,7 @@ describe('Strict equality constraint:', function() {
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
     });
 
-    it('rejects a document when a nested hashtable property is missing', function() {
+    it('rejects a document when a nested hashtable property is missing', () => {
       const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
@@ -349,7 +349,7 @@ describe('Strict equality constraint:', function() {
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
     });
 
-    it('rejects a document when an unexpected nested hashtable property is null', function() {
+    it('rejects a document when an unexpected nested hashtable property is null', () => {
       const doc = {
         _id: 'staticHashtableDoc',
         hashtableProp: {
@@ -370,8 +370,8 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('hashtable type with dynamic property validation', function() {
-    it('allows a document when the hashtable property matches', function() {
+  describe('hashtable type with dynamic property validation', () => {
+    it('allows a document when the hashtable property matches', () => {
       const doc = {
         _id: 'dynamicHashtableDoc',
         expectedDynamicValue: { myDateProp: '2017-04-07' },
@@ -381,7 +381,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document when the hashtable property does not match', function() {
+    it('rejects a document when the hashtable property does not match', () => {
       const doc = {
         _id: 'dynamicHashtableDoc',
         expectedDynamicValue: { myStringProp: 'foo', myIntegerProp: -1 },
@@ -395,8 +395,8 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('when applied to array elements', function() {
-    it('allows array element values that match', function() {
+  describe('when applied to array elements', () => {
+    it('allows array element values that match', () => {
       const doc = {
         _id: 'arrayElementConstraintDoc',
         arrayProp: [ 'foobar', 'foobar' ]
@@ -405,7 +405,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects array element values that do not match', function() {
+    it('rejects array element values that do not match', () => {
       const doc = {
         _id: 'arrayElementConstraintDoc',
         arrayProp: [ 'foobar', 'foobar', 'fubar' ]
@@ -418,8 +418,8 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('when applied to hashtable element values', function() {
-    it('allows hashtable element values that match', function() {
+  describe('when applied to hashtable element values', () => {
+    it('allows hashtable element values that match', () => {
       const doc = {
         _id: 'hashtableElementConstraintDoc',
         hashtableProp: {
@@ -431,7 +431,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects hashtable element values that do not match', function() {
+    it('rejects hashtable element values that do not match', () => {
       const doc = {
         _id: 'hashtableElementConstraintDoc',
         hashtableProp: {
@@ -448,8 +448,8 @@ describe('Strict equality constraint:', function() {
     });
   });
 
-  describe('with an expected value of null', function() {
-    it('allows a document with a value of null', function() {
+  describe('with an expected value of null', () => {
+    it('allows a document with a value of null', () => {
       const doc = {
         _id: 'nullExpectedValueDoc',
         stringProp: null
@@ -458,7 +458,7 @@ describe('Strict equality constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document with a missing value', function() {
+    it('rejects a document with a missing value', () => {
       const doc = { _id: 'nullExpectedValueDoc' };
 
       testHelper.verifyDocumentNotCreated(
@@ -467,7 +467,7 @@ describe('Strict equality constraint:', function() {
         errorFormatter.mustEqualViolation('stringProp', null));
     });
 
-    it('rejects a document with a value that is neither null nor undefined', function() {
+    it('rejects a document with a value that is neither null nor undefined', () => {
       const doc = {
         _id: 'nullExpectedValueDoc',
         stringProp: 'foobar'

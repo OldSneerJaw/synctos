@@ -1,13 +1,13 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Time zone validation type:', function() {
-  beforeEach(function() {
+describe('Time zone validation type:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-timezone-sync-function.js');
   });
 
-  describe('format', function() {
-    it('allows the UTC time zone', function() {
+  describe('format', () => {
+    it('allows the UTC time zone', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -17,7 +17,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a valid time zone with a colon separator', function() {
+    it('allows a valid time zone with a colon separator', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -27,7 +27,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a valid time zone without a colon separator', function() {
+    it('allows a valid time zone without a colon separator', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -37,7 +37,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a time zone without a positive or negative sign', function() {
+    it('rejects a time zone without a positive or negative sign', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -47,7 +47,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timezoneDoc', errorFormatter.timezoneFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time zone without a minute component', function() {
+    it('rejects a time zone without a minute component', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -57,7 +57,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timezoneDoc', errorFormatter.timezoneFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time zone that is less than the minimum possible value', function() {
+    it('rejects a time zone that is less than the minimum possible value', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -67,7 +67,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timezoneDoc', errorFormatter.timezoneFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time zone that is greater than the maximum possible value', function() {
+    it('rejects a time zone that is greater than the maximum possible value', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -77,7 +77,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'timezoneDoc', errorFormatter.timezoneFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time zone that is not a string', function() {
+    it('rejects a time zone that is not a string', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -88,8 +88,8 @@ describe('Time zone validation type:', function() {
     });
   });
 
-  describe('inclusive range constraints', function() {
-    it('allow a valid time zone with a colon separator that is within the minimum and maximum value range', function() {
+  describe('inclusive range constraints', () => {
+    it('allow a valid time zone with a colon separator that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -99,7 +99,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow a valid time zone without a colon separator that is within the minimum and maximum value range', function() {
+    it('allow a valid time zone without a colon separator that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -109,7 +109,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow zero/zulu time zone when it is within the minimum and maximum value range', function() {
+    it('allow zero/zulu time zone when it is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -119,7 +119,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('reject a time zone that is less than the minimum range constraint', function() {
+    it('reject a time zone that is less than the minimum range constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -132,7 +132,7 @@ describe('Time zone validation type:', function() {
         errorFormatter.minimumValueViolation('minAndMaxInclusiveValuesProp', 'Z'));
     });
 
-    it('reject a time zone that is greater than the maximum range constraint', function() {
+    it('reject a time zone that is greater than the maximum range constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -146,8 +146,8 @@ describe('Time zone validation type:', function() {
     });
   });
 
-  describe('exclusive range constraints', function() {
-    it('allow a valid time zone with a colon separator that is within the minimum and maximum value range', function() {
+  describe('exclusive range constraints', () => {
+    it('allow a valid time zone with a colon separator that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -157,7 +157,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow a valid time zone without a colon separator that is within the minimum and maximum value range', function() {
+    it('allow a valid time zone without a colon separator that is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -167,7 +167,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow zero/zulu time zone when it is within the minimum and maximum value range', function() {
+    it('allow zero/zulu time zone when it is within the minimum and maximum value range', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -177,7 +177,7 @@ describe('Time zone validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('reject a time zone that is less than the minimum range constraint', function() {
+    it('reject a time zone that is less than the minimum range constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -190,7 +190,7 @@ describe('Time zone validation type:', function() {
         errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '-1131'));
     });
 
-    it('reject a time zone that is equal to the minimum range constraint', function() {
+    it('reject a time zone that is equal to the minimum range constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -203,7 +203,7 @@ describe('Time zone validation type:', function() {
         errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '-1131'));
     });
 
-    it('reject a time zone that is greater than the maximum range constraint', function() {
+    it('reject a time zone that is greater than the maximum range constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
@@ -216,7 +216,7 @@ describe('Time zone validation type:', function() {
         errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '+12:31'));
     });
 
-    it('reject a time zone that is equal to the maximum range constraint', function() {
+    it('reject a time zone that is equal to the maximum range constraint', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',

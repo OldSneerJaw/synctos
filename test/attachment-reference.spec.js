@@ -1,14 +1,14 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Attachment reference validation type', function() {
-  beforeEach(function() {
+describe('Attachment reference validation type', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-attachment-reference-sync-function.js');
   });
 
-  describe('file extensions constraint', function() {
-    describe('with static validation', function() {
-      it('allows an attachment reference with a valid file extension', function() {
+  describe('file extensions constraint', () => {
+    describe('with static validation', () => {
+      it('allows an attachment reference with a valid file extension', () => {
         const doc = {
           _id: 'foo',
           type: 'attachmentsDoc',
@@ -18,7 +18,7 @@ describe('Attachment reference validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('rejects an attachment reference with an invalid file extension', function() {
+      it('rejects an attachment reference with an invalid file extension', () => {
         const doc = {
           _id: 'foo',
           type: 'attachmentsDoc',
@@ -32,8 +32,8 @@ describe('Attachment reference validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows an attachment reference with a valid file extension', function() {
+    describe('with dynamic validation', () => {
+      it('allows an attachment reference with a valid file extension', () => {
         const doc = {
           _id: 'foo',
           type: 'attachmentsDoc',
@@ -44,7 +44,7 @@ describe('Attachment reference validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('rejects an attachment reference with an invalid file extension', function() {
+      it('rejects an attachment reference with an invalid file extension', () => {
         const expectedSupportedExtensions = [ 'png', 'jpg', 'gif' ];
         const doc = {
           _id: 'foo',
@@ -61,9 +61,9 @@ describe('Attachment reference validation type', function() {
     });
   });
 
-  describe('file content types constraint', function() {
-    describe('with static validation', function() {
-      it('allows an attachment reference with a valid content type', function() {
+  describe('file content types constraint', () => {
+    describe('with static validation', () => {
+      it('allows an attachment reference with a valid content type', () => {
         const doc = {
           _id: 'foo',
           _attachments: {
@@ -76,7 +76,7 @@ describe('Attachment reference validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('rejects an attachment reference with an invalid content type', function() {
+      it('rejects an attachment reference with an invalid content type', () => {
         const doc = {
           _id: 'foo',
           _attachments: {
@@ -93,8 +93,8 @@ describe('Attachment reference validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows an attachment reference with a valid content type', function() {
+    describe('with dynamic validation', () => {
+      it('allows an attachment reference with a valid content type', () => {
         const doc = {
           _id: 'foo',
           _attachments: {
@@ -108,7 +108,7 @@ describe('Attachment reference validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('rejects an attachment reference with an invalid content type', function() {
+      it('rejects an attachment reference with an invalid content type', () => {
         const expectedSupportedContentTypes = [ 'image/png', 'image/jpeg', 'image/gif' ];
         const doc = {
           _id: 'foo',
@@ -128,9 +128,9 @@ describe('Attachment reference validation type', function() {
     });
   });
 
-  describe('maximum size constraint', function() {
-    describe('with static validation', function() {
-      it('allows an attachment smaller than the maximum size', function() {
+  describe('maximum size constraint', () => {
+    describe('with static validation', () => {
+      it('allows an attachment smaller than the maximum size', () => {
         const doc = {
           _id: 'foo',
           _attachments: {
@@ -143,7 +143,7 @@ describe('Attachment reference validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('rejects an attachment larger than the maximum size', function() {
+      it('rejects an attachment larger than the maximum size', () => {
         const doc = {
           _id: 'foo',
           _attachments: {
@@ -160,8 +160,8 @@ describe('Attachment reference validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows an attachment smaller than the maximum size', function() {
+    describe('with dynamic validation', () => {
+      it('allows an attachment smaller than the maximum size', () => {
         const doc = {
           _id: 'foo',
           _attachments: {
@@ -175,7 +175,7 @@ describe('Attachment reference validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('rejects an attachment larger than the maximum size', function() {
+      it('rejects an attachment larger than the maximum size', () => {
         const doc = {
           _id: 'foo',
           _attachments: {

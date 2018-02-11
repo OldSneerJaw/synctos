@@ -2,8 +2,8 @@ const sampleSpecHelper = require('./helpers/sample-spec-helper');
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample payment processor settlement doc definition', function() {
-  beforeEach(function() {
+describe('Sample payment processor settlement doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
@@ -19,7 +19,7 @@ describe('Sample payment processor settlement doc definition', function() {
       expectedErrorMessages, sampleSpecHelper.getExpectedAuthorization('payment-settlement-write'));
   }
 
-  it('can successfully create a valid payment processor settlement document', function() {
+  it('can successfully create a valid payment processor settlement document', () => {
     const doc = {
       _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.some-settlement-id',
       _attachments: { },
@@ -37,7 +37,7 @@ describe('Sample payment processor settlement doc definition', function() {
     verifySettlementWritten(20, doc);
   });
 
-  it('cannot create a payment processor settlement document when the properties are invalid', function() {
+  it('cannot create a payment processor settlement document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar',
       businessId: 54321,
@@ -65,7 +65,7 @@ describe('Sample payment processor settlement doc definition', function() {
       ]);
   });
 
-  it('cannot replace a payment processor settlement document because it is immutable', function() {
+  it('cannot replace a payment processor settlement document because it is immutable', () => {
     const doc = {
       _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar',
       businessId: 12345,
@@ -104,7 +104,7 @@ describe('Sample payment processor settlement doc definition', function() {
       ]);
   });
 
-  it('cannot delete a valid payment processing attempt document because it is immutable', function() {
+  it('cannot delete a valid payment processing attempt document because it is immutable', () => {
     const doc = { _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar', _deleted: true };
     const oldDoc = { _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar', businessId: 12345 };
 

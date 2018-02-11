@@ -2,8 +2,8 @@ const sampleSpecHelper = require('./helpers/sample-spec-helper');
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample invoice payment processing attempt doc definition', function() {
-  beforeEach(function() {
+describe('Sample invoice payment processing attempt doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
@@ -20,7 +20,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
       sampleSpecHelper.getExpectedAuthorization('payment-attempt-write'));
   }
 
-  it('successfully creates a valid payment processing attempt document', function() {
+  it('successfully creates a valid payment processing attempt document', () => {
     const doc = {
       _id: 'paymentAttempt.foo-bar',
       _attachments: { },
@@ -39,7 +39,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
     verifyPaymentAttemptWritten(20, doc);
   });
 
-  it('cannot create a payment processing attempt document when the properties are invalid', function() {
+  it('cannot create a payment processing attempt document when the properties are invalid', () => {
     const doc = {
       _id: 'paymentAttempt.foo-bar',
       businessId: 'my-business',
@@ -73,7 +73,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
       ]);
   });
 
-  it('cannot replace a payment processing attempt document because it is immutable', function() {
+  it('cannot replace a payment processing attempt document because it is immutable', () => {
     const doc = {
       _id: 'paymentAttempt.foo-bar',
       businessId: 0,
@@ -112,7 +112,7 @@ describe('Sample invoice payment processing attempt doc definition', function() 
       ]);
   });
 
-  it('cannot delete a valid payment processing attempt document because it is immutable', function() {
+  it('cannot delete a valid payment processing attempt document because it is immutable', () => {
     const doc = { _id: 'paymentAttempt.foo-bar', _deleted: true };
     const oldDoc = { _id: 'paymentAttempt.foo-bar', businessId: 20 };
 

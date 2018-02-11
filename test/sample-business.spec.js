@@ -2,8 +2,8 @@ const sampleSpecHelper = require('./helpers/sample-spec-helper');
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample Business config doc definition', function() {
-  beforeEach(function() {
+describe('Sample Business config doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
@@ -28,7 +28,7 @@ describe('Sample Business config doc definition', function() {
       sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_BUSINESS' ]));
   }
 
-  it('successfully creates a valid business document', function() {
+  it('successfully creates a valid business document', () => {
     const doc = {
       _id: 'biz.2',
       _attachments: {
@@ -46,7 +46,7 @@ describe('Sample Business config doc definition', function() {
     verifyBusinessConfigCreated(2, doc);
   });
 
-  it('cannot create a business document when the properties are invalid', function() {
+  it('cannot create a business document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.5',
       businessLogoAttachment: 15,
@@ -68,14 +68,14 @@ describe('Sample Business config doc definition', function() {
       ]);
   });
 
-  it('successfully replaces a valid business document', function() {
+  it('successfully replaces a valid business document', () => {
     const doc = { _id: 'biz.8', paymentProcessors: [ 'foo', 'bar' ], businessLogoAttachment: 'foobar.png' };
     const oldDoc = { _id: 'biz.8' };
 
     verifyBusinessConfigReplaced(8, doc, oldDoc);
   });
 
-  it('cannot replace a business document when the properties are invalid', function() {
+  it('cannot replace a business document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.551',
       _attachments: {
@@ -115,7 +115,7 @@ describe('Sample Business config doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a valid business document', function() {
+  it('successfully deletes a valid business document', () => {
     const oldDoc = { _id: 'biz.11' };
 
     verifyBusinessConfigDeleted(11, oldDoc);

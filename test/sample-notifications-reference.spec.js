@@ -2,15 +2,15 @@ const sampleSpecHelper = require('./helpers/sample-spec-helper');
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample business notifications reference doc definition', function() {
-  beforeEach(function() {
+describe('Sample business notifications reference doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
   const expectedDocType = 'notificationsReference';
   const expectedBasePrivilege = 'NOTIFICATIONS';
 
-  it('successfully creates a valid notifications reference document', function() {
+  it('successfully creates a valid notifications reference document', () => {
     const doc = {
       _id: 'biz.4.notifications',
       allNotificationIds: [ 'X', 'Y', 'Z' ],
@@ -20,7 +20,7 @@ describe('Sample business notifications reference doc definition', function() {
     sampleSpecHelper.verifyDocumentCreated(expectedBasePrivilege, 4, doc);
   });
 
-  it('cannot create a notifications reference document when the properties are invalid', function() {
+  it('cannot create a notifications reference document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.123.notifications',
       allNotificationIds: [ 23, 'Y', 'Z' ],
@@ -38,7 +38,7 @@ describe('Sample business notifications reference doc definition', function() {
       ]);
   });
 
-  it('successfully replaces a valid notifications reference document', function() {
+  it('successfully replaces a valid notifications reference document', () => {
     const doc = {
       _id: 'biz.44.notifications',
       allNotificationIds: [ 'X', 'Y', 'Z', 'A' ],
@@ -53,7 +53,7 @@ describe('Sample business notifications reference doc definition', function() {
     sampleSpecHelper.verifyDocumentReplaced(expectedBasePrivilege, 44, doc, oldDoc);
   });
 
-  it('cannot replace a notifications reference document when the properties are invalid', function() {
+  it('cannot replace a notifications reference document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.29.notifications',
       allNotificationIds: [ 'X', 'Y', 'Z', '' ],
@@ -77,7 +77,7 @@ describe('Sample business notifications reference doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a notifications reference document', function() {
+  it('successfully deletes a notifications reference document', () => {
     const oldDoc = {
       _id: 'biz.369.notifications',
       allNotificationIds: [ 'X', 'Y', 'Z' ],

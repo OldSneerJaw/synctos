@@ -2,15 +2,15 @@ const sampleSpecHelper = require('./helpers/sample-spec-helper');
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample payment processor definition doc definition', function() {
-  beforeEach(function() {
+describe('Sample payment processor definition doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
   const expectedDocType = 'paymentProcessorDefinition';
   const expectedBasePrivilege = 'CUSTOMER_PAYMENT_PROCESSORS';
 
-  it('successfully creates a valid payment processor document', function() {
+  it('successfully creates a valid payment processor document', () => {
     const doc = {
       _id: 'biz.3.paymentProcessor.2',
       provider: 'foo',
@@ -23,7 +23,7 @@ describe('Sample payment processor definition doc definition', function() {
     sampleSpecHelper.verifyDocumentCreated(expectedBasePrivilege, 3, doc);
   });
 
-  it('cannot create a payment processor document when the properties are invalid', function() {
+  it('cannot create a payment processor document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.1.paymentProcessor.2',
       provider: '',
@@ -49,7 +49,7 @@ describe('Sample payment processor definition doc definition', function() {
       ]);
   });
 
-  it('successfully replaces a valid payment processor document', function() {
+  it('successfully replaces a valid payment processor document', () => {
     const doc = {
       _id: 'biz.5.paymentProcessor.2',
       provider: 'foobar',
@@ -61,7 +61,7 @@ describe('Sample payment processor definition doc definition', function() {
     sampleSpecHelper.verifyDocumentReplaced(expectedBasePrivilege, 5, doc, oldDoc);
   });
 
-  it('cannot replace a payment processor document when the properties are invalid', function() {
+  it('cannot replace a payment processor document when the properties are invalid', () => {
     const doc = {
       _id: 'biz.2.paymentProcessor.2',
       accountId: 555.9,
@@ -87,7 +87,7 @@ describe('Sample payment processor definition doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a payment processor document', function() {
+  it('successfully deletes a payment processor document', () => {
     const oldDoc = { _id: 'biz.8.paymentProcessor.2' };
 
     sampleSpecHelper.verifyDocumentDeleted(expectedBasePrivilege, 8, oldDoc);

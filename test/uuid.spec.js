@@ -1,12 +1,12 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('UUID validation type', function() {
-  beforeEach(function() {
+describe('UUID validation type', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-uuid-sync-function.js');
   });
 
-  it('allows a valid UUID with lowercase letters', function() {
+  it('allows a valid UUID with lowercase letters', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDocType',
@@ -16,7 +16,7 @@ describe('UUID validation type', function() {
     testHelper.verifyDocumentCreated(doc);
   });
 
-  it('allows a valid UUID with uppercase letters', function() {
+  it('allows a valid UUID with uppercase letters', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDocType',
@@ -26,7 +26,7 @@ describe('UUID validation type', function() {
     testHelper.verifyDocumentCreated(doc);
   });
 
-  it('rejects a UUID with invalid characters', function() {
+  it('rejects a UUID with invalid characters', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDocType',
@@ -36,7 +36,7 @@ describe('UUID validation type', function() {
     testHelper.verifyDocumentNotCreated(doc, 'myDocType', [ errorFormatter.uuidFormatInvalid('uuidProp') ]);
   });
 
-  it('rejects a UUID without hyphens', function() {
+  it('rejects a UUID without hyphens', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDocType',
@@ -46,7 +46,7 @@ describe('UUID validation type', function() {
     testHelper.verifyDocumentNotCreated(doc, 'myDocType', [ errorFormatter.uuidFormatInvalid('uuidProp') ]);
   });
 
-  it('rejects a UUID with too many characters', function() {
+  it('rejects a UUID with too many characters', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDocType',
@@ -56,7 +56,7 @@ describe('UUID validation type', function() {
     testHelper.verifyDocumentNotCreated(doc, 'myDocType', [ errorFormatter.uuidFormatInvalid('uuidProp') ]);
   });
 
-  it('rejects a UUID with too few characters', function() {
+  it('rejects a UUID with too few characters', () => {
     const doc = {
       _id: 'my-doc',
       type: 'myDocType',

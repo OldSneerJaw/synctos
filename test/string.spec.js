@@ -1,14 +1,14 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('String validation type', function() {
-  beforeEach(function() {
+describe('String validation type', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-string-sync-function.js');
   });
 
-  describe('length constraints', function() {
-    describe('with static validation', function() {
-      it('can create a doc with a string that is within the minimum and maximum lengths', function() {
+  describe('length constraints', () => {
+    describe('with static validation', () => {
+      it('can create a doc with a string that is within the minimum and maximum lengths', () => {
         const doc = {
           _id: 'stringDoc',
           staticLengthValidationProp: 'foo'
@@ -17,7 +17,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('cannot create a doc with a string that is shorter than the minimum length', function() {
+      it('cannot create a doc with a string that is shorter than the minimum length', () => {
         const doc = {
           _id: 'stringDoc',
           staticLengthValidationProp: 'fo'
@@ -26,7 +26,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.minimumLengthViolation('staticLengthValidationProp', 3));
       });
 
-      it('cannot create a doc with a string that is longer than the maximum length', function() {
+      it('cannot create a doc with a string that is longer than the maximum length', () => {
         const doc = {
           _id: 'stringDoc',
           staticLengthValidationProp: 'foob'
@@ -36,8 +36,8 @@ describe('String validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a doc with a string that is within the minimum and maximum lengths', function() {
+    describe('with dynamic validation', () => {
+      it('allows a doc with a string that is within the minimum and maximum lengths', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicLengthValidationProp: 'foo',
@@ -47,7 +47,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with a string that is shorter than the minimum length', function() {
+      it('blocks a doc with a string that is shorter than the minimum length', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicLengthValidationProp: 'foobar',
@@ -65,9 +65,9 @@ describe('String validation type', function() {
     });
   });
 
-  describe('non-empty constraint', function() {
-    describe('with static validation', function() {
-      it('allows a doc with a string that is not empty', function() {
+  describe('non-empty constraint', () => {
+    describe('with static validation', () => {
+      it('allows a doc with a string that is not empty', () => {
         const doc = {
           _id: 'stringDoc',
           staticNonEmptyValidationProp: 'foo'
@@ -76,7 +76,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with an empty string', function() {
+      it('blocks a doc with an empty string', () => {
         const doc = {
           _id: 'stringDoc',
           staticNonEmptyValidationProp: ''
@@ -86,8 +86,8 @@ describe('String validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a doc with a string that is not empty', function() {
+    describe('with dynamic validation', () => {
+      it('allows a doc with a string that is not empty', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicNonEmptyValidationProp: 'bar',
@@ -97,7 +97,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a doc with a string that is empty if the constraint is disabled', function() {
+      it('allows a doc with a string that is empty if the constraint is disabled', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicNonEmptyValidationProp: '',
@@ -107,7 +107,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with an empty string if the constraint is enabled', function() {
+      it('blocks a doc with an empty string if the constraint is enabled', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicNonEmptyValidationProp: '',
@@ -119,9 +119,9 @@ describe('String validation type', function() {
     });
   });
 
-  describe('regular expression pattern constraint', function() {
-    describe('with static validation', function() {
-      it('allows a doc with a string that matches the expected pattern', function() {
+  describe('regular expression pattern constraint', () => {
+    describe('with static validation', () => {
+      it('allows a doc with a string that matches the expected pattern', () => {
         const doc = {
           _id: 'stringDoc',
           staticRegexPatternValidationProp: '0472`foo'
@@ -130,7 +130,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with a string that does not match the expected pattern', function() {
+      it('blocks a doc with a string that does not match the expected pattern', () => {
         const doc = {
           _id: 'stringDoc',
           staticRegexPatternValidationProp: 'foobar'
@@ -143,10 +143,10 @@ describe('String validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
+    describe('with dynamic validation', () => {
       const testRegexPattern = '^[a-zA-Z]+$';
 
-      it('allows a doc with a string that matches the expected pattern', function() {
+      it('allows a doc with a string that matches the expected pattern', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicRegexPatternValidationProp: 'fooBAR',
@@ -156,7 +156,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with a string that does not match the expected pattern', function() {
+      it('blocks a doc with a string that does not match the expected pattern', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicRegexPatternValidationProp: 'foobar2',
@@ -171,9 +171,9 @@ describe('String validation type', function() {
     });
   });
 
-  describe('must be trimmed constraint', function() {
-    describe('with static validation', function() {
-      it('allows an empty string', function() {
+  describe('must be trimmed constraint', () => {
+    describe('with static validation', () => {
+      it('allows an empty string', () => {
         const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: ''
@@ -182,7 +182,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a string that has no leading or trailing whitespace', function() {
+      it('allows a string that has no leading or trailing whitespace', () => {
         const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: 'foo bar'
@@ -191,7 +191,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a string that has leading whitespace', function() {
+      it('blocks a string that has leading whitespace', () => {
         const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: '\tfoo bar'
@@ -200,7 +200,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('staticMustBeTrimmedValidationProp'));
       });
 
-      it('blocks a string that has trailing whitespace', function() {
+      it('blocks a string that has trailing whitespace', () => {
         const doc = {
           _id: 'stringDoc',
           staticMustBeTrimmedValidationProp: 'foo bar\n'
@@ -210,8 +210,8 @@ describe('String validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a string that has no leading or trailing whitespace', function() {
+    describe('with dynamic validation', () => {
+      it('allows a string that has no leading or trailing whitespace', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: 'bar',
@@ -221,7 +221,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a string that has leading whitespace if the constraint is disabled', function() {
+      it('allows a string that has leading whitespace if the constraint is disabled', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: ' foobar',
@@ -231,7 +231,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a string that has trailing whitespace if the constraint is disabled', function() {
+      it('allows a string that has trailing whitespace if the constraint is disabled', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: 'foobar ',
@@ -241,7 +241,7 @@ describe('String validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a string that has leading and trailing whitespace if the constraint is enabled', function() {
+      it('blocks a string that has leading and trailing whitespace if the constraint is enabled', () => {
         const doc = {
           _id: 'stringDoc',
           dynamicMustBeTrimmedValidationProp: ' foobar ',

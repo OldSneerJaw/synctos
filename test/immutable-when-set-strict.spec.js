@@ -1,13 +1,13 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Strict immutable when set constraint:', function() {
-  beforeEach(function() {
+describe('Strict immutable when set constraint:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-immutable-when-set-strict-sync-function.js');
   });
 
-  describe('a property with static validation', function() {
-    it('can be set to a value in a new document', function() {
+  describe('a property with static validation', () => {
+    it('can be set to a value in a new document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
@@ -16,7 +16,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('can be left undefined in a new document', function() {
+    it('can be left undefined in a new document', () => {
       const doc = {
         _id: 'myDoc'
       };
@@ -24,7 +24,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('can be set to null in a new document', function() {
+    it('can be set to null in a new document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: null
@@ -33,7 +33,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('can be set to the same value as was already assigned in the old document', function() {
+    it('can be set to the same value as was already assigned in the old document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
@@ -46,7 +46,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can be set to a value if it was left undefined in the old document', function() {
+    it('can be set to a value if it was left undefined in the old document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
@@ -58,7 +58,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can be set to null if it was undefined in the old document', function() {
+    it('can be set to null if it was undefined in the old document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: null
@@ -70,7 +70,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('cannot be set to undefined if it was null in the old document', function() {
+    it('cannot be set to undefined if it was null in the old document', () => {
       const doc = {
         _id: 'myDoc'
       };
@@ -82,7 +82,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
-    it('cannot be set to a value if it was null in the old document', function() {
+    it('cannot be set to a value if it was null in the old document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
@@ -95,7 +95,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
-    it('cannot be changed to a new value if it was set to a value in the old document', function() {
+    it('cannot be changed to a new value if it was set to a value in the old document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: 'barfoo'
@@ -108,7 +108,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
-    it('cannot be change to undefined if it was set to a value in the old document', function() {
+    it('cannot be change to undefined if it was set to a value in the old document', () => {
       const doc = {
         _id: 'myDoc'
       };
@@ -120,7 +120,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
-    it('cannot be changed to null if it was set to a value in the old document', function() {
+    it('cannot be changed to null if it was set to a value in the old document', () => {
       const doc = {
         _id: 'myDoc',
         staticValidationProp: null
@@ -133,7 +133,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
-    it('does not prevent a document from being deleted if it is set to a value', function() {
+    it('does not prevent a document from being deleted if it is set to a value', () => {
       const oldDoc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
@@ -143,8 +143,8 @@ describe('Strict immutable when set constraint:', function() {
     });
   });
 
-  describe('a property with dynamic validation', function() {
-    it('can be set to the same value as was already assigned in the old document', function() {
+  describe('a property with dynamic validation', () => {
+    it('can be set to the same value as was already assigned in the old document', () => {
       const doc = {
         _id: 'myDoc',
         dynamicValidationProp: 42,
@@ -159,7 +159,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can be set to a new value if the property is not immutable', function() {
+    it('can be set to a new value if the property is not immutable', () => {
       const doc = {
         _id: 'myDoc',
         dynamicValidationProp: -1,
@@ -174,7 +174,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('cannot be set to a new value if the property is immutable', function() {
+    it('cannot be set to a new value if the property is immutable', () => {
       const doc = {
         _id: 'myDoc',
         dynamicValidationProp: 0,

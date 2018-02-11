@@ -1,14 +1,14 @@
 const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Array validation type', function() {
-  beforeEach(function() {
+describe('Array validation type', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-array-sync-function.js');
   });
 
-  describe('length constraints', function() {
-    describe('with static validation', function() {
-      it('can create a doc with an array that is within the minimum and maximum lengths', function() {
+  describe('length constraints', () => {
+    describe('with static validation', () => {
+      it('can create a doc with an array that is within the minimum and maximum lengths', () => {
         const doc = {
           _id: 'arrayDoc',
           staticLengthValidationProp: [ 'foo', 'bar' ]
@@ -17,7 +17,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('cannot create a doc with an array that is shorter than the minimum length', function() {
+      it('cannot create a doc with an array that is shorter than the minimum length', () => {
         const doc = {
           _id: 'arrayDoc',
           staticLengthValidationProp: [ 'foo' ]
@@ -26,7 +26,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.minimumLengthViolation('staticLengthValidationProp', 2));
       });
 
-      it('cannot create a doc with an array that is longer than the maximum length', function() {
+      it('cannot create a doc with an array that is longer than the maximum length', () => {
         const doc = {
           _id: 'arrayDoc',
           staticLengthValidationProp: [ 'foo', 'bar', 'baz' ]
@@ -36,8 +36,8 @@ describe('Array validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a doc with an array that is within the minimum and maximum lengths', function() {
+    describe('with dynamic validation', () => {
+      it('allows a doc with an array that is within the minimum and maximum lengths', () => {
         const doc = {
           _id: 'arrayDoc',
           dynamicLengthValidationProp: [ 'foo', 'bar' ],
@@ -47,7 +47,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with an array whose length is outside the allowed bounds', function() {
+      it('blocks a doc with an array whose length is outside the allowed bounds', () => {
         const doc = {
           _id: 'arrayDoc',
           dynamicLengthValidationProp: [ 'foo' ],
@@ -65,9 +65,9 @@ describe('Array validation type', function() {
     });
   });
 
-  describe('non-empty constraint', function() {
-    describe('with static validation', function() {
-      it('allows a doc with an array that is not empty', function() {
+  describe('non-empty constraint', () => {
+    describe('with static validation', () => {
+      it('allows a doc with an array that is not empty', () => {
         const doc = {
           _id: 'arrayDoc',
           staticNonEmptyValidationProp: [ 'foo' ]
@@ -76,7 +76,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with an empty array', function() {
+      it('blocks a doc with an empty array', () => {
         const doc = {
           _id: 'arrayDoc',
           staticNonEmptyValidationProp: [ ]
@@ -86,8 +86,8 @@ describe('Array validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a doc with an array that is not empty', function() {
+    describe('with dynamic validation', () => {
+      it('allows a doc with an array that is not empty', () => {
         const doc = {
           _id: 'arrayDoc',
           dynamicNonEmptyValidationProp: [ 'foo' ],
@@ -97,7 +97,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a doc with an array that is empty if the constraint is disabled', function() {
+      it('allows a doc with an array that is empty if the constraint is disabled', () => {
         const doc = {
           _id: 'arrayDoc',
           dynamicNonEmptyValidationProp: [ ],
@@ -107,7 +107,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc with an empty array if the constraint is enabled', function() {
+      it('blocks a doc with an empty array if the constraint is enabled', () => {
         const doc = {
           _id: 'arrayDoc',
           dynamicNonEmptyValidationProp: [ ],
@@ -119,9 +119,9 @@ describe('Array validation type', function() {
     });
   });
 
-  describe('array elements validator', function() {
-    describe('with static validation', function() {
-      it('allows a doc when the array elements are valid', function() {
+  describe('array elements validator', () => {
+    describe('with static validation', () => {
+      it('allows a doc when the array elements are valid', () => {
         const doc = {
           _id: 'arrayDoc',
           staticArrayElementsValidatorProp: [ 0, 1, 2 ]
@@ -130,7 +130,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc when the array elements fail validation', function() {
+      it('blocks a doc when the array elements fail validation', () => {
         const doc = {
           _id: 'arrayDoc',
           staticArrayElementsValidatorProp: [ 0, null, void 0, 'foo', -1, 3 ]
@@ -149,8 +149,8 @@ describe('Array validation type', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a doc when the array elements are valid', function() {
+    describe('with dynamic validation', () => {
+      it('allows a doc when the array elements are valid', () => {
         const doc = {
           _id: 'arrayDoc',
           dynamicArrayElementsValidatorProp: [ 0, 1, 2, null ],
@@ -161,7 +161,7 @@ describe('Array validation type', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('blocks a doc when the array elements fail validation', function() {
+      it('blocks a doc when the array elements fail validation', () => {
         const doc = {
           _id: 'arrayDoc',
           dynamicArrayElementsValidatorProp: [ '2017-04-11', null, void 0, 'foo', 47 ],
