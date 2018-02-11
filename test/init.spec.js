@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper');
 
 describe('Test helper module initialization', function() {
   describe('when initialized from a generated sync function file', function() {

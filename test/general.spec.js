@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Functionality that is common to all documents:', function() {

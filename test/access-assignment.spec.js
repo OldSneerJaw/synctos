@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper');
 
 describe('User and role access assignment:', function() {
   beforeEach(function() {

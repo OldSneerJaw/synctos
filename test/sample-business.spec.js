@@ -1,5 +1,5 @@
-const sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-const testHelper = require('../src/testing/test-helper.js');
+const sampleSpecHelper = require('./helpers/sample-spec-helper');
+const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Sample Business config doc definition', function() {

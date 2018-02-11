@@ -1,4 +1,4 @@
-const testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper');
 const errorFormatter = testHelper.validationErrorFormatter;
 
 describe('Immutable document validation:', function() {

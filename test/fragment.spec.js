@@ -1,4 +1,4 @@
-const testHelper = require('../src/testing/test-helper.js');
+const testHelper = require('../src/testing/test-helper');
 
 describe('Document definition fragments:', function() {
   beforeEach(function() {
