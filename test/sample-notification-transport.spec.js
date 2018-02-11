@@ -13,7 +13,7 @@ describe('Sample business notification transport doc definition', () => {
 
   function verifyAuthorizationCustomAction(docId, action) {
     expect(testHelper.requireAccess.callCount).to.equal(2);
-    expect(testHelper.requireAccess.calls[1].arg).to.equal(docId + '-' + action);
+    expect(testHelper.requireAccess.calls[1].arg).to.equal(`${docId}-${action}`);
   }
 
   function verifyNoAuthorizationCustomAction() {

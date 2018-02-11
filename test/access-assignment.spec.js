@@ -87,17 +87,17 @@ describe('User and role access assignment:', () => {
         expectedType: 'channel',
         expectedUsers: doc.users,
         expectedRoles: doc.roles,
-        expectedChannels: [ doc._id + '-channel1', doc._id + '-channel2' ]
+        expectedChannels: [ `${doc._id}-channel1`, `${doc._id}-channel2` ]
       },
       {
         expectedType: 'channel',
         expectedUsers: doc.users,
-        expectedChannels: [ doc._id + '-channel3' ]
+        expectedChannels: [ `${doc._id}-channel3` ]
       },
       {
         expectedType: 'channel',
         expectedRoles: doc.roles,
-        expectedChannels: [ doc._id + '-channel4' ]
+        expectedChannels: [ `${doc._id}-channel4` ]
       },
       {
         expectedType: 'role',
@@ -135,18 +135,18 @@ describe('User and role access assignment:', () => {
         {
           expectedType: 'channel',
           expectedUsers: null,
-          expectedChannels: [ doc._id + '-channel3' ]
+          expectedChannels: [ `${doc._id}-channel3` ]
         },
         {
           expectedType: 'channel',
           expectedRoles: null,
-          expectedChannels: [ doc._id + '-channel4' ]
+          expectedChannels: [ `${doc._id}-channel4` ]
         },
         {
           expectedType: 'channel',
           expectedUsers: null,
           expectedRoles: null,
-          expectedChannels: [ doc._id + '-channel2', doc._id + '-channel1' ]
+          expectedChannels: [ `${doc._id}-channel2`, `${doc._id}-channel1` ]
         },
         {
           expectedType: 'role',

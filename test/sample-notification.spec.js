@@ -13,7 +13,7 @@ describe('Sample business notification doc definition', () => {
   function getExpectedAccessAssignments(doc, docId) {
     return [
       {
-        expectedChannels: [ docId + '-VIEW' ],
+        expectedChannels: [ `${docId}-VIEW` ],
         expectedUsers: doc ? doc.users : null,
         expectedRoles: doc ? doc.groups : null
       }
@@ -31,14 +31,14 @@ describe('Sample business notification doc definition', () => {
     testHelper.verifyDocumentReplaced(
       doc,
       oldDoc,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_' + expectedBasePrivilege ]),
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_${expectedBasePrivilege}` ]),
       getExpectedAccessAssignments(doc, doc._id));
   }
 
   function verifyNotificationDeleted(businessId, oldDoc) {
     testHelper.verifyDocumentDeleted(
       oldDoc,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-REMOVE_' + expectedBasePrivilege ]),
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_${expectedBasePrivilege}` ]),
       getExpectedAccessAssignments({ }, oldDoc._id));
   }
 
@@ -56,7 +56,7 @@ describe('Sample business notification doc definition', () => {
       oldDoc,
       expectedDocType,
       expectedErrorMessages,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_' + expectedBasePrivilege ]));
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_${expectedBasePrivilege}` ]));
   }
 
   it('successfully creates a valid notification document', () => {

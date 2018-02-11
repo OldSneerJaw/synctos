@@ -8,15 +8,15 @@ describe('Sample Business config doc definition', () => {
   });
 
   function verifyBusinessConfigCreated(businessId, doc) {
-    testHelper.verifyDocumentCreated(doc, sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_BUSINESS' ]));
+    testHelper.verifyDocumentCreated(doc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigReplaced(businessId, doc, oldDoc) {
-    testHelper.verifyDocumentReplaced(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_BUSINESS' ]));
+    testHelper.verifyDocumentReplaced(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigDeleted(businessId, oldDoc) {
-    testHelper.verifyDocumentDeleted(oldDoc, sampleSpecHelper.getExpectedAuthorization([ businessId + '-REMOVE_BUSINESS' ]));
+    testHelper.verifyDocumentDeleted(oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigRejected(businessId, doc, oldDoc, expectedErrorMessages) {
@@ -25,7 +25,7 @@ describe('Sample Business config doc definition', () => {
       oldDoc,
       'business',
       expectedErrorMessages,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_BUSINESS' ]));
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
   it('successfully creates a valid business document', () => {

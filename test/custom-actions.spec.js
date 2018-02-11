@@ -218,7 +218,7 @@ function verifyAccessAssignmentMetadata(actualMetadata) {
     const expectedAssignments = actualMetadata.documentDefinition.accessAssignments.map((assignment) => ({
       type: 'channel',
       channels: [ assignment.channels ],
-      usersAndRoles: [ assignment.users, 'role:' + assignment.roles ]
+      usersAndRoles: [ assignment.users, `role:${assignment.roles}` ]
     }));
 
     expect(actualMetadata.accessAssignments).to.eql(expectedAssignments);

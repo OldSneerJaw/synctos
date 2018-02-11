@@ -13,15 +13,15 @@ function getExpectedAuthorization(expectedChannels) {
 exports.getExpectedAuthorization = getExpectedAuthorization;
 
 exports.verifyDocumentCreated = (basePrivilegeName, businessId, doc) => {
-  testHelper.verifyDocumentCreated(doc, getExpectedAuthorization([ businessId + '-ADD_' + basePrivilegeName ]));
+  testHelper.verifyDocumentCreated(doc, getExpectedAuthorization([ `${businessId}-ADD_${basePrivilegeName}` ]));
 };
 
 exports.verifyDocumentReplaced = (basePrivilegeName, businessId, doc, oldDoc) => {
-  testHelper.verifyDocumentReplaced(doc, oldDoc, getExpectedAuthorization([ businessId + '-CHANGE_' + basePrivilegeName ]));
+  testHelper.verifyDocumentReplaced(doc, oldDoc, getExpectedAuthorization([ `${businessId}-CHANGE_${basePrivilegeName}` ]));
 };
 
 exports.verifyDocumentDeleted = (basePrivilegeName, businessId, oldDoc) => {
-  testHelper.verifyDocumentDeleted(oldDoc, getExpectedAuthorization([ businessId + '-REMOVE_' + basePrivilegeName ]));
+  testHelper.verifyDocumentDeleted(oldDoc, getExpectedAuthorization([ `${businessId}-REMOVE_${basePrivilegeName}` ]));
 };
 
 exports.verifyDocumentNotCreated = (basePrivilegeName, businessId, doc, expectedDocType, expectedErrorMessages) => {
@@ -29,7 +29,7 @@ exports.verifyDocumentNotCreated = (basePrivilegeName, businessId, doc, expected
     doc,
     expectedDocType,
     expectedErrorMessages,
-    getExpectedAuthorization([ businessId + '-ADD_' + basePrivilegeName ]));
+    getExpectedAuthorization([ `${businessId}-ADD_${basePrivilegeName}` ]));
 };
 
 exports.verifyDocumentNotReplaced = (basePrivilegeName, businessId, doc, oldDoc, expectedDocType, expectedErrorMessages) => {
@@ -38,5 +38,5 @@ exports.verifyDocumentNotReplaced = (basePrivilegeName, businessId, doc, oldDoc,
     oldDoc,
     expectedDocType,
     expectedErrorMessages,
-    getExpectedAuthorization([ businessId + '-CHANGE_' + basePrivilegeName ]));
+    getExpectedAuthorization([ `${businessId}-CHANGE_${basePrivilegeName}` ]));
 };
