@@ -358,11 +358,6 @@ function validationModule() {
         validateEquality(expectedEqualValue, true);
       }
 
-      var expectedStrictEqualValue = resolveValidationConstraint(validator.mustEqualStrict);
-      if (typeof expectedStrictEqualValue !== 'undefined') {
-        validateEquality(expectedStrictEqualValue, false);
-      }
-
       if (!isValueNullOrUndefined(itemValue)) {
         if (resolveValidationConstraint(validator.mustNotBeEmpty) && itemValue.length < 1) {
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be empty');

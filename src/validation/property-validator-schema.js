@@ -190,16 +190,13 @@ function makeTypeConstraintsSchema(typeName) {
     .without('mustNotBeMissing', [ 'required', 'mustNotBeNull' ])
     .without('mustNotBeNull', [ 'required', 'mustNotBeMissing' ])
 
-    // Prevent the use of more than one constraint from the "equality" category
-    .without('mustEqual', [ 'mustEqualStrict' ])
-
     // Prevent the use of more than one constraint from the "minimum value" category
-    .without('minimumValue', [ 'minimumValueExclusive', 'mustEqual', 'mustEqualStrict' ])
-    .without('minimumValueExclusive', [ 'minimumValue', 'mustEqual', 'mustEqualStrict' ])
+    .without('minimumValue', [ 'minimumValueExclusive', 'mustEqual' ])
+    .without('minimumValueExclusive', [ 'minimumValue', 'mustEqual' ])
 
     // Prevent the use of more than one constraint from the "maximum value" category
-    .without('maximumValue', [ 'maximumValueExclusive', 'mustEqualStrict', 'mustEqual' ])
-    .without('maximumValueExclusive', [ 'maximumValue', 'mustEqualStrict', 'mustEqual' ])
+    .without('maximumValue', [ 'maximumValueExclusive', 'mustEqual' ])
+    .without('maximumValueExclusive', [ 'maximumValue', 'mustEqual' ])
 
     // Prevent the use of more than one constraint from the "immutability" category
     .without('immutable', [ 'immutableStrict', 'immutableWhenSet', 'immutableWhenSetStrict' ])
@@ -223,7 +220,6 @@ function universalConstraintSchemas(typeEqualitySchema) {
     immutableWhenSet: dynamicConstraintSchema(joi.boolean()),
     immutableWhenSetStrict: dynamicConstraintSchema(joi.boolean()),
     mustEqual: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
-    mustEqualStrict: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
     customValidation: joi.func().maxArity(4) // Function parameters: doc, oldDoc, currentItemElement, validationItemStack
   };
 }
