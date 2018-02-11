@@ -315,31 +315,16 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
 }
 
 function areUnorderedListsEqual(list1, list2) {
-  if (list1.length !== list2.length) {
-    return false;
-  }
-
-  for (let setIndex = 0; setIndex < list1.length; setIndex++) {
-    if (list2.indexOf(list1[setIndex]) < 0) {
-      return false;
-    } else if (list1.indexOf(list2[setIndex]) < 0) {
-      return false;
-    }
-  }
-
-  // If we got here, the two sets are equal
-  return true;
+  return list1.length === list2.length &&
+    list1.every((element) => list2.includes(element)) &&
+    list2.every((element) => list1.includes(element));
 }
 
 function accessAssignmentCallExists(accessFunction, expectedAssignees, expectedPermissions) {
   // Try to find an actual channel/role access assignment call that matches the expected call
-  for (const accessCall of accessFunction.calls) {
-    if (areUnorderedListsEqual(accessCall.args[0], expectedAssignees) && areUnorderedListsEqual(accessCall.args[1], expectedPermissions)) {
-      return true;
-    }
-  }
-
-  return false;
+  return accessFunction.calls.some((accessCall) => {
+    return areUnorderedListsEqual(accessCall.args[0], expectedAssignees) && areUnorderedListsEqual(accessCall.args[1], expectedPermissions);
+  });
 }
 
 function prefixRoleName(role) {
