@@ -1,5 +1,5 @@
-var expect = require('chai').expect;
-var errorFormatter = require('./validation-error-formatter');
+const expect = require('chai').expect;
+const errorFormatter = require('./validation-error-formatter');
 
 describe('Validation error formatter', function() {
   describe('at the document level', function() {
@@ -20,40 +20,40 @@ describe('Validation error formatter', function() {
     });
 
     it('produces maximumAttachmentCount violation messages', function() {
-      var maximumAttachmentCount = 2;
+      const maximumAttachmentCount = 2;
       expect(errorFormatter.maximumAttachmentCountViolation(maximumAttachmentCount))
         .to.equal('documents of this type must not have more than ' + maximumAttachmentCount + ' attachments');
     });
 
     it('produces attachments maximumIndividualSize violation messages', function() {
-      var fileName = 'my-attachment-file.jpg';
-      var maximumAttachmentSize = 2;
+      const fileName = 'my-attachment-file.jpg';
+      const maximumAttachmentSize = 2;
       expect(errorFormatter.maximumIndividualAttachmentSizeViolation(fileName, maximumAttachmentSize))
         .to.equal('attachment ' + fileName + ' must not exceed ' + maximumAttachmentSize + ' bytes');
     });
 
     it('produces attachments maximumTotalSize violation messages', function() {
-      var maximumSize = 2;
+      const maximumSize = 2;
       expect(errorFormatter.maximumTotalAttachmentSizeViolation(maximumSize))
         .to.equal('documents of this type must not have a combined attachment size greater than ' + maximumSize + ' bytes');
     });
 
     it('produces requireAttachmentReferences violation messages', function() {
-      var fileName = 'my-attachment-file.txt';
+      const fileName = 'my-attachment-file.txt';
       expect(errorFormatter.requireAttachmentReferencesViolation(fileName))
         .to.equal('attachment ' + fileName + ' must have a corresponding attachment reference property');
     });
 
     it('produces attachments supportedContentTypes violation messages', function() {
-      var fileName = 'my-attachment-file.svg';
-      var contentTypes = [ 'image/png' ];
+      const fileName = 'my-attachment-file.svg';
+      const contentTypes = [ 'image/png' ];
       expect(errorFormatter.supportedContentTypesRawAttachmentViolation(fileName, contentTypes))
         .to.equal('attachment "' + fileName + '" must have a supported content type (' + contentTypes + ')');
     });
 
     it('produces attachments supportedExtensions violation messages', function() {
-      var fileName = 'my-attachment-file.jpg';
-      var extensions = [ 'png' ];
+      const fileName = 'my-attachment-file.jpg';
+      const extensions = [ 'png' ];
       expect(errorFormatter.supportedExtensionsRawAttachmentViolation(fileName, extensions))
         .to.equal('attachment "' + fileName + '" must have a supported file extension (' + extensions + ')');
     });
@@ -64,7 +64,7 @@ describe('Validation error formatter', function() {
   });
 
   describe('at the property/element level', function() {
-    var fakeItemPath = 'my.fake[item]';
+    const fakeItemPath = 'my.fake[item]';
 
     it('produces invalid date format messages', function() {
       expect(errorFormatter.dateFormatInvalid(fakeItemPath))
@@ -87,7 +87,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces invalid enum value messages', function() {
-      var fakeEnumValues = [ 'foo', 'bar', -5 ];
+      const fakeEnumValues = [ 'foo', 'bar', -5 ];
       expect(errorFormatter.enumPredefinedValueViolation(fakeItemPath, fakeEnumValues))
         .to.equal('item "' + fakeItemPath + '" must be one of the predefined values: ' + fakeEnumValues);
     });
@@ -98,13 +98,13 @@ describe('Validation error formatter', function() {
     });
 
     it('produces hashtable maximumSize violation messages', function() {
-      var maximumSize = 8;
+      const maximumSize = 8;
       expect(errorFormatter.hashtableMaximumSizeViolation(fakeItemPath, maximumSize))
         .to.equal('hashtable "' + fakeItemPath + '" must not be larger than ' + maximumSize + ' elements');
     });
 
     it('produces hashtable minimumSize violation messages', function() {
-      var minimumSize = 1;
+      const minimumSize = 1;
       expect(errorFormatter.hashtableMinimumSizeViolation(fakeItemPath, minimumSize))
         .to.equal('hashtable "' + fakeItemPath + '" must not be smaller than ' + minimumSize + ' elements');
     });
@@ -114,43 +114,43 @@ describe('Validation error formatter', function() {
     });
 
     it('produces maximumLength violation messages', function() {
-      var maximumLength = 1;
+      const maximumLength = 1;
       expect(errorFormatter.maximumLengthViolation(fakeItemPath, maximumLength))
         .to.equal('length of item "' + fakeItemPath + '" must not be greater than ' + maximumLength);
     });
 
     it('produces attachment reference maximumSize violation messages', function() {
-      var maximumSize = 1;
+      const maximumSize = 1;
       expect(errorFormatter.maximumSizeAttachmentViolation(fakeItemPath, maximumSize))
         .to.equal('attachment reference "' + fakeItemPath + '" must not be larger than ' + maximumSize + ' bytes');
     });
 
     it('produces maximumValue violation messages', function() {
-      var maximumValue = 1;
+      const maximumValue = 1;
       expect(errorFormatter.maximumValueViolation(fakeItemPath, maximumValue))
         .to.equal('item "' + fakeItemPath + '" must not be greater than ' + maximumValue);
     });
 
     it('produces maximumValueExclusive violation messages', function() {
-      var maximumValue = 1;
+      const maximumValue = 1;
       expect(errorFormatter.maximumValueExclusiveViolation(fakeItemPath, maximumValue))
         .to.equal('item "' + fakeItemPath + '" must not be greater than or equal to ' + maximumValue);
     });
 
     it('produces minimumLength violation messages', function() {
-      var minimumLength = 1;
+      const minimumLength = 1;
       expect(errorFormatter.minimumLengthViolation(fakeItemPath, minimumLength))
         .to.equal('length of item "' + fakeItemPath + '" must not be less than ' + minimumLength);
     });
 
     it('produces minimumValue violation messages', function() {
-      var minimumValue = 1;
+      const minimumValue = 1;
       expect(errorFormatter.minimumValueViolation(fakeItemPath, minimumValue))
         .to.equal('item "' + fakeItemPath + '" must not be less than ' + minimumValue);
     });
 
     it('produces minimumValueExclusive violation messages', function() {
-      var minimumValue = 1;
+      const minimumValue = 1;
       expect(errorFormatter.minimumValueExclusiveViolation(fakeItemPath, minimumValue))
         .to.equal('item "' + fakeItemPath + '" must not be less than or equal to ' + minimumValue);
     });
@@ -161,7 +161,7 @@ describe('Validation error formatter', function() {
     });
 
     it('produces mustEqual violation messages', function() {
-      var value = { foo: [ 'bar' ] };
+      const value = { foo: [ 'bar' ] };
       expect(errorFormatter.mustEqualViolation(fakeItemPath, value))
         .to.equal('value of item "' + fakeItemPath + '" must equal ' + JSON.stringify(value));
     });
@@ -179,13 +179,13 @@ describe('Validation error formatter', function() {
     });
 
     it('produces hashtable key regexPattern violation messages', function() {
-      var regex = /^foo-bar$/;
+      const regex = /^foo-bar$/;
       expect(errorFormatter.regexPatternHashtableKeyViolation(fakeItemPath, regex))
         .to.equal('hashtable key "' + fakeItemPath + '" must conform to expected format ' + regex);
     });
 
     it('produces regexPattern violation messages', function() {
-      var regex = /^bar-baz$/;
+      const regex = /^bar-baz$/;
       expect(errorFormatter.regexPatternItemViolation(fakeItemPath, regex))
         .to.equal('item "' + fakeItemPath + '" must conform to expected format ' + regex);
     });
@@ -195,13 +195,13 @@ describe('Validation error formatter', function() {
     });
 
     it('produces attachment reference supportedContentTypes violation messages', function() {
-      var contentTypes = [ 'text/html', 'image/jpeg' ];
+      const contentTypes = [ 'text/html', 'image/jpeg' ];
       expect(errorFormatter.supportedContentTypesAttachmentReferenceViolation(fakeItemPath, contentTypes))
         .to.equal('attachment reference "' + fakeItemPath + '" must have a supported content type (' + contentTypes.join(',') + ')');
     });
 
     it('produces attachment reference supportedExtensions violation messages', function() {
-      var extensions = [ 'htm', 'jpg' ];
+      const extensions = [ 'htm', 'jpg' ];
       expect(errorFormatter.supportedExtensionsAttachmentReferenceViolation(fakeItemPath, extensions))
         .to.equal('attachment reference "' + fakeItemPath + '" must have a supported file extension (' + extensions.join(',') + ')');
     });
@@ -216,7 +216,7 @@ describe('Validation error formatter', function() {
 
     describe('type constraint violations', function() {
       it('formats messages for general types', function() {
-        var typeDescriptions = {
+        const typeDescriptions = {
           'array': 'an array',
           'attachmentReference': 'an attachment reference string',
           'boolean': 'a boolean',
@@ -233,14 +233,14 @@ describe('Validation error formatter', function() {
           'uuid': 'a UUID string'
         };
 
-        for (var typeName in typeDescriptions) {
+        Object.keys(typeDescriptions).forEach((typeName) => {
           expect(errorFormatter.typeConstraintViolation(fakeItemPath, typeName))
             .to.equal('item "' + fakeItemPath + '" must be ' + typeDescriptions[typeName]);
-        }
+        });
       });
 
       it('throws an error if an unrecognized type is encountered', function() {
-        var invalidType = 'foo-type';
+        const invalidType = 'foo-type';
         expect(function() {
           errorFormatter.typeConstraintViolation(fakeItemPath, invalidType);
         }).to.throw('Unrecognized validation type: ' + invalidType);

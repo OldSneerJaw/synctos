@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
-var mkdirp = require('./lib/mkdirp/index');
-var syncFunctionLoader = require('./src/loading/sync-function-loader.js');
+const fs = require('fs');
+const path = require('path');
+const mkdirp = require('./lib/mkdirp/index');
+const syncFunctionLoader = require('./src/loading/sync-function-loader.js');
 
-var errorStatus = 1;
+const errorStatus = 1;
 
 // Verify the correct number of commandline params
 if (process.argv.length !== 4) {
@@ -14,10 +14,10 @@ if (process.argv.length !== 4) {
   process.exit(errorStatus);
 }
 
-var syncDocDefnFilename = process.argv[2];
-var outputFilename = process.argv[3];
+const syncDocDefnFilename = process.argv[2];
+const outputFilename = process.argv[3];
 
-var syncFunc;
+let syncFunc;
 try {
   syncFunc = syncFunctionLoader.load(syncDocDefnFilename);
 } catch (ex) {
@@ -25,7 +25,7 @@ try {
 }
 
 try {
-  var outputDirectory = path.dirname(outputFilename);
+  const outputDirectory = path.dirname(outputFilename);
   if (!fs.existsSync(outputDirectory)) {
     mkdirp.sync(outputDirectory);
   }
@@ -47,8 +47,8 @@ console.log('Sync function written to ' + outputFilename);
 
 
 function showUsage() {
-  var nodeBinary = path.basename(process.argv[0]);
-  var scriptName = path.basename(process.argv[1]);
+  const nodeBinary = path.basename(process.argv[0]);
+  const scriptName = path.basename(process.argv[1]);
 
   console.log('A utility for creating structured sync functions for Couchbase Sync Gateway.\n');
 

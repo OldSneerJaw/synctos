@@ -1,11 +1,11 @@
-var expect = require('chai').expect;
-var simpleMock = require('../../lib/simple-mock/index.js');
-var mockRequire = require('mock-require');
+const expect = require('chai').expect;
+const simpleMock = require('../../lib/simple-mock/index.js');
+const mockRequire = require('mock-require');
 
 describe('Document definitions loader', function() {
-  var docDefinitionsLoader, fsMock, pathMock, vmMock, fileFragmentLoaderMock;
+  let docDefinitionsLoader, fsMock, pathMock, vmMock, fileFragmentLoaderMock;
 
-  var expectedMacroName = 'importDocumentDefinitionFragment';
+  const expectedMacroName = 'importDocumentDefinitionFragment';
 
   beforeEach(function() {
     // Mock out the "require" calls in the module under test
@@ -30,16 +30,16 @@ describe('Document definitions loader', function() {
   });
 
   it('should load the contents of a document definitions file that exists', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var expectedDir = '/an/arbitrary/directory';
-    var originalFileContents = '\tmy-original-doc-definitions\n';
-    var expectedFileContents = 'my-expected-doc-definitions';
+    const docDefinitionsFile = 'my/doc-definitions.js';
+    const expectedDir = '/an/arbitrary/directory';
+    const originalFileContents = '\tmy-original-doc-definitions\n';
+    const expectedFileContents = 'my-expected-doc-definitions';
 
     fsMock.readFileSync.returnWith(originalFileContents);
     pathMock.dirname.returnWith(expectedDir);
     fileFragmentLoaderMock.load.returnWith(expectedFileContents);
 
-    var result = docDefinitionsLoader.load(docDefinitionsFile);
+    const result = docDefinitionsLoader.load(docDefinitionsFile);
 
     expect(result).to.equal(expectedFileContents);
 
@@ -54,8 +54,8 @@ describe('Document definitions loader', function() {
   });
 
   it('should throw an exception if the document definitions file does not exist', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var expectedException = new Error('my-expected-exception');
+    const docDefinitionsFile = 'my/doc-definitions.js';
+    const expectedException = new Error('my-expected-exception');
 
     fsMock.readFileSync.throwWith(expectedException);
     pathMock.dirname.returnWith('');

@@ -1,12 +1,12 @@
-var expect = require('chai').expect;
-var simpleMock = require('../../lib/simple-mock/index');
-var mockRequire = require('mock-require');
+const expect = require('chai').expect;
+const simpleMock = require('../../lib/simple-mock/index');
+const mockRequire = require('mock-require');
 
 describe('Test helper:', function() {
-  var testHelper, fsMock, syncFunctionLoaderMock, testEnvironmentMakerMock, fakeTestEnvironment;
+  let testHelper, fsMock, syncFunctionLoaderMock, testEnvironmentMakerMock, fakeTestEnvironment;
 
-  var fakeFilePath = 'my-file-path';
-  var fakeSyncFunctionContents = 'my-sync-function';
+  const fakeFilePath = 'my-file-path';
+  const fakeSyncFunctionContents = 'my-sync-function';
 
   beforeEach(function() {
     fakeTestEnvironment = {
@@ -88,8 +88,8 @@ describe('Test helper:', function() {
     });
 
     it('fails if it encounters a required channel that was not expected', function() {
-      var actualChannels = [ 'my-channel-1', 'my-channel-2' ];
-      var expectedChannels = [ 'my-channel-1' ];
+      const actualChannels = [ 'my-channel-1', 'my-channel-2' ];
+      const expectedChannels = [ 'my-channel-1' ];
 
       testHelper.syncFunction = function() {
         testHelper.requireAccess(actualChannels);
@@ -101,8 +101,8 @@ describe('Test helper:', function() {
     });
 
     it('fails if it does not encounter a channel that was expected', function() {
-      var actualChannels = [ 'my-channel-1' ];
-      var expectedChannels = [ 'my-channel-1', 'my-channel-2' ];
+      const actualChannels = [ 'my-channel-1' ];
+      const expectedChannels = [ 'my-channel-1', 'my-channel-2' ];
 
       testHelper.syncFunction = function() {
         testHelper.requireAccess(actualChannels);
@@ -160,7 +160,7 @@ describe('Test helper:', function() {
     });
 
     it('fails if the validation error message format is invalid', function() {
-      var errorMessage = 'Foo: bar';
+      const errorMessage = 'Foo: bar';
 
       testHelper.syncFunction = function() {
         throw { forbidden: errorMessage };
@@ -172,9 +172,9 @@ describe('Test helper:', function() {
     });
 
     it('fails if an expected validation error is missing', function() {
-      var docType = 'my-doc-type';
-      var expectedErrors = [ 'my-error-1', 'my-error-2' ];
-      var errorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
+      const docType = 'my-doc-type';
+      const expectedErrors = [ 'my-error-1', 'my-error-2' ];
+      const errorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
 
       testHelper.syncFunction = function() {
         throw { forbidden: errorMessage };
@@ -186,11 +186,11 @@ describe('Test helper:', function() {
     });
 
     it('fails if an unexpected validation error is encountered', function() {
-      var docType = 'my-doc-type';
-      var actualErrors = [ 'my-error-1', 'my-error-2' ];
-      var actualErrorMessage = 'Invalid ' + docType + ' document: ' + actualErrors[0] + '; ' + actualErrors[1];
-      var expectedErrors = [ actualErrors[0] ];
-      var expectedErrorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
+      const docType = 'my-doc-type';
+      const actualErrors = [ 'my-error-1', 'my-error-2' ];
+      const actualErrorMessage = 'Invalid ' + docType + ' document: ' + actualErrors[0] + '; ' + actualErrors[1];
+      const expectedErrors = [ actualErrors[0] ];
+      const expectedErrorMessage = 'Invalid ' + docType + ' document: ' + expectedErrors[0];
 
       testHelper.syncFunction = function() {
         throw { forbidden: actualErrorMessage };
@@ -224,13 +224,13 @@ describe('Test helper:', function() {
     });
 
     it('fails if a different set of channel access is assigned than what was expected', function() {
-      var actualChannels = [ 'my-channel-1' ];
-      var expectedChannelAccessAssignment = {
+      const actualChannels = [ 'my-channel-1' ];
+      const expectedChannelAccessAssignment = {
         expectedType: 'channel',
         expectedRoles: [ 'my-role-1' ],
         foo: [ 'bar' ] // This should be ignored
       };
-      var expectedEffectiveRoles = expectedChannelAccessAssignment.expectedRoles.map(function(role) { return 'role:' + role; });
+      const expectedEffectiveRoles = expectedChannelAccessAssignment.expectedRoles.map(function(role) { return 'role:' + role; });
 
       testHelper.syncFunction = function() {
         testHelper.access(expectedEffectiveRoles, actualChannels);
@@ -246,13 +246,13 @@ describe('Test helper:', function() {
     });
 
     it('fails if a different set of role access is assigned than what was expected', function() {
-      var expectedRoleAccessAssignment = {
+      const expectedRoleAccessAssignment = {
         expectedType: 'role',
         expectedRoles: [ 'my-role-1', 'my-role-2' ],
         expectedUsers: [ 'my-user-1', 'my-user-2', 'my-user-3' ]
       };
-      var expectedEffectiveRoles = expectedRoleAccessAssignment.expectedRoles.map(function(role) { return 'role:' + role; });
-      var actualUsers = [ 'my-user-1', 'my-user-2', 'my-user-2' ];
+      const expectedEffectiveRoles = expectedRoleAccessAssignment.expectedRoles.map(function(role) { return 'role:' + role; });
+      const actualUsers = [ 'my-user-1', 'my-user-2', 'my-user-2' ];
 
       testHelper.syncFunction = function() {
         testHelper.role(actualUsers, expectedEffectiveRoles);
@@ -289,7 +289,7 @@ describe('Test helper:', function() {
     });
 
     it('fails if there is an unrecognized access assignment type', function() {
-      var expectedInvalidAccessAssignment = {
+      const expectedInvalidAccessAssignment = {
         expectedType: 'invalid-type',
         expectedRoles: [ 'my-role-1' ],
         expectedUsers: [ 'my-user-1' ]

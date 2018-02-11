@@ -289,7 +289,7 @@ exports.requiredValueViolation = function(itemPath) {
  *                                        Element order must match that set in the validator in the document definition.
  */
 exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, expectedContentTypes) {
-  var contentTypesString = expectedContentTypes.join(',');
+  const contentTypesString = expectedContentTypes.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported content type (' + contentTypesString + ')';
 };
@@ -302,7 +302,7 @@ exports.supportedContentTypesAttachmentReferenceViolation = function(itemPath, e
  *                                        Element order must match that set in the validator in the document definition.
  */
 exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, expectedContentTypes) {
-  var contentTypesString = expectedContentTypes.join(',');
+  const contentTypesString = expectedContentTypes.join(',');
 
   return 'attachment "' + attachmentName + '" must have a supported content type (' + contentTypesString + ')';
 };
@@ -315,7 +315,7 @@ exports.supportedContentTypesRawAttachmentViolation = function(attachmentName, e
  *                                          Element order must match that set in the validator in the document definition.
  */
 exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, expectedFileExtensions) {
-  var extensionsString = expectedFileExtensions.join(',');
+  const extensionsString = expectedFileExtensions.join(',');
 
   return 'attachment reference "' + itemPath + '" must have a supported file extension (' + extensionsString + ')';
 };
@@ -328,7 +328,7 @@ exports.supportedExtensionsAttachmentReferenceViolation = function(itemPath, exp
  *                                          Element order must match that set in the validator in the document definition.
  */
 exports.supportedExtensionsRawAttachmentViolation = function(attachmentName, expectedFileExtensions) {
-  var extensionsString = expectedFileExtensions.join(',');
+  const extensionsString = expectedFileExtensions.join(',');
 
   return 'attachment "' + attachmentName + '" must have a supported file extension (' + extensionsString + ')';
 };

@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var simpleMock = require('../../lib/simple-mock/index');
-var mockRequire = require('mock-require');
+const expect = require('chai').expect;
+const simpleMock = require('../../lib/simple-mock/index');
+const mockRequire = require('mock-require');
 
 describe('Validation environment maker', function() {
-  var environmentMaker, fsMock, vmMock;
+  let environmentMaker, fsMock, vmMock;
 
   beforeEach(function() {
     // Mock out the "require" calls in the module under test
@@ -22,20 +22,20 @@ describe('Validation environment maker', function() {
   });
 
   function verifyParse(rawDocumentDefinitions, originalFilename) {
-    var envTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
+    const envTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
-    var expectedEnvString = envTemplateFileContents.replace(
+    const expectedEnvString = envTemplateFileContents.replace(
       '%DOC_DEFINITIONS_PLACEHOLDER%',
       function() { return rawDocumentDefinitions; });
 
-    var expectedResult = { foo: 'bar' };
-    var mockVmEnvironment = simpleMock.stub();
+    const expectedResult = { foo: 'bar' };
+    const mockVmEnvironment = simpleMock.stub();
     mockVmEnvironment.returnWith(expectedResult);
 
     vmMock.runInThisContext.returnWith(mockVmEnvironment);
 
-    var result = environmentMaker.init(rawDocumentDefinitions, originalFilename);
+    const result = environmentMaker.init(rawDocumentDefinitions, originalFilename);
 
     expect(result).to.eql(expectedResult);
 

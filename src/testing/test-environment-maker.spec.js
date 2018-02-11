@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var simpleMock = require('../../lib/simple-mock/index.js');
-var mockRequire = require('mock-require');
+const expect = require('chai').expect;
+const simpleMock = require('../../lib/simple-mock/index.js');
+const mockRequire = require('mock-require');
 
 describe('Test environment maker', function() {
-  var testEnvironmentMaker, fsMock, vmMock;
+  let testEnvironmentMaker, fsMock, vmMock;
 
   beforeEach(function() {
     // Mock out the "require" calls in the module under test
@@ -30,20 +30,20 @@ describe('Test environment maker', function() {
   });
 
   function verifyParse(rawSyncFunction, originalFilename) {
-    var envTemplateFileContents = 'template: %SYNC_FUNC_PLACEHOLDER%';
+    const envTemplateFileContents = 'template: %SYNC_FUNC_PLACEHOLDER%';
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
-    var expectedTestEnvString = envTemplateFileContents.replace(
+    const expectedTestEnvString = envTemplateFileContents.replace(
       '%SYNC_FUNC_PLACEHOLDER%',
       function() { return rawSyncFunction.replace(/\\`/g, function() { return '`'; }); });
 
-    var expectedResult = { bar: 'foo' };
-    var mockVmEnvironment = simpleMock.stub();
+    const expectedResult = { bar: 'foo' };
+    const mockVmEnvironment = simpleMock.stub();
     mockVmEnvironment.returnWith(expectedResult);
 
     vmMock.runInThisContext.returnWith(mockVmEnvironment);
 
-    var result = testEnvironmentMaker.init(rawSyncFunction, originalFilename);
+    const result = testEnvironmentMaker.init(rawSyncFunction, originalFilename);
 
     expect(result).to.eql(expectedResult);
 

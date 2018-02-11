@@ -9,11 +9,11 @@
  */
 exports.load = load;
 
-var fs = require('fs');
+const fs = require('fs');
 
 function load(baseDir, macroName, rawText) {
   function replacer(fullMatch, fragmentFilename) {
-    var rawFileContents = readFileFragment(fragmentFilename, baseDir);
+    const rawFileContents = readFileFragment(fragmentFilename, baseDir);
 
     // Recursively replace macros nested an arbitrary number of levels deep. Recursion terminates when it encounters a
     // template file that does not contain the specified macro (i.e. this replacer will not run when `rawText.replace`
@@ -27,7 +27,7 @@ function load(baseDir, macroName, rawText) {
 
 function readFileFragment(fragmentFilename, baseDir) {
   // The filename may have been defined with escape sequences (e.g. \\, \', \") in it, so unescape them
-  var sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, function(escapeSequence, escapedChar) { return escapedChar; });
+  const sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, function(escapeSequence, escapedChar) { return escapedChar; });
 
   try {
     // Attempt to import the fragment file with a path that is relative to the base directory

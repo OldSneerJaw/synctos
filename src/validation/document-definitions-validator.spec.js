@@ -1,19 +1,19 @@
-var expect = require('chai').expect;
-var docDefinitionsLoader = require('../loading/document-definitions-loader');
-var validator = require('./document-definitions-validator');
+const expect = require('chai').expect;
+const docDefinitionsLoader = require('../loading/document-definitions-loader');
+const validator = require('./document-definitions-validator');
 
 describe('Document definitions validator:', function() {
   it('performs validation on the sample document definitions file', function() {
-    var filePath = 'samples/sample-sync-doc-definitions.js';
-    var sampleDocDefinitions = docDefinitionsLoader.load(filePath);
+    const filePath = 'samples/sample-sync-doc-definitions.js';
+    const sampleDocDefinitions = docDefinitionsLoader.load(filePath);
 
-    var results = validator.validate(sampleDocDefinitions, filePath);
+    const results = validator.validate(sampleDocDefinitions, filePath);
 
     expect(results.length).to.equal(0);
   });
 
   it('performs validation on a document definitions object', function() {
-    var fakeDocDefinitions = {
+    const fakeDocDefinitions = {
       myDoc1: {
         allowUnknownProperties: 1, // Must be a boolean
         immutable: true,
@@ -31,7 +31,7 @@ describe('Document definitions validator:', function() {
       }
     };
 
-    var results = validator.validate(fakeDocDefinitions);
+    const results = validator.validate(fakeDocDefinitions);
 
     expect(results).to.have.members(
       [
@@ -48,7 +48,7 @@ describe('Document definitions validator:', function() {
   });
 
   it('performs validation on a document definitions function', function() {
-    var fakeDocDefinitions = function() {
+    const fakeDocDefinitions = function() {
       return {
         myDoc1: {
           typeFilter: function() { },
@@ -205,7 +205,7 @@ describe('Document definitions validator:', function() {
       };
     };
 
-    var results = validator.validate(fakeDocDefinitions);
+    const results = validator.validate(fakeDocDefinitions);
 
     expect(results).to.have.members(
       [

@@ -8,12 +8,12 @@
  */
 exports.load = loadFromFile;
 
-var fs = require('fs');
-var path = require('path');
-var fileFragmentLoader = require('./file-fragment-loader.js');
+const fs = require('fs');
+const path = require('path');
+const fileFragmentLoader = require('./file-fragment-loader.js');
 
 function loadFromFile(docDefinitionsFile) {
-  var docDefinitions;
+  let docDefinitions;
   try {
     docDefinitions = fs.readFileSync(docDefinitionsFile, 'utf8').trim();
   } catch (ex) {
@@ -26,7 +26,7 @@ function loadFromFile(docDefinitionsFile) {
     throw ex;
   }
 
-  var docDefinitionsDir = path.dirname(docDefinitionsFile);
+  const docDefinitionsDir = path.dirname(docDefinitionsFile);
 
   // Automatically replace instances of the "importDocumentDefinitionFragment" macro with the contents of the file that is specified by each
   return fileFragmentLoader.load(docDefinitionsDir, 'importDocumentDefinitionFragment', docDefinitions);

@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-var simpleMock = require('../../lib/simple-mock/index.js');
-var mockRequire = require('mock-require');
+const expect = require('chai').expect;
+const simpleMock = require('../../lib/simple-mock/index.js');
+const mockRequire = require('mock-require');
 
 describe('File fragment loader', function() {
-  var fileFragmentLoader, fsMock;
+  let fileFragmentLoader, fsMock;
 
   beforeEach(function() {
     // Mock out the "require" calls in the module under test
@@ -18,19 +18,19 @@ describe('File fragment loader', function() {
   });
 
   it('should replace instances of the macro with the correct file contents', function() {
-    var baseDir = '/my/base/dir';
-    var macroName = 'myFileFragmentMacro';
-    var rawText = 'doSomething();\nnotmyFileFragmentMacro("foo.js");myFileFragmentMacro("bar.js");\tmyFileFragmentMacro(\'foo\\ baz.js\');';
+    const baseDir = '/my/base/dir';
+    const macroName = 'myFileFragmentMacro';
+    const rawText = 'doSomething();\nnotmyFileFragmentMacro("foo.js");myFileFragmentMacro("bar.js");\tmyFileFragmentMacro(\'foo\\ baz.js\');';
 
-    var fileFragment1Contents = ' somethingElseGoesHere()\n';
-    var fileFragment2Contents = '\nyetAnotherThingHere(\'qux\') ';
+    const fileFragment1Contents = ' somethingElseGoesHere()\n';
+    const fileFragment2Contents = '\nyetAnotherThingHere(\'qux\') ';
     fsMock.readFileSync.withActions([
         { returnValue: fileFragment1Contents }, // First call successfully reads bar.js with a relative path
         { throwError: new Error('') }, // Second call attempts and fails to read baz.js with a relative path
         { returnValue: fileFragment2Contents } // Third call retries baz.js with an absolute path and succeeds
       ]);
 
-    var result = fileFragmentLoader.load(baseDir, macroName, rawText);
+    const result = fileFragmentLoader.load(baseDir, macroName, rawText);
 
     expect(result).to.equal('doSomething();\nnotmyFileFragmentMacro("foo.js");' + fileFragment1Contents.trim() + ';\t' + fileFragment2Contents.trim() + ';');
 
@@ -41,11 +41,11 @@ describe('File fragment loader', function() {
   });
 
   it('should throw an exception if the file fragment cannot be found', function() {
-    var baseDir = '/my/base/dir';
-    var macroName = 'myFileFragmentMacro';
-    var rawText = 'doSomething();\nmyFileFragmentMacro("foo.js");';
+    const baseDir = '/my/base/dir';
+    const macroName = 'myFileFragmentMacro';
+    const rawText = 'doSomething();\nmyFileFragmentMacro("foo.js");';
 
-    var expectedException = new Error('my-expected-exception');
+    const expectedException = new Error('my-expected-exception');
     fsMock.readFileSync.throwWith(expectedException);
 
     expect(function() {

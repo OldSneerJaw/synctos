@@ -8,32 +8,32 @@
  */
 exports.init = init;
 
-var fs = require('fs');
-var vm = require('vm');
-var underscore = require('../../lib/underscore/underscore-min');
-var simpleMock = require('../../lib/simple-mock/index');
+const fs = require('fs');
+const vm = require('vm');
+const underscore = require('../../lib/underscore/underscore-min');
+const simpleMock = require('../../lib/simple-mock/index');
 
 function init(rawSyncFunction, syncFunctionFile) {
-  var options = {
+  const options = {
     filename: syncFunctionFile,
     displayErrors: true
   };
 
-  var environmentTemplate = fs.readFileSync('templates/test-environment-template.js', 'utf8').trim();
+  const environmentTemplate = fs.readFileSync('templates/test-environment-template.js', 'utf8').trim();
 
   // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
   // the sync function
-  var environmentString = environmentTemplate.replace(
+  const environmentString = environmentTemplate.replace(
     '%SYNC_FUNC_PLACEHOLDER%',
     function() { return unescapeBackticks(rawSyncFunction); });
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.
-  var environmentStatement = '(' + environmentString + ');';
+  const environmentStatement = '(' + environmentString + ');';
 
   // Compile the test environment function within the current virtual machine context so it can share access to the "requireAccess",
   // "channel", "customActionStub", etc. stubs with the test-helper module
-  var environmentFunction = vm.runInThisContext(environmentStatement, options);
+  const environmentFunction = vm.runInThisContext(environmentStatement, options);
 
   return environmentFunction(underscore, simpleMock);
 }

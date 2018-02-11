@@ -1,5 +1,5 @@
-var validationEnvironmentMaker = require('./validation-environment-maker');
-var documentDefinitionSchema = require('./document-definition-schema');
+const validationEnvironmentMaker = require('./validation-environment-maker');
+const documentDefinitionSchema = require('./document-definition-schema');
 
 /**
  * Performs validation of the specified document definitions.
@@ -19,7 +19,7 @@ exports.validate = function(documentDefinitions, docDefinitionsFilename) {
 };
 
 function validateDocumentDefinitionsString(rawDocDefinitionsString, docDefinitionsFilename) {
-  var validationEnv = validationEnvironmentMaker.init(rawDocDefinitionsString, docDefinitionsFilename);
+  const validationEnv = validationEnvironmentMaker.init(rawDocDefinitionsString, docDefinitionsFilename);
 
   return validateDocumentDefinitionsObjectOrFunction(validationEnv.documentDefinitions);
 }
@@ -33,7 +33,7 @@ function validateDocumentDefinitionsObjectOrFunction(documentDefinitions) {
 }
 
 function validateDocumentDefinitionsObject(documentDefinitions) {
-  var validationErrors = [ ];
+  const validationErrors = [ ];
 
   Object.keys(documentDefinitions).forEach(function(documentType) {
     documentDefinitionSchema.validate(
@@ -42,7 +42,7 @@ function validateDocumentDefinitionsObject(documentDefinitions) {
       function(error) {
         if (error) {
           error.details.forEach(function(errorDetails) {
-            var path = [ documentType ].concat(errorDetails.path);
+            const path = [ documentType ].concat(errorDetails.path);
             validationErrors.push(path.join('.') + ': ' + errorDetails.message);
           });
         }

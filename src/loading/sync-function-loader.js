@@ -7,17 +7,17 @@
  */
 exports.load = loadFromFile;
 
-var fs = require('fs');
-var path = require('path');
-var indent = require('../../lib/indent.js/indent.min.js');
-var docDefinitionsLoader = require('./document-definitions-loader.js');
-var fileFragmentLoader = require('./file-fragment-loader.js');
+const fs = require('fs');
+const path = require('path');
+const indent = require('../../lib/indent.js/indent.min.js');
+const docDefinitionsLoader = require('./document-definitions-loader.js');
+const fileFragmentLoader = require('./file-fragment-loader.js');
 
 function loadFromFile(docDefinitionsFile) {
-  var syncFuncTemplateDir = path.resolve(__dirname, '../../templates');
+  const syncFuncTemplateDir = path.resolve(__dirname, '../../templates');
 
-  var syncFuncTemplatePath = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
-  var syncFuncTemplate;
+  const syncFuncTemplatePath = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
+  let syncFuncTemplate;
   try {
     syncFuncTemplate = fs.readFileSync(syncFuncTemplatePath, 'utf8');
   } catch (ex) {
@@ -29,10 +29,10 @@ function loadFromFile(docDefinitionsFile) {
   // Automatically replace each instance of the "importSyncFunctionFragment" macro with the contents of the file that is specified
   syncFuncTemplate = fileFragmentLoader.load(syncFuncTemplateDir, 'importSyncFunctionFragment', syncFuncTemplate);
 
-  var docDefinitions = docDefinitionsLoader.load(docDefinitionsFile);
+  const docDefinitions = docDefinitionsLoader.load(docDefinitionsFile);
 
   // Load the document definitions into the sync function template
-  var syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return docDefinitions; });
+  const syncFunc = syncFuncTemplate.replace('%SYNC_DOCUMENT_DEFINITIONS%', function() { return docDefinitions; });
 
   // Normalize code block indentation, normalize line endings, replace blank lines with empty lines and then escape any occurrence of the
   // backtick character so the sync function can be used in a Sync Gateway configuration file multiline string

@@ -231,27 +231,27 @@ exports.verifyAccessDenied = verifyAccessDenied;
 exports.verifyUnknownDocumentType = verifyUnknownDocumentType;
 
 // Implementation begins here
-var assert = require('assert');
-var fs = require('fs');
-var syncFunctionLoader = require('../loading/sync-function-loader.js');
-var testEnvironmentMaker = require('./test-environment-maker.js');
+const assert = require('assert');
+const fs = require('fs');
+const syncFunctionLoader = require('../loading/sync-function-loader.js');
+const testEnvironmentMaker = require('./test-environment-maker.js');
 
-var defaultWriteChannel = 'write';
+const defaultWriteChannel = 'write';
 
 function initSyncFunction(filePath) {
-  var rawSyncFunction = fs.readFileSync(filePath, 'utf8').toString();
+  const rawSyncFunction = fs.readFileSync(filePath, 'utf8').toString();
 
   init(rawSyncFunction, filePath);
 }
 
 function initDocumentDefinitions(filePath) {
-  var rawSyncFunction = syncFunctionLoader.load(filePath);
+  const rawSyncFunction = syncFunctionLoader.load(filePath);
 
   init(rawSyncFunction);
 }
 
 function init(rawSyncFunction, syncFunctionFile) {
-  var testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
+  const testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
 
   exports.requireAccess = testHelperEnvironment.requireAccess;
   exports.requireRole = testHelperEnvironment.requireRole;
@@ -301,19 +301,17 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
 
   // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
   // that neither list of channels/roles/users contains an element that does not exist in the other
-  for (var expectedAuthIndex = 0; expectedAuthIndex < expectedAuthorizations.length; expectedAuthIndex++) {
-    var expectedAuth = expectedAuthorizations[expectedAuthIndex];
+  expectedAuthorizations.forEach((expectedAuth) => {
     if (actualAuthorizations.indexOf(expectedAuth) < 0) {
       assert.fail('Expected ' + authorizationType + ' was not encountered: ' + expectedAuth + '. Actual ' + authorizationType + 's: ' + actualAuthorizations);
     }
-  }
+  });
 
-  for (var actualAuthIndex = 0; actualAuthIndex < actualAuthorizations.length; actualAuthIndex++) {
-    var actualAuth = actualAuthorizations[actualAuthIndex];
+  actualAuthorizations.forEach((actualAuth) => {
     if (expectedAuthorizations.indexOf(actualAuth) < 0) {
       assert.fail('Unexpected ' + authorizationType + ' encountered: ' + actualAuth + '. Expected ' + authorizationType + 's: ' + expectedAuthorizations);
     }
-  }
+  });
 }
 
 function areUnorderedListsEqual(list1, list2) {
@@ -321,7 +319,7 @@ function areUnorderedListsEqual(list1, list2) {
     return false;
   }
 
-  for (var setIndex = 0; setIndex < list1.length; setIndex++) {
+  for (let setIndex = 0; setIndex < list1.length; setIndex++) {
     if (list2.indexOf(list1[setIndex]) < 0) {
       return false;
     } else if (list1.indexOf(list2[setIndex]) < 0) {
@@ -335,8 +333,7 @@ function areUnorderedListsEqual(list1, list2) {
 
 function accessAssignmentCallExists(accessFunction, expectedAssignees, expectedPermissions) {
   // Try to find an actual channel/role access assignment call that matches the expected call
-  for (var accessCallIndex = 0; accessCallIndex < accessFunction.callCount; accessCallIndex++) {
-    var accessCall = accessFunction.calls[accessCallIndex];
+  for (const accessCall of accessFunction.calls) {
     if (areUnorderedListsEqual(accessCall.args[0], expectedAssignees) && areUnorderedListsEqual(accessCall.args[1], expectedPermissions)) {
       return true;
     }
@@ -350,12 +347,10 @@ function prefixRoleName(role) {
 }
 
 function verifyChannelAccessAssignment(expectedAssignment) {
-  var expectedUsersAndRoles = [ ];
+  const expectedUsersAndRoles = [ ];
   if (expectedAssignment.expectedUsers) {
     if (expectedAssignment.expectedUsers instanceof Array) {
-      for (var userIndex = 0; userIndex < expectedAssignment.expectedUsers.length; userIndex++) {
-        expectedUsersAndRoles.push(expectedAssignment.expectedUsers[userIndex]);
-      }
+      expectedUsersAndRoles.push(...expectedAssignment.expectedUsers);
     } else {
       expectedUsersAndRoles.push(expectedAssignment.expectedUsers);
     }
@@ -365,20 +360,18 @@ function verifyChannelAccessAssignment(expectedAssignment) {
     // The prefix "role:" must be applied to roles when calling the access function, as specified by
     // http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#access-username-channelname
     if (expectedAssignment.expectedRoles instanceof Array) {
-      for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
-        expectedUsersAndRoles.push(prefixRoleName(expectedAssignment.expectedRoles[roleIndex]));
-      }
+      expectedAssignment.expectedRoles.forEach((expectedRole) => {
+        expectedUsersAndRoles.push(prefixRoleName(expectedRole));
+      });
     } else {
       expectedUsersAndRoles.push(prefixRoleName(expectedAssignment.expectedRoles));
     }
   }
 
-  var expectedChannels = [ ];
+  const expectedChannels = [ ];
   if (expectedAssignment.expectedChannels) {
     if (expectedAssignment.expectedChannels instanceof Array) {
-      for (var channelIndex = 0; channelIndex < expectedAssignment.expectedChannels.length; channelIndex++) {
-        expectedChannels.push(expectedAssignment.expectedChannels[channelIndex]);
-      }
+      expectedChannels.push(...expectedAssignment.expectedChannels);
     } else {
       expectedChannels.push(expectedAssignment.expectedChannels);
     }
@@ -395,23 +388,23 @@ function verifyChannelAccessAssignment(expectedAssignment) {
 }
 
 function verifyRoleAccessAssignment(expectedAssignment) {
-  var expectedUsers = [ ];
+  const expectedUsers = [ ];
   if (expectedAssignment.expectedUsers) {
     if (expectedAssignment.expectedUsers instanceof Array) {
-      expectedUsers = expectedAssignment.expectedUsers;
+      expectedUsers.push(...expectedAssignment.expectedUsers);
     } else {
       expectedUsers.push(expectedAssignment.expectedUsers);
     }
   }
 
-  var expectedRoles = [ ];
+  const expectedRoles = [ ];
   if (expectedAssignment.expectedRoles) {
     // The prefix "role:" must be applied to roles when calling the role function, as specified by
     // http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#role-username-rolename
     if (expectedAssignment.expectedRoles instanceof Array) {
-      for (var roleIndex = 0; roleIndex < expectedAssignment.expectedRoles.length; roleIndex++) {
-        expectedRoles.push(prefixRoleName(expectedAssignment.expectedRoles[roleIndex]));
-      }
+      expectedAssignment.expectedRoles.forEach((expectedRole) => {
+        expectedRoles.push(prefixRoleName(expectedRole));
+      });
     } else {
       expectedRoles.push(prefixRoleName(expectedAssignment.expectedRoles));
     }
@@ -428,11 +421,9 @@ function verifyRoleAccessAssignment(expectedAssignment) {
 }
 
 function verifyAccessAssignments(expectedAccessAssignments) {
-  var expectedAccessCalls = 0;
-  var expectedRoleCalls = 0;
-  for (var assignmentIndex = 0; assignmentIndex < expectedAccessAssignments.length; assignmentIndex++) {
-    var expectedAssignment = expectedAccessAssignments[assignmentIndex];
-
+  let expectedAccessCalls = 0;
+  let expectedRoleCalls = 0;
+  expectedAccessAssignments.forEach((expectedAssignment) => {
     if (expectedAssignment.expectedType === 'role') {
       verifyRoleAccessAssignment(expectedAssignment);
       expectedRoleCalls++;
@@ -442,7 +433,7 @@ function verifyAccessAssignments(expectedAccessAssignments) {
     } else {
       assert.fail('Unrecognized expected access assignment type ("' + expectedAssignment.expectedType + '")');
     }
-  }
+  });
 
   if (exports.access.callCount !== expectedAccessCalls) {
     assert.fail('Number of calls to assign channel access (' + exports.access.callCount + ') does not match expected (' + expectedAccessCalls + ')');
@@ -458,13 +449,13 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
     assert.fail('Document channels were not assigned');
   }
 
-  var actualChannels = exports.channel.calls[0].arg;
+  const actualChannels = exports.channel.calls[0].arg;
   if (expectedChannels instanceof Array) {
-    for (var channelIndex = 0; channelIndex < expectedChannels.length; channelIndex++) {
+    expectedChannels.forEach((expectedChannel) => {
       assert.ok(
-        actualChannels.indexOf(expectedChannels[channelIndex]) >= 0,
-        'Document was not assigned to expected channel: ' + expectedChannels[channelIndex] + '. Actual: ' + actualChannels);
-    }
+        actualChannels.indexOf(expectedChannel) >= 0,
+        'Document was not assigned to expected channel: ' + expectedChannel + '. Actual: ' + actualChannels);
+    });
   } else {
      assert.ok(
       actualChannels.indexOf(expectedChannels) >= 0,
@@ -473,7 +464,7 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
 }
 
 function verifyAuthorization(expectedAuthorization) {
-  var expectedOperationChannels = [ ];
+  let expectedOperationChannels = [ ];
   if (typeof expectedAuthorization === 'string' || expectedAuthorization instanceof Array) {
     // For backward compatibility, if the authorization parameter is not an object, treat it as the collection of channels that are required
     // for authorization
@@ -514,7 +505,7 @@ function verifyDocumentAccepted(doc, oldDoc, expectedAuthorization, expectedAcce
     verifyAccessAssignments(expectedAccessAssignments);
   }
 
-  var expectedOperationChannels = verifyAuthorization(expectedAuthorization);
+  const expectedOperationChannels = verifyAuthorization(expectedAuthorization);
 
   verifyOperationChannelsAssigned(doc, oldDoc, expectedOperationChannels);
 }
@@ -532,7 +523,7 @@ function verifyDocumentDeleted(oldDoc, expectedAuthorization, expectedAccessAssi
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {
-  var syncFuncError = null;
+  let syncFuncError = null;
   try {
     exports.syncFunction(doc, oldDoc);
   } catch (ex) {
@@ -567,14 +558,14 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
   }
 
   // Used to split the leading component (e.g. "Invalid foobar document") from the validation error messages, which are separated by a colon
-  var validationErrorRegex = /^([^:]+):\s*(.+)$/;
+  const validationErrorRegex = /^([^:]+):\s*(.+)$/;
 
-  var exceptionMessageMatches = validationErrorRegex.exec(exception.forbidden);
-  var actualErrorMessages;
+  const exceptionMessageMatches = validationErrorRegex.exec(exception.forbidden);
+  let actualErrorMessages;
   if (exceptionMessageMatches) {
     assert.equal(exceptionMessageMatches.length, 3, 'Unrecognized document validation error message format: "' + exception.forbidden + '"');
 
-    var invalidDocMessage = exceptionMessageMatches[1].trim();
+    const invalidDocMessage = exceptionMessageMatches[1].trim();
     assert.equal(
       invalidDocMessage,
       'Invalid ' + docType + ' document',
@@ -587,23 +578,21 @@ function verifyValidationErrors(docType, expectedErrorMessages, exception) {
 
   // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), verify
   // that neither list of validation errors contains an element that does not exist in the other
-  for (var expectedErrorIndex = 0; expectedErrorIndex < expectedErrorMessages.length; expectedErrorIndex++) {
-    var expectedErrorMsg = expectedErrorMessages[expectedErrorIndex];
+  expectedErrorMessages.forEach((expectedErrorMsg) => {
     assert.ok(
       actualErrorMessages.indexOf(expectedErrorMsg) >= 0,
       'Document validation errors do not include expected error message: "' + expectedErrorMsg  + '". Actual error: ' + exception.forbidden);
-  }
+  });
 
-  for (var actualErrorIndex = 0; actualErrorIndex < actualErrorMessages.length; actualErrorIndex++) {
-    var errorMessage = actualErrorMessages[actualErrorIndex];
+  actualErrorMessages.forEach((errorMessage) => {
     if (expectedErrorMessages.indexOf(errorMessage) < 0) {
       assert.fail('Unexpected document validation error: "' + errorMessage + '". Expected error: Invalid ' + docType + ' document: ' + expectedErrorMessages.join('; '));
     }
-  }
+  });
 }
 
 function countAuthorizationTypes(expectedAuthorization) {
-  var count = 0;
+  let count = 0;
   if (expectedAuthorization.expectedChannels) {
     count++;
   }
@@ -618,16 +607,16 @@ function countAuthorizationTypes(expectedAuthorization) {
 }
 
 function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
-  var channelAccessDeniedError = new Error('Channel access denied!');
-  var roleAccessDeniedError = new Error('Role access denied!');
-  var userAccessDeniedError = new Error('User access denied!');
-  var generalAuthFailedMessage = 'missing channel access';
+  const channelAccessDeniedError = new Error('Channel access denied!');
+  const roleAccessDeniedError = new Error('Role access denied!');
+  const userAccessDeniedError = new Error('User access denied!');
+  const generalAuthFailedMessage = 'missing channel access';
 
   exports.requireAccess.throwWith(channelAccessDeniedError);
   exports.requireRole.throwWith(roleAccessDeniedError);
   exports.requireUser.throwWith(userAccessDeniedError);
 
-  var syncFuncError = null;
+  let syncFuncError = null;
   try {
     exports.syncFunction(doc, oldDoc);
   } catch (ex) {
@@ -671,7 +660,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
 }
 
 function verifyUnknownDocumentType(doc, oldDoc) {
-  var syncFuncError = null;
+  let syncFuncError = null;
   try {
     exports.syncFunction(doc, oldDoc);
   } catch (ex) {
