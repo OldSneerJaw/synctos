@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.12.0] - 2018-02-12
+### Undeprecated
+- `mustEqualStrict` constraint
+
 ## [1.11.0] - 2018-02-11
 ### Deprecated
 - `mustEqualStrict` constraint
@@ -121,7 +125,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/Kashoo/synctos/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/Kashoo/synctos/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/Kashoo/synctos/compare/v1.9.4...v1.10.0
 [1.9.4]: https://github.com/Kashoo/synctos/compare/v1.9.3...v1.9.4
