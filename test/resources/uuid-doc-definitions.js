@@ -10,6 +10,10 @@
         type: 'uuid',
         minimumValue: 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
         maximumValue: 'DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD'
+      },
+      immutableValidationProp: {
+        type: 'uuid',
+        immutableWhenSet: true
       }
     }
   },

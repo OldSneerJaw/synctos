@@ -140,4 +140,54 @@ describe('UUID validation type:', function() {
         [ errorFormatter.mustEqualViolation('equalityValidationProp', '5e7f697b-fe56-4b98-a68b-aae104bff1d4') ]);
     });
   });
+
+  describe('intelligent immutability constraint', function() {
+    it('allows a UUID that exactly matches the existing UUID', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'uuidDocType',
+        immutableValidationProp: '30fc7749-649d-472b-88b5-38b82d7f69ce'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'uuidDocType',
+        immutableValidationProp: '30fc7749-649d-472b-88b5-38b82d7f69ce'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('allows a UUID that differs from the existing UUID only in case', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'uuidDocType',
+        immutableValidationProp: 'a2cbd67d-23c0-478e-95ce-350568e655ea'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'uuidDocType',
+        immutableValidationProp: oldDoc.immutableValidationProp.toUpperCase()
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('rejects a UUID that differs from the existing UUID', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'uuidDocType',
+        immutableValidationProp: 'a2cbd67d-23c0-478e-95ce-350568e655ea'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'uuidDocType',
+        immutableValidationProp: '35ba6044-3775-41ea-864f-db584531a6be'
+      };
+
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'uuidDocType', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+    });
+  });
 });

@@ -15,6 +15,10 @@
         type: 'time',
         minimumValueExclusive: '13:42:00.999',
         maximumValueExclusive: '13:42:01.002'
+      },
+      immutableValidationProp: {
+        type: 'time',
+        immutableWhenSet: true
       }
     }
   },

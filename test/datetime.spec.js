@@ -402,4 +402,52 @@ describe('Date/time validation type', function() {
         [ errorFormatter.mustEqualViolation('equalityValidationProp', '2018-01-01T11:00:00.000+09:30') ]);
     });
   });
+
+  describe('intelligent immutability constraint', function() {
+    it('allows a datetime that exactly matches the existing datetime', function() {
+      var oldDoc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '2018-02-11T19:40:13.822-08:00'
+      };
+
+      var doc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '2018-02-11T19:40:13.822-08:00'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('allows a datetime with omitted optional components that matches the existing datetime', function() {
+      var oldDoc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '2018-02-01' // No time component means midnight UTC
+      };
+
+      var doc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '2018-02T13:40+13:40'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('rejects a datetime that does not match the existing datetime', function() {
+      var oldDoc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '1999-12-31T23:59:59.999-0800'
+      };
+
+      var doc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '1999-12-31T23:59:59.999-0700'
+      };
+
+      testHelper.verifyDocumentNotReplaced(
+        doc,
+        oldDoc,
+        'datetimeDoc',
+        [ errorFormatter.immutableItemViolation('immutabilityValidationProp') ]);
+    });
+  });
 });

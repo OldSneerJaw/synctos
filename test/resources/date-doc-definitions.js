@@ -17,6 +17,10 @@
       },
       formatValidationProp: {
         type: 'date'
+      },
+      immutableValidationProp: {
+        type: 'date',
+        immutableWhenSet: true
       }
     }
   },

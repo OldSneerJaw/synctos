@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
 - [#202](https://github.com/Kashoo/synctos/issues/202): Time zone data validation type
 - [#225](https://github.com/Kashoo/synctos/issues/225): Use intelligent equality comparisons for specialized string types
+- [#227](https://github.com/Kashoo/synctos/issues/227): Use intelligent immutability comparisons for specialized string types
 
 ### Changed
 - [#212](https://github.com/Kashoo/synctos/issues/212): Improve document validation error messages

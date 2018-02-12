@@ -274,4 +274,54 @@ describe('Time zone validation type:', function() {
         [ errorFormatter.mustEqualViolation('equalityValidationProp', 'Z') ]);
     });
   });
+
+  describe('intelligent immutability constraint', function() {
+    it('allows a time zone that does not differ from the old time zone', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '+09:15'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '+09:15'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('allows a time zone that differs from the old time zone only by omitting the colon separator', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '-03:30'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '-0330'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('rejects a time zone that differs from the old time zone', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '+11:00'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '-11:00'
+      };
+
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'timezoneDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+    });
+  });
 });

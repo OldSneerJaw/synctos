@@ -250,4 +250,48 @@ describe('Date validation type:', function() {
         [ errorFormatter.mustEqualViolation('equalityValidationProp', '2018-01-01T00:00:00.000Z') ]);
     });
   });
+
+  describe('intelligent immutability constraint', function() {
+    it('allows a date that exactly matches the existing date', function() {
+      var oldDoc = {
+        _id: 'dateDoc',
+        immutableValidationProp: '2018-02-11'
+      };
+
+      var doc = {
+        _id: 'dateDoc',
+        immutableValidationProp: '2018-02-11'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('allows a date with omitted optional components that matches the existing date', function() {
+      var oldDoc = {
+        _id: 'dateDoc',
+        immutableValidationProp: new Date(Date.UTC(2017, 0, 1))
+      };
+
+      var doc = {
+        _id: 'dateDoc',
+        immutableValidationProp: '2017'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('rejects a date that does not match the existing date', function() {
+      var oldDoc = {
+        _id: 'dateDoc',
+        immutableValidationProp: '2018-11-12'
+      };
+
+      var doc = {
+        _id: 'dateDoc',
+        immutableValidationProp: '2017-11-12'
+      };
+
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'dateDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+    });
+  });
 });

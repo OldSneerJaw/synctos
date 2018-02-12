@@ -17,6 +17,10 @@
       },
       formatValidationProp: {
         type: 'datetime'
+      },
+      immutabilityValidationProp: {
+        type: 'datetime',
+        immutable: true
       }
     }
   },

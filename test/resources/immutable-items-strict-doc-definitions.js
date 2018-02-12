@@ -22,6 +22,26 @@ function() {
           type: 'hashtable',
           immutableStrict: true
         },
+        staticImmutableDateProp: {
+          type: 'date',
+          immutableStrict: true
+        },
+        staticImmutableDatetimeProp: {
+          type: 'datetime',
+          immutableStrict: true
+        },
+        staticImmutableTimeProp: {
+          type: 'time',
+          immutableStrict: true
+        },
+        staticImmutableTimezoneProp: {
+          type: 'timezone',
+          immutableStrict: true
+        },
+        staticImmutableUuidProp: {
+          type: 'uuid',
+          immutableStrict: true
+        },
         dynamicPropertiesAreImmutable: {
           type: 'boolean'
         },

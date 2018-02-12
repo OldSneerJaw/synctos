@@ -439,19 +439,23 @@ function validationModule() {
       }
 
       if (resolveValidationConstraint(validator.immutable)) {
-        validateImmutable(false, true);
+        validateImmutable(false, validator.type);
       }
 
       if (resolveValidationConstraint(validator.immutableStrict)) {
-        validateImmutable(false, false);
+        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+        // (e.g. "date", "datetime", "time", "timezone", "uuid")
+        validateImmutable(false);
       }
 
       if (resolveValidationConstraint(validator.immutableWhenSet)) {
-        validateImmutable(true, true);
+        validateImmutable(true, validator.type);
       }
 
       if (resolveValidationConstraint(validator.immutableWhenSetStrict)) {
-        validateImmutable(true, false);
+        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+        // (e.g. "date", "datetime", "time", "timezone", "uuid")
+        validateImmutable(true);
       }
 
       var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
@@ -598,10 +602,6 @@ function validationModule() {
       }
     }
 
-    function hasNoValue(value, treatNullAsUndefined) {
-      return treatNullAsUndefined ? isValueNullOrUndefined(value) : typeof value === 'undefined';
-    }
-
     function validateString(validator) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var itemValue = currentItemEntry.itemValue;
@@ -625,13 +625,13 @@ function validationModule() {
       }
     }
 
-    function validateImmutable(onlyEnforceIfHasValue, treatNullAsUndefined) {
+    function validateImmutable(onlyEnforceIfHasValue, validatorType) {
       if (!isDocumentMissingOrDeleted(oldDoc)) {
         var currentItemEntry = itemStack[itemStack.length - 1];
         var itemValue = currentItemEntry.itemValue;
         var oldItemValue = currentItemEntry.oldItemValue;
 
-        if (onlyEnforceIfHasValue && hasNoValue(oldItemValue, treatNullAsUndefined)) {
+        if (onlyEnforceIfHasValue && isValueNullOrUndefined(oldItemValue)) {
           // No need to continue; the constraint only applies if the old document has a value for this item
           return;
         }
@@ -641,10 +641,10 @@ function validationModule() {
         // document, then there is nothing to validate.
         var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
         var constraintSatisfied;
-        if (hasNoValue(oldParentItemValue, treatNullAsUndefined)) {
+        if (isValueNullOrUndefined(oldParentItemValue)) {
           constraintSatisfied = true;
         } else {
-          constraintSatisfied = checkItemEquality(itemValue, oldItemValue, treatNullAsUndefined);
+          constraintSatisfied = checkItemEquality(itemValue, oldItemValue, validatorType);
         }
 
         if (!constraintSatisfied) {
@@ -656,16 +656,16 @@ function validationModule() {
     function validateEquality(expectedItemValue, validatorType) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var currentItemValue = currentItemEntry.itemValue;
-      if (!checkItemEquality(currentItemValue, expectedItemValue, true, validatorType)) {
+      if (!checkItemEquality(currentItemValue, expectedItemValue, validatorType)) {
         validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + jsonStringify(expectedItemValue));
       }
     }
 
-    function checkItemEquality(itemValue, expectedItemValue, treatNullAsUndefined, validatorType) {
+    function checkItemEquality(itemValue, expectedItemValue, validatorType) {
       if (simpleTypeEqualityComparator(validatorType)(itemValue, expectedItemValue)) {
         // Both have the same simple type (string, number, boolean, null) value
         return true;
-      } else if (hasNoValue(itemValue, treatNullAsUndefined) && hasNoValue(expectedItemValue, treatNullAsUndefined)) {
+      } else if (isValueNullOrUndefined(itemValue) && isValueNullOrUndefined(expectedItemValue)) {
         // Both values are missing, which means they can be considered equal
         return true;
       } else if (isValueNullOrUndefined(itemValue) !== isValueNullOrUndefined(expectedItemValue)) {
@@ -673,16 +673,16 @@ function validationModule() {
         return false;
       } else {
         if (itemValue instanceof Array || expectedItemValue instanceof Array) {
-          return checkArrayEquality(itemValue, expectedItemValue, treatNullAsUndefined);
+          return checkArrayEquality(itemValue, expectedItemValue);
         } else if (typeof itemValue === 'object' || typeof expectedItemValue === 'object') {
-          return checkObjectEquality(itemValue, expectedItemValue, treatNullAsUndefined);
+          return checkObjectEquality(itemValue, expectedItemValue);
         } else {
           return false;
         }
       }
     }
 
-    function checkArrayEquality(itemValue, expectedItemValue, treatNullAsUndefined) {
+    function checkArrayEquality(itemValue, expectedItemValue) {
       if (!(itemValue instanceof Array && expectedItemValue instanceof Array)) {
         return false;
       } else if (itemValue.length !== expectedItemValue.length) {
@@ -693,7 +693,7 @@ function validationModule() {
         var elementValue = itemValue[elementIndex];
         var expectedElementValue = expectedItemValue[elementIndex];
 
-        if (!checkItemEquality(elementValue, expectedElementValue, treatNullAsUndefined)) {
+        if (!checkItemEquality(elementValue, expectedElementValue)) {
           return false;
         }
       }
@@ -702,7 +702,7 @@ function validationModule() {
       return true;
     }
 
-    function checkObjectEquality(itemValue, expectedItemValue, treatNullAsUndefined) {
+    function checkObjectEquality(itemValue, expectedItemValue) {
       if (typeof itemValue !== 'object' || typeof expectedItemValue !== 'object') {
         return false;
       }
@@ -723,7 +723,7 @@ function validationModule() {
         var propertyValue = itemValue[propertyName];
         var expectedPropertyValue = expectedItemValue[propertyName];
 
-        if (!checkItemEquality(propertyValue, expectedPropertyValue, treatNullAsUndefined)) {
+        if (!checkItemEquality(propertyValue, expectedPropertyValue)) {
           return false;
         }
       }
