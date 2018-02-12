@@ -230,9 +230,9 @@ describe('Time zone validation type:', () => {
     });
   });
 
-  describe('intelligent equality constraint', function() {
-    it('allows a value that matches the expected value exactly', function() {
-      var doc = {
+  describe('intelligent equality constraint', () => {
+    it('allows a value that matches the expected value exactly', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timezoneMustEqualDocType',
         equalityValidationProp: 'Z'
@@ -241,8 +241,8 @@ describe('Time zone validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a value that specifies UTC as positive zero', function() {
-      var doc = {
+    it('allows a value that specifies UTC as positive zero', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timezoneMustEqualDocType',
         equalityValidationProp: '+00:00'
@@ -251,8 +251,8 @@ describe('Time zone validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a value that specifies UTC as negative zero', function() {
-      var doc = {
+    it('allows a value that specifies UTC as negative zero', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timezoneMustEqualDocType',
         equalityValidationProp: '-0000'
@@ -261,8 +261,8 @@ describe('Time zone validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a value that differs from the expected value', function() {
-      var doc = {
+    it('rejects a value that differs from the expected value', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timezoneMustEqualDocType',
         equalityValidationProp: '+21:45'
@@ -275,15 +275,15 @@ describe('Time zone validation type:', () => {
     });
   });
 
-  describe('intelligent immutability constraint', function() {
-    it('allows a time zone that does not differ from the old time zone', function() {
-      var oldDoc = {
+  describe('intelligent immutability constraint', () => {
+    it('allows a time zone that does not differ from the old time zone', () => {
+      const oldDoc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
         immutableValidationProp: '+09:15'
       };
 
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
         immutableValidationProp: '+09:15'
@@ -292,14 +292,14 @@ describe('Time zone validation type:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('allows a time zone that differs from the old time zone only by omitting the colon separator', function() {
-      var oldDoc = {
+    it('allows a time zone that differs from the old time zone only by omitting the colon separator', () => {
+      const oldDoc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
         immutableValidationProp: '-03:30'
       };
 
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
         immutableValidationProp: '-0330'
@@ -308,14 +308,14 @@ describe('Time zone validation type:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('rejects a time zone that differs from the old time zone', function() {
-      var oldDoc = {
+    it('rejects a time zone that differs from the old time zone', () => {
+      const oldDoc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
         immutableValidationProp: '+11:00'
       };
 
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timezoneDoc',
         immutableValidationProp: '-11:00'

@@ -220,9 +220,9 @@ describe('Time validation type:', () => {
     });
   });
 
-  describe('intelligent equality constraint', function() {
-    it('allows a time that matches the expected time exactly', function() {
-      var doc = {
+  describe('intelligent equality constraint', () => {
+    it('allows a time that matches the expected time exactly', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timeMustEqualDocType',
         equalityValidationProp: '22:56:00.000'
@@ -231,8 +231,8 @@ describe('Time validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a time that matches the expected time without all millisecond digits', function() {
-      var doc = {
+    it('allows a time that matches the expected time without all millisecond digits', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timeMustEqualDocType',
         equalityValidationProp: '22:56:00.0'
@@ -241,8 +241,8 @@ describe('Time validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a time that matches the expected time without any millisecond digits', function() {
-      var doc = {
+    it('allows a time that matches the expected time without any millisecond digits', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timeMustEqualDocType',
         equalityValidationProp: '22:56:00'
@@ -251,8 +251,8 @@ describe('Time validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a time that matches the expected time without seconds', function() {
-      var doc = {
+    it('allows a time that matches the expected time without seconds', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timeMustEqualDocType',
         equalityValidationProp: '22:56'
@@ -261,8 +261,8 @@ describe('Time validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a time that does not match the expected time', function() {
-      var doc = {
+    it('rejects a time that does not match the expected time', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'timeMustEqualDocType',
         equalityValidationProp: '22:56:00.001'
@@ -275,15 +275,15 @@ describe('Time validation type:', () => {
     });
   });
 
-  describe('intelligent immutability constraint', function() {
-    it('allows a time that exactly matches the existing time', function() {
-      var oldDoc = {
+  describe('intelligent immutability constraint', () => {
+    it('allows a time that exactly matches the existing time', () => {
+      const oldDoc = {
         _id: 'my-doc',
         type: 'timeDoc',
         immutableValidationProp: '01:45:15.9'
       };
 
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         immutableValidationProp: '01:45:15.9'
@@ -292,14 +292,14 @@ describe('Time validation type:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('allows a time with omitted optional components that matches the existing time', function() {
-      var oldDoc = {
+    it('allows a time with omitted optional components that matches the existing time', () => {
+      const oldDoc = {
         _id: 'my-doc',
         type: 'timeDoc',
         immutableValidationProp: '08:11:00.0'
       };
 
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         immutableValidationProp: '08:11'
@@ -308,14 +308,14 @@ describe('Time validation type:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('rejects a time that does not match the existing time', function() {
-      var oldDoc = {
+    it('rejects a time that does not match the existing time', () => {
+      const oldDoc = {
         _id: 'my-doc',
         type: 'timeDoc',
         immutableValidationProp: '12:34:56.789'
       };
 
-      var doc = {
+      const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         immutableValidationProp: '12:34:56.78'

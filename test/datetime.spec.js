@@ -371,9 +371,9 @@ describe('Date/time validation type', () => {
     });
   });
 
-  describe('intelligent equality constraint', function() {
-    it('allows a datetime that exactly matches the expected datetime', function() {
-      var doc = {
+  describe('intelligent equality constraint', () => {
+    it('allows a datetime that exactly matches the expected datetime', () => {
+      const doc = {
         _id: 'datetimeMustEqualDoc',
         equalityValidationProp: '2018-01-01T11:00:00.000+09:30'
       };
@@ -381,8 +381,8 @@ describe('Date/time validation type', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a datetime with a different time zone and without optional components that matches the expected datetime', function() {
-      var doc = {
+    it('allows a datetime with a different time zone and without optional components that matches the expected datetime', () => {
+      const doc = {
         _id: 'datetimeMustEqualDoc',
         equalityValidationProp: '2018T01:30Z'
       };
@@ -390,8 +390,8 @@ describe('Date/time validation type', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a datetime that does not match the expected datetime', function() {
-      var doc = {
+    it('rejects a datetime that does not match the expected datetime', () => {
+      const doc = {
         _id: 'datetimeMustEqualDoc',
         equalityValidationProp: '2018-01-01T01:30:00.001Z'
       };
@@ -403,14 +403,14 @@ describe('Date/time validation type', () => {
     });
   });
 
-  describe('intelligent immutability constraint', function() {
-    it('allows a datetime that exactly matches the existing datetime', function() {
-      var oldDoc = {
+  describe('intelligent immutability constraint', () => {
+    it('allows a datetime that exactly matches the existing datetime', () => {
+      const oldDoc = {
         _id: 'datetimeDoc',
         immutabilityValidationProp: '2018-02-11T19:40:13.822-08:00'
       };
 
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         immutabilityValidationProp: '2018-02-11T19:40:13.822-08:00'
       };
@@ -418,13 +418,13 @@ describe('Date/time validation type', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('allows a datetime with omitted optional components that matches the existing datetime', function() {
-      var oldDoc = {
+    it('allows a datetime with omitted optional components that matches the existing datetime', () => {
+      const oldDoc = {
         _id: 'datetimeDoc',
         immutabilityValidationProp: '2018-02-01' // No time component means midnight UTC
       };
 
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         immutabilityValidationProp: '2018-02T13:40+13:40'
       };
@@ -432,13 +432,13 @@ describe('Date/time validation type', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('rejects a datetime that does not match the existing datetime', function() {
-      var oldDoc = {
+    it('rejects a datetime that does not match the existing datetime', () => {
+      const oldDoc = {
         _id: 'datetimeDoc',
         immutabilityValidationProp: '1999-12-31T23:59:59.999-0800'
       };
 
-      var doc = {
+      const doc = {
         _id: 'datetimeDoc',
         immutabilityValidationProp: '1999-12-31T23:59:59.999-0700'
       };

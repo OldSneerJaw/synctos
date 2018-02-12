@@ -70,7 +70,7 @@ describe('Strict immutable when set constraint:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('can be set to undefined if it was null in the old document', function() {
+    it('can be set to undefined if it was null in the old document', () => {
       const doc = {
         _id: 'myDoc'
       };
@@ -190,9 +190,9 @@ describe('Strict immutable when set constraint:', () => {
     });
   });
 
-  describe('for specialized string types', function() {
-    it('allow values that match the old values exactly', function() {
-      var oldDoc = {
+  describe('for specialized string types', () => {
+    it('allow values that match the old values exactly', () => {
+      const oldDoc = {
         _id: 'myDoc',
         staticImmutableDateProp: '0975-06-15',
         staticImmutableDatetimeProp: '3999-12-31T23:59:59.999+00:00',
@@ -201,7 +201,7 @@ describe('Strict immutable when set constraint:', () => {
         staticImmutableUuidProp: '91d7ba3c-e827-4619-842d-3d1b07bf39f7'
       };
 
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticImmutableDateProp: '0975-06-15',
         staticImmutableDatetimeProp: '3999-12-31T23:59:59.999+00:00',
@@ -213,8 +213,8 @@ describe('Strict immutable when set constraint:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('reject values that are semantically equal to the old values but not strictly equal', function() {
-      var oldDoc = {
+    it('reject values that are semantically equal to the old values but not strictly equal', () => {
+      const oldDoc = {
         _id: 'myDoc',
         staticImmutableDateProp: '1935',
         staticImmutableDatetimeProp: '1621T18:24Z',
@@ -223,7 +223,7 @@ describe('Strict immutable when set constraint:', () => {
         staticImmutableUuidProp: '0b028c34-4891-4427-8e9d-9122163d28c4'
       };
 
-      var doc = {
+      const doc = {
         _id: 'myDoc',
         staticImmutableDateProp: '1935-01-01',
         staticImmutableDatetimeProp: '1621-01-01T18:24:00.000Z',

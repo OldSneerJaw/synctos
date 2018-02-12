@@ -27,8 +27,8 @@ describe('UUID validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a UUID with invalid characters', function() {
-      var doc = {
+    it('rejects a UUID with invalid characters', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'uuidDocType',
         formatValidationProp: 'g78d516e-cb95-4ef7-b593-2ee7ce375738'
@@ -37,8 +37,8 @@ describe('UUID validation type:', () => {
       testHelper.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
     });
 
-    it('rejects a UUID without hyphens', function() {
-      var doc = {
+    it('rejects a UUID without hyphens', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'uuidDocType',
         formatValidationProp: '1511fba4e03942cc9ac29f2fa29eecfc'
@@ -57,8 +57,8 @@ describe('UUID validation type:', () => {
       testHelper.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
     });
 
-    it('rejects a UUID with too few characters', function() {
-      var doc = {
+    it('rejects a UUID with too few characters', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'uuidDocType',
         formatValidationProp: '1511fba4-e03-42cc-9ac2-9f2fa29eecfc'
@@ -117,8 +117,8 @@ describe('UUID validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a UUID that differs only from the expected value by case', function() {
-      var doc = {
+    it('allows a UUID that differs only from the expected value by case', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'uuidMustEqualDocType',
         equalityValidationProp: '5E7F697B-FE56-4B98-A68B-AAE104BFF1D4'
@@ -127,8 +127,8 @@ describe('UUID validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a UUID that differs from the expected value by one character', function() {
-      var doc = {
+    it('rejects a UUID that differs from the expected value by one character', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'uuidMustEqualDocType',
         equalityValidationProp: '5e7f697b-fe56-4b98-a68b-aae104bff1d3'

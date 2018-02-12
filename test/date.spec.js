@@ -210,9 +210,9 @@ describe('Date validation type:', () => {
     });
   });
 
-  describe('intelligent equality constraint', function() {
-    it('allows a full date-only string that matches the expected date', function() {
-      var doc = {
+  describe('intelligent equality constraint', () => {
+    it('allows a full date-only string that matches the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2018-01-01'
       };
@@ -220,8 +220,8 @@ describe('Date validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a date-only string without day that matches the expected date', function() {
-      var doc = {
+    it('allows a date-only string without day that matches the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2018-01'
       };
@@ -229,8 +229,8 @@ describe('Date validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a date-only string without month and day that matches the expected date', function() {
-      var doc = {
+    it('allows a date-only string without month and day that matches the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2018'
       };
@@ -238,8 +238,8 @@ describe('Date validation type:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a date-only string that does not match the expected date', function() {
-      var doc = {
+    it('rejects a date-only string that does not match the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2017-12-31'
       };
@@ -251,14 +251,14 @@ describe('Date validation type:', () => {
     });
   });
 
-  describe('intelligent immutability constraint', function() {
-    it('allows a date that exactly matches the existing date', function() {
-      var oldDoc = {
+  describe('intelligent immutability constraint', () => {
+    it('allows a date that exactly matches the existing date', () => {
+      const oldDoc = {
         _id: 'dateDoc',
         immutableValidationProp: '2018-02-11'
       };
 
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         immutableValidationProp: '2018-02-11'
       };
@@ -266,13 +266,13 @@ describe('Date validation type:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('allows a date with omitted optional components that matches the existing date', function() {
-      var oldDoc = {
+    it('allows a date with omitted optional components that matches the existing date', () => {
+      const oldDoc = {
         _id: 'dateDoc',
         immutableValidationProp: new Date(Date.UTC(2017, 0, 1))
       };
 
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         immutableValidationProp: '2017'
       };
@@ -280,13 +280,13 @@ describe('Date validation type:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('rejects a date that does not match the existing date', function() {
-      var oldDoc = {
+    it('rejects a date that does not match the existing date', () => {
+      const oldDoc = {
         _id: 'dateDoc',
         immutableValidationProp: '2018-11-12'
       };
 
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         immutableValidationProp: '2017-11-12'
       };

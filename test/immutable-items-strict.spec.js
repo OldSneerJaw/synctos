@@ -768,9 +768,9 @@ describe('Strict immutable item constraint:', () => {
     });
   });
 
-  describe('for specialized string types', function() {
-    it('allow values that match the old values exactly', function() {
-      var oldDoc = {
+  describe('for specialized string types', () => {
+    it('allow values that match the old values exactly', () => {
+      const oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableDateProp: '1801-12-09',
         staticImmutableDatetimeProp: '2096-02-29T03:36:27.369+12:45',
@@ -779,7 +779,7 @@ describe('Strict immutable item constraint:', () => {
         staticImmutableUuidProp: 'b75a2f25-cae2-46b2-be92-e96f3063dec7'
       };
 
-      var doc = {
+      const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableDateProp: '1801-12-09',
         staticImmutableDatetimeProp: '2096-02-29T03:36:27.369+12:45',
@@ -791,8 +791,8 @@ describe('Strict immutable item constraint:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('reject values that are semantically equal to the old values but not strictly equal', function() {
-      var oldDoc = {
+    it('reject values that are semantically equal to the old values but not strictly equal', () => {
+      const oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableDateProp: '1970',
         staticImmutableDatetimeProp: '1970-01-01T18:24Z',
@@ -801,7 +801,7 @@ describe('Strict immutable item constraint:', () => {
         staticImmutableUuidProp: '3bf7118b-19fa-48e2-b0c9-dab20b65bad8'
       };
 
-      var doc = {
+      const doc = {
         _id: 'immutableItemsDoc',
         staticImmutableDateProp: '1970-01-01',
         staticImmutableDatetimeProp: '1970-01-01T18:24:00.000Z',
