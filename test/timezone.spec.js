@@ -229,4 +229,49 @@ describe('Time zone validation type:', function() {
         errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '+12:31'));
     });
   });
+
+  describe('intelligent equality constraint', function() {
+    it('allows a value that matches the expected value exactly', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: 'Z'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a value that specifies UTC as positive zero', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: '+00:00'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a value that specifies UTC as negative zero', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: '-0000'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a value that differs from the expected value', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: '+21:45'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'timezoneMustEqualDocType',
+        [ errorFormatter.mustEqualViolation('equalityValidationProp', 'Z') ]);
+    });
+  });
 });

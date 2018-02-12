@@ -17,5 +17,15 @@
         maximumValueExclusive: '13:42:01.002'
       }
     }
+  },
+  timeMustEqualDocType: {
+    typeFilter: simpleTypeFilter,
+    channels: { write: 'write' },
+    propertyValidators: {
+      equalityValidationProp: {
+        type: 'time',
+        mustEqual: '22:56:00.000'
+      }
+    }
   }
 }

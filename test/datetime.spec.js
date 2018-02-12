@@ -370,4 +370,36 @@ describe('Date/time validation type', function() {
       testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('rangeValidationAsDatesOnlyProp'));
     });
   });
+
+  describe('intelligent equality constraint', function() {
+    it('allows a datetime that exactly matches the expected datetime', function() {
+      var doc = {
+        _id: 'datetimeMustEqualDoc',
+        equalityValidationProp: '2018-01-01T11:00:00.000+09:30'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a datetime with a different time zone and without optional components that matches the expected datetime', function() {
+      var doc = {
+        _id: 'datetimeMustEqualDoc',
+        equalityValidationProp: '2018T01:30Z'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a datetime that does not match the expected datetime', function() {
+      var doc = {
+        _id: 'datetimeMustEqualDoc',
+        equalityValidationProp: '2018-01-01T01:30:00.001Z'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'datetimeMustEqualDocType',
+        [ errorFormatter.mustEqualViolation('equalityValidationProp', '2018-01-01T11:00:00.000+09:30') ]);
+    });
+  });
 });
