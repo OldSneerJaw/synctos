@@ -92,7 +92,7 @@ describe('Document definitions validator:', function() {
                   immutable: true,
                   immutableWhenSet: false, // Must not be defined in conjunction with "immutable"
                   maximumValue: '2018-01-31T17:31:27.283-08:00', // Should not include time and time zone components
-                  mustEqualStrict: new Date('1578-11-30'), // Must be a date string for equality
+                  mustEqual: new Date('1578-11-30'), // Must be a date string for equality
                   customValidation: function(a, b, c, d, extraParam) { // Too many parameters
                     return extraParam;
                   }
@@ -105,8 +105,7 @@ describe('Document definitions validator:', function() {
                     3,
                     1.9 // Must include only strings and integers
                   ],
-                  mustEqual: true, // Must be an integer or string
-                  mustEqualStrict: 3 // Must not be defined in conjunction with "mustEqual"
+                  mustEqual: 5.3 // Must be an integer or string
                 },
                 hashtableProperty: {
                   type: 'hashtable',
@@ -225,13 +224,12 @@ describe('Document definitions validator:', function() {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutableWhenSet: \"immutableWhenSet\" conflict with forbidden peer \"immutable\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutable: \"immutable\" conflict with forbidden peer \"immutableWhenSet\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.maximumValue: "maximumValue" with value "2018-01-31T17:31:27.283-08:00" fails to match the required pattern: /^([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$/',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"mustEqualStrict\"',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.mustEqualStrict: \"mustEqualStrict\" must be a string',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"mustEqual\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.mustEqual: \"mustEqual\" must be a string',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.customValidation: \"customValidation\" must have an arity lesser or equal to 4',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.predefinedValues.3: \"predefinedValues\" at position 3 does not match any of the allowed types',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" conflict with forbidden peer \"mustEqualStrict\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a string',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a number',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.maximumSize: \"maximumSize\" must be larger than or equal to 2',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableKeysValidator.regexPattern: "regexPattern" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.minimumValue: \"minimumValue\" with value \"Mon, 25 Dec 1995 13:30:00 +0430\" fails to match the required pattern: /^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\\.[0-9]{1,3})?)?(Z|([\\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/',

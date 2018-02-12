@@ -14,6 +14,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Changed
 - [#212](https://github.com/Kashoo/synctos/issues/212): Improve document validation error messages
 - [#185](https://github.com/Kashoo/synctos/issues/185): Upgrade minimum supported Node.js version to latest Long Term Support release
+- [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules
+- [#224](https://github.com/Kashoo/synctos/issues/224): Remove strict equality constraint
 
 ### Fixed
 - [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
@@ -21,7 +23,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#199](https://github.com/Kashoo/synctos/issues/199): Date and date-time validation types permit dates that are invalid
 
 ### Removed
-- [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules
+- `etc/test-helper.js` module
+- `etc/validation-error-message-formatter.js` module
+- `mustEqualStrict` constraint
 
 ## [1.11.0] - 2018-02-11
 ### Deprecated
