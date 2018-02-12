@@ -17,6 +17,24 @@
       },
       formatValidationProp: {
         type: 'date'
+      },
+      immutableValidationProp: {
+        type: 'date',
+        immutableWhenSet: true
+      }
+    }
+  },
+  dateMustEqualDocType: {
+    typeFilter: function(doc) {
+      return doc._id === 'dateMustEqualDoc';
+    },
+    channels: { write: 'write' },
+    propertyValidators: {
+      equalityValidationProp: {
+        type: 'date',
+        mustEqual: function() {
+          return new Date(Date.UTC(2018, 0, 1, 0, 0, 0, 0));
+        }
       }
     }
   }

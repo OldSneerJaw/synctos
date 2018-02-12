@@ -80,7 +80,7 @@ describe('Document definitions validator:', () => {
               type: 'timezone',
               minimumValueExclusive: '-15', // Must include minute component
               maximumValueExclusive: '19:00', // Must have a positive or negative sign
-              mustEqualStrict: 'barfoo' // Must be a valid timezone string
+              mustEqual: 'barfoo' // Must be a valid timezone string
             },
             _invalidName: { // Sync Gateway does not allow top-level property names to start with underscore
               type: 'string'
@@ -228,9 +228,9 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators.timeProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"mustEqual\"',
         'myDoc1.propertyValidators.timezoneProperty.minimumValueExclusive: \"minimumValueExclusive\" with value \"-15\" fails to match the required pattern: /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/',
         'myDoc1.propertyValidators.timezoneProperty.maximumValueExclusive: \"maximumValueExclusive\" with value \"19:00\" fails to match the required pattern: /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/',
-        'myDoc1.propertyValidators.timezoneProperty.mustEqualStrict: \"mustEqualStrict\" with value \"barfoo\" fails to match the required pattern: /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/',
-        'myDoc1.propertyValidators.timezoneProperty.minimumValueExclusive: \"minimumValueExclusive\" conflict with forbidden peer \"mustEqualStrict\"',
-        'myDoc1.propertyValidators.timezoneProperty.maximumValueExclusive: \"maximumValueExclusive\" conflict with forbidden peer \"mustEqualStrict\"',
+        'myDoc1.propertyValidators.timezoneProperty.mustEqual: \"mustEqual\" with value \"barfoo\" fails to match the required pattern: /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/',
+        'myDoc1.propertyValidators.timezoneProperty.minimumValueExclusive: \"minimumValueExclusive\" conflict with forbidden peer \"mustEqual\"',
+        'myDoc1.propertyValidators.timezoneProperty.maximumValueExclusive: \"maximumValueExclusive\" conflict with forbidden peer \"mustEqual\"',
         'myDoc1.propertyValidators._invalidName: "_invalidName" is not allowed',
         'myDoc1.propertyValidators.nestedObject.unrecognizedConstraint: "unrecognizedConstraint" is not allowed',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutableWhenSet: \"immutableWhenSet\" conflict with forbidden peer \"immutable\"',

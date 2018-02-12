@@ -119,6 +119,32 @@ function() {
         }
       }
     },
+    specializedStringsDoc: {
+      typeFilter: sharedTypeFilter,
+      channels: docChannels,
+      propertyValidators: {
+        dateProp: {
+          type: 'date',
+          mustEqualStrict: '2018-02-01'
+        },
+        datetimeProp: {
+          type: 'datetime',
+          mustEqualStrict: '2018-02-12T11:10:00.000-08:00'
+        },
+        timeProp: {
+          type: 'time',
+          mustEqualStrict: '11:11:52.000'
+        },
+        timezoneProp: {
+          type: 'timezone',
+          mustEqualStrict: '+00:00'
+        },
+        uuidProp: {
+          type: 'uuid',
+          mustEqualStrict: '25f5f392-2c4d-4ab1-9056-52d227dd9a37'
+        }
+      }
+    },
     nullExpectedValueDoc: {
       typeFilter: sharedTypeFilter,
       channels: docChannels,

@@ -229,4 +229,99 @@ describe('Time zone validation type:', () => {
         errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '+12:31'));
     });
   });
+
+  describe('intelligent equality constraint', function() {
+    it('allows a value that matches the expected value exactly', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: 'Z'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a value that specifies UTC as positive zero', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: '+00:00'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a value that specifies UTC as negative zero', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: '-0000'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a value that differs from the expected value', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneMustEqualDocType',
+        equalityValidationProp: '+21:45'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'timezoneMustEqualDocType',
+        [ errorFormatter.mustEqualViolation('equalityValidationProp', 'Z') ]);
+    });
+  });
+
+  describe('intelligent immutability constraint', function() {
+    it('allows a time zone that does not differ from the old time zone', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '+09:15'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '+09:15'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('allows a time zone that differs from the old time zone only by omitting the colon separator', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '-03:30'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '-0330'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('rejects a time zone that differs from the old time zone', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '+11:00'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timezoneDoc',
+        immutableValidationProp: '-11:00'
+      };
+
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'timezoneDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+    });
+  });
 });

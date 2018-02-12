@@ -17,6 +17,22 @@
       },
       formatValidationProp: {
         type: 'datetime'
+      },
+      immutabilityValidationProp: {
+        type: 'datetime',
+        immutable: true
+      }
+    }
+  },
+  datetimeMustEqualDocType: {
+    typeFilter: function(doc) {
+      return doc._id === 'datetimeMustEqualDoc';
+    },
+    channels: { write: 'write' },
+    propertyValidators: {
+      equalityValidationProp: {
+        type: 'datetime',
+        mustEqual: '2018-01-01T11:00:00.000+09:30'
       }
     }
   }

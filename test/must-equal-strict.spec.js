@@ -80,15 +80,6 @@ describe('Strict equality constraint:', () => {
 
       testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
-
-    it('rejects a document when an unexpected nested object property is null', () => {
-      const doc = {
-        _id: 'staticArrayDoc',
-        arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar', baz: null }, [ ] ]
-      };
-
-      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
-    });
   });
 
   describe('array type with dynamic property validation', () => {
@@ -196,23 +187,6 @@ describe('Strict equality constraint:', () => {
           myFloatProp: 88.92,
           myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { } ],
           myObjectProp: { baz: 73, qux: [ ] }
-        }
-      };
-
-      testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
-    });
-
-    it('rejects a document when an unexpected nested object property is null', () => {
-      const doc = {
-        _id: 'staticObjectDoc',
-        objectProp: {
-          myStringProp: 'foobar',
-          myIntegerProp: 8,
-          myBooleanProp: true,
-          myFloatProp: 88.92,
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { } ],
-          myObjectProp: { foo: 'bar', baz: 73, qux: [ ] },
-          myUnexpectedProp: null
         }
       };
 
@@ -448,6 +422,43 @@ describe('Strict equality constraint:', () => {
     });
   });
 
+  describe('for specialized string types', () => {
+    it('allow values that match the expected values exactly', () => {
+      const doc = {
+        _id: 'specializedStringsDoc',
+        dateProp: '2018-02-01',
+        datetimeProp: '2018-02-12T11:10:00.000-08:00',
+        timeProp: '11:11:52.000',
+        timezoneProp: '+00:00',
+        uuidProp: '25f5f392-2c4d-4ab1-9056-52d227dd9a37'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('reject values that are semantically equal to the expected values but not strictly equal', () => {
+      const doc = {
+        _id: 'specializedStringsDoc',
+        dateProp: '2018-02',
+        datetimeProp: '2018-02-12T11:10-08:00',
+        timeProp: '11:11:52',
+        timezoneProp: 'Z',
+        uuidProp: '25F5F392-2C4D-4AB1-9056-52D227DD9A37'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'specializedStringsDoc',
+        [
+          errorFormatter.mustEqualViolation('dateProp', '2018-02-01'),
+          errorFormatter.mustEqualViolation('datetimeProp', '2018-02-12T11:10:00.000-08:00'),
+          errorFormatter.mustEqualViolation('timeProp', '11:11:52.000'),
+          errorFormatter.mustEqualViolation('timezoneProp', '+00:00'),
+          errorFormatter.mustEqualViolation('uuidProp', '25f5f392-2c4d-4ab1-9056-52d227dd9a37'),
+        ]);
+    });
+  });
+
   describe('with an expected value of null', () => {
     it('allows a document with a value of null', () => {
       const doc = {
@@ -458,13 +469,10 @@ describe('Strict equality constraint:', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a document with a missing value', () => {
+    it('allows a document with a missing value', () => {
       const doc = { _id: 'nullExpectedValueDoc' };
 
-      testHelper.verifyDocumentNotCreated(
-        doc,
-        'nullExpectedValueDoc',
-        errorFormatter.mustEqualViolation('stringProp', null));
+      testHelper.verifyDocumentCreated(doc);
     });
 
     it('rejects a document with a value that is neither null nor undefined', () => {
