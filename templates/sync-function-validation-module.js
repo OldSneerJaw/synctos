@@ -202,10 +202,7 @@ function validationModule() {
       return NaN;
     }
 
-    var aNormalized = normalizeIso8601TimeZone(a);
-    var bNormalized = normalizeIso8601TimeZone(b);
-
-    return aNormalized - bNormalized;
+    return normalizeIso8601TimeZone(a) - normalizeIso8601TimeZone(b);
   }
 
   function minValueInclusiveViolationComparator(validatorType) {
