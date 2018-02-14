@@ -7,10 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#189](https://github.com/Kashoo/synctos/issues/189): Automatically create the output sync function file directory if it does not exist
 - [#207](https://github.com/Kashoo/synctos/issues/207): Ignore all top-level document properties that start with an underscore
 - [#204](https://github.com/Kashoo/synctos/issues/204): Constraint that requires string values to be trimmed
-- [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
-- [#203](https://github.com/Kashoo/synctos/issues/203): Date range validation fails for values far in the past or future
 - [#215](https://github.com/Kashoo/synctos/issues/215): Allow document definition fragments to be nested
 - [#197](https://github.com/Kashoo/synctos/issues/197): Make month and day components of date validation type optional
+- [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
+- [#202](https://github.com/Kashoo/synctos/issues/202): Time zone data validation type
 
 ### Changed
 - [#212](https://github.com/Kashoo/synctos/issues/212): Improve document validation error messages
@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
 - [#196](https://github.com/Kashoo/synctos/issues/196): Date-time validation type supports invalid time components
 - [#199](https://github.com/Kashoo/synctos/issues/199): Date and date-time validation types permit dates that are invalid
+- [#203](https://github.com/Kashoo/synctos/issues/203): Date range validation fails for values far in the past or future
 
 ### Removed
 - [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules

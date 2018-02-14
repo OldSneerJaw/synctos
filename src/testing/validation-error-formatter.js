@@ -343,6 +343,15 @@ exports.timeFormatInvalid = function(itemPath) {
 };
 
 /**
+ * Formats a message for the error that occurs when the format for a time zone is invalid.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.timezoneProp")
+ */
+exports.timezoneFormatInvalid = function(itemPath) {
+  return 'item "' + itemPath + '" must be ' + getTypeDescription('timezone');
+};
+
+/**
  * Formats a message for the error that occurs when a property or element's type does not match what is defined by the validator.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[2].datetimeProp")
@@ -406,6 +415,8 @@ function getTypeDescription(type) {
       return 'a string';
     case 'time':
       return 'an ECMAScript simplified ISO 8601 time string with no date or time zone components';
+    case 'timezone':
+      return 'an ECMAScript simplified ISO 8601 time zone string';
     case 'uuid':
       return 'a UUID string';
     default:

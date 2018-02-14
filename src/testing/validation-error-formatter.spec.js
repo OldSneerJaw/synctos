@@ -81,6 +81,11 @@ describe('Validation error formatter', function() {
         .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 time string with no date or time zone components');
     });
 
+    it('produces invalid time zone format messages', function() {
+      expect(errorFormatter.timezoneFormatInvalid(fakeItemPath))
+        .to.equal('item "' + fakeItemPath + '" must be an ECMAScript simplified ISO 8601 time zone string');
+    });
+
     it('produces invalid enum value messages', function() {
       var fakeEnumValues = [ 'foo', 'bar', -5 ];
       expect(errorFormatter.enumPredefinedValueViolation(fakeItemPath, fakeEnumValues))
@@ -224,6 +229,7 @@ describe('Validation error formatter', function() {
           'object': 'an object',
           'string': 'a string',
           'time': 'an ECMAScript simplified ISO 8601 time string with no date or time zone components',
+          'timezone': 'an ECMAScript simplified ISO 8601 time zone string',
           'uuid': 'a UUID string'
         };
 

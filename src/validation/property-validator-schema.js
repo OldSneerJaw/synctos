@@ -26,6 +26,7 @@ var dateOnlySchema = joi.any().when(
   });
 
 var timeOnlySchema = joi.string().regex(/^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?$/);
+var timezoneSchema = joi.string().regex(/^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/);
 
 var typeEqualitySchemas = {
   string: joi.string(),
@@ -35,6 +36,7 @@ var typeEqualitySchemas = {
   datetime: datetimeStringSchema,
   date: dateOnlyStringSchema,
   time: timeOnlySchema,
+  timezone: timezoneSchema,
   enum: joi.alternatives().try([ joi.string(), integerSchema ]),
   uuid: uuidSchema,
   attachmentReference: joi.string(),
@@ -69,6 +71,9 @@ var schema = joi.object().keys({
   .when(
     joi.object().unknown().keys({ type: 'time' }),
     { then: makeTypeConstraintsSchema('time') })
+  .when(
+    joi.object().unknown().keys({ type: 'timezone' }),
+    { then: makeTypeConstraintsSchema('timezone') })
   .when(
     joi.object().unknown().keys({ type: 'enum' }),
     { then: makeTypeConstraintsSchema('enum') })
@@ -142,6 +147,12 @@ function typeSpecificConstraintSchemas() {
       minimumValueExclusive: dynamicConstraintSchema(timeOnlySchema),
       maximumValue: dynamicConstraintSchema(timeOnlySchema),
       maximumValueExclusive: dynamicConstraintSchema(timeOnlySchema)
+    },
+    timezone: {
+      minimumValue: dynamicConstraintSchema(timezoneSchema),
+      minimumValueExclusive: dynamicConstraintSchema(timezoneSchema),
+      maximumValue: dynamicConstraintSchema(timezoneSchema),
+      maximumValueExclusive: dynamicConstraintSchema(timezoneSchema)
     },
     enum: {
       predefinedValues: dynamicConstraintSchema(joi.array().required().min(1).items([ integerSchema, joi.string() ]))

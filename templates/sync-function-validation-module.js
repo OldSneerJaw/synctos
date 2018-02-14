@@ -6,7 +6,7 @@ function validationModule() {
 
   // Check that a given value is a valid ISO 8601 format date string with optional time and time zone components
   function isIso8601DateTimeString(value) {
-    var regex = /^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/;
+    var regex = /^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/;
 
     // Verify that it's in ISO 8601 format (via the regex) and that it represents a valid point in time (via Date.parse)
     return regex.test(value) && !isNaN(Date.parse(value));
@@ -23,6 +23,13 @@ function validationModule() {
   // Check that a given value is a valid ISO 8601 time string without date and time zone components
   function isIso8601TimeString(value) {
     var regex = /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?$/;
+
+    return regex.test(value);
+  }
+
+  // Check that a given value is a valid ISO 8601 time zone
+  function isIso8601TimeZoneString(value) {
+    var regex = /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/;
 
     return regex.test(value);
   }
@@ -188,6 +195,16 @@ function validationModule() {
     }
   }
 
+  // Compares the given time zone representations. Returns a negative number if a is less than b, a positive number if
+  // a is greater than b, or zero if a and b are equal.
+  function compareTimeZones(a, b) {
+    if (typeof a !== 'string' || typeof b !== 'string') {
+      return NaN;
+    }
+
+    return normalizeIso8601TimeZone(a) - normalizeIso8601TimeZone(b);
+  }
+
   function minValueInclusiveViolationComparator(validatorType) {
     switch (validatorType) {
       case 'time':
@@ -198,6 +215,10 @@ function validationModule() {
       case 'datetime':
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) < 0;
+        };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) < 0;
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -217,6 +238,10 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) <= 0;
         };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) <= 0;
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue <= constraintValue;
@@ -235,6 +260,10 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) > 0;
         };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) > 0;
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue > constraintValue;
@@ -252,6 +281,10 @@ function validationModule() {
       case 'datetime':
         return function(candidateValue, constraintValue) {
           return compareDates(candidateValue, constraintValue) >= 0;
+        };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) >= 0;
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -543,6 +576,11 @@ function validationModule() {
           case 'time':
             if (typeof itemValue !== 'string' || !isIso8601TimeString(itemValue)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ECMAScript simplified ISO 8601 time string with no date or time zone components');
+            }
+            break;
+          case 'timezone':
+            if (typeof itemValue !== 'string' || !isIso8601TimeZoneString(itemValue)) {
+              validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an ECMAScript simplified ISO 8601 time zone string');
             }
             break;
           case 'enum':
