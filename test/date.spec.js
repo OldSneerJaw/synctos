@@ -209,4 +209,45 @@ describe('Date validation type:', function() {
         errorFormatter.maximumValueExclusiveViolation('exclusiveRangeValidationProp', '2018-02-02'));
     });
   });
+
+  describe('intelligent equality constraint', function() {
+    it('allows a full date-only string that matches the expected date', function() {
+      var doc = {
+        _id: 'dateMustEqualDoc',
+        equalityValidationProp: '2018-01-01'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a date-only string without day that matches the expected date', function() {
+      var doc = {
+        _id: 'dateMustEqualDoc',
+        equalityValidationProp: '2018-01'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a date-only string without month and day that matches the expected date', function() {
+      var doc = {
+        _id: 'dateMustEqualDoc',
+        equalityValidationProp: '2018'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a date-only string that does not match the expected date', function() {
+      var doc = {
+        _id: 'dateMustEqualDoc',
+        equalityValidationProp: '2017-12-31'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'dateMustEqualDocType',
+        [ errorFormatter.mustEqualViolation('equalityValidationProp', '2018-01-01T00:00:00.000Z') ]);
+    });
+  });
 });

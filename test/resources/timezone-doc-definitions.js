@@ -17,5 +17,15 @@
         maximumValueExclusive: '+12:31'
       }
     }
+  },
+  timezoneMustEqualDocType: {
+    typeFilter: simpleTypeFilter,
+    channels: { write: 'write' },
+    propertyValidators: {
+      equalityValidationProp: {
+        type: 'timezone',
+        mustEqual: 'Z'
+      }
+    }
   }
 }

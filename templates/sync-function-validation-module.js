@@ -220,6 +220,10 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) < 0;
         };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) < convertToLowerCase(constraintValue);
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue < constraintValue;
@@ -241,6 +245,10 @@ function validationModule() {
       case 'timezone':
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) <= 0;
+        };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) <= convertToLowerCase(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -264,6 +272,10 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) > 0;
         };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) > convertToLowerCase(constraintValue);
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue > constraintValue;
@@ -286,9 +298,39 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) >= 0;
         };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) >= convertToLowerCase(constraintValue);
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue >= constraintValue;
+        };
+    }
+  }
+
+  function simpleTypeEqualityComparator(validatorType) {
+    switch (validatorType) {
+      case 'time':
+        return function(candidateValue, constraintValue) {
+          return compareTimes(candidateValue, constraintValue) === 0;
+        };
+      case 'date':
+      case 'datetime':
+        return function(candidateValue, constraintValue) {
+          return compareDates(candidateValue, constraintValue) === 0;
+        };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) === 0;
+        };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) === convertToLowerCase(constraintValue);
+        };
+      default:
+        return function(candidateValue, constraintValue) {
+          return candidateValue === constraintValue;
         };
     }
   }
@@ -299,6 +341,10 @@ function validationModule() {
     } else {
       return !isValueNullOrUndefined(value) ? value.toString() : 'null';
     }
+  }
+
+  function convertToLowerCase(value) {
+    return !isValueNullOrUndefined(value) ? value.toLowerCase() : null;
   }
 
   function isUuid(value) {
@@ -489,12 +535,14 @@ function validationModule() {
 
       var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
       if (typeof expectedEqualValue !== 'undefined') {
-        validateEquality(expectedEqualValue, true);
+        validateEquality(expectedEqualValue, validator.type);
       }
 
       var expectedStrictEqualValue = resolveValidationConstraint(validator.mustEqualStrict);
       if (typeof expectedStrictEqualValue !== 'undefined') {
-        validateEquality(expectedStrictEqualValue, false);
+        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+        // (e.g. "date", "datetime", "time", "timezone", "uuid")
+        validateEquality(expectedStrictEqualValue);
       }
 
       if (!isValueNullOrUndefined(itemValue)) {
@@ -684,17 +732,17 @@ function validationModule() {
       }
     }
 
-    function validateEquality(expectedItemValue, treatNullAsUndefined) {
+    function validateEquality(expectedItemValue, validatorType) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var currentItemValue = currentItemEntry.itemValue;
-      if (!checkItemEquality(currentItemValue, expectedItemValue, treatNullAsUndefined)) {
+      if (!checkItemEquality(currentItemValue, expectedItemValue, true, validatorType)) {
         validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + jsonStringify(expectedItemValue));
       }
     }
 
-    function checkItemEquality(itemValue, expectedItemValue, treatNullAsUndefined) {
-      if (itemValue === expectedItemValue) {
-        // Both have the same simple type (string, number, boolean or null) value
+    function checkItemEquality(itemValue, expectedItemValue, treatNullAsUndefined, validatorType) {
+      if (simpleTypeEqualityComparator(validatorType)(itemValue, expectedItemValue)) {
+        // Both have the same simple type (string, number, boolean, null) value
         return true;
       } else if (hasNoValue(itemValue, treatNullAsUndefined) && hasNoValue(expectedItemValue, treatNullAsUndefined)) {
         // Both values are missing, which means they can be considered equal

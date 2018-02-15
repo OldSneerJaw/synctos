@@ -11,10 +11,12 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#197](https://github.com/Kashoo/synctos/issues/197): Make month and day components of date validation type optional
 - [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
 - [#202](https://github.com/Kashoo/synctos/issues/202): Time zone data validation type
+- [#225](https://github.com/Kashoo/synctos/issues/225): Use intelligent equality comparisons for specialized string types
 
 ### Changed
 - [#212](https://github.com/Kashoo/synctos/issues/212): Improve document validation error messages
 - [#185](https://github.com/Kashoo/synctos/issues/185): Upgrade minimum supported Node.js version to latest Long Term Support release
+- [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules
 
 ### Fixed
 - [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
@@ -23,7 +25,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#203](https://github.com/Kashoo/synctos/issues/203): Date range validation fails for values far in the past or future
 
 ### Removed
-- [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules
+- `etc/test-helper.js` module
+- `etc/validation-error-message-formatter.js` module
 
 ## [1.12.0] - 2018-02-12
 ### Undeprecated
