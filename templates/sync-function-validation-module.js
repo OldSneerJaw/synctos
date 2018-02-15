@@ -36,14 +36,17 @@ function validationModule() {
 
   // Converts an ISO 8601 time into an array of its component pieces
   function extractIso8601TimePieces(value) {
-    var timePieces = value.split(/[:.,]/);
+    var timePieces = /^(\d{2}):(\d{2})(?:\:(\d{2}))?(?:\.(\d{1,3}))?$/.exec(value);
+    if (timePieces === null) {
+      return null;
+    }
 
-    var hour = timePieces[0] ? parseInt(timePieces[0], 10) : 0;
-    var minute = timePieces[1] ? parseInt(timePieces[1], 10) : 0;
-    var second = timePieces[2] ? parseInt(timePieces[2], 10) : 0;
+    var hour = timePieces[1] ? parseInt(timePieces[1], 10) : 0;
+    var minute = timePieces[2] ? parseInt(timePieces[2], 10) : 0;
+    var second = timePieces[3] ? parseInt(timePieces[3], 10) : 0;
 
     // The millisecond component has a variable length; normalize the length by padding it with zeros
-    var millisecond = timePieces[3] ? parseInt(padRight(timePieces[3], 3, '0'), 10) : 0;
+    var millisecond = timePieces[4] ? parseInt(padRight(timePieces[4], 3, '0'), 10) : 0;
 
     return [ hour, minute, second, millisecond ];
   }
@@ -58,6 +61,10 @@ function validationModule() {
     var aTimePieces = extractIso8601TimePieces(a);
     var bTimePieces = extractIso8601TimePieces(b);
 
+    if (aTimePieces === null || bTimePieces === null) {
+      return NaN;
+    }
+
     for (var timePieceIndex = 0; timePieceIndex < aTimePieces.length; timePieceIndex++) {
       if (aTimePieces[timePieceIndex] < bTimePieces[timePieceIndex]) {
         return -1;
@@ -70,12 +77,87 @@ function validationModule() {
     return 0;
   }
 
+  function extractIso8601DateOnlyPieces(value) {
+    var datePieces = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(value);
+    if (datePieces === null) {
+      return null;
+    }
+
+    var year = datePieces[1] ? parseInt(datePieces[1], 10) : 0;
+    var month = datePieces[2] ? parseInt(datePieces[2], 10) : 1;
+    var day = datePieces[3] ? parseInt(datePieces[3], 10) : 1;
+
+    return [ year, month, day ];
+  }
+
+  function extractDateFromPieces(dateAndTimePieces) {
+    var dateString = dateAndTimePieces.length > 0 ? dateAndTimePieces[0] : '';
+    var datePieces = extractIso8601DateOnlyPieces(dateString);
+    if (datePieces === null) {
+      return null;
+    }
+
+    return {
+      year: datePieces[0],
+      month: datePieces[1],
+      day: datePieces[2]
+    };
+  }
+
+  function extractTimeFromPieces(dateAndTimePieces) {
+      // Default to midnight UTC if the candidate value represents a date only
+      var timeAndTimezoneString = dateAndTimePieces.length > 1 ? dateAndTimePieces[1] : '00:00:00.000Z';
+      var timezoneSeparatorIndex =
+        Math.max(timeAndTimezoneString.indexOf('-'), timeAndTimezoneString.indexOf('+'), timeAndTimezoneString.indexOf('Z'));
+
+      var timeString = (timezoneSeparatorIndex >= 0) ? timeAndTimezoneString.substr(0, timezoneSeparatorIndex) : timeAndTimezoneString;
+      var timePieces = extractIso8601TimePieces(timeString);
+      if (timePieces === null)
+      {
+        return null;
+      }
+
+      var timezoneString = (timezoneSeparatorIndex >= 0) ? timeAndTimezoneString.substr(timezoneSeparatorIndex) : null;
+
+      // Default to the server's local time zone offset if time zone is missing from the input
+      var timezoneOffsetMinutes = timezoneString !== null ? normalizeIso8601TimeZone(timezoneString) : -(new Date().getTimezoneOffset());
+
+      return {
+        hour: timePieces[0],
+        minute: timePieces[1],
+        second: timePieces[2],
+        millisecond: timePieces[3],
+        timezoneOffsetMinutes: timezoneOffsetMinutes
+      };
+  }
+
   // Converts the given date representation to a timestamp that represents the number of ms since the Unix epoch
   function convertToTimestamp(value) {
     if (value instanceof Date) {
       return value.getTime();
-    } else if (typeof value === 'string' || typeof value === 'number') {
-      return new Date(value).getTime();
+    } else if (typeof value === 'number') {
+      return Math.floor(value);
+    } else if (typeof value === 'string') {
+      var dateAndTimePieces = value.split('T', 2);
+
+      var date = extractDateFromPieces(dateAndTimePieces);
+      if (date === null) {
+        return NaN;
+      }
+
+      var time = extractTimeFromPieces(dateAndTimePieces);
+      if (time === null) {
+        return NaN;
+      }
+
+      return Date.UTC(
+        date.year,
+        date.month - 1,
+        date.day,
+        time.hour,
+        time.minute - time.timezoneOffsetMinutes,
+        time.second,
+        time.millisecond);
     } else {
       return NaN;
     }
@@ -100,7 +182,7 @@ function validationModule() {
       return 0;
     }
 
-    var regex = /^([+-])(\d\d):?([0-5]\d)$/;
+    var regex = /^([+-])(\d\d):?(\d\d)$/;
     var matches = regex.exec(value);
     if (matches === null) {
       return NaN;
@@ -120,10 +202,7 @@ function validationModule() {
       return NaN;
     }
 
-    var aNormalized = normalizeIso8601TimeZone(a);
-    var bNormalized = normalizeIso8601TimeZone(b);
-
-    return aNormalized - bNormalized;
+    return normalizeIso8601TimeZone(a) - normalizeIso8601TimeZone(b);
   }
 
   function minValueInclusiveViolationComparator(validatorType) {

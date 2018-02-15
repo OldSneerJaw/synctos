@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
 - [#196](https://github.com/Kashoo/synctos/issues/196): Date-time validation type supports invalid time components
 - [#199](https://github.com/Kashoo/synctos/issues/199): Date and date-time validation types permit dates that are invalid
+- [#203](https://github.com/Kashoo/synctos/issues/203): Date range validation fails for values far in the past or future
 
 ### Removed
 - `etc/test-helper.js` module
