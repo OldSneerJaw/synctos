@@ -23,7 +23,7 @@ describe('Strict immutable item constraint:', function() {
     it('allows replacement of a document with an immutable array when the nested complex type elements have not changed', function() {
       var doc = {
         _id: 'immutableItemsDoc',
-        staticImmutableArrayProp: [ [ 'foobar', 3, false ], void 0, [ 45.9 ], [ ], null, { foo: 'bar' } ]
+        staticImmutableArrayProp: [ [ 'foobar', 3, false ], void 0, [ 45.9 ], [ ], null, { foo: 'bar', baz: null } ]
       };
       var oldDoc = {
         _id: 'immutableItemsDoc',
@@ -97,7 +97,7 @@ describe('Strict immutable item constraint:', function() {
     it('blocks replacement of a document with an immutable array when a nested element is not equal', function() {
       var doc = {
         _id: 'immutableItemsDoc',
-        staticImmutableArrayProp: [ 'foobar', 3, false, 45.9, [ ], { foo: null } ]
+        staticImmutableArrayProp: [ 'foobar', 3, false, 45.9, [ ], { foo: 'bar' } ]
       };
       var oldDoc = {
         _id: 'immutableItemsDoc',
@@ -275,7 +275,7 @@ describe('Strict immutable item constraint:', function() {
       var oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { } ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { foo: null } ],
           myObjectProp: { foo: 'bar', baz: 73, qux: [ ] }
         }
       };
@@ -365,14 +365,14 @@ describe('Strict immutable item constraint:', function() {
       var doc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: null } ] ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: 'baz' } ] ],
           myObjectProp: { foo: 'bar', baz: 73 }
         }
       };
       var oldDoc = {
         _id: 'immutableItemsDoc',
         staticImmutableObjectProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: void 0 } ] ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ { } ] ],
           myObjectProp: { foo: 'bar', baz: 73 }
         }
       };
@@ -452,52 +452,6 @@ describe('Strict immutable item constraint:', function() {
         staticImmutableObjectProp: { }
       };
       var oldDoc = { _id: 'immutableItemsDoc' };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
-    });
-
-    it('blocks replacement of a document with an immutable object when it goes from null to missing', function() {
-      var doc = { _id: 'immutableItemsDoc' };
-      var oldDoc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableObjectProp: null
-      };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
-    });
-
-    it('blocks replacement of a document with an immutable object when it goes from missing to null', function() {
-      var doc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableObjectProp: null
-      };
-      var oldDoc = { _id: 'immutableItemsDoc' };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
-    });
-
-    it('blocks replacement of a document with an immutable object when a nested null property goes missing', function() {
-      var doc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableObjectProp: { }
-      };
-      var oldDoc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableObjectProp: { myNullProp: null }
-      };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
-    });
-
-    it('blocks replacement of a document with an immutable object when a nested missing property becomes null', function() {
-      var doc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableObjectProp: { myNullProp: null }
-      };
-      var oldDoc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableObjectProp: { }
-      };
 
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableObjectProp'));
     });
@@ -675,7 +629,7 @@ describe('Strict immutable item constraint:', function() {
       var doc = {
         _id: 'immutableItemsDoc',
         staticImmutableHashtableProp: {
-          myArrayProp: [ 'foobar', 3, false, 45.9, [ { foo: void 0 } ] ],
+          myArrayProp: [ 'foobar', 3, false, 45.9, [ { bar: 'baz' } ] ],
           myObjectProp: { foo: 'bar', baz: 73 }
         }
       };
@@ -765,52 +719,6 @@ describe('Strict immutable item constraint:', function() {
 
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
     });
-
-    it('blocks replacement of a document with an immutable hashtable when it goes from null to missing', function() {
-      var doc = { _id: 'immutableItemsDoc' };
-      var oldDoc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableHashtableProp: null
-      };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
-    });
-
-    it('blocks replacement of a document with an immutable hashtable when it goes from missing to null', function() {
-      var doc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableHashtableProp: null
-      };
-      var oldDoc = { _id: 'immutableItemsDoc' };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
-    });
-
-    it('blocks replacement of a document with an immutable hashtable when a nested null property goes missing', function() {
-      var doc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableHashtableProp: { }
-      };
-      var oldDoc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableHashtableProp: { myNullProp: null }
-      };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
-    });
-
-    it('blocks replacement of a document with an immutable hashtable when a nested missing property becomes null', function() {
-      var doc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableHashtableProp: { myNullProp: null }
-      };
-      var oldDoc = {
-        _id: 'immutableItemsDoc',
-        staticImmutableHashtableProp: { }
-      };
-
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('staticImmutableHashtableProp'));
-    });
   });
 
   describe('hashtable type with dynamic property validation', function() {
@@ -857,6 +765,62 @@ describe('Strict immutable item constraint:', function() {
       };
 
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'immutableItemsDoc', errorFormatter.immutableItemViolation('dynamicImmutableHashtableProp'));
+    });
+  });
+
+  describe('for specialized string types', function() {
+    it('allow values that match the old values exactly', function() {
+      var oldDoc = {
+        _id: 'immutableItemsDoc',
+        staticImmutableDateProp: '1801-12-09',
+        staticImmutableDatetimeProp: '2096-02-29T03:36:27.369+12:45',
+        staticImmutableTimeProp: '11:58',
+        staticImmutableTimezoneProp: '+13:00',
+        staticImmutableUuidProp: 'b75a2f25-cae2-46b2-be92-e96f3063dec7'
+      };
+
+      var doc = {
+        _id: 'immutableItemsDoc',
+        staticImmutableDateProp: '1801-12-09',
+        staticImmutableDatetimeProp: '2096-02-29T03:36:27.369+12:45',
+        staticImmutableTimeProp: '11:58',
+        staticImmutableTimezoneProp: '+13:00',
+        staticImmutableUuidProp: 'b75a2f25-cae2-46b2-be92-e96f3063dec7'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('reject values that are semantically equal to the old values but not strictly equal', function() {
+      var oldDoc = {
+        _id: 'immutableItemsDoc',
+        staticImmutableDateProp: '1970',
+        staticImmutableDatetimeProp: '1970-01-01T18:24Z',
+        staticImmutableTimeProp: '00:00',
+        staticImmutableTimezoneProp: '+13:00',
+        staticImmutableUuidProp: '3bf7118b-19fa-48e2-b0c9-dab20b65bad8'
+      };
+
+      var doc = {
+        _id: 'immutableItemsDoc',
+        staticImmutableDateProp: '1970-01-01',
+        staticImmutableDatetimeProp: '1970-01-01T18:24:00.000Z',
+        staticImmutableTimeProp: '00:00:00.000',
+        staticImmutableTimezoneProp: '+1300',
+        staticImmutableUuidProp: oldDoc.staticImmutableUuidProp.toUpperCase()
+      };
+
+      testHelper.verifyDocumentNotReplaced(
+        doc,
+        oldDoc,
+        'immutableItemsDoc',
+        [
+          errorFormatter.immutableItemViolation('staticImmutableDateProp'),
+          errorFormatter.immutableItemViolation('staticImmutableDatetimeProp'),
+          errorFormatter.immutableItemViolation('staticImmutableTimeProp'),
+          errorFormatter.immutableItemViolation('staticImmutableTimezoneProp'),
+          errorFormatter.immutableItemViolation('staticImmutableUuidProp'),
+        ]);
     });
   });
 });
