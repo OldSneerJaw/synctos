@@ -29,14 +29,6 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - `etc/test-helper.js` module
 - `etc/validation-error-message-formatter.js` module
 
-## [1.12.0] - 2018-02-12
-### Undeprecated
-- `mustEqualStrict` constraint
-
-## [1.11.0] - 2018-02-11
-### Deprecated
-- `mustEqualStrict` constraint
-
 ## [1.10.0] - 2018-01-24
 ### Added
 - [#146](https://github.com/Kashoo/synctos/issues/146): Underscore.js support
@@ -152,9 +144,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.12.0...HEAD
-[1.12.0]: https://github.com/Kashoo/synctos/compare/v1.11.0...v1.12.0
-[1.11.0]: https://github.com/Kashoo/synctos/compare/v1.10.0...v1.11.0
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.10.0...HEAD
 [1.10.0]: https://github.com/Kashoo/synctos/compare/v1.9.4...v1.10.0
 [1.9.4]: https://github.com/Kashoo/synctos/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/Kashoo/synctos/compare/v1.9.2...v1.9.3
