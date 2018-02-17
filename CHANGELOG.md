@@ -1,7 +1,7 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
-## [Unreleased]
+## [2.0.0] - 2018-02-16
 ### Added
 - [#43](https://github.com/Kashoo/synctos/issues/43): Tool to validate structure and semantics of a document definitions file
 - [#189](https://github.com/Kashoo/synctos/issues/189): Automatically create the output sync function file directory if it does not exist
@@ -144,7 +144,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/Kashoo/synctos/compare/v1.10.0...v2.0.0
 [1.10.0]: https://github.com/Kashoo/synctos/compare/v1.9.4...v1.10.0
 [1.9.4]: https://github.com/Kashoo/synctos/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/Kashoo/synctos/compare/v1.9.2...v1.9.3
