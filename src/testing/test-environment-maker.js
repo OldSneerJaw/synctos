@@ -9,6 +9,7 @@
 exports.init = init;
 
 var fs = require('fs');
+var path = require('path');
 var vm = require('vm');
 var underscore = require('../../lib/underscore/underscore-min');
 var simpleMock = require('../../lib/simple-mock/index');
@@ -19,7 +20,8 @@ function init(rawSyncFunction, syncFunctionFile) {
     displayErrors: true
   };
 
-  var environmentTemplate = fs.readFileSync('templates/test-environment-template.js', 'utf8').trim();
+  var filePath = path.resolve(__dirname, '../../templates/test-environment-template.js');
+  var environmentTemplate = fs.readFileSync(filePath, 'utf8').trim();
 
   // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
   // the sync function

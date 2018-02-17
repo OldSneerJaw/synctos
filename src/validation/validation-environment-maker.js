@@ -12,6 +12,7 @@
 exports.init = init;
 
 var fs = require('fs');
+var path = require('path');
 var vm = require('vm');
 var underscore = require('../../lib/underscore/underscore-min');
 var simpleMock = require('../../lib/simple-mock/index');
@@ -22,7 +23,8 @@ function init(docDefinitionsString, originalFilename) {
     displayErrors: true
   };
 
-  var envTemplateString = fs.readFileSync('templates/validation-environment-template.js', 'utf8').trim();
+  var filePath = path.resolve(__dirname, '../../templates/validation-environment-template.js');
+  var envTemplateString = fs.readFileSync(filePath, 'utf8').trim();
 
   // The test helper environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
   // contents of the document definitions
