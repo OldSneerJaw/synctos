@@ -2,8 +2,7 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-### Changed
-- [#221](https://github.com/Kashoo/synctos/issues/221): Upgrade Node.js modules to ECMAScript 2015 specification
+Nothing yet.
 
 ## [2.0.0] - 2018-02-16
 ### Added
