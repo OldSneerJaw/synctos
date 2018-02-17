@@ -1,6 +1,6 @@
 {
   "name": "synctos",
-  "version": "1.10.0",
+  "version": "2.0.0",
   "description": "The Syncmaker. A tool to build comprehensive sync functions for Couchbase Sync Gateway.",
   "keywords": [
     "couchbase",

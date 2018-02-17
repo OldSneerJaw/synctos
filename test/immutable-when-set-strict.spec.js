@@ -70,7 +70,7 @@ describe('Strict immutable when set constraint:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('cannot be set to undefined if it was null in the old document', function() {
+    it('can be set to undefined if it was null in the old document', function() {
       var doc = {
         _id: 'myDoc'
       };
@@ -79,10 +79,10 @@ describe('Strict immutable when set constraint:', function() {
         staticValidationProp: null
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('cannot be set to a value if it was null in the old document', function() {
+    it('can be set to a value if it was null in the old document', function() {
       var doc = {
         _id: 'myDoc',
         staticValidationProp: 'foobar'
@@ -92,7 +92,7 @@ describe('Strict immutable when set constraint:', function() {
         staticValidationProp: null
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('cannot be changed to a new value if it was set to a value in the old document', function() {
@@ -187,6 +187,62 @@ describe('Strict immutable when set constraint:', function() {
       };
 
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('dynamicValidationProp'));
+    });
+  });
+
+  describe('for specialized string types', function() {
+    it('allow values that match the old values exactly', function() {
+      var oldDoc = {
+        _id: 'myDoc',
+        staticImmutableDateProp: '0975-06-15',
+        staticImmutableDatetimeProp: '3999-12-31T23:59:59.999+00:00',
+        staticImmutableTimeProp: '16:29',
+        staticImmutableTimezoneProp: '+05:00',
+        staticImmutableUuidProp: '91d7ba3c-e827-4619-842d-3d1b07bf39f7'
+      };
+
+      var doc = {
+        _id: 'myDoc',
+        staticImmutableDateProp: '0975-06-15',
+        staticImmutableDatetimeProp: '3999-12-31T23:59:59.999+00:00',
+        staticImmutableTimeProp: '16:29',
+        staticImmutableTimezoneProp: '+05:00',
+        staticImmutableUuidProp: '91d7ba3c-e827-4619-842d-3d1b07bf39f7'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('reject values that are semantically equal to the old values but not strictly equal', function() {
+      var oldDoc = {
+        _id: 'myDoc',
+        staticImmutableDateProp: '1935',
+        staticImmutableDatetimeProp: '1621T18:24Z',
+        staticImmutableTimeProp: '00:12',
+        staticImmutableTimezoneProp: '-10:30',
+        staticImmutableUuidProp: '0b028c34-4891-4427-8e9d-9122163d28c4'
+      };
+
+      var doc = {
+        _id: 'myDoc',
+        staticImmutableDateProp: '1935-01-01',
+        staticImmutableDatetimeProp: '1621-01-01T18:24:00.000Z',
+        staticImmutableTimeProp: '00:12:00.000',
+        staticImmutableTimezoneProp: '-1030',
+        staticImmutableUuidProp: oldDoc.staticImmutableUuidProp.toUpperCase()
+      };
+
+      testHelper.verifyDocumentNotReplaced(
+        doc,
+        oldDoc,
+        'myDoc',
+        [
+          errorFormatter.immutableItemViolation('staticImmutableDateProp'),
+          errorFormatter.immutableItemViolation('staticImmutableDatetimeProp'),
+          errorFormatter.immutableItemViolation('staticImmutableTimeProp'),
+          errorFormatter.immutableItemViolation('staticImmutableTimezoneProp'),
+          errorFormatter.immutableItemViolation('staticImmutableUuidProp'),
+        ]);
     });
   });
 });

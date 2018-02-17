@@ -2,6 +2,10 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
+### Changed
+- [#221](https://github.com/Kashoo/synctos/issues/221): Upgrade Node.js modules to ECMAScript 2015 specification
+
+## [2.0.0] - 2018-02-16
 ### Added
 - [#43](https://github.com/Kashoo/synctos/issues/43): Tool to validate structure and semantics of a document definitions file
 - [#189](https://github.com/Kashoo/synctos/issues/189): Automatically create the output sync function file directory if it does not exist
@@ -11,19 +15,23 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#197](https://github.com/Kashoo/synctos/issues/197): Make month and day components of date validation type optional
 - [#180](https://github.com/Kashoo/synctos/issues/180): Data validation type for time of day
 - [#202](https://github.com/Kashoo/synctos/issues/202): Time zone data validation type
+- [#225](https://github.com/Kashoo/synctos/issues/225): Use intelligent equality comparisons for specialized string types
+- [#227](https://github.com/Kashoo/synctos/issues/227): Use intelligent immutability comparisons for specialized string types
 
 ### Changed
 - [#212](https://github.com/Kashoo/synctos/issues/212): Improve document validation error messages
 - [#185](https://github.com/Kashoo/synctos/issues/185): Upgrade minimum supported Node.js version to latest Long Term Support release
-- [#221](https://github.com/Kashoo/synctos/issues/221): Upgrade Node.js modules to ECMAScript 2015 specification
+- [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules
 
 ### Fixed
 - [#190](https://github.com/Kashoo/synctos/issues/190): JavaScript error when mustEqual constraint is violated
 - [#196](https://github.com/Kashoo/synctos/issues/196): Date-time validation type supports invalid time components
 - [#199](https://github.com/Kashoo/synctos/issues/199): Date and date-time validation types permit dates that are invalid
+- [#203](https://github.com/Kashoo/synctos/issues/203): Date range validation fails for values far in the past or future
 
 ### Removed
-- [#186](https://github.com/Kashoo/synctos/issues/186): Remove deprecated Node.js modules
+- `etc/test-helper.js` module
+- `etc/validation-error-message-formatter.js` module
 
 ## [1.10.0] - 2018-01-24
 ### Added
@@ -38,21 +46,27 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#118](https://github.com/Kashoo/synctos/issues/118): Embed indent.js as a static dependency
 - [#174](https://github.com/Kashoo/synctos/issues/174): Reorganize project source structure
 
+### Deprecated
+- `etc/test-helper.js` module
+- `etc/validation-error-message-formatter.js` module
+
 ## [1.9.4] - 2018-01-04
 ### Changed
 - [#157](https://github.com/Kashoo/synctos/issues/157): Swap in Chai as the assertion library used in specs throughout the project
 - [#163](https://github.com/Kashoo/synctos/issues/163): Embed simple-mock as a static development dependency
 
 ### Fixed
-- [#156](https://github.com/Kashoo/synctos/issues/156): Users with a replace role may erroneously gain the privilege of removing a document under certain conditions
 - [#160](https://github.com/Kashoo/synctos/issues/160): Unable to import document if it was deleted via Couchbase SDK
+
+### Security
+- [#156](https://github.com/Kashoo/synctos/issues/156): Users with a replace role may erroneously gain the privilege of removing a document under certain conditions
 
 ## [1.9.3] - 2017-10-23
 ### Fixed
 - [#152](https://github.com/Kashoo/synctos/issues/152): Cannot append a new object with immutable properties to an array
 
 ## [1.9.2] - 2017-10-02
-### Fixed
+### Security
 - [#149](https://github.com/Kashoo/synctos/issues/149): Permissions for add operations sometimes applied to other operation types
 
 ## [1.9.1] - 2017-05-01
@@ -134,7 +148,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/Kashoo/synctos/compare/v1.10.0...v2.0.0
 [1.10.0]: https://github.com/Kashoo/synctos/compare/v1.9.4...v1.10.0
 [1.9.4]: https://github.com/Kashoo/synctos/compare/v1.9.3...v1.9.4
 [1.9.3]: https://github.com/Kashoo/synctos/compare/v1.9.2...v1.9.3

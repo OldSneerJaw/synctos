@@ -36,14 +36,17 @@ function validationModule() {
 
   // Converts an ISO 8601 time into an array of its component pieces
   function extractIso8601TimePieces(value) {
-    var timePieces = value.split(/[:.,]/);
+    var timePieces = /^(\d{2}):(\d{2})(?:\:(\d{2}))?(?:\.(\d{1,3}))?$/.exec(value);
+    if (timePieces === null) {
+      return null;
+    }
 
-    var hour = timePieces[0] ? parseInt(timePieces[0], 10) : 0;
-    var minute = timePieces[1] ? parseInt(timePieces[1], 10) : 0;
-    var second = timePieces[2] ? parseInt(timePieces[2], 10) : 0;
+    var hour = timePieces[1] ? parseInt(timePieces[1], 10) : 0;
+    var minute = timePieces[2] ? parseInt(timePieces[2], 10) : 0;
+    var second = timePieces[3] ? parseInt(timePieces[3], 10) : 0;
 
     // The millisecond component has a variable length; normalize the length by padding it with zeros
-    var millisecond = timePieces[3] ? parseInt(padRight(timePieces[3], 3, '0'), 10) : 0;
+    var millisecond = timePieces[4] ? parseInt(padRight(timePieces[4], 3, '0'), 10) : 0;
 
     return [ hour, minute, second, millisecond ];
   }
@@ -58,6 +61,10 @@ function validationModule() {
     var aTimePieces = extractIso8601TimePieces(a);
     var bTimePieces = extractIso8601TimePieces(b);
 
+    if (aTimePieces === null || bTimePieces === null) {
+      return NaN;
+    }
+
     for (var timePieceIndex = 0; timePieceIndex < aTimePieces.length; timePieceIndex++) {
       if (aTimePieces[timePieceIndex] < bTimePieces[timePieceIndex]) {
         return -1;
@@ -70,12 +77,87 @@ function validationModule() {
     return 0;
   }
 
+  function extractIso8601DateOnlyPieces(value) {
+    var datePieces = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(value);
+    if (datePieces === null) {
+      return null;
+    }
+
+    var year = datePieces[1] ? parseInt(datePieces[1], 10) : 0;
+    var month = datePieces[2] ? parseInt(datePieces[2], 10) : 1;
+    var day = datePieces[3] ? parseInt(datePieces[3], 10) : 1;
+
+    return [ year, month, day ];
+  }
+
+  function extractDateFromPieces(dateAndTimePieces) {
+    var dateString = dateAndTimePieces.length > 0 ? dateAndTimePieces[0] : '';
+    var datePieces = extractIso8601DateOnlyPieces(dateString);
+    if (datePieces === null) {
+      return null;
+    }
+
+    return {
+      year: datePieces[0],
+      month: datePieces[1],
+      day: datePieces[2]
+    };
+  }
+
+  function extractTimeFromPieces(dateAndTimePieces) {
+      // Default to midnight UTC if the candidate value represents a date only
+      var timeAndTimezoneString = dateAndTimePieces.length > 1 ? dateAndTimePieces[1] : '00:00:00.000Z';
+      var timezoneSeparatorIndex =
+        Math.max(timeAndTimezoneString.indexOf('-'), timeAndTimezoneString.indexOf('+'), timeAndTimezoneString.indexOf('Z'));
+
+      var timeString = (timezoneSeparatorIndex >= 0) ? timeAndTimezoneString.substr(0, timezoneSeparatorIndex) : timeAndTimezoneString;
+      var timePieces = extractIso8601TimePieces(timeString);
+      if (timePieces === null)
+      {
+        return null;
+      }
+
+      var timezoneString = (timezoneSeparatorIndex >= 0) ? timeAndTimezoneString.substr(timezoneSeparatorIndex) : null;
+
+      // Default to the server's local time zone offset if time zone is missing from the input
+      var timezoneOffsetMinutes = timezoneString !== null ? normalizeIso8601TimeZone(timezoneString) : -(new Date().getTimezoneOffset());
+
+      return {
+        hour: timePieces[0],
+        minute: timePieces[1],
+        second: timePieces[2],
+        millisecond: timePieces[3],
+        timezoneOffsetMinutes: timezoneOffsetMinutes
+      };
+  }
+
   // Converts the given date representation to a timestamp that represents the number of ms since the Unix epoch
   function convertToTimestamp(value) {
     if (value instanceof Date) {
       return value.getTime();
-    } else if (typeof value === 'string' || typeof value === 'number') {
-      return new Date(value).getTime();
+    } else if (typeof value === 'number') {
+      return Math.floor(value);
+    } else if (typeof value === 'string') {
+      var dateAndTimePieces = value.split('T', 2);
+
+      var date = extractDateFromPieces(dateAndTimePieces);
+      if (date === null) {
+        return NaN;
+      }
+
+      var time = extractTimeFromPieces(dateAndTimePieces);
+      if (time === null) {
+        return NaN;
+      }
+
+      return Date.UTC(
+        date.year,
+        date.month - 1,
+        date.day,
+        time.hour,
+        time.minute - time.timezoneOffsetMinutes,
+        time.second,
+        time.millisecond);
     } else {
       return NaN;
     }
@@ -100,7 +182,7 @@ function validationModule() {
       return 0;
     }
 
-    var regex = /^([+-])(\d\d):?([0-5]\d)$/;
+    var regex = /^([+-])(\d\d):?(\d\d)$/;
     var matches = regex.exec(value);
     if (matches === null) {
       return NaN;
@@ -120,10 +202,7 @@ function validationModule() {
       return NaN;
     }
 
-    var aNormalized = normalizeIso8601TimeZone(a);
-    var bNormalized = normalizeIso8601TimeZone(b);
-
-    return aNormalized - bNormalized;
+    return normalizeIso8601TimeZone(a) - normalizeIso8601TimeZone(b);
   }
 
   function minValueInclusiveViolationComparator(validatorType) {
@@ -140,6 +219,10 @@ function validationModule() {
       case 'timezone':
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) < 0;
+        };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) < convertToLowerCase(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -163,6 +246,10 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) <= 0;
         };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) <= convertToLowerCase(constraintValue);
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue <= constraintValue;
@@ -184,6 +271,10 @@ function validationModule() {
       case 'timezone':
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) > 0;
+        };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) > convertToLowerCase(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -207,9 +298,39 @@ function validationModule() {
         return function(candidateValue, constraintValue) {
           return compareTimeZones(candidateValue, constraintValue) >= 0;
         };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) >= convertToLowerCase(constraintValue);
+        };
       default:
         return function(candidateValue, constraintValue) {
           return candidateValue >= constraintValue;
+        };
+    }
+  }
+
+  function simpleTypeEqualityComparator(validatorType) {
+    switch (validatorType) {
+      case 'time':
+        return function(candidateValue, constraintValue) {
+          return compareTimes(candidateValue, constraintValue) === 0;
+        };
+      case 'date':
+      case 'datetime':
+        return function(candidateValue, constraintValue) {
+          return compareDates(candidateValue, constraintValue) === 0;
+        };
+      case 'timezone':
+        return function(candidateValue, constraintValue) {
+          return compareTimeZones(candidateValue, constraintValue) === 0;
+        };
+      case 'uuid':
+        return function(candidateValue, constraintValue) {
+          return convertToLowerCase(candidateValue) === convertToLowerCase(constraintValue);
+        };
+      default:
+        return function(candidateValue, constraintValue) {
+          return candidateValue === constraintValue;
         };
     }
   }
@@ -220,6 +341,10 @@ function validationModule() {
     } else {
       return !isValueNullOrUndefined(value) ? value.toString() : 'null';
     }
+  }
+
+  function convertToLowerCase(value) {
+    return !isValueNullOrUndefined(value) ? value.toLowerCase() : null;
   }
 
   function isUuid(value) {
@@ -393,29 +518,35 @@ function validationModule() {
       }
 
       if (resolveValidationConstraint(validator.immutable)) {
-        validateImmutable(false, true);
+        validateImmutable(false, validator.type);
       }
 
       if (resolveValidationConstraint(validator.immutableStrict)) {
-        validateImmutable(false, false);
+        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+        // (e.g. "date", "datetime", "time", "timezone", "uuid")
+        validateImmutable(false);
       }
 
       if (resolveValidationConstraint(validator.immutableWhenSet)) {
-        validateImmutable(true, true);
+        validateImmutable(true, validator.type);
       }
 
       if (resolveValidationConstraint(validator.immutableWhenSetStrict)) {
-        validateImmutable(true, false);
+        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+        // (e.g. "date", "datetime", "time", "timezone", "uuid")
+        validateImmutable(true);
       }
 
       var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
       if (typeof expectedEqualValue !== 'undefined') {
-        validateEquality(expectedEqualValue, true);
+        validateEquality(expectedEqualValue, validator.type);
       }
 
       var expectedStrictEqualValue = resolveValidationConstraint(validator.mustEqualStrict);
       if (typeof expectedStrictEqualValue !== 'undefined') {
-        validateEquality(expectedStrictEqualValue, false);
+        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+        // (e.g. "date", "datetime", "time", "timezone", "uuid")
+        validateEquality(expectedStrictEqualValue);
       }
 
       if (!isValueNullOrUndefined(itemValue)) {
@@ -550,10 +681,6 @@ function validationModule() {
       }
     }
 
-    function hasNoValue(value, treatNullAsUndefined) {
-      return treatNullAsUndefined ? isValueNullOrUndefined(value) : typeof value === 'undefined';
-    }
-
     function validateString(validator) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var itemValue = currentItemEntry.itemValue;
@@ -577,13 +704,13 @@ function validationModule() {
       }
     }
 
-    function validateImmutable(onlyEnforceIfHasValue, treatNullAsUndefined) {
+    function validateImmutable(onlyEnforceIfHasValue, validatorType) {
       if (!isDocumentMissingOrDeleted(oldDoc)) {
         var currentItemEntry = itemStack[itemStack.length - 1];
         var itemValue = currentItemEntry.itemValue;
         var oldItemValue = currentItemEntry.oldItemValue;
 
-        if (onlyEnforceIfHasValue && hasNoValue(oldItemValue, treatNullAsUndefined)) {
+        if (onlyEnforceIfHasValue && isValueNullOrUndefined(oldItemValue)) {
           // No need to continue; the constraint only applies if the old document has a value for this item
           return;
         }
@@ -593,10 +720,10 @@ function validationModule() {
         // document, then there is nothing to validate.
         var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
         var constraintSatisfied;
-        if (hasNoValue(oldParentItemValue, treatNullAsUndefined)) {
+        if (isValueNullOrUndefined(oldParentItemValue)) {
           constraintSatisfied = true;
         } else {
-          constraintSatisfied = checkItemEquality(itemValue, oldItemValue, treatNullAsUndefined);
+          constraintSatisfied = checkItemEquality(itemValue, oldItemValue, validatorType);
         }
 
         if (!constraintSatisfied) {
@@ -605,19 +732,19 @@ function validationModule() {
       }
     }
 
-    function validateEquality(expectedItemValue, treatNullAsUndefined) {
+    function validateEquality(expectedItemValue, validatorType) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var currentItemValue = currentItemEntry.itemValue;
-      if (!checkItemEquality(currentItemValue, expectedItemValue, treatNullAsUndefined)) {
+      if (!checkItemEquality(currentItemValue, expectedItemValue, validatorType)) {
         validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + jsonStringify(expectedItemValue));
       }
     }
 
-    function checkItemEquality(itemValue, expectedItemValue, treatNullAsUndefined) {
-      if (itemValue === expectedItemValue) {
-        // Both have the same simple type (string, number, boolean or null) value
+    function checkItemEquality(itemValue, expectedItemValue, validatorType) {
+      if (simpleTypeEqualityComparator(validatorType)(itemValue, expectedItemValue)) {
+        // Both have the same simple type (string, number, boolean, null) value
         return true;
-      } else if (hasNoValue(itemValue, treatNullAsUndefined) && hasNoValue(expectedItemValue, treatNullAsUndefined)) {
+      } else if (isValueNullOrUndefined(itemValue) && isValueNullOrUndefined(expectedItemValue)) {
         // Both values are missing, which means they can be considered equal
         return true;
       } else if (isValueNullOrUndefined(itemValue) !== isValueNullOrUndefined(expectedItemValue)) {
@@ -625,16 +752,16 @@ function validationModule() {
         return false;
       } else {
         if (itemValue instanceof Array || expectedItemValue instanceof Array) {
-          return checkArrayEquality(itemValue, expectedItemValue, treatNullAsUndefined);
+          return checkArrayEquality(itemValue, expectedItemValue);
         } else if (typeof itemValue === 'object' || typeof expectedItemValue === 'object') {
-          return checkObjectEquality(itemValue, expectedItemValue, treatNullAsUndefined);
+          return checkObjectEquality(itemValue, expectedItemValue);
         } else {
           return false;
         }
       }
     }
 
-    function checkArrayEquality(itemValue, expectedItemValue, treatNullAsUndefined) {
+    function checkArrayEquality(itemValue, expectedItemValue) {
       if (!(itemValue instanceof Array && expectedItemValue instanceof Array)) {
         return false;
       } else if (itemValue.length !== expectedItemValue.length) {
@@ -645,7 +772,7 @@ function validationModule() {
         var elementValue = itemValue[elementIndex];
         var expectedElementValue = expectedItemValue[elementIndex];
 
-        if (!checkItemEquality(elementValue, expectedElementValue, treatNullAsUndefined)) {
+        if (!checkItemEquality(elementValue, expectedElementValue)) {
           return false;
         }
       }
@@ -654,7 +781,7 @@ function validationModule() {
       return true;
     }
 
-    function checkObjectEquality(itemValue, expectedItemValue, treatNullAsUndefined) {
+    function checkObjectEquality(itemValue, expectedItemValue) {
       if (typeof itemValue !== 'object' || typeof expectedItemValue !== 'object') {
         return false;
       }
@@ -675,7 +802,7 @@ function validationModule() {
         var propertyValue = itemValue[propertyName];
         var expectedPropertyValue = expectedItemValue[propertyName];
 
-        if (!checkItemEquality(propertyValue, expectedPropertyValue, treatNullAsUndefined)) {
+        if (!checkItemEquality(propertyValue, expectedPropertyValue)) {
           return false;
         }
       }

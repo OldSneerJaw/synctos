@@ -15,6 +15,20 @@
         type: 'timezone',
         minimumValueExclusive: '-1131',
         maximumValueExclusive: '+12:31'
+      },
+      immutableValidationProp: {
+        type: 'timezone',
+        immutable: true
+      }
+    }
+  },
+  timezoneMustEqualDocType: {
+    typeFilter: simpleTypeFilter,
+    channels: { write: 'write' },
+    propertyValidators: {
+      equalityValidationProp: {
+        type: 'timezone',
+        mustEqual: 'Z'
       }
     }
   }

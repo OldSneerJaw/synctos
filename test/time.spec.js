@@ -219,4 +219,109 @@ describe('Time validation type:', function() {
         errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:01.002'));
     });
   });
+
+  describe('intelligent equality constraint', function() {
+    it('allows a time that matches the expected time exactly', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeMustEqualDocType',
+        equalityValidationProp: '22:56:00.000'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a time that matches the expected time without all millisecond digits', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeMustEqualDocType',
+        equalityValidationProp: '22:56:00.0'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a time that matches the expected time without any millisecond digits', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeMustEqualDocType',
+        equalityValidationProp: '22:56:00'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('allows a time that matches the expected time without seconds', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeMustEqualDocType',
+        equalityValidationProp: '22:56'
+      };
+
+      testHelper.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a time that does not match the expected time', function() {
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeMustEqualDocType',
+        equalityValidationProp: '22:56:00.001'
+      };
+
+      testHelper.verifyDocumentNotCreated(
+        doc,
+        'timeMustEqualDocType',
+        [ errorFormatter.mustEqualViolation('equalityValidationProp', '22:56:00.000') ]);
+    });
+  });
+
+  describe('intelligent immutability constraint', function() {
+    it('allows a time that exactly matches the existing time', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '01:45:15.9'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '01:45:15.9'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('allows a time with omitted optional components that matches the existing time', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '08:11:00.0'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '08:11'
+      };
+
+      testHelper.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('rejects a time that does not match the existing time', function() {
+      var oldDoc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '12:34:56.789'
+      };
+
+      var doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '12:34:56.78'
+      };
+
+      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'timeDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+    });
+  });
 });
