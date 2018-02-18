@@ -53,9 +53,9 @@ In either case, specification files must be denoted by the `.spec.js` filename s
 
 To execute the full test suite and lint the project's JS files with JSHint, run `npm test` from the project's root directory. A detailed, human-readable code coverage report is generated at `build/coverage/lcov-report/index.html`.
 
-### Document definitions validator
+### Document definitions schema validator
 
-Whenever configuration elements are added or updated, the document definitions schema (see the `src/validation/document-definition-schema` and `src/validation/property-validator-schema` modules) must also be updated for use by the document-definitions-validator module. The schema is defined according to the [Joi](https://github.com/hapijs/joi) library's API. See the project's official API [documentation](https://github.com/hapijs/joi/blob/v13.1.1/API.md) for more info.
+Whenever configuration elements are added or updated, the document definitions schema (see the `src/validation/document-definition-schema` and `src/validation/property-validator-schema` modules) must also be updated for use by the document-definitions-validator module. The schema is defined according to the [Joi](https://github.com/hapijs/joi) library's API. See the project's official API [documentation](https://github.com/hapijs/joi/blob/v13.1.2/API.md) for more info.
 
 ### Documentation
 
