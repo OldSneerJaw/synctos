@@ -13,7 +13,8 @@ function() {
             customValidationProp: {
               type: 'string',
               customValidation: function(doc, oldDoc, currentItemElement, validationItemStack) {
-                if (doc.baseProp.failValidation) {
+                var parentItemValue = validationItemStack[validationItemStack.length - 1].itemValue;
+                if (parentItemValue && parentItemValue.failValidation) {
                   return [
                     'doc: ' + jsonStringify(doc),
                     'oldDoc: ' + jsonStringify(oldDoc),

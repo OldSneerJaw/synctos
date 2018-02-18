@@ -21,7 +21,8 @@ describe('Custom validation constraint:', () => {
   it('blocks a document if custom validation fails', () => {
     const oldDoc = {
       _id: 'my-doc',
-      type: 'customValidationDoc'
+      type: 'customValidationDoc',
+      baseProp: { }
     };
 
     const doc = {
@@ -46,7 +47,7 @@ describe('Custom validation constraint:', () => {
       },
       { // The parent of the property with the customValidation constraint
         itemValue: doc.baseProp,
-        oldItemValue: null,
+        oldItemValue: oldDoc.baseProp,
         itemName: 'baseProp'
       }
     ];
