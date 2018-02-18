@@ -515,15 +515,15 @@ propertyValidators: {
     type: 'integer',
     minimumValue: 1,
     maximumValue: 100,
-    customValidation: function(doc, oldDoc, currentItemElement, validationItemStack) {
+    customValidation: function(doc, oldDoc, currentItemEntry, validationItemStack) {
       var parentObjectElement = validationItemStack[validationItemStack.length - 1];
       var parentObjectName = parentObjectElement.itemName;
       var parentObjectValue = parentObjectElement.itemValue;
       var parentObjectOldValue = parentObjectElement.oldItemValue;
 
-      var currentPropName = currentItemElement.itemName;
-      var currentPropValue = currentItemElement.itemValue;
-      var currentPropOldValue = currentItemElement.oldItemValue;
+      var currentPropName = currentItemEntry.itemName;
+      var currentPropValue = currentItemEntry.itemValue;
+      var currentPropOldValue = currentItemEntry.oldItemValue;
 
       var currentPropPath = parentObjectName + '.' + currentPropName;
       var myStringPropPath = parentObjectName + '.myStringProp';

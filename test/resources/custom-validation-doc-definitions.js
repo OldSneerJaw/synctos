@@ -12,13 +12,13 @@ function() {
             },
             customValidationProp: {
               type: 'string',
-              customValidation: function(doc, oldDoc, currentItemElement, validationItemStack) {
+              customValidation: function(doc, oldDoc, currentItemEntry, validationItemStack) {
                 var parentItemValue = validationItemStack[validationItemStack.length - 1].itemValue;
                 if (parentItemValue && parentItemValue.failValidation) {
                   return [
                     'doc: ' + jsonStringify(doc),
                     'oldDoc: ' + jsonStringify(oldDoc),
-                    'currentItemElement: ' + jsonStringify(currentItemElement),
+                    'currentItemEntry: ' + jsonStringify(currentItemEntry),
                     'validationItemStack: ' + jsonStringify(validationItemStack)
                   ];
                 } else {
