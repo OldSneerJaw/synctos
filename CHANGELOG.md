@@ -2,7 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-Nothing yet.
+### Fixed
+- [#98](https://github.com/Kashoo/synctos/issues/98): Final argument of custom validation constraint receives incorrect value
 
 ## [2.0.0] - 2018-02-16
 ### Added

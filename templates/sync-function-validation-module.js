@@ -1026,7 +1026,7 @@ function validationModule() {
       var currentItemEntry = itemStack[itemStack.length - 1];
 
       // Copy all but the last/top element so that the item's parent is at the top of the stack for the custom validation function
-      var customValidationItemStack = itemStack.slice(-1);
+      var customValidationItemStack = itemStack.slice(0, -1);
 
       var customValidationErrors = validator.customValidation(doc, oldDoc, currentItemEntry, customValidationItemStack);
 
