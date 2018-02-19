@@ -15,11 +15,11 @@ function() {
   }
 
   // Checks that a business ID is valid (an integer greater than 0) and is not changed from the old version of the document
-  function validateBusinessIdProperty(doc, oldDoc, currentItemElement, validationItemStack) {
+  function validateBusinessIdProperty(doc, oldDoc, currentItemEntry, validationItemStack) {
     var parentObjectElement = validationItemStack[validationItemStack.length - 1];
 
-    var businessId = currentItemElement.itemValue;
-    var oldBusinessId = currentItemElement.oldItemValue;
+    var businessId = currentItemEntry.itemValue;
+    var oldBusinessId = currentItemEntry.oldItemValue;
 
     var validationErrors = [ ];
 
