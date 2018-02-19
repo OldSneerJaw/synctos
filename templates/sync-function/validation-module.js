@@ -4,7 +4,7 @@ function validationModule() {
     return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
   };
 
-  var timeModule = importSyncFunctionFragment('sync-function-time-module.js')();
+  var timeModule = importSyncFunctionFragment('time-module.js')();
 
   function minValueInclusiveViolationComparator(validatorType) {
     switch (validatorType) {

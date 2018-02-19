@@ -14,9 +14,9 @@ var docDefinitionsLoader = require('./document-definitions-loader.js');
 var fileFragmentLoader = require('./file-fragment-loader.js');
 
 function loadFromFile(docDefinitionsFile) {
-  var syncFuncTemplateDir = path.resolve(__dirname, '../../templates');
+  var syncFuncTemplateDir = path.resolve(__dirname, '../../templates/sync-function');
 
-  var syncFuncTemplatePath = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
+  var syncFuncTemplatePath = path.resolve(syncFuncTemplateDir, 'template.js');
   var syncFuncTemplate;
   try {
     syncFuncTemplate = fs.readFileSync(syncFuncTemplatePath, 'utf8');
