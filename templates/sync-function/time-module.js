@@ -1,4 +1,4 @@
-function timeModule() {
+function timeModule(utils) {
   return {
     isIso8601DateTimeString: isIso8601DateTimeString,
     isIso8601DateString: isIso8601DateString,
@@ -51,7 +51,7 @@ function timeModule() {
     var second = timePieces[3] ? parseInt(timePieces[3], 10) : 0;
 
     // The millisecond component has a variable length; normalize the length by padding it with zeros
-    var millisecond = timePieces[4] ? parseInt(padRight(timePieces[4], 3, '0'), 10) : 0;
+    var millisecond = timePieces[4] ? parseInt(utils.padRight(timePieces[4], 3, '0'), 10) : 0;
 
     return [ hour, minute, second, millisecond ];
   }

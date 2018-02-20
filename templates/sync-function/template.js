@@ -34,7 +34,7 @@ function synctos(doc, oldDoc) {
 
   // Retrieves the old doc's effective value. If it is null, undefined or its "_deleted" property is true, returns null. Otherwise, returns
   // the value of the "oldDoc" parameter.
-  function getEffectiveOldDoc(oldDoc) {
+  function resolveOldDoc(oldDoc) {
     return !isDocumentMissingOrDeleted(oldDoc) ? oldDoc : null;
   }
 
@@ -47,16 +47,25 @@ function synctos(doc, oldDoc) {
     return value;
   }
 
+  // Converts a given value to a JSON string. Exists because JSON.stringify is not supported by Sync Gateway's JavaScript engine.
   var jsonStringify = importSyncFunctionFragment('json-stringify-module.js');
 
-  // Load the document authorization module
-  var authorizationModule = importSyncFunctionFragment('authorization-module.js')();
+  var utils = {
+    isDocumentMissingOrDeleted: isDocumentMissingOrDeleted,
+    isValueNullOrUndefined: isValueNullOrUndefined,
+    jsonStringify: jsonStringify,
+    padRight: padRight,
+    resolveOldDoc: resolveOldDoc
+  };
 
-  // Load the document validation module
-  var validationModule = importSyncFunctionFragment('validation-module.js')();
+  // The document authorization module is responsible for verifying the user's permissions (e.g. roles, channels)
+  var authorizationModule = importSyncFunctionFragment('./authorization-module.js')(utils);
 
-  // Load the access assignment module
-  var accessAssignmentModule = importSyncFunctionFragment('access-assignment-module.js')();
+  // The document validation module is responsible for verifying the document's contents
+  var validationModule = importSyncFunctionFragment('./validation-module.js')(utils, simpleTypeFilter, typeIdValidator);
+
+  // The access assignment module is responsible for dynamically assigning channels and roles to users
+  var accessAssignmentModule = importSyncFunctionFragment('./access-assignment-module.js')(utils);
 
   var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
 
@@ -68,7 +77,7 @@ function synctos(doc, oldDoc) {
   }
 
   function getDocumentType(doc, oldDoc) {
-    var effectiveOldDoc = getEffectiveOldDoc(oldDoc);
+    var effectiveOldDoc = resolveOldDoc(oldDoc);
 
     for (var docType in docDefinitions) {
       var docDefn = docDefinitions[docType];

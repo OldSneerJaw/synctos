@@ -1,4 +1,4 @@
-function comparisonModule(timeModule, buildItemPath) {
+function comparisonModule(utils, buildItemPath, timeModule) {
   return {
     validateMinValueInclusiveConstraint: validateMinValueInclusiveConstraint,
     validateMaxValueInclusiveConstraint: validateMaxValueInclusiveConstraint,
@@ -47,7 +47,7 @@ function comparisonModule(timeModule, buildItemPath) {
     var itemValue = currentItemEntry.itemValue;
     var oldItemValue = currentItemEntry.oldItemValue;
 
-    if (onlyEnforceIfHasValue && isValueNullOrUndefined(oldItemValue)) {
+    if (onlyEnforceIfHasValue && utils.isValueNullOrUndefined(oldItemValue)) {
       // No need to continue; the constraint only applies if the old document has a value for this item
       return null;
     }
@@ -57,7 +57,7 @@ function comparisonModule(timeModule, buildItemPath) {
     // document, then there is nothing to validate.
     var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
     var constraintSatisfied;
-    if (isValueNullOrUndefined(oldParentItemValue)) {
+    if (utils.isValueNullOrUndefined(oldParentItemValue)) {
       constraintSatisfied = true;
     } else {
       constraintSatisfied = checkItemEquality(itemValue, oldItemValue, validatorType);
@@ -71,7 +71,7 @@ function comparisonModule(timeModule, buildItemPath) {
     var currentItemValue = currentItemEntry.itemValue;
 
     if (!checkItemEquality(currentItemValue, expectedItemValue, validatorType)) {
-      return 'value of item "' + buildItemPath(itemStack) + '" must equal ' + jsonStringify(expectedItemValue);
+      return 'value of item "' + buildItemPath(itemStack) + '" must equal ' + utils.jsonStringify(expectedItemValue);
     } else {
       return null;
     }
@@ -81,10 +81,10 @@ function comparisonModule(timeModule, buildItemPath) {
     if (simpleTypeEqualityComparator(validatorType)(itemValue, expectedItemValue)) {
       // Both have the same simple type (string, number, boolean, null) value
       return true;
-    } else if (isValueNullOrUndefined(itemValue) && isValueNullOrUndefined(expectedItemValue)) {
+    } else if (utils.isValueNullOrUndefined(itemValue) && utils.isValueNullOrUndefined(expectedItemValue)) {
       // Both values are missing, which means they can be considered equal
       return true;
-    } else if (isValueNullOrUndefined(itemValue) !== isValueNullOrUndefined(expectedItemValue)) {
+    } else if (utils.isValueNullOrUndefined(itemValue) !== utils.isValueNullOrUndefined(expectedItemValue)) {
       // One has a value while the other does not
       return false;
     } else {
@@ -282,11 +282,11 @@ function comparisonModule(timeModule, buildItemPath) {
     if (value instanceof Date) {
       return value.toISOString();
     } else {
-      return !isValueNullOrUndefined(value) ? value.toString() : 'null';
+      return !utils.isValueNullOrUndefined(value) ? value.toString() : 'null';
     }
   }
 
   function normalizeUuid(value) {
-    return !isValueNullOrUndefined(value) ? value.toLowerCase() : null;
+    return !utils.isValueNullOrUndefined(value) ? value.toLowerCase() : null;
   }
 }

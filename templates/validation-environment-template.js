@@ -5,7 +5,7 @@ function makeValidationEnvironment(_, simple) {
   var simpleTypeFilter = simple.stub();
   var isDocumentMissingOrDeleted = simple.stub();
   var isValueNullOrUndefined = simple.stub();
-  var getEffectiveOldDoc = simple.stub();
+  var resolveOldDoc = simple.stub();
   var jsonStringify = simple.stub();
   var padRight = simple.stub();
   var getDocumentType = simple.stub();
@@ -26,7 +26,7 @@ function makeValidationEnvironment(_, simple) {
     simpleTypeFilter: simpleTypeFilter,
     isDocumentMissingOrDeleted: isDocumentMissingOrDeleted,
     isValueNullOrUndefined: isValueNullOrUndefined,
-    getEffectiveOldDoc: getEffectiveOldDoc,
+    resolveOldDoc: resolveOldDoc,
     jsonStringify: jsonStringify,
     padRight: padRight,
     getDocumentType: getDocumentType,

@@ -7,17 +7,10 @@
     "access": false,
     "channel": false,
     "customActionStub": false,
-    "getEffectiveOldDoc": false,
     "importSyncFunctionFragment": false,
-    "isDocumentMissingOrDeleted": false,
-    "isValueNullOrUndefined": false,
-    "jsonStringify": false,
-    "padRight": false,
     "requireAccess": false,
     "requireRole": false,
     "requireUser": false,
-    "role": false,
-    "simpleTypeFilter": false,
-    "typeIdValidator": false
+    "role": false
   }
 }
