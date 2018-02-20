@@ -49,7 +49,7 @@ function comparisonModule(timeModule, buildItemPath) {
 
     if (onlyEnforceIfHasValue && isValueNullOrUndefined(oldItemValue)) {
       // No need to continue; the constraint only applies if the old document has a value for this item
-      return;
+      return null;
     }
 
     // Only compare the item's value to the old item if the item's parent existed in the old document. For example, if the item in
@@ -165,7 +165,7 @@ function comparisonModule(timeModule, buildItemPath) {
         };
       case 'uuid':
         return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) < convertToLowerCase(constraintValue);
+          return normalizeUuid(candidateValue) < normalizeUuid(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -191,7 +191,7 @@ function comparisonModule(timeModule, buildItemPath) {
         };
       case 'uuid':
         return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) <= convertToLowerCase(constraintValue);
+          return normalizeUuid(candidateValue) <= normalizeUuid(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -217,7 +217,7 @@ function comparisonModule(timeModule, buildItemPath) {
         };
       case 'uuid':
         return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) > convertToLowerCase(constraintValue);
+          return normalizeUuid(candidateValue) > normalizeUuid(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -243,7 +243,7 @@ function comparisonModule(timeModule, buildItemPath) {
         };
       case 'uuid':
         return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) >= convertToLowerCase(constraintValue);
+          return normalizeUuid(candidateValue) >= normalizeUuid(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -269,7 +269,7 @@ function comparisonModule(timeModule, buildItemPath) {
         };
       case 'uuid':
         return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) === convertToLowerCase(constraintValue);
+          return normalizeUuid(candidateValue) === normalizeUuid(constraintValue);
         };
       default:
         return function(candidateValue, constraintValue) {
@@ -286,7 +286,7 @@ function comparisonModule(timeModule, buildItemPath) {
     }
   }
 
-  function convertToLowerCase(value) {
+  function normalizeUuid(value) {
     return !isValueNullOrUndefined(value) ? value.toLowerCase() : null;
   }
 }
