@@ -2,21 +2,10 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
   var timeModule = importSyncFunctionFragment('time-module.js')(utils);
   var comparisonModule = importSyncFunctionFragment('comparison-module.js')(utils, buildItemPath, timeModule);
 
-  // Determine if a given value is an integer. Exists because Number.isInteger is not supported by Sync Gateway's JavaScript engine.
-  function isInteger(value) {
-    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
-  }
-
   function isUuid(value) {
     var regex = /^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$/;
 
     return regex.test(value);
-  }
-
-  // A regular expression that matches one of the given file extensions
-  function buildSupportedExtensionsRegex(extensions) {
-    // Note that this regex uses double quotes rather than single quotes as a workaround to https://github.com/Kashoo/synctos/issues/116
-    return new RegExp("\\.(" + extensions.join("|") + ")$", "i");
   }
 
   // Constructs the fully qualified path of the item at the top of the given stack
@@ -80,7 +69,6 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
   }
 
   function validateDocContents(doc, oldDoc, docDefinition, validationErrors) {
-    var attachmentReferenceValidators = { };
     var itemStack = [
       {
         itemValue: doc,
@@ -96,6 +84,9 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
       resolvedPropertyValidators.type = typeIdValidator;
     }
 
+    var attachmentModule =
+      importSyncFunctionFragment('attachment-module.js')(utils, buildItemPath, resolveDocConstraint, resolveItemConstraint);
+
     // Execute each of the document's property validators while ignoring internal document properties at the root level
     validateProperties(
       resolvedPropertyValidators,
@@ -103,7 +94,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
       true);
 
     if (doc._attachments) {
-      validateAttachments();
+      storeOptionalValidationErrors(attachmentModule.validateAttachments(doc, oldDoc, docDefinition));
     }
 
     // The following functions are nested within this function so they can share access to the doc, oldDoc and validationErrors params and
@@ -179,36 +170,36 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
 
       if (!utils.isDocumentMissingOrDeleted(oldDoc)) {
         if (resolveItemConstraint(validator.immutable)) {
-          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, false, validator.type));
+          storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, false, validator.type));
         }
 
         if (resolveItemConstraint(validator.immutableStrict)) {
           // Omitting validator type forces it to perform strict equality comparisons for specialized string types
           // (e.g. "date", "datetime", "time", "timezone", "uuid")
-          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, false));
+          storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, false));
         }
 
         if (resolveItemConstraint(validator.immutableWhenSet)) {
-          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, true, validator.type));
+          storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, true, validator.type));
         }
 
         if (resolveItemConstraint(validator.immutableWhenSetStrict)) {
           // Omitting validator type forces it to perform strict equality comparisons for specialized string types
           // (e.g. "date", "datetime", "time", "timezone", "uuid")
-          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, true));
+          storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, true));
         }
       }
 
       var expectedEqualValue = resolveItemConstraint(validator.mustEqual);
       if (typeof expectedEqualValue !== 'undefined') {
-        storeOptionalValidationError(comparisonModule.validateEquality(itemStack, expectedEqualValue, validator.type));
+        storeOptionalValidationErrors(comparisonModule.validateEquality(itemStack, expectedEqualValue, validator.type));
       }
 
       var expectedStrictEqualValue = resolveItemConstraint(validator.mustEqualStrict);
       if (typeof expectedStrictEqualValue !== 'undefined') {
         // Omitting validator type forces it to perform strict equality comparisons for specialized string types
         // (e.g. "date", "datetime", "time", "timezone", "uuid")
-        storeOptionalValidationError(comparisonModule.validateEquality(itemStack, expectedStrictEqualValue));
+        storeOptionalValidationErrors(comparisonModule.validateEquality(itemStack, expectedStrictEqualValue));
       }
 
       if (!utils.isValueNullOrUndefined(itemValue)) {
@@ -218,12 +209,12 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
 
         var minimumValue = resolveItemConstraint(validator.minimumValue);
         if (!utils.isValueNullOrUndefined(minimumValue)) {
-          storeOptionalValidationError(comparisonModule.validateMinValueInclusiveConstraint(itemStack, minimumValue, validatorType));
+          storeOptionalValidationErrors(comparisonModule.validateMinValueInclusiveConstraint(itemStack, minimumValue, validatorType));
         }
 
         var minimumValueExclusive = resolveItemConstraint(validator.minimumValueExclusive);
         if (!utils.isValueNullOrUndefined(minimumValueExclusive)) {
-          storeOptionalValidationError(comparisonModule.validateMinValueExclusiveConstraint(
+          storeOptionalValidationErrors(comparisonModule.validateMinValueExclusiveConstraint(
             itemStack,
             minimumValueExclusive,
             validatorType));
@@ -231,12 +222,12 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
 
         var maximumValue = resolveItemConstraint(validator.maximumValue);
         if (!utils.isValueNullOrUndefined(maximumValue)) {
-          storeOptionalValidationError(comparisonModule.validateMaxValueInclusiveConstraint(itemStack, maximumValue, validatorType));
+          storeOptionalValidationErrors(comparisonModule.validateMaxValueInclusiveConstraint(itemStack, maximumValue, validatorType));
         }
 
         var maximumValueExclusive = resolveItemConstraint(validator.maximumValueExclusive);
         if (!utils.isValueNullOrUndefined(maximumValueExclusive)) {
-          storeOptionalValidationError(comparisonModule.validateMaxValueExclusiveConstraint(
+          storeOptionalValidationErrors(comparisonModule.validateMaxValueExclusiveConstraint(
             itemStack,
             maximumValueExclusive,
             validatorType));
@@ -261,7 +252,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
             }
             break;
           case 'integer':
-            if (!isInteger(itemValue)) {
+            if (!utils.isValueAnInteger(itemValue)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an integer');
             }
             break;
@@ -323,7 +314,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
             validateHashtable(validator);
             break;
           case 'attachmentReference':
-            validateAttachmentRef(validator);
+            storeOptionalValidationErrors(attachmentModule.validateAttachmentReference(validator, itemStack, doc._attachments));
             break;
           default:
             // This is not a document validation error; the item validator is configured incorrectly and must be fixed
@@ -341,9 +332,13 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
       }
     }
 
-    function storeOptionalValidationError(errorMessage) {
-      if (typeof errorMessage === 'string') {
-        validationErrors.push(errorMessage);
+    function storeOptionalValidationErrors(errorMessages) {
+      if (typeof errorMessages === 'string') {
+        validationErrors.push(errorMessages);
+      } else if (errorMessages instanceof Array) {
+        for (var errorMessageIndex = 0; errorMessageIndex < errorMessages.length; errorMessageIndex++) {
+          validationErrors.push(errorMessages[errorMessageIndex]);
+        }
       }
     }
 
@@ -457,118 +452,6 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
         if (!utils.isValueNullOrUndefined(minimumSize) && size < minimumSize) {
           validationErrors.push('hashtable "' + hashtablePath + '" must not be smaller than ' + minimumSize + ' elements');
         }
-      }
-    }
-
-    function validateAttachmentRef(validator) {
-      var currentItemEntry = itemStack[itemStack.length - 1];
-      var itemValue = currentItemEntry.itemValue;
-
-      if (typeof itemValue !== 'string') {
-        validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an attachment reference string');
-      } else {
-        attachmentReferenceValidators[itemValue] = validator;
-
-        var supportedExtensions = resolveItemConstraint(validator.supportedExtensions);
-        if (supportedExtensions) {
-          var extRegex = buildSupportedExtensionsRegex(supportedExtensions);
-          if (!extRegex.test(itemValue)) {
-            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported file extension (' + supportedExtensions.join(',') + ')');
-          }
-        }
-
-        // Because the addition of an attachment is typically a separate operation from the creation/update of the associated document, we
-        // can't guarantee that the attachment is present when the attachment reference property is created/updated for it, so only
-        // validate it if it's present. The good news is that, because adding an attachment is a two part operation (create/update the
-        // document and add the attachment), the sync function will be run once for each part, thus ensuring the content is verified once
-        // both parts have been synced.
-        if (doc._attachments && doc._attachments[itemValue]) {
-          var attachment = doc._attachments[itemValue];
-
-          var supportedContentTypes = resolveItemConstraint(validator.supportedContentTypes);
-          if (supportedContentTypes && supportedContentTypes.indexOf(attachment.content_type) < 0) {
-            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must have a supported content type (' + supportedContentTypes.join(',') + ')');
-          }
-
-          var maximumSize = resolveItemConstraint(validator.maximumSize);
-          if (!utils.isValueNullOrUndefined(maximumSize) && attachment.length > maximumSize) {
-            validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must not be larger than ' + maximumSize + ' bytes');
-          }
-        }
-      }
-    }
-
-    function validateAttachments() {
-      var attachmentConstraints = resolveDocConstraint(doc, oldDoc, docDefinition.attachmentConstraints);
-
-      var maximumAttachmentCount =
-        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumAttachmentCount) : null;
-      var maximumIndividualAttachmentSize =
-        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumIndividualSize) : null;
-      var maximumTotalAttachmentSize =
-        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumTotalSize) : null;
-
-      var supportedExtensions = attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.supportedExtensions) : null;
-      var supportedExtensionsRegex = supportedExtensions ? buildSupportedExtensionsRegex(supportedExtensions) : null;
-
-      var supportedContentTypes =
-        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.supportedContentTypes) : null;
-
-      var requireAttachmentReferences =
-        attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.requireAttachmentReferences) : false;
-
-      var totalSize = 0;
-      var attachmentCount = 0;
-      for (var attachmentName in doc._attachments) {
-        attachmentCount++;
-
-        var attachment = doc._attachments[attachmentName];
-
-        var attachmentSize = attachment.length;
-        totalSize += attachmentSize;
-
-        var attachmentRefValidator = attachmentReferenceValidators[attachmentName];
-
-        if (requireAttachmentReferences && utils.isValueNullOrUndefined(attachmentRefValidator)) {
-          validationErrors.push('attachment ' + attachmentName + ' must have a corresponding attachment reference property');
-        }
-
-        if (isInteger(maximumIndividualAttachmentSize) && attachmentSize > maximumIndividualAttachmentSize) {
-          // If this attachment is owned by an attachment reference property, that property's size constraint (if any) takes precedence
-          if (utils.isValueNullOrUndefined(attachmentRefValidator) || !isInteger(attachmentRefValidator.maximumSize)) {
-            validationErrors.push('attachment ' + attachmentName + ' must not exceed ' + maximumIndividualAttachmentSize + ' bytes');
-          }
-        }
-
-        if (supportedExtensionsRegex && !supportedExtensionsRegex.test(attachmentName)) {
-          // If this attachment is owned by an attachment reference property, that property's extensions constraint (if any) takes
-          // precedence
-          if (utils.isValueNullOrUndefined(attachmentRefValidator) ||
-              utils.isValueNullOrUndefined(attachmentRefValidator.supportedExtensions)) {
-            validationErrors.push('attachment "' + attachmentName + '" must have a supported file extension (' + supportedExtensions.join(',') + ')');
-          }
-        }
-
-        if (supportedContentTypes && supportedContentTypes.indexOf(attachment.content_type) < 0) {
-          // If this attachment is owned by an attachment reference property, that property's content types constraint (if any) takes
-          // precedence
-          if (utils.isValueNullOrUndefined(attachmentRefValidator) ||
-              utils.isValueNullOrUndefined(attachmentRefValidator.supportedContentTypes)) {
-            validationErrors.push('attachment "' + attachmentName + '" must have a supported content type (' + supportedContentTypes.join(',') + ')');
-          }
-        }
-      }
-
-      if (isInteger(maximumTotalAttachmentSize) && totalSize > maximumTotalAttachmentSize) {
-        validationErrors.push('documents of this type must not have a combined attachment size greater than ' + maximumTotalAttachmentSize + ' bytes');
-      }
-
-      if (isInteger(maximumAttachmentCount) && attachmentCount > maximumAttachmentCount) {
-        validationErrors.push('documents of this type must not have more than ' + maximumAttachmentCount + ' attachments');
-      }
-
-      if (!resolveDocConstraint(doc, oldDoc, docDefinition.allowAttachments) && attachmentCount > 0) {
-        validationErrors.push('document type does not support attachments');
       }
     }
 

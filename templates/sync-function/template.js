@@ -47,11 +47,17 @@ function synctos(doc, oldDoc) {
     return value;
   }
 
+  // Determine if a given value is an integer. Exists because Number.isInteger is not supported by Sync Gateway's JavaScript engine.
+  function isValueAnInteger(value) {
+    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+  }
+
   // Converts a given value to a JSON string. Exists because JSON.stringify is not supported by Sync Gateway's JavaScript engine.
   var jsonStringify = importSyncFunctionFragment('json-stringify-module.js');
 
   var utils = {
     isDocumentMissingOrDeleted: isDocumentMissingOrDeleted,
+    isValueAnInteger: isValueAnInteger,
     isValueNullOrUndefined: isValueNullOrUndefined,
     jsonStringify: jsonStringify,
     padRight: padRight,
