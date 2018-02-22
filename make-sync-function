@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
-var mkdirp = require('./lib/mkdirp/index');
-var syncFunctionLoader = require('./src/loading/sync-function-loader.js');
+const fs = require('fs');
+const path = require('path');
+const mkdirp = require('./lib/mkdirp/index');
+const syncFunctionLoader = require('./src/loading/sync-function-loader');
 
-var errorStatus = 1;
+const errorStatus = 1;
 
 // Verify the correct number of commandline params
 if (process.argv.length !== 4) {
@@ -14,10 +14,10 @@ if (process.argv.length !== 4) {
   process.exit(errorStatus);
 }
 
-var syncDocDefnFilename = process.argv[2];
-var outputFilename = process.argv[3];
+const syncDocDefnFilename = process.argv[2];
+const outputFilename = process.argv[3];
 
-var syncFunc;
+let syncFunc;
 try {
   syncFunc = syncFunctionLoader.load(syncDocDefnFilename);
 } catch (ex) {
@@ -25,12 +25,12 @@ try {
 }
 
 try {
-  var outputDirectory = path.dirname(outputFilename);
+  const outputDirectory = path.dirname(outputFilename);
   if (!fs.existsSync(outputDirectory)) {
     mkdirp.sync(outputDirectory);
   }
 } catch (ex) {
-  console.log('ERROR: Unable to create the sync function output directory: ' + ex);
+  console.log(`ERROR: Unable to create the sync function output directory: ${ex}`);
 
   process.exit(errorStatus);
 }
@@ -38,30 +38,32 @@ try {
 try {
   fs.writeFileSync(outputFilename, syncFunc, 'utf8');
 } catch (ex) {
-  console.log('ERROR: Unable to write the sync function to the output file: ' + ex);
+  console.log(`ERROR: Unable to write the sync function to the output file: ${ex}`);
 
   process.exit(errorStatus);
 }
 
-console.log('Sync function written to ' + outputFilename);
+console.log(`Sync function written to ${outputFilename}`);
 
 
 function showUsage() {
-  var nodeBinary = path.basename(process.argv[0]);
-  var scriptName = path.basename(process.argv[1]);
+  const nodeBinary = path.basename(process.argv[0]);
+  const scriptName = path.basename(process.argv[1]);
 
-  console.log('A utility for creating structured sync functions for Couchbase Sync Gateway.\n');
+  console.log(
+`A utility for generating sync functions for Couchbase Sync Gateway.
 
-  console.log('Usage:  ' + scriptName + ' <sync_document_definitions_file> <output_file>');
-  console.log('   or:  ' + nodeBinary + ' ' + scriptName + ' <sync_document_definitions_file> <output_file>\n');
+Usage:  ${scriptName} <sync_document_definitions_file> <output_file>
+   or:  ${nodeBinary} ${scriptName} <sync_document_definitions_file> <output_file>
 
-  console.log('Arguments:');
-  console.log('    sync_document_definitions_file');
-  console.log('        Path to the JavaScript file that defines the document types to use in the sync function');
-  console.log('    output_file');
-  console.log('        Path to the file in which to output the sync function\n');
+Arguments:
+    sync_document_definitions_file
+        Path to the JavaScript file that defines the document types to use in the sync function
+    output_file
+        Path to the file in which to output the sync function
 
-  console.log('For example:  ' + scriptName + ' /path/to/my-sync-doc-definitions.js /path/to/my-new-sync-function.js\n');
+For example:  ${scriptName} /path/to/my-sync-doc-definitions.js /path/to/my-new-sync-function.js
 
-  console.log('See the README for more information.');
+See the README for more information.`
+  );
 }
