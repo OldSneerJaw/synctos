@@ -371,9 +371,9 @@ describe('Date/time validation type', () => {
     });
   });
 
-  describe('exclusive range validation', function() {
-    it('allows a date/time that is within the minimum and maximum values', function() {
-      var doc = {
+  describe('exclusive range validation', () => {
+    it('allows a date/time that is within the minimum and maximum values', () => {
+      const doc = {
         _id: 'datetimeDoc',
         exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:38').toISOString() // Output as UTC
       };
@@ -381,8 +381,8 @@ describe('Date/time validation type', () => {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a date/time that is less than the minimum value', function() {
-      var doc = {
+    it('rejects a date/time that is less than the minimum value', () => {
+      const doc = {
         _id: 'datetimeDoc',
         exclusiveRangeValidationAsDatetimesProp: '2018-02-07'
       };
@@ -393,8 +393,8 @@ describe('Date/time validation type', () => {
         errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9'));
     });
 
-    it('rejects a date/time that is equal to the minimum value', function() {
-      var doc = {
+    it('rejects a date/time that is equal to the minimum value', () => {
+      const doc = {
         _id: 'datetimeDoc',
         exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:37.900').toISOString() // Output as UTC
       };
@@ -407,8 +407,8 @@ describe('Date/time validation type', () => {
         errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9'));
     });
 
-    it('rejects a date/time that is greater than the maximum value', function() {
-      var doc = {
+    it('rejects a date/time that is greater than the maximum value', () => {
+      const doc = {
         _id: 'datetimeDoc',
         exclusiveRangeValidationAsDatetimesProp: '2018-02-08T19:35'
       };
@@ -419,8 +419,8 @@ describe('Date/time validation type', () => {
         errorFormatter.maximumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:38.1'));
     });
 
-    it('rejects a date/time that is equal to the maximum value', function() {
-      var doc = {
+    it('rejects a date/time that is equal to the maximum value', () => {
+      const doc = {
         _id: 'datetimeDoc',
         exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:38.10').toISOString() // Output as UTC
       };
