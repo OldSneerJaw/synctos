@@ -1,6 +1,6 @@
 const testHelper = require('../src/testing/test-helper');
 
-describe('Array validation type', () => {
+describe('Underscore.js library', () => {
   beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-underscore-js-sync-function.js');
   });

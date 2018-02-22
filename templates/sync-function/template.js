@@ -50,13 +50,13 @@ function synctos(doc, oldDoc) {
   var jsonStringify = importSyncFunctionFragment('json-stringify-module.js');
 
   // Load the document authorization module
-  var authorizationModule = importSyncFunctionFragment('sync-function-authorization-module.js')();
+  var authorizationModule = importSyncFunctionFragment('authorization-module.js')();
 
   // Load the document validation module
-  var validationModule = importSyncFunctionFragment('sync-function-validation-module.js')();
+  var validationModule = importSyncFunctionFragment('validation-module.js')();
 
   // Load the access assignment module
-  var accessAssignmentModule = importSyncFunctionFragment('sync-function-access-assignment-module.js')();
+  var accessAssignmentModule = importSyncFunctionFragment('access-assignment-module.js')();
 
   var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
 

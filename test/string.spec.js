@@ -252,4 +252,202 @@ describe('String validation type', () => {
       });
     });
   });
+
+  describe('inclusive range constraints', () => {
+    describe('with static validation', () => {
+      it('allows a value that falls between the minimum and maximum values', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticInclusiveRangeValidationProp: 'Right'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('allows a value that matches the minimum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticInclusiveRangeValidationProp: 'A'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('allows a value that matches the maximum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticInclusiveRangeValidationProp: 'Z'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a value that is less than the minimum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticInclusiveRangeValidationProp: '9'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.minimumValueViolation('staticInclusiveRangeValidationProp', 'A') ]);
+      });
+
+      it('rejects a value that is greater than the maximum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticInclusiveRangeValidationProp: 'wrong'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.maximumValueViolation('staticInclusiveRangeValidationProp', 'Z') ]);
+      });
+    });
+
+    describe('with dynamic validation', () => {
+      it('allows a value that falls between the minimum and maximum values', () => {
+        const doc = {
+          _id: 'stringDoc',
+          dynamicMinimumValue: '5',
+          dynamicMaximumValue: '5999',
+          dynamicInclusiveRangeValidationProp: '54'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a value that is less than the minimum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          dynamicMinimumValue: '3',
+          dynamicMaximumValue: '4',
+          dynamicInclusiveRangeValidationProp: '2.99999'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.minimumValueViolation('dynamicInclusiveRangeValidationProp', '3') ]);
+      });
+
+      it('rejects a value that is greater than the maximum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          dynamicMinimumValue: 'a',
+          dynamicMaximumValue: 'z',
+          dynamicInclusiveRangeValidationProp: '{'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.maximumValueViolation('dynamicInclusiveRangeValidationProp', 'z') ]);
+      });
+    });
+  });
+
+  describe('exclusive range constraints', () => {
+    describe('with static validation', () => {
+      it('allows a value that falls between the minimum and maximum values', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticExclusiveRangeValidationProp: 'aaa'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a value that matches the minimum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticExclusiveRangeValidationProp: 'aa'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.minimumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'aa') ]);
+      });
+
+      it('rejects a value that matches the maximum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticExclusiveRangeValidationProp: 'c'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.maximumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'c') ]);
+      });
+
+      it('rejects a value that is less than the minimum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticExclusiveRangeValidationProp: 'a'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.minimumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'aa') ]);
+      });
+
+      it('rejects a value that is greater than the maximum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          staticExclusiveRangeValidationProp: 'cc'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.maximumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'c') ]);
+      });
+    });
+
+    describe('with dynamic validation', () => {
+      it('allows a value that falls between the minimum and maximum values', () => {
+        const doc = {
+          _id: 'stringDoc',
+          dynamicMinimumValue: '@',
+          dynamicMaximumValue: '[',
+          dynamicExclusiveRangeValidationProp: 'Good'
+        };
+
+        testHelper.verifyDocumentCreated(doc);
+      });
+
+      it('rejects a value that matches the minimum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          dynamicMinimumValue: 'F',
+          dynamicMaximumValue: 'f',
+          dynamicExclusiveRangeValidationProp: 'F'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.minimumValueExclusiveViolation('dynamicExclusiveRangeValidationProp', 'F') ]);
+      });
+
+      it('rejects a value that matches the maximum value', () => {
+        const doc = {
+          _id: 'stringDoc',
+          dynamicMinimumValue: '{',
+          dynamicMaximumValue: '}',
+          dynamicExclusiveRangeValidationProp: '}'
+        };
+
+        testHelper.verifyDocumentNotCreated(
+          doc,
+          'stringDoc',
+          [ errorFormatter.maximumValueExclusiveViolation('dynamicExclusiveRangeValidationProp', '}') ]);
+      });
+    });
+  });
 });

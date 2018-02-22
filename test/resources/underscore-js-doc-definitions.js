@@ -6,10 +6,9 @@
       myProp: {
         type: 'string',
         required: true,
-        customValidation: function(doc, oldDoc, currentItemElement, validationItemStack) {
-          var escapedItemValue = _.chain(currentItemElement.itemValue).escape().value();
-
-          if (escapedItemValue === currentItemElement.itemValue) {
+        customValidation: function(doc, oldDoc, currentItemEntry, validationItemStack) {
+          var escapedItemValue = _.chain(currentItemEntry.itemValue).escape().value();
+          if (escapedItemValue === currentItemEntry.itemValue) {
             return null;
           } else {
             return [ 'escaped value of "myProp" does not match raw value' ];
