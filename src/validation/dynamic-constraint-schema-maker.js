@@ -1,4 +1,4 @@
-var joi = require('../../lib/joi/joi.bundle');
+const joi = require('../../lib/joi/joi.bundle');
 
 /**
  * Generates a schema that accepts as valid either a function with the specified maximum number of arguments (arity) or
