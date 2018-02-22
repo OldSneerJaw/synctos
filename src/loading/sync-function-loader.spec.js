@@ -7,8 +7,8 @@ describe('Sync function loader', () => {
   let syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
   const expectedMacroName = 'importSyncFunctionFragment';
-  const syncFuncTemplateDir = path.resolve(__dirname, '../../templates');
-  const syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'sync-function-template.js');
+  const syncFuncTemplateDir = path.resolve(__dirname, '../../templates/sync-function');
+  const syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'template.js');
 
   beforeEach(() => {
     // Mock out the "require" calls in the module under test

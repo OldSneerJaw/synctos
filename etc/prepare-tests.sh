@@ -4,12 +4,6 @@ cd "$(dirname "$0")"/.. || exit 1
 
 outputDir="build/sync-functions"
 
-mkdir -p "$outputDir"
-mkdir -p build/test-reports/
-
-# Set up JSHint configuration for the generated sync functions
-cp "etc/jshintrc-sync-function-template.json" "$outputDir/.jshintrc"
-
 echo "Linting modules and specs with JSHint...\n"
 node_modules/jshint/bin/jshint src test
 
