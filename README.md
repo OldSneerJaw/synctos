@@ -837,7 +837,7 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 });
 ```
 
-The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/validation-error-formatter.js` module in this project for documentation.
+The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/testing/validation-error-formatter.js` module in this project for documentation.
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).
 
