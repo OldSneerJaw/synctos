@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var index = require('./index');
+const { expect } = require('chai');
+const index = require('./index');
 
-describe('Main package module', function() {
-  it('exposes the public API', function() {
+describe('Main package module', () => {
+  it('exposes the public API', () => {
     expect(index).to.eql({
       documentDefinitionsValidator: require('./validation/document-definitions-validator'),
       syncFunctionLoader: require('./loading/sync-function-loader'),

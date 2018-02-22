@@ -9,11 +9,11 @@
  */
 exports.load = load;
 
-var fs = require('fs');
+const fs = require('fs');
 
 function load(baseDir, macroName, rawText) {
   function replacer(fullMatch, fragmentFilename) {
-    var rawFileContents = readFileFragment(fragmentFilename, baseDir);
+    const rawFileContents = readFileFragment(fragmentFilename, baseDir);
 
     // Recursively replace macros nested an arbitrary number of levels deep. Recursion terminates when it encounters a
     // template file that does not contain the specified macro (i.e. this replacer will not run when `rawText.replace`
@@ -21,23 +21,23 @@ function load(baseDir, macroName, rawText) {
     return load(baseDir, macroName, rawFileContents);
   }
 
-  return rawText.replace(new RegExp('\\b' + macroName + '\\s*\\(\\s*"((?:\\\\"|[^"])+)"\\s*\\)', 'g'), replacer)
-    .replace(new RegExp('\\b' + macroName + '\\s*\\(\\s*\'((?:\\\\\'|[^\'])+)\'\\s*\\)', 'g'), replacer);
+  return rawText.replace(new RegExp(`\\b${macroName}\\s*\\(\\s*"((?:\\\\"|[^"])+)"\\s*\\)`, 'g'), replacer)
+    .replace(new RegExp(`\\b${macroName}\\s*\\(\\s*'((?:\\\\'|[^'])+)'\\s*\\)`, 'g'), replacer);
 }
 
 function readFileFragment(fragmentFilename, baseDir) {
   // The filename may have been defined with escape sequences (e.g. \\, \', \") in it, so unescape them
-  var sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, function(escapeSequence, escapedChar) { return escapedChar; });
+  const sanitizedFragmentFilename = fragmentFilename.replace(/\\(.)/g, (escapeSequence, escapedChar) => escapedChar);
 
   try {
     // Attempt to import the fragment file with a path that is relative to the base directory
-    return fs.readFileSync(baseDir + '/' + sanitizedFragmentFilename, 'utf8').trim();
+    return fs.readFileSync(`${baseDir}/${sanitizedFragmentFilename}`, 'utf8').trim();
   } catch (relativePathEx) {
     try {
       // It's possible the fragment file path was not relative so try again as an absolute path
       return fs.readFileSync(sanitizedFragmentFilename, 'utf8').trim();
     } catch (absolutePathEx) {
-      console.log('ERROR: Unable to read fragment file "' + sanitizedFragmentFilename + '": ' + absolutePathEx);
+      console.log(`ERROR: Unable to read fragment file "${sanitizedFragmentFilename}": ${absolutePathEx}`);
 
       throw absolutePathEx;
     }

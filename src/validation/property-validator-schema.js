@@ -1,34 +1,34 @@
-var joi = require('../../lib/joi/joi.bundle');
-var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
+const joi = require('../../lib/joi/joi.bundle');
+const makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
-var integerSchema = joi.number().integer();
-var uuidSchema = joi.string().uuid();
-var regexSchema = joi.object().type(RegExp);
+const integerSchema = joi.number().integer();
+const uuidSchema = joi.string().uuid();
+const regexSchema = joi.object().type(RegExp);
 
 // NOTE: When Joi runs, it does so in a Node.js process, which may support a different subset of the ISO 8601 date-time
 // string format than Sync Gateway's JavaScript interpreter does. To prevent the validator from allowing date or
 // date-time strings that cannot be parsed when a generated sync function is used in Sync Gateway, strings with explicit
 // regular expression definitions are used for the "date" and "datetime" types rather than `joi.date().iso()`.
-var datetimeStringSchema = joi.string()
+const datetimeStringSchema = joi.string()
   .regex(/^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([\+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/);
-var datetimeSchema = joi.any().when(
+const datetimeSchema = joi.any().when(
   joi.string(),
   {
     then: datetimeStringSchema,
     otherwise: joi.date().options({ convert: false })
   });
-var dateOnlyStringSchema = joi.string().regex(/^([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$/);
-var dateOnlySchema = joi.any().when(
+const dateOnlyStringSchema = joi.string().regex(/^([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$/);
+const dateOnlySchema = joi.any().when(
   joi.string(),
   {
     then: dateOnlyStringSchema,
     otherwise: joi.date().options({ convert: false })
   });
 
-var timeOnlySchema = joi.string().regex(/^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?$/);
-var timezoneSchema = joi.string().regex(/^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/);
+const timeOnlySchema = joi.string().regex(/^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?$/);
+const timezoneSchema = joi.string().regex(/^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/);
 
-var typeEqualitySchemas = {
+const typeEqualitySchemas = {
   string: joi.string(),
   integer: integerSchema,
   float: joi.number(),
@@ -45,9 +45,9 @@ var typeEqualitySchemas = {
   hashtable: joi.object().unknown()
 };
 
-var validPropertyTypes = Object.keys(typeEqualitySchemas).sort().map(function(key) { return key; });
+const validPropertyTypes = Object.keys(typeEqualitySchemas).sort().map((key) => key);
 
-var schema = joi.object().keys({
+const schema = joi.object().keys({
   type: dynamicConstraintSchema(joi.string().only(validPropertyTypes)).required()
 })
   .when(
@@ -172,11 +172,11 @@ function typeSpecificConstraintSchemas() {
       mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
       minimumLength: dynamicConstraintSchema(integerSchema.min(0)),
       maximumLength: maximumSizeConstraintSchema('minimumLength'),
-      arrayElementsValidator: dynamicConstraintSchema(joi.lazy(function() { return schema; }))
+      arrayElementsValidator: dynamicConstraintSchema(joi.lazy(() => schema))
     },
     object: {
       allowUnknownProperties: dynamicConstraintSchema(joi.boolean()),
-      propertyValidators: dynamicConstraintSchema(joi.object().min(1).pattern(/^.+$/, joi.lazy(function() { return schema; })))
+      propertyValidators: dynamicConstraintSchema(joi.object().min(1).pattern(/^.+$/, joi.lazy(() => schema)))
     },
     hashtable: {
       minimumSize: dynamicConstraintSchema(integerSchema.min(0)),
@@ -185,15 +185,15 @@ function typeSpecificConstraintSchemas() {
         mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
         regexPattern: dynamicConstraintSchema(regexSchema)
       })),
-      hashtableValuesValidator: dynamicConstraintSchema(joi.lazy(function() { return schema; }))
+      hashtableValuesValidator: dynamicConstraintSchema(joi.lazy(() => schema))
     }
   };
 }
 
 // Creates a validation schema for the constraints of the specified type
 function makeTypeConstraintsSchema(typeName) {
-  var allTypeConstraints = typeSpecificConstraintSchemas();
-  var constraints = Object.assign({ }, universalConstraintSchemas(typeEqualitySchemas[typeName]), allTypeConstraints[typeName]);
+  const allTypeConstraints = typeSpecificConstraintSchemas();
+  const constraints = Object.assign({ }, universalConstraintSchemas(typeEqualitySchemas[typeName]), allTypeConstraints[typeName]);
 
   return joi.object().keys(constraints)
     // Prevent the use of more than one constraint from the "required value" category

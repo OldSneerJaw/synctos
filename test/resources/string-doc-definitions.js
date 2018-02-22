@@ -19,6 +19,14 @@ function() {
     return doc.dynamicMustBeTrimmedState;
   }
 
+  function dynamicMinimumValue(doc, oldDoc, value, oldValue) {
+    return doc.dynamicMinimumValue;
+  }
+
+  function dynamicMaximumValue(doc, oldDoc, value, oldValue) {
+    return doc.dynamicMaximumValue;
+  }
+
   return {
     stringDoc: {
       channels: { write: 'write' },
@@ -71,6 +79,32 @@ function() {
         dynamicMustBeTrimmedValidationProp: {
           type: 'string',
           mustBeTrimmed: dynamicMustBeTrimmed
+        },
+        staticInclusiveRangeValidationProp: {
+          type: 'string',
+          minimumValue: 'A',
+          maximumValue: 'Z'
+        },
+        staticExclusiveRangeValidationProp: {
+          type: 'string',
+          minimumValueExclusive: 'aa',
+          maximumValueExclusive: 'c'
+        },
+        dynamicMinimumValue: {
+          type: 'string'
+        },
+        dynamicMaximumValue: {
+          type: 'string'
+        },
+        dynamicInclusiveRangeValidationProp: {
+          type: 'string',
+          minimumValue: dynamicMinimumValue,
+          maximumValue: dynamicMaximumValue
+        },
+        dynamicExclusiveRangeValidationProp: {
+          type: 'string',
+          minimumValueExclusive: dynamicMinimumValue,
+          maximumValueExclusive: dynamicMaximumValue
         }
       }
     }
