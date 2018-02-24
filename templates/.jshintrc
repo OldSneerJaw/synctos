@@ -2,6 +2,7 @@
   "extends": "../.jshintrc",
   "esversion": 3,
   "node": false,
+  "varstmt": false,
   "globals": {
     "_": false,
     "access": false,
