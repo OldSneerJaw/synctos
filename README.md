@@ -87,7 +87,7 @@ Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `
 }
 ```
 
-If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard output. Otherwise, if validation was successful, the utility will exit normally and will not output anything.
+If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard error (stderr). Otherwise, if validation was successful, the utility will exit normally and will not output anything.
 
 See the [Testing](#testing) section for information on writing test cases for custom code in document definitions.
 
