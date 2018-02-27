@@ -1,14 +1,14 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Property validators:', function() {
-  beforeEach(function() {
+describe('Property validators:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-property-validators-sync-function.js');
   });
 
-  describe('static validation at the document level', function() {
-    it('allow unknown properties when a document is created and the option is enabled', function() {
-      var doc = {
+  describe('static validation at the document level', () => {
+    it('allow unknown properties when a document is created and the option is enabled', () => {
+      const doc = {
         _id: 'staticAllowUnknownDoc',
         unknownProperty1: 15
       };
@@ -16,12 +16,12 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow unknown properties when a document is replaced and the option is enabled', function() {
-      var doc = {
+    it('allow unknown properties when a document is replaced and the option is enabled', () => {
+      const doc = {
         _id: 'staticAllowUnknownDoc',
         unknownProperty1: 'foo'
       };
-      var oldDoc = {
+      const oldDoc = {
         _id: 'staticAllowUnknownDoc',
         unknownProperty2: true
       };
@@ -29,8 +29,8 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('reject unknown properties when a document is created and the option is disabled', function() {
-      var doc = {
+    it('reject unknown properties when a document is created and the option is disabled', () => {
+      const doc = {
         _id: 'staticPreventUnknownDoc',
         unknownProperty1: 15
       };
@@ -38,20 +38,20 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
     });
 
-    it('reject unknown properties when a document is replaced and the option is disabled', function() {
-      var doc = {
+    it('reject unknown properties when a document is replaced and the option is disabled', () => {
+      const doc = {
         _id: 'staticPreventUnknownDoc',
         unknownProperty1: 73.7
       };
-      var oldDoc = { _id: 'staticPreventUnknownDoc' };
+      const oldDoc = { _id: 'staticPreventUnknownDoc' };
 
       testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
     });
   });
 
-  describe('dynamic validation at the document level', function() {
-    it('allows a document with no unknown properties', function() {
-      var doc = {
+  describe('dynamic validation at the document level', () => {
+    it('allows a document with no unknown properties', () => {
+      const doc = {
         _id: 'foobar',
         type: 'dynamicPropertiesValidationDoc',
         extraProperty: 1.5,
@@ -61,8 +61,8 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a document with unknown properties when they are enabled', function() {
-      var doc = {
+    it('allows a document with unknown properties when they are enabled', () => {
+      const doc = {
         _id: 'foobar',
         type: 'dynamicPropertiesValidationDoc',
         unrecognizedProperty: 'foobar',
@@ -72,8 +72,8 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('blocks a document with unknown properties when they are disabled', function() {
-      var doc = {
+    it('blocks a document with unknown properties when they are disabled', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'dynamicPropertiesValidationDoc',
         extraProperty: 99, // Since the ID is not "foobar", extraProperty is expected to be a string
@@ -91,9 +91,9 @@ describe('Property validators:', function() {
     });
   });
 
-  describe('static validation in a nested object', function() {
-    it('allow unknown properties when a document is created and the option is enabled', function() {
-      var doc = {
+  describe('static validation in a nested object', () => {
+    it('allow unknown properties when a document is created and the option is enabled', () => {
+      const doc = {
         _id: 'staticPreventUnknownDoc',
         allowUnknownProp: {
           myStringProp: 'foo',
@@ -104,21 +104,21 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allow unknown properties when a document is replaced and the option is enabled', function() {
-      var doc = {
+    it('allow unknown properties when a document is replaced and the option is enabled', () => {
+      const doc = {
         _id: 'staticPreventUnknownDoc',
         allowUnknownProp: {
           myStringProp: 'foo',
           myUnknownProp: 'bar'
         }
       };
-      var oldDoc = { _id: 'staticPreventUnknownDoc' };
+      const oldDoc = { _id: 'staticPreventUnknownDoc' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('reject unknown properties when a document is created and the option is disabled', function() {
-      var doc = {
+    it('reject unknown properties when a document is created and the option is disabled', () => {
+      const doc = {
         _id: 'staticAllowUnknownDoc',
         preventUnknownProp: {
           myStringProp: 'foo',
@@ -132,15 +132,15 @@ describe('Property validators:', function() {
         [ errorFormatter.unsupportedProperty('preventUnknownProp.myUnknownProp') ]);
     });
 
-    it('reject unknown properties when a document is replaced and the option is disabled', function() {
-      var doc = {
+    it('reject unknown properties when a document is replaced and the option is disabled', () => {
+      const doc = {
         _id: 'staticAllowUnknownDoc',
         preventUnknownProp: {
           myStringProp: 'foo',
           myUnknownProp: 'bar'
         }
       };
-      var oldDoc = { _id: 'staticAllowUnknownDoc' };
+      const oldDoc = { _id: 'staticAllowUnknownDoc' };
 
       testHelper.verifyDocumentNotReplaced(
         doc,
@@ -150,9 +150,9 @@ describe('Property validators:', function() {
     });
   });
 
-  describe('dynamic validation in a nested object', function() {
-    it('allows a document with no nested unknown properties', function() {
-      var doc = {
+  describe('dynamic validation in a nested object', () => {
+    it('allows a document with no nested unknown properties', () => {
+      const doc = {
         _id: 'foobar',
         type: 'dynamicObjectValidationDoc',
         subObject: {
@@ -164,8 +164,8 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a document with nested unknown properties when they are enabled', function() {
-      var doc = {
+    it('allows a document with nested unknown properties when they are enabled', () => {
+      const doc = {
         _id: 'foobar',
         type: 'dynamicObjectValidationDoc',
         subObject: {
@@ -177,8 +177,8 @@ describe('Property validators:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('blocks a document with nested unknown properties when they are disabled', function() {
-      var doc = {
+    it('blocks a document with nested unknown properties when they are disabled', () => {
+      const doc = {
         _id: 'my-doc',
         type: 'dynamicObjectValidationDoc',
         subObject: {

@@ -3,6 +3,7 @@
   "esversion": 3,
   "node": false,
   "unused": false,
+  "varstmt": false,
   "globals": {
     "_": false,
     "access": false,

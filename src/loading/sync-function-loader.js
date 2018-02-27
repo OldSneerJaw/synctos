@@ -20,7 +20,7 @@ function loadFromFile(docDefinitionsFile) {
   try {
     syncFuncTemplate = fs.readFileSync(syncFuncTemplatePath, 'utf8');
   } catch (ex) {
-    console.log(`ERROR: Unable to read the sync function template file: ${ex}`);
+    console.error(`ERROR: Unable to read the sync function template file: ${ex}`);
 
     throw ex;
   }

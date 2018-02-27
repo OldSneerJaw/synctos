@@ -1,9 +1,9 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelper = require('./helpers/sample-spec-helper');
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample notification transport processing summary doc definition', function() {
-  beforeEach(function() {
+describe('Sample notification transport processing summary doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
@@ -20,8 +20,8 @@ describe('Sample notification transport processing summary doc definition', func
       sampleSpecHelper.getExpectedAuthorization('notification-transport-write'));
   }
 
-  it('successfully creates a valid notification transport processing summary document', function() {
-    var doc = {
+  it('successfully creates a valid notification transport processing summary document', () => {
+    const doc = {
       _id: 'biz.901.notification.ABC.processedTransport.XYZ',
       nonce: 'my-nonce',
       processedAt: '2016-06-04T21:02:19.013Z',
@@ -32,8 +32,8 @@ describe('Sample notification transport processing summary doc definition', func
     verifyProcessingSummaryWritten(doc);
   });
 
-  it('cannot create a notification transport processing summary document when the properties are invalid', function() {
-    var doc = {
+  it('cannot create a notification transport processing summary document when the properties are invalid', () => {
+    const doc = {
       _id: 'biz.109.notification.ABC.processedTransport.XYZ',
       processedBy: [ ],
       sentAt: '2016-06-04T21:02:55.9999Z'  // too many digits in the millisecond segment
@@ -50,13 +50,13 @@ describe('Sample notification transport processing summary doc definition', func
       ]);
   });
 
-  it('successfully replaces a valid notification transport processing summary document', function() {
-    var doc = {
+  it('successfully replaces a valid notification transport processing summary document', () => {
+    const doc = {
       _id: 'biz.119.notification.ABC.processedTransport.XYZ',
       nonce: 'my-nonce',
       processedAt: '2016-06-04T21:02:19.013Z'
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'biz.119.notification.ABC.processedTransport.XYZ',
       nonce: 'my-nonce',
       processedBy: null,
@@ -66,14 +66,14 @@ describe('Sample notification transport processing summary doc definition', func
     verifyProcessingSummaryWritten(doc, oldDoc);
   });
 
-  it('cannot replace a notification transport processing summary document when the properties are invalid', function() {
-    var doc = {
+  it('cannot replace a notification transport processing summary document when the properties are invalid', () => {
+    const doc = {
       _id: 'biz.275.notification.ABC.processedTransport.XYZ',
       nonce: 471,
       processedAt: '2016-06-04T09:27:07.514Z',
       sentAt: ''
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'biz.275.notification.ABC.processedTransport.XYZ',
       processedBy: 'foobar',
       processedAt: '2016-06-03T21:02:19.013Z',
@@ -93,9 +93,9 @@ describe('Sample notification transport processing summary doc definition', func
       ]);
   });
 
-  it('cannot delete a notification transport processing summary document because it is marked as undeletable', function() {
-    var doc = { _id: 'biz.317.notification.ABC.processedTransport.XYZ', _deleted: true };
-    var oldDoc = {
+  it('cannot delete a notification transport processing summary document because it is marked as undeletable', () => {
+    const doc = { _id: 'biz.317.notification.ABC.processedTransport.XYZ', _deleted: true };
+    const oldDoc = {
       _id: 'biz.317.notification.ABC.processedTransport.XYZ',
       processedBy: 'foobar',
       processedAt: '2016-06-04T21:02:19.013Z'

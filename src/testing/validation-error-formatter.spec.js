@@ -152,7 +152,7 @@ describe('Validation error formatter', () => {
     it('produces minimumValueExclusive violation messages', () => {
       const minimumValue = 1;
       expect(errorFormatter.minimumValueExclusiveViolation(fakeItemPath, minimumValue))
-        .to.equal(`item "` + fakeItemPath + `" must not be less than or equal to ` + minimumValue);
+        .to.equal(`item "${fakeItemPath}" must not be less than or equal to ${minimumValue}`);
     });
 
     it('produces mustBeTrimmed violation messages', () => {

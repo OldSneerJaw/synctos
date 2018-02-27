@@ -1,13 +1,13 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Type identifier validator', function() {
-  beforeEach(function() {
+describe('Type identifier validator', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-type-id-validator-sync-function.js');
   });
 
-  it('allows a valid string value', function() {
-    var doc = {
+  it('allows a valid string value', () => {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: 'my-doc-type'
     };
@@ -15,8 +15,8 @@ describe('Type identifier validator', function() {
     testHelper.verifyDocumentCreated(doc);
   });
 
-  it('rejects a non-string value', function() {
-    var doc = {
+  it('rejects a non-string value', () => {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: 15
     };
@@ -24,8 +24,8 @@ describe('Type identifier validator', function() {
     testHelper.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.typeConstraintViolation('typeIdProp', 'string') ]);
   });
 
-  it('rejects an empty string value', function() {
-    var doc = {
+  it('rejects an empty string value', () => {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: ''
     };
@@ -33,8 +33,8 @@ describe('Type identifier validator', function() {
     testHelper.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.mustNotBeEmptyViolation('typeIdProp') ]);
   });
 
-  it('rejects a null value', function() {
-    var doc = {
+  it('rejects a null value', () => {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: null
     };
@@ -42,12 +42,12 @@ describe('Type identifier validator', function() {
     testHelper.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.requiredValueViolation('typeIdProp') ]);
   });
 
-  it('rejects a value that has been modified', function() {
-    var doc = {
+  it('rejects a value that has been modified', () => {
+    const doc = {
       _id: 'typeIdDoc',
       typeIdProp: 'my-modified-doc-type'
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'typeIdDoc',
       typeIdProp: 'my-doc-type'
     };

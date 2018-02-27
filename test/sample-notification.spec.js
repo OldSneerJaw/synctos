@@ -1,19 +1,19 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelper = require('./helpers/sample-spec-helper');
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample business notification doc definition', function() {
-  beforeEach(function() {
+describe('Sample business notification doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
-  var expectedDocType = 'notification';
-  var expectedBasePrivilege = 'NOTIFICATIONS';
+  const expectedDocType = 'notification';
+  const expectedBasePrivilege = 'NOTIFICATIONS';
 
   function getExpectedAccessAssignments(doc, docId) {
     return [
       {
-        expectedChannels: [ docId + '-VIEW' ],
+        expectedChannels: [ `${docId}-VIEW` ],
         expectedUsers: doc ? doc.users : null,
         expectedRoles: doc ? doc.groups : null
       }
@@ -31,14 +31,14 @@ describe('Sample business notification doc definition', function() {
     testHelper.verifyDocumentReplaced(
       doc,
       oldDoc,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_' + expectedBasePrivilege ]),
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_${expectedBasePrivilege}` ]),
       getExpectedAccessAssignments(doc, doc._id));
   }
 
   function verifyNotificationDeleted(businessId, oldDoc) {
     testHelper.verifyDocumentDeleted(
       oldDoc,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-REMOVE_' + expectedBasePrivilege ]),
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_${expectedBasePrivilege}` ]),
       getExpectedAccessAssignments({ }, oldDoc._id));
   }
 
@@ -56,11 +56,11 @@ describe('Sample business notification doc definition', function() {
       oldDoc,
       expectedDocType,
       expectedErrorMessages,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_' + expectedBasePrivilege ]));
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_${expectedBasePrivilege}` ]));
   }
 
-  it('successfully creates a valid notification document', function() {
-    var doc = {
+  it('successfully creates a valid notification document', () => {
+    const doc = {
       _id: 'biz.63.notification.5',
       eventId: '082979cf-6990-44a6-bb62-9b9517c3052b',
       sender: 'test-service',
@@ -75,8 +75,8 @@ describe('Sample business notification doc definition', function() {
     verifyNotificationCreated(63, doc);
   });
 
-  it('cannot create a notification document when the properties are invalid', function() {
-    var doc = {
+  it('cannot create a notification document when the properties are invalid', () => {
+    const doc = {
       _id: 'biz.13.notification.5',
       eventId: 'not-a-uuid',
       type: true ,
@@ -105,8 +105,8 @@ describe('Sample business notification doc definition', function() {
       ]);
   });
 
-  it('successfully replaces a valid notification document', function() {
-    var doc = {
+  it('successfully replaces a valid notification document', () => {
+    const doc = {
       _id: 'biz.7.notification.3',
       eventId: '1d856cd8-a0db-473c-9ea0-20b3113e2571',
       type: 'invoice-payments',
@@ -118,7 +118,7 @@ describe('Sample business notification doc definition', function() {
       actions: [ { url: 'http://foobar.baz/lastwarning', label: 'pay up here'} ],
       groups: [ 'my-group1', 'my-group2' ]
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'biz.7.notification.3',
       eventId: '1d856cd8-a0db-473c-9ea0-20b3113e2571',
       type: 'invoice-payments',
@@ -133,8 +133,8 @@ describe('Sample business notification doc definition', function() {
     verifyNotificationReplaced(7, doc, oldDoc);
   });
 
-  it('cannot replace a notification document when the properties are invalid', function() {
-    var doc = {
+  it('cannot replace a notification document when the properties are invalid', () => {
+    const doc = {
       _id: 'biz.10.notification.3',
       eventId: '692d8c84-8ff2-358-b806-edbf4c3c5813',
       sender: '', // missing type, empty sender
@@ -143,7 +143,7 @@ describe('Sample business notification doc definition', function() {
       firstReadAt: '2016-07-14T21:24:16.997-08:00',
       actions: [ { label: ''} ]
     };
-    var oldDoc = { // valid oldDoc
+    const oldDoc = { // valid oldDoc
       _id: 'biz.10.notification.3',
       eventId: '692d8c84-8ff2-358-b806-edbf4c3c5813',
       type: 'invoice-payments',
@@ -177,8 +177,8 @@ describe('Sample business notification doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a valid notification document', function() {
-    var oldDoc = {
+  it('successfully deletes a valid notification document', () => {
+    const oldDoc = {
       _id: 'biz.71.notification.5',
       eventId: '56be8a52-f050-4d72-b4cb-c4f6eb2ca3ed',
       type: 'invoice-payments',

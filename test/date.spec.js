@@ -1,14 +1,14 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Date validation type:', function() {
-  beforeEach(function() {
+describe('Date validation type:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-date-sync-function.js');
   });
 
-  describe('format validation', function() {
-    it('accepts a valid date with all components', function() {
-      var doc = {
+  describe('format validation', () => {
+    it('accepts a valid date with all components', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-17'
       };
@@ -16,8 +16,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts a valid date without a day', function() {
-      var doc = {
+    it('accepts a valid date without a day', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '0000-12'
       };
@@ -25,8 +25,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts a valid date without a month or day', function() {
-      var doc = {
+    it('accepts a valid date without a month or day', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '9999'
       };
@@ -34,8 +34,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a date with an invalid year', function() {
-      var doc = {
+    it('rejects a date with an invalid year', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '999-07-17'
       };
@@ -43,8 +43,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a date with an invalid month', function() {
-      var doc = {
+    it('rejects a date with an invalid month', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-13-17'
       };
@@ -52,8 +52,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a date with an invalid day', function() {
-      var doc = {
+    it('rejects a date with an invalid day', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-32'
       };
@@ -61,8 +61,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a date with time and time zone components', function() {
-      var doc = {
+    it('rejects a date with time and time zone components', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-17T15:01:58.382-05:00'
       };
@@ -70,8 +70,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a date with a time but no time zone', function() {
-      var doc = {
+    it('rejects a date with a time but no time zone', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: '2016-07-17T21:27:10.894'
       };
@@ -79,8 +79,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a value that is not a string', function() {
-      var doc = {
+    it('rejects a value that is not a string', () => {
+      const doc = {
         _id: 'dateDoc',
         formatValidationProp: 20160717
       };
@@ -89,9 +89,9 @@ describe('Date validation type:', function() {
     });
   });
 
-  describe('inclusive range constraints', function() {
-    it('accepts a date with all components that is within the minimum and maximum values', function() {
-      var doc = {
+  describe('inclusive range constraints', () => {
+    it('accepts a date with all components that is within the minimum and maximum values', () => {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016-01-01'
       };
@@ -99,8 +99,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts a date without a day that is within the minimum and maximum values', function() {
-      var doc = {
+    it('accepts a date without a day that is within the minimum and maximum values', () => {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016-01'
       };
@@ -108,8 +108,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts a date with a month or day that is within the minimum and maximum values', function() {
-      var doc = {
+    it('accepts a date with a month or day that is within the minimum and maximum values', () => {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016'
       };
@@ -117,8 +117,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a date that is less than the minimum value', function() {
-      var doc = {
+    it('rejects a date that is less than the minimum value', () => {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2015-12-31'
       };
@@ -129,8 +129,8 @@ describe('Date validation type:', function() {
         errorFormatter.minimumValueViolation('inclusiveRangeValidationProp', '2015-12-31T23:59:59.999Z'));
     });
 
-    it('rejects a date that is greater than the maximum value', function() {
-      var doc = {
+    it('rejects a date that is greater than the maximum value', () => {
+      const doc = {
         _id: 'dateDoc',
         inclusiveRangeValidationProp: '2016-01-02'
       };
@@ -142,9 +142,9 @@ describe('Date validation type:', function() {
     });
   });
 
-  describe('exclusive range constraints', function() {
-    it('accepts a date with all components that is within the minimum and maximum values', function() {
-      var doc = {
+  describe('exclusive range constraints', () => {
+    it('accepts a date with all components that is within the minimum and maximum values', () => {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02-01'
       };
@@ -152,8 +152,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts a date without a day that is within the minimum and maximum values', function() {
-      var doc = {
+    it('accepts a date without a day that is within the minimum and maximum values', () => {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02'
       };
@@ -161,8 +161,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a date that is less than the minimum value', function() {
-      var doc = {
+    it('rejects a date that is less than the minimum value', () => {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2017-12-31'
       };
@@ -173,8 +173,8 @@ describe('Date validation type:', function() {
         errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationProp', '2018'));
     });
 
-    it('rejects a date that is equal to the minimum value', function() {
-      var doc = {
+    it('rejects a date that is equal to the minimum value', () => {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018'
       };
@@ -185,8 +185,8 @@ describe('Date validation type:', function() {
         errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationProp', '2018'));
     });
 
-    it('rejects a date that is greater than the maximum value', function() {
-      var doc = {
+    it('rejects a date that is greater than the maximum value', () => {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02-03'
       };
@@ -197,8 +197,8 @@ describe('Date validation type:', function() {
         errorFormatter.maximumValueExclusiveViolation('exclusiveRangeValidationProp', '2018-02-02'));
     });
 
-    it('rejects a date that is equal to the maximum value', function() {
-      var doc = {
+    it('rejects a date that is equal to the maximum value', () => {
+      const doc = {
         _id: 'dateDoc',
         exclusiveRangeValidationProp: '2018-02-02'
       };
@@ -210,9 +210,9 @@ describe('Date validation type:', function() {
     });
   });
 
-  describe('intelligent equality constraint', function() {
-    it('allows a full date-only string that matches the expected date', function() {
-      var doc = {
+  describe('intelligent equality constraint', () => {
+    it('allows a full date-only string that matches the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2018-01-01'
       };
@@ -220,8 +220,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a date-only string without day that matches the expected date', function() {
-      var doc = {
+    it('allows a date-only string without day that matches the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2018-01'
       };
@@ -229,8 +229,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a date-only string without month and day that matches the expected date', function() {
-      var doc = {
+    it('allows a date-only string without month and day that matches the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2018'
       };
@@ -238,8 +238,8 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a date-only string that does not match the expected date', function() {
-      var doc = {
+    it('rejects a date-only string that does not match the expected date', () => {
+      const doc = {
         _id: 'dateMustEqualDoc',
         equalityValidationProp: '2017-12-31'
       };
@@ -251,14 +251,14 @@ describe('Date validation type:', function() {
     });
   });
 
-  describe('intelligent immutability constraint', function() {
-    it('allows a date that exactly matches the existing date', function() {
-      var oldDoc = {
+  describe('intelligent immutability constraint', () => {
+    it('allows a date that exactly matches the existing date', () => {
+      const oldDoc = {
         _id: 'dateDoc',
         immutableValidationProp: '2018-02-11'
       };
 
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         immutableValidationProp: '2018-02-11'
       };
@@ -266,13 +266,13 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('allows a date with omitted optional components that matches the existing date', function() {
-      var oldDoc = {
+    it('allows a date with omitted optional components that matches the existing date', () => {
+      const oldDoc = {
         _id: 'dateDoc',
         immutableValidationProp: new Date(Date.UTC(2017, 0, 1))
       };
 
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         immutableValidationProp: '2017'
       };
@@ -280,13 +280,13 @@ describe('Date validation type:', function() {
       testHelper.verifyDocumentReplaced(doc, oldDoc);
     });
 
-    it('rejects a date that does not match the existing date', function() {
-      var oldDoc = {
+    it('rejects a date that does not match the existing date', () => {
+      const oldDoc = {
         _id: 'dateDoc',
         immutableValidationProp: '2018-11-12'
       };
 
-      var doc = {
+      const doc = {
         _id: 'dateDoc',
         immutableValidationProp: '2017-11-12'
       };

@@ -1,15 +1,15 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Immutable document validation:', function() {
-  beforeEach(function() {
+describe('Immutable document validation:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-immutable-docs-sync-function.js');
   });
 
-  describe('full document immutability constraint', function() {
-    describe('with static validation', function() {
-      it('allows a document to be created if the old document does not exist', function() {
-        var doc = {
+  describe('full document immutability constraint', () => {
+    describe('with static validation', () => {
+      it('allows a document to be created if the old document does not exist', () => {
+        const doc = {
           _id: 'staticImmutableDoc',
           stringProp: 'foobar'
         };
@@ -17,28 +17,28 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a document to be created if the old document was deleted', function() {
-        var doc = {
+      it('allows a document to be created if the old document was deleted', () => {
+        const doc = {
           _id: 'staticImmutableDoc',
           stringProp: 'barfoo'
         };
-        var oldDoc = { _id: 'staticImmutableDoc', _deleted: true };
+        const oldDoc = { _id: 'staticImmutableDoc', _deleted: true };
 
         testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
       });
 
-      it('allows a document to be deleted if the old document was already deleted', function() {
+      it('allows a document to be deleted if the old document was already deleted', () => {
         // There doesn't seem to be much point in deleting something that is already deleted, but since Sync Gateway allows you to do it, check
         // that it works properly
-        var oldDoc = { _id: 'staticImmutableDoc', _deleted: true };
+        const oldDoc = { _id: 'staticImmutableDoc', _deleted: true };
 
         testHelper.verifyDocumentDeleted(oldDoc);
       });
 
-      it('allows a document to be deleted if the old document does not exist', function() {
+      it('allows a document to be deleted if the old document does not exist', () => {
         // There doesn't seem to be much point in deleting something that doesn't exist, but since Sync Gateway allows you to do it, check
         // that it works properly
-        var doc = {
+        const doc = {
           _id: 'staticImmutableDoc',
           _deleted: true
         };
@@ -46,12 +46,12 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
-      it('refuses to replace an existing document even if its properties have not been modified', function() {
-        var doc = {
+      it('refuses to replace an existing document even if its properties have not been modified', () => {
+        const doc = {
           _id: 'staticImmutableDoc',
           stringProp: 'foobar'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'staticImmutableDoc',
           stringProp: 'foobar'
         };
@@ -59,8 +59,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
       });
 
-      it('refuses to delete an existing document', function() {
-        var oldDoc = {
+      it('refuses to delete an existing document', () => {
+        const oldDoc = {
           _id: 'staticImmutableDoc',
           stringProp: 'foobar'
         };
@@ -68,8 +68,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentNotDeleted(oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
       });
 
-      it('refuses to allow modification of attachments after the document has been created', function() {
-        var doc = {
+      it('refuses to allow modification of attachments after the document has been created', () => {
+        const doc = {
           _id: 'staticImmutableDoc',
           _attachments: {
             'bar.pdf': {
@@ -78,7 +78,7 @@ describe('Immutable document validation:', function() {
           },
           stringProp: 'foobar'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'staticImmutableDoc',
           _attachments: {
             'foo.pdf': {
@@ -92,9 +92,9 @@ describe('Immutable document validation:', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a new document to be created', function() {
-        var doc = {
+    describe('with dynamic validation', () => {
+      it('allows a new document to be created', () => {
+        const doc = {
           _id: 'dynamicImmutableDoc',
           integerProp: 17,
           applyImmutability: true
@@ -103,13 +103,13 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a document to be replaced if the constraint is disabled', function() {
-        var doc = {
+      it('allows a document to be replaced if the constraint is disabled', () => {
+        const doc = {
           _id: 'dynamicImmutableDoc',
           integerProp: 71,
           applyImmutability: true
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'dynamicImmutableDoc',
           integerProp: -81,
           applyImmutability: false
@@ -118,8 +118,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentReplaced(doc, oldDoc);
       });
 
-      it('allows a document to be deleted if the constraint is disabled', function() {
-        var oldDoc = {
+      it('allows a document to be deleted if the constraint is disabled', () => {
+        const oldDoc = {
           _id: 'dynamicImmutableDoc',
           integerProp: 909,
           applyImmutability: false
@@ -128,13 +128,13 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentDeleted(oldDoc);
       });
 
-      it('blocks a document from being replaced if the constraint is enabled', function() {
-        var doc = {
+      it('blocks a document from being replaced if the constraint is enabled', () => {
+        const doc = {
           _id: 'dynamicImmutableDoc',
           integerProp: 7,
           applyImmutability: false
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'dynamicImmutableDoc',
           integerProp: 14,
           applyImmutability: true
@@ -143,8 +143,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'dynamicImmutableDoc', errorFormatter.immutableDocViolation());
       });
 
-      it('blocks a document from being deleted if the constraint is enabled', function() {
-        var oldDoc = {
+      it('blocks a document from being deleted if the constraint is enabled', () => {
+        const oldDoc = {
           _id: 'dynamicImmutableDoc',
           integerProp: -111,
           applyImmutability: true
@@ -155,10 +155,10 @@ describe('Immutable document validation:', function() {
     });
   });
 
-  describe('cannot replace document constraint', function() {
-    describe('with static validation', function() {
-      it('allows a document to be created if the old document does not exist', function() {
-        var doc = {
+  describe('cannot replace document constraint', () => {
+    describe('with static validation', () => {
+      it('allows a document to be created if the old document does not exist', () => {
+        const doc = {
           _id: 'staticCannotReplaceDoc',
           stringProp: 'foobar'
         };
@@ -166,18 +166,18 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a document to be created if the old document was deleted', function() {
-        var doc = {
+      it('allows a document to be created if the old document was deleted', () => {
+        const doc = {
           _id: 'staticCannotReplaceDoc',
           stringProp: 'barfoo'
         };
-        var oldDoc = { _id: 'staticCannotReplaceDoc', _deleted: true };
+        const oldDoc = { _id: 'staticCannotReplaceDoc', _deleted: true };
 
         testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
       });
 
-      it('allows a document to be deleted', function() {
-        var oldDoc = {
+      it('allows a document to be deleted', () => {
+        const oldDoc = {
           _id: 'staticCannotReplaceDoc',
           stringProp: 'foobar'
         };
@@ -185,18 +185,18 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentDeleted(oldDoc);
       });
 
-      it('allows a document to be deleted if the old document was already deleted', function() {
+      it('allows a document to be deleted if the old document was already deleted', () => {
         // There doesn't seem to be much point in deleting something that is already deleted, but since Sync Gateway allows you to do it, check
         // that it works properly
-        var oldDoc = { _id: 'staticCannotReplaceDoc', _deleted: true };
+        const oldDoc = { _id: 'staticCannotReplaceDoc', _deleted: true };
 
         testHelper.verifyDocumentDeleted(oldDoc);
       });
 
-      it('allows a document to be deleted if the old document does not exist', function() {
+      it('allows a document to be deleted if the old document does not exist', () => {
         // There doesn't seem to be much point in deleting something that doesn't exist, but since Sync Gateway allows you to do it, check
         // that it works properly
-        var doc = {
+        const doc = {
           _id: 'staticCannotReplaceDoc',
           _deleted: true
         };
@@ -204,12 +204,12 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
-      it('refuses to replace an existing document even if its properties have not been modified', function() {
-        var doc = {
+      it('refuses to replace an existing document even if its properties have not been modified', () => {
+        const doc = {
           _id: 'staticCannotReplaceDoc',
           stringProp: 'foobar'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'staticCannotReplaceDoc',
           stringProp: 'foobar'
         };
@@ -217,8 +217,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticCannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
       });
 
-      it('refuses to allow modification of attachments after the document has been created', function() {
-        var doc = {
+      it('refuses to allow modification of attachments after the document has been created', () => {
+        const doc = {
           _id: 'staticCannotReplaceDoc',
           _attachments: {
             'bar.pdf': {
@@ -227,7 +227,7 @@ describe('Immutable document validation:', function() {
           },
           stringProp: 'foobar'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'staticCannotReplaceDoc',
           _attachments: {
             'foo.pdf': {
@@ -241,9 +241,9 @@ describe('Immutable document validation:', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a new document to be created', function() {
-        var doc = {
+    describe('with dynamic validation', () => {
+      it('allows a new document to be created', () => {
+        const doc = {
           _id: 'dynamicCannotReplaceDoc',
           integerProp: 0,
           applyImmutability: true
@@ -252,8 +252,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a document to be deleted', function() {
-        var oldDoc = {
+      it('allows a document to be deleted', () => {
+        const oldDoc = {
           _id: 'dynamicCannotReplaceDoc',
           integerProp: 1,
           applyImmutability: true
@@ -262,13 +262,13 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentDeleted(oldDoc);
       });
 
-      it('allows a document to be replaced if the constraint is disabled', function() {
-        var doc = {
+      it('allows a document to be replaced if the constraint is disabled', () => {
+        const doc = {
           _id: 'dynamicCannotReplaceDoc',
           integerProp: 1,
           applyImmutability: true
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'dynamicCannotReplaceDoc',
           integerProp: 0,
           applyImmutability: false
@@ -277,13 +277,13 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentReplaced(doc, oldDoc);
       });
 
-      it('blocks a document from being replaced if the constraint is enabled', function() {
-        var doc = {
+      it('blocks a document from being replaced if the constraint is enabled', () => {
+        const doc = {
           _id: 'dynamicCannotReplaceDoc',
           integerProp: 2,
           applyImmutability: false
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'dynamicCannotReplaceDoc',
           integerProp: 1,
           applyImmutability: true
@@ -294,10 +294,10 @@ describe('Immutable document validation:', function() {
     });
   });
 
-  describe('cannot delete document constraint', function() {
-    describe('with static validation', function() {
-      it('allows a document to be created if the old document does not exist', function() {
-        var doc = {
+  describe('cannot delete document constraint', () => {
+    describe('with static validation', () => {
+      it('allows a document to be created if the old document does not exist', () => {
+        const doc = {
           _id: 'staticCannotDeleteDoc',
           stringProp: 'foobar'
         };
@@ -305,28 +305,28 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a document to be created if the old document was deleted', function() {
-        var doc = {
+      it('allows a document to be created if the old document was deleted', () => {
+        const doc = {
           _id: 'staticCannotDeleteDoc',
           stringProp: 'barfoo'
         };
-        var oldDoc = { _id: 'staticCannotDeleteDoc', _deleted: true };
+        const oldDoc = { _id: 'staticCannotDeleteDoc', _deleted: true };
 
         testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
       });
 
-      it('allows a document to be deleted if the old document was already deleted', function() {
+      it('allows a document to be deleted if the old document was already deleted', () => {
         // There doesn't seem to be much point in deleting something that is already deleted, but since Sync Gateway allows you to do it, check
         // that it works properly
-        var oldDoc = { _id: 'staticCannotDeleteDoc', _deleted: true };
+        const oldDoc = { _id: 'staticCannotDeleteDoc', _deleted: true };
 
         testHelper.verifyDocumentDeleted(oldDoc);
       });
 
-      it('allows a document to be deleted if the old document does not exist', function() {
+      it('allows a document to be deleted if the old document does not exist', () => {
         // There doesn't seem to be much point in deleting something that doesn't exist, but since Sync Gateway allows you to do it, check
         // that it works properly
-        var doc = {
+        const doc = {
           _id: 'staticCannotDeleteDoc',
           _deleted: true
         };
@@ -334,12 +334,12 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
-      it('allows a document to be replaced', function() {
-        var doc = {
+      it('allows a document to be replaced', () => {
+        const doc = {
           _id: 'staticCannotDeleteDoc',
           stringProp: 'barfoo'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'staticCannotDeleteDoc',
           stringProp: 'foobar'
         };
@@ -347,8 +347,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentReplaced(doc, oldDoc);
       });
 
-      it('allows modifification of attachments after the document has been created', function() {
-        var doc = {
+      it('allows modifification of attachments after the document has been created', () => {
+        const doc = {
           _id: 'staticCannotDeleteDoc',
           _attachments: {
             'bar.pdf': {
@@ -357,7 +357,7 @@ describe('Immutable document validation:', function() {
           },
           stringProp: 'foobar'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'staticCannotDeleteDoc',
           _attachments: {
             'foo.pdf': {
@@ -370,8 +370,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentReplaced(doc, oldDoc);
       });
 
-      it('refuses to delete an existing document', function() {
-        var oldDoc = {
+      it('refuses to delete an existing document', () => {
+        const oldDoc = {
           _id: 'staticCannotDeleteDoc',
           stringProp: 'foobar'
         };
@@ -380,9 +380,9 @@ describe('Immutable document validation:', function() {
       });
     });
 
-    describe('with dynamic validation', function() {
-      it('allows a new document to be created', function() {
-        var doc = {
+    describe('with dynamic validation', () => {
+      it('allows a new document to be created', () => {
+        const doc = {
           _id: 'dynamicCannotDeleteDoc',
           integerProp: 9,
           applyImmutability: true
@@ -391,13 +391,13 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('allows a document to be replaced', function() {
-        var doc = {
+      it('allows a document to be replaced', () => {
+        const doc = {
           _id: 'dynamicCannotDeleteDoc',
           integerProp: 8,
           applyImmutability: true
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'dynamicCannotDeleteDoc',
           integerProp: 9,
           applyImmutability: true
@@ -406,8 +406,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentReplaced(doc, oldDoc);
       });
 
-      it('allows a document to be deleted if the constraint is disabled', function() {
-        var oldDoc = {
+      it('allows a document to be deleted if the constraint is disabled', () => {
+        const oldDoc = {
           _id: 'dynamicCannotDeleteDoc',
           integerProp: 7,
           applyImmutability: false
@@ -416,8 +416,8 @@ describe('Immutable document validation:', function() {
         testHelper.verifyDocumentDeleted(oldDoc);
       });
 
-      it('blocks a document from being deleted if the constraint is enabled', function() {
-        var oldDoc = {
+      it('blocks a document from being deleted if the constraint is enabled', () => {
+        const oldDoc = {
           _id: 'dynamicCannotDeleteDoc',
           integerProp: 6,
           applyImmutability: true

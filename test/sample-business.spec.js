@@ -1,22 +1,22 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelper = require('./helpers/sample-spec-helper');
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample Business config doc definition', function() {
-  beforeEach(function() {
+describe('Sample Business config doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
   function verifyBusinessConfigCreated(businessId, doc) {
-    testHelper.verifyDocumentCreated(doc, sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_BUSINESS' ]));
+    testHelper.verifyDocumentCreated(doc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigReplaced(businessId, doc, oldDoc) {
-    testHelper.verifyDocumentReplaced(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_BUSINESS' ]));
+    testHelper.verifyDocumentReplaced(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigDeleted(businessId, oldDoc) {
-    testHelper.verifyDocumentDeleted(oldDoc, sampleSpecHelper.getExpectedAuthorization([ businessId + '-REMOVE_BUSINESS' ]));
+    testHelper.verifyDocumentDeleted(oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigRejected(businessId, doc, oldDoc, expectedErrorMessages) {
@@ -25,11 +25,11 @@ describe('Sample Business config doc definition', function() {
       oldDoc,
       'business',
       expectedErrorMessages,
-      sampleSpecHelper.getExpectedAuthorization([ businessId + '-CHANGE_BUSINESS' ]));
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
-  it('successfully creates a valid business document', function() {
-    var doc = {
+  it('successfully creates a valid business document', () => {
+    const doc = {
       _id: 'biz.2',
       _attachments: {
         'logo.gIf': {
@@ -46,8 +46,8 @@ describe('Sample Business config doc definition', function() {
     verifyBusinessConfigCreated(2, doc);
   });
 
-  it('cannot create a business document when the properties are invalid', function() {
-    var doc = {
+  it('cannot create a business document when the properties are invalid', () => {
+    const doc = {
       _id: 'biz.5',
       businessLogoAttachment: 15,
       defaultInvoiceTemplate: { templateId: '', 'some-unrecognized-property': 'baz' },
@@ -68,15 +68,15 @@ describe('Sample Business config doc definition', function() {
       ]);
   });
 
-  it('successfully replaces a valid business document', function() {
-    var doc = { _id: 'biz.8', paymentProcessors: [ 'foo', 'bar' ], businessLogoAttachment: 'foobar.png' };
-    var oldDoc = { _id: 'biz.8' };
+  it('successfully replaces a valid business document', () => {
+    const doc = { _id: 'biz.8', paymentProcessors: [ 'foo', 'bar' ], businessLogoAttachment: 'foobar.png' };
+    const oldDoc = { _id: 'biz.8' };
 
     verifyBusinessConfigReplaced(8, doc, oldDoc);
   });
 
-  it('cannot replace a business document when the properties are invalid', function() {
-    var doc = {
+  it('cannot replace a business document when the properties are invalid', () => {
+    const doc = {
       _id: 'biz.551',
       _attachments: {
         'bogus.mp3': {
@@ -93,7 +93,7 @@ describe('Sample Business config doc definition', function() {
       paymentProcessors: [ 'foo', 8 ],
       'unrecognized-property2': 'bar'
     };
-    var oldDoc = { _id: 'biz.551' };
+    const oldDoc = { _id: 'biz.551' };
 
     verifyBusinessConfigRejected(
       551,
@@ -115,8 +115,8 @@ describe('Sample Business config doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a valid business document', function() {
-    var oldDoc = { _id: 'biz.11' };
+  it('successfully deletes a valid business document', () => {
+    const oldDoc = { _id: 'biz.11' };
 
     verifyBusinessConfigDeleted(11, oldDoc);
   });

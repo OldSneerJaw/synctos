@@ -1,17 +1,17 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelper = require('./helpers/sample-spec-helper');
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample invoice payment requisition doc definition', function() {
-  beforeEach(function() {
+describe('Sample invoice payment requisition doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
-  var expectedDocType = 'paymentRequisition';
-  var expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
+  const expectedDocType = 'paymentRequisition';
+  const expectedBasePrivilege = 'INVOICE_PAYMENT_REQUISITIONS';
 
-  it('successfully creates a valid payment requisition document', function() {
-    var doc = {
+  it('successfully creates a valid payment requisition document', () => {
+    const doc = {
       _id: 'paymentRequisition.foo-bar',
       invoiceRecordId: 10,
       businessId: 20,
@@ -23,8 +23,8 @@ describe('Sample invoice payment requisition doc definition', function() {
     sampleSpecHelper.verifyDocumentCreated(expectedBasePrivilege, 20, doc);
   });
 
-  it('cannot create a payment requisition document when the properties are invalid', function() {
-    var doc = {
+  it('cannot create a payment requisition document when the properties are invalid', () => {
+    const doc = {
       _id: 'paymentRequisition.foo-bar',
       invoiceRecordId: 0,
       businessId: '6',
@@ -49,8 +49,8 @@ describe('Sample invoice payment requisition doc definition', function() {
       ]);
   });
 
-  it('cannot replace a payment requisition document because it is marked as irreplaceable', function() {
-    var doc = {
+  it('cannot replace a payment requisition document because it is marked as irreplaceable', () => {
+    const doc = {
       _id: 'paymentRequisition.foo-bar',
       invoiceRecordId: '7',
       businessId: 0,
@@ -59,7 +59,7 @@ describe('Sample invoice payment requisition doc definition', function() {
       invoiceRecipients: 15,
       'unrecognized-property8': 'bar'
     };
-    var oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 20 };
+    const oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 20 };
 
     sampleSpecHelper.verifyDocumentNotReplaced(
       expectedBasePrivilege,
@@ -79,8 +79,8 @@ describe('Sample invoice payment requisition doc definition', function() {
       ]);
   });
 
-  it('successfully deletes a payment requisition document', function() {
-    var oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 17 };
+  it('successfully deletes a payment requisition document', () => {
+    const oldDoc = { _id: 'paymentRequisition.foo-bar', invoiceRecordId: 10, businessId: 17 };
 
     sampleSpecHelper.verifyDocumentDeleted(expectedBasePrivilege, 17, oldDoc);
   });

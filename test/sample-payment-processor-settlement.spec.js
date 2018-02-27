@@ -1,9 +1,9 @@
-var sampleSpecHelper = require('./helpers/sample-spec-helper.js');
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelper = require('./helpers/sample-spec-helper');
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Sample payment processor settlement doc definition', function() {
-  beforeEach(function() {
+describe('Sample payment processor settlement doc definition', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
   });
 
@@ -19,8 +19,8 @@ describe('Sample payment processor settlement doc definition', function() {
       expectedErrorMessages, sampleSpecHelper.getExpectedAuthorization('payment-settlement-write'));
   }
 
-  it('can successfully create a valid payment processor settlement document', function() {
-    var doc = {
+  it('can successfully create a valid payment processor settlement document', () => {
+    const doc = {
       _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.some-settlement-id',
       _attachments: { },
       businessId: 12345,
@@ -37,8 +37,8 @@ describe('Sample payment processor settlement doc definition', function() {
     verifySettlementWritten(20, doc);
   });
 
-  it('cannot create a payment processor settlement document when the properties are invalid', function() {
-    var doc = {
+  it('cannot create a payment processor settlement document when the properties are invalid', () => {
+    const doc = {
       _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar',
       businessId: 54321,
       settlementId: 'not-foo-bar',
@@ -65,8 +65,8 @@ describe('Sample payment processor settlement doc definition', function() {
       ]);
   });
 
-  it('cannot replace a payment processor settlement document because it is immutable', function() {
-    var doc = {
+  it('cannot replace a payment processor settlement document because it is immutable', () => {
+    const doc = {
       _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar',
       businessId: 12345,
       transferId: -5,
@@ -79,7 +79,7 @@ describe('Sample payment processor settlement doc definition', function() {
       processorMessage: 'my-other-processor-message',
       whatPropIsThis: 'some value'
     };
-    var oldDoc = {
+    const oldDoc = {
       _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar',
       businessId: 12345,
       transferId: 10,
@@ -104,9 +104,9 @@ describe('Sample payment processor settlement doc definition', function() {
       ]);
   });
 
-  it('cannot delete a valid payment processing attempt document because it is immutable', function() {
-    var doc = { _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar', _deleted: true };
-    var oldDoc = { _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar', businessId: 12345 };
+  it('cannot delete a valid payment processing attempt document because it is immutable', () => {
+    const doc = { _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar', _deleted: true };
+    const oldDoc = { _id: 'biz.12345.paymentProcessor.XYZ.processedSettlement.foo-bar', businessId: 12345 };
 
     verifySettlementNotWritten(12345, doc, oldDoc, [ errorFormatter.immutableDocViolation() ]);
   });
