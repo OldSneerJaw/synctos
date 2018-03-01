@@ -1,151 +1,10 @@
 function validationModule() {
-  // Determine if a given value is an integer. Exists as a failsafe because Number.isInteger is not guaranteed to exist in all environments.
-  var isInteger = Number.isInteger || function(value) {
-    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
-  };
-
   var timeModule = importSyncFunctionFragment('time-module.js')();
+  var comparisonModule = importSyncFunctionFragment('comparison-module.js')(timeModule, buildItemPath);
 
-  function minValueInclusiveViolationComparator(validatorType) {
-    switch (validatorType) {
-      case 'time':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimes(candidateValue, constraintValue) < 0;
-        };
-      case 'date':
-      case 'datetime':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareDates(candidateValue, constraintValue) < 0;
-        };
-      case 'timezone':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimeZones(candidateValue, constraintValue) < 0;
-        };
-      case 'uuid':
-        return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) < convertToLowerCase(constraintValue);
-        };
-      default:
-        return function(candidateValue, constraintValue) {
-          return candidateValue < constraintValue;
-        };
-    }
-  }
-
-  function minValueExclusiveViolationComparator(validatorType) {
-    switch (validatorType) {
-      case 'time':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimes(candidateValue, constraintValue) <= 0;
-        };
-      case 'date':
-      case 'datetime':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareDates(candidateValue, constraintValue) <= 0;
-        };
-      case 'timezone':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimeZones(candidateValue, constraintValue) <= 0;
-        };
-      case 'uuid':
-        return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) <= convertToLowerCase(constraintValue);
-        };
-      default:
-        return function(candidateValue, constraintValue) {
-          return candidateValue <= constraintValue;
-        };
-    }
-  }
-
-  function maxValueInclusiveViolationComparator(validatorType) {
-    switch (validatorType) {
-      case 'time':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimes(candidateValue, constraintValue) > 0;
-        };
-      case 'date':
-      case 'datetime':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareDates(candidateValue, constraintValue) > 0;
-        };
-      case 'timezone':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimeZones(candidateValue, constraintValue) > 0;
-        };
-      case 'uuid':
-        return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) > convertToLowerCase(constraintValue);
-        };
-      default:
-        return function(candidateValue, constraintValue) {
-          return candidateValue > constraintValue;
-        };
-    }
-  }
-
-  function maxValueExclusiveViolationComparator(validatorType) {
-    switch (validatorType) {
-      case 'time':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimes(candidateValue, constraintValue) >= 0;
-        };
-      case 'date':
-      case 'datetime':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareDates(candidateValue, constraintValue) >= 0;
-        };
-      case 'timezone':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimeZones(candidateValue, constraintValue) >= 0;
-        };
-      case 'uuid':
-        return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) >= convertToLowerCase(constraintValue);
-        };
-      default:
-        return function(candidateValue, constraintValue) {
-          return candidateValue >= constraintValue;
-        };
-    }
-  }
-
-  function simpleTypeEqualityComparator(validatorType) {
-    switch (validatorType) {
-      case 'time':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimes(candidateValue, constraintValue) === 0;
-        };
-      case 'date':
-      case 'datetime':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareDates(candidateValue, constraintValue) === 0;
-        };
-      case 'timezone':
-        return function(candidateValue, constraintValue) {
-          return timeModule.compareTimeZones(candidateValue, constraintValue) === 0;
-        };
-      case 'uuid':
-        return function(candidateValue, constraintValue) {
-          return convertToLowerCase(candidateValue) === convertToLowerCase(constraintValue);
-        };
-      default:
-        return function(candidateValue, constraintValue) {
-          return candidateValue === constraintValue;
-        };
-    }
-  }
-
-  function convertToString(value) {
-    if (value instanceof Date) {
-      return value.toISOString();
-    } else {
-      return !isValueNullOrUndefined(value) ? value.toString() : 'null';
-    }
-  }
-
-  function convertToLowerCase(value) {
-    return !isValueNullOrUndefined(value) ? value.toLowerCase() : null;
+// Determine if a given value is an integer. Exists as a failsafe because Number.isInteger is not guaranteed to exist in all environments.
+  function isInteger(value) {
+    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
   }
 
   function isUuid(value) {
@@ -318,36 +177,38 @@ function validationModule() {
         performCustomValidation(validator);
       }
 
-      if (resolveValidationConstraint(validator.immutable)) {
-        validateImmutable(false, validator.type);
-      }
+      if (!isDocumentMissingOrDeleted(oldDoc)) {
+        if (resolveValidationConstraint(validator.immutable)) {
+          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, false, validator.type));
+        }
 
-      if (resolveValidationConstraint(validator.immutableStrict)) {
-        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
-        // (e.g. "date", "datetime", "time", "timezone", "uuid")
-        validateImmutable(false);
-      }
+        if (resolveValidationConstraint(validator.immutableStrict)) {
+          // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+          // (e.g. "date", "datetime", "time", "timezone", "uuid")
+          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, false));
+        }
 
-      if (resolveValidationConstraint(validator.immutableWhenSet)) {
-        validateImmutable(true, validator.type);
-      }
+        if (resolveValidationConstraint(validator.immutableWhenSet)) {
+          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, true, validator.type));
+        }
 
-      if (resolveValidationConstraint(validator.immutableWhenSetStrict)) {
-        // Omitting validator type forces it to perform strict equality comparisons for specialized string types
-        // (e.g. "date", "datetime", "time", "timezone", "uuid")
-        validateImmutable(true);
+        if (resolveValidationConstraint(validator.immutableWhenSetStrict)) {
+          // Omitting validator type forces it to perform strict equality comparisons for specialized string types
+          // (e.g. "date", "datetime", "time", "timezone", "uuid")
+          storeOptionalValidationError(comparisonModule.validateImmutable(itemStack, true));
+        }
       }
 
       var expectedEqualValue = resolveValidationConstraint(validator.mustEqual);
       if (typeof expectedEqualValue !== 'undefined') {
-        validateEquality(expectedEqualValue, validator.type);
+        storeOptionalValidationError(comparisonModule.validateEquality(itemStack, expectedEqualValue, validator.type));
       }
 
       var expectedStrictEqualValue = resolveValidationConstraint(validator.mustEqualStrict);
       if (typeof expectedStrictEqualValue !== 'undefined') {
         // Omitting validator type forces it to perform strict equality comparisons for specialized string types
         // (e.g. "date", "datetime", "time", "timezone", "uuid")
-        validateEquality(expectedStrictEqualValue);
+        storeOptionalValidationError(comparisonModule.validateEquality(itemStack, expectedStrictEqualValue));
       }
 
       if (!isValueNullOrUndefined(itemValue)) {
@@ -357,30 +218,22 @@ function validationModule() {
 
         var minimumValue = resolveValidationConstraint(validator.minimumValue);
         if (!isValueNullOrUndefined(minimumValue)) {
-          validateRangeConstraint(minimumValue, validatorType, minValueInclusiveViolationComparator(validatorType), 'less than');
+          storeOptionalValidationError(comparisonModule.validateMinValueInclusiveConstraint(itemStack, minimumValue, validatorType));
         }
 
         var minimumValueExclusive = resolveValidationConstraint(validator.minimumValueExclusive);
         if (!isValueNullOrUndefined(minimumValueExclusive)) {
-          validateRangeConstraint(
-            minimumValueExclusive,
-            validatorType,
-            minValueExclusiveViolationComparator(validatorType),
-            'less than or equal to');
+          storeOptionalValidationError(comparisonModule.validateMinValueExclusiveConstraint(itemStack, minimumValueExclusive, validatorType));
         }
 
         var maximumValue = resolveValidationConstraint(validator.maximumValue);
         if (!isValueNullOrUndefined(maximumValue)) {
-          validateRangeConstraint(maximumValue, validatorType, maxValueInclusiveViolationComparator(validatorType), 'greater than');
+          storeOptionalValidationError(comparisonModule.validateMaxValueInclusiveConstraint(itemStack, maximumValue, validatorType));
         }
 
         var maximumValueExclusive = resolveValidationConstraint(validator.maximumValueExclusive);
         if (!isValueNullOrUndefined(maximumValueExclusive)) {
-          validateRangeConstraint(
-            maximumValueExclusive,
-            validatorType,
-            maxValueExclusiveViolationComparator(validatorType),
-            'greater than or equal to');
+          storeOptionalValidationError(comparisonModule.validateMaxValueExclusiveConstraint(itemStack, maximumValueExclusive, validatorType));
         }
 
         var minimumLength = resolveValidationConstraint(validator.minimumLength);
@@ -482,6 +335,12 @@ function validationModule() {
       }
     }
 
+    function storeOptionalValidationError(errorMessage) {
+      if (typeof errorMessage === 'string') {
+        validationErrors.push(errorMessage);
+      }
+    }
+
     function validateString(validator) {
       var currentItemEntry = itemStack[itemStack.length - 1];
       var itemValue = currentItemEntry.itemValue;
@@ -503,124 +362,6 @@ function validationModule() {
       } else {
         return value !== value.trim();
       }
-    }
-
-    function validateImmutable(onlyEnforceIfHasValue, validatorType) {
-      if (!isDocumentMissingOrDeleted(oldDoc)) {
-        var currentItemEntry = itemStack[itemStack.length - 1];
-        var itemValue = currentItemEntry.itemValue;
-        var oldItemValue = currentItemEntry.oldItemValue;
-
-        if (onlyEnforceIfHasValue && isValueNullOrUndefined(oldItemValue)) {
-          // No need to continue; the constraint only applies if the old document has a value for this item
-          return;
-        }
-
-        // Only compare the item's value to the old item if the item's parent existed in the old document. For example, if the item in
-        // question is the value of a property in an object that is itself in an array, but the object did not exist in the array in the old
-        // document, then there is nothing to validate.
-        var oldParentItemValue = (itemStack.length >= 2) ? itemStack[itemStack.length - 2].oldItemValue : null;
-        var constraintSatisfied;
-        if (isValueNullOrUndefined(oldParentItemValue)) {
-          constraintSatisfied = true;
-        } else {
-          constraintSatisfied = checkItemEquality(itemValue, oldItemValue, validatorType);
-        }
-
-        if (!constraintSatisfied) {
-          validationErrors.push('item "' + buildItemPath(itemStack) + '" cannot be modified');
-        }
-      }
-    }
-
-    function validateEquality(expectedItemValue, validatorType) {
-      var currentItemEntry = itemStack[itemStack.length - 1];
-      var currentItemValue = currentItemEntry.itemValue;
-      if (!checkItemEquality(currentItemValue, expectedItemValue, validatorType)) {
-        validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal ' + jsonStringify(expectedItemValue));
-      }
-    }
-
-    function checkItemEquality(itemValue, expectedItemValue, validatorType) {
-      if (simpleTypeEqualityComparator(validatorType)(itemValue, expectedItemValue)) {
-        // Both have the same simple type (string, number, boolean, null) value
-        return true;
-      } else if (isValueNullOrUndefined(itemValue) && isValueNullOrUndefined(expectedItemValue)) {
-        // Both values are missing, which means they can be considered equal
-        return true;
-      } else if (isValueNullOrUndefined(itemValue) !== isValueNullOrUndefined(expectedItemValue)) {
-        // One has a value while the other does not
-        return false;
-      } else {
-        if (itemValue instanceof Array || expectedItemValue instanceof Array) {
-          return checkArrayEquality(itemValue, expectedItemValue);
-        } else if (typeof itemValue === 'object' || typeof expectedItemValue === 'object') {
-          return checkObjectEquality(itemValue, expectedItemValue);
-        } else {
-          return false;
-        }
-      }
-    }
-
-    function checkArrayEquality(itemValue, expectedItemValue) {
-      if (!(itemValue instanceof Array && expectedItemValue instanceof Array)) {
-        return false;
-      } else if (itemValue.length !== expectedItemValue.length) {
-        return false;
-      }
-
-      for (var elementIndex = 0; elementIndex < itemValue.length; elementIndex++) {
-        var elementValue = itemValue[elementIndex];
-        var expectedElementValue = expectedItemValue[elementIndex];
-
-        if (!checkItemEquality(elementValue, expectedElementValue)) {
-          return false;
-        }
-      }
-
-      // If we got here, all elements match
-      return true;
-    }
-
-    function checkObjectEquality(itemValue, expectedItemValue) {
-      if (typeof itemValue !== 'object' || typeof expectedItemValue !== 'object') {
-        return false;
-      }
-
-      var itemProperties = [ ];
-      for (var itemProp in itemValue) {
-        itemProperties.push(itemProp);
-      }
-
-      for (var expectedItemProp in expectedItemValue) {
-        if (itemProperties.indexOf(expectedItemProp) < 0) {
-          itemProperties.push(expectedItemProp);
-        }
-      }
-
-      for (var propIndex = 0; propIndex < itemProperties.length; propIndex++) {
-        var propertyName = itemProperties[propIndex];
-        var propertyValue = itemValue[propertyName];
-        var expectedPropertyValue = expectedItemValue[propertyName];
-
-        if (!checkItemEquality(propertyValue, expectedPropertyValue)) {
-          return false;
-        }
-      }
-
-      // If we got here, all properties match
-      return true;
-    }
-
-    function validateRangeConstraint(rangeConstraint, validationType, violationComparator, violationDescription) {
-      var itemValue = itemStack[itemStack.length - 1].itemValue;
-      if (violationComparator(itemValue, rangeConstraint)) {
-        addOutOfRangeValidationError(rangeConstraint, violationDescription);
-      }
-    }
-
-    function addOutOfRangeValidationError(rangeConstraint, violationDescription) {
-      validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be ' + violationDescription + ' ' + convertToString(rangeConstraint));
     }
 
     function validateArray(elementValidator) {
