@@ -1,13 +1,13 @@
-var expect = require('chai').expect;
-var testHelper = require('../src/testing/test-helper.js');
+const { expect } = require('chai');
+const testHelper = require('../src/testing/test-helper');
 
-describe('User and role access assignment:', function() {
-  beforeEach(function() {
+describe('User and role access assignment:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-access-assignment-sync-function.js');
   });
 
-  describe('Static assignment of channels to users and roles', function() {
-    var expectedStaticAssignments = [
+  describe('Static assignment of channels to users and roles', () => {
+    const expectedStaticAssignments = [
       {
         expectedType: 'channel',
         expectedUsers: [ 'user2', 'user1', 'user4' ],
@@ -31,73 +31,73 @@ describe('User and role access assignment:', function() {
       }
     ];
 
-    it('is applied when creating a valid document', function() {
-      var doc = { _id: 'staticAccessDoc' };
+    it('is applied when creating a valid document', () => {
+      const doc = { _id: 'staticAccessDoc' };
 
       testHelper.verifyDocumentCreated(doc, 'write', expectedStaticAssignments);
     });
 
-    it('is applied when replacing an existing valid document', function() {
-      var doc = { _id: 'staticAccessDoc' };
-      var oldDoc = { _id: 'staticAccessDoc' };
+    it('is applied when replacing an existing valid document', () => {
+      const doc = { _id: 'staticAccessDoc' };
+      const oldDoc = { _id: 'staticAccessDoc' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedStaticAssignments);
     });
 
-    it('is applied when deleting an existing document', function() {
-      var oldDoc = { _id: 'staticAccessDoc' };
+    it('is applied when deleting an existing document', () => {
+      const oldDoc = { _id: 'staticAccessDoc' };
 
       testHelper.verifyDocumentDeleted(oldDoc, 'write', expectedStaticAssignments);
     });
 
-    it('is NOT applied when creating an invalid document', function() {
-      var doc = {
+    it('is NOT applied when creating an invalid document', () => {
+      const doc = {
         _id: 'staticAccessDoc',
         invalidProperty: 'foobar'
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.syncFunction(doc);
       }).to.throw();
       expect(testHelper.access.callCount).to.equal(0);
     });
 
-    it('is NOT applied when replacing an invalid document', function() {
-      var doc = {
+    it('is NOT applied when replacing an invalid document', () => {
+      const doc = {
         _id: 'staticAccessDoc',
         invalidProperty: 'foobar'
       };
-      var oldDoc = { _id: 'staticAccessDoc' };
+      const oldDoc = { _id: 'staticAccessDoc' };
 
-      expect(function() {
+      expect(() => {
         testHelper.syncFunction(doc, oldDoc);
       }).to.throw();
       expect(testHelper.access.callCount).to.equal(0);
     });
   });
 
-  describe('Dynamic assignment of channels to users and roles', function() {
-    var doc = {
+  describe('Dynamic assignment of channels to users and roles', () => {
+    const doc = {
       _id: 'dynamicAccessDoc',
       users: [ 'user1', 'user2' ],
       roles: [ 'role1', 'role2' ]
     };
-    var expectedDynamicAssignments = [
+    const expectedDynamicAssignments = [
       {
         expectedType: 'channel',
         expectedUsers: doc.users,
         expectedRoles: doc.roles,
-        expectedChannels: [ doc._id + '-channel1', doc._id + '-channel2' ]
+        expectedChannels: [ `${doc._id}-channel1`, `${doc._id}-channel2` ]
       },
       {
         expectedType: 'channel',
         expectedUsers: doc.users,
-        expectedChannels: [ doc._id + '-channel3' ]
+        expectedChannels: [ `${doc._id}-channel3` ]
       },
       {
         expectedType: 'channel',
         expectedRoles: doc.roles,
-        expectedChannels: [ doc._id + '-channel4' ]
+        expectedChannels: [ `${doc._id}-channel4` ]
       },
       {
         expectedType: 'role',
@@ -106,12 +106,12 @@ describe('User and role access assignment:', function() {
       }
     ];
 
-    it('is applied when creating a valid document', function() {
+    it('is applied when creating a valid document', () => {
       testHelper.verifyDocumentCreated(doc, 'write', expectedDynamicAssignments);
     });
 
-    it('is applied when replacing a deleted document', function() {
-      var oldDoc = {
+    it('is applied when replacing a deleted document', () => {
+      const oldDoc = {
         _id: 'dynamicAccessDoc',
         _deleted: true
       };
@@ -122,31 +122,31 @@ describe('User and role access assignment:', function() {
       testHelper.verifyDocumentAccepted(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
-    it('is applied when replacing an existing valid document', function() {
-      var oldDoc = { _id: 'dynamicAccessDoc' };
+    it('is applied when replacing an existing valid document', () => {
+      const oldDoc = { _id: 'dynamicAccessDoc' };
 
       testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
-    it('is applied when deleting an existing document', function() {
-      var oldDoc = { _id: 'dynamicAccessDoc' };
+    it('is applied when deleting an existing document', () => {
+      const oldDoc = { _id: 'dynamicAccessDoc' };
 
-      var expectedDeleteAssignments = [
+      const expectedDeleteAssignments = [
         {
           expectedType: 'channel',
           expectedUsers: null,
-          expectedChannels: [ doc._id + '-channel3' ]
+          expectedChannels: [ `${doc._id}-channel3` ]
         },
         {
           expectedType: 'channel',
           expectedRoles: null,
-          expectedChannels: [ doc._id + '-channel4' ]
+          expectedChannels: [ `${doc._id}-channel4` ]
         },
         {
           expectedType: 'channel',
           expectedUsers: null,
           expectedRoles: null,
-          expectedChannels: [ doc._id + '-channel2', doc._id + '-channel1' ]
+          expectedChannels: [ `${doc._id}-channel2`, `${doc._id}-channel1` ]
         },
         {
           expectedType: 'role',
@@ -158,30 +158,30 @@ describe('User and role access assignment:', function() {
       testHelper.verifyDocumentDeleted(oldDoc, 'write', expectedDeleteAssignments);
     });
 
-    it('is NOT applied when creating an invalid document', function() {
-      var doc = {
+    it('is NOT applied when creating an invalid document', () => {
+      const doc = {
         _id: 'dynamicAccessDoc',
         users: [ 'user1' ],
         roles: [ 'role1' ],
         invalidProperty: 'foobar'
       };
 
-      expect(function() {
+      expect(() => {
         testHelper.syncFunction(doc);
       }).to.throw();
       expect(testHelper.access.callCount).to.equal(0);
     });
 
-    it('is NOT applied when replacing an invalid document', function() {
-      var doc = {
+    it('is NOT applied when replacing an invalid document', () => {
+      const doc = {
         _id: 'dynamicAccessDoc',
         users: [ 'user1' ],
         roles: [ 'role1' ],
         invalidProperty: 'foobar'
       };
-      var oldDoc = { _id: 'dynamicAccessDoc' };
+      const oldDoc = { _id: 'dynamicAccessDoc' };
 
-      expect(function() {
+      expect(() => {
         testHelper.syncFunction(doc, oldDoc);
       }).to.throw();
       expect(testHelper.access.callCount).to.equal(0);

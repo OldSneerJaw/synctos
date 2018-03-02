@@ -1,16 +1,16 @@
-var path = require('path');
-var expect = require('chai').expect;
-var simpleMock = require('../../lib/simple-mock/index.js');
-var mockRequire = require('mock-require');
+const path = require('path');
+const { expect } = require('chai');
+const simpleMock = require('../../lib/simple-mock/index');
+const mockRequire = require('mock-require');
 
-describe('Sync function loader', function() {
-  var syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
+describe('Sync function loader', () => {
+  let syncFunctionLoader, fsMock, indentMock, fileFragmentLoaderMock, docDefinitionsLoaderMock;
 
-  var expectedMacroName = 'importSyncFunctionFragment';
-  var syncFuncTemplateDir = path.resolve(__dirname, '../../templates/sync-function');
-  var syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'template.js');
+  const expectedMacroName = 'importSyncFunctionFragment';
+  const syncFuncTemplateDir = path.resolve(__dirname, '../../templates/sync-function');
+  const syncFuncTemplateFile = path.resolve(syncFuncTemplateDir, 'template.js');
 
-  beforeEach(function() {
+  beforeEach(() => {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
@@ -24,27 +24,27 @@ describe('Sync function loader', function() {
     docDefinitionsLoaderMock = { load: simpleMock.stub() };
     mockRequire('./document-definitions-loader.js', docDefinitionsLoaderMock);
 
-    syncFunctionLoader = mockRequire.reRequire('./sync-function-loader.js');
+    syncFunctionLoader = mockRequire.reRequire('./sync-function-loader');
   });
 
-  afterEach(function() {
+  afterEach(() => {
     // Restore "require" calls to their original behaviour after each test case
     mockRequire.stopAll();
   });
 
-  it('should load a sync function', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var docDefinitionsContent = 'my-doc-definitions';
-    var originalSyncFuncTemplate = 'my-original-sync-fync-template';
-    var updatedSyncFuncTemplate = 'function my-sync-func-template() { %SYNC_DOCUMENT_DEFINITIONS%; }';
-    var indentedSyncFunc = 'my\n  \r\nfinal\rsync `func`';
+  it('should load a sync function', () => {
+    const docDefinitionsFile = 'my/doc-definitions.js';
+    const docDefinitionsContent = 'my-doc-definitions';
+    const originalSyncFuncTemplate = 'my-original-sync-fync-template';
+    const updatedSyncFuncTemplate = 'function my-sync-func-template() { %SYNC_DOCUMENT_DEFINITIONS%; }';
+    const indentedSyncFunc = 'my\n  \r\nfinal\rsync `func`';
 
     fsMock.readFileSync.returnWith(originalSyncFuncTemplate);
     fileFragmentLoaderMock.load.returnWith(updatedSyncFuncTemplate);
     docDefinitionsLoaderMock.load.returnWith(docDefinitionsContent);
     indentMock.js.returnWith(indentedSyncFunc);
 
-    var result = syncFunctionLoader.load(docDefinitionsFile);
+    const result = syncFunctionLoader.load(docDefinitionsFile);
 
     expect(result).to.equal('my\n\nfinal\nsync \\`func\\`');
 
@@ -59,19 +59,19 @@ describe('Sync function loader', function() {
 
     expect(indentMock.js.callCount).to.equal(1);
     expect(indentMock.js.calls[0].args).to.eql(
-      [ 'function my-sync-func-template() { ' + docDefinitionsContent + '; }', { tabString: '  ' } ]);
+      [ `function my-sync-func-template() { ${docDefinitionsContent}; }`, { tabString: '  ' } ]);
   });
 
-  it('should throw an exception if the sync function template file does not exist', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var expectedException = new Error('my-expected-exception');
+  it('should throw an exception if the sync function template file does not exist', () => {
+    const docDefinitionsFile = 'my/doc-definitions.js';
+    const expectedException = new Error('my-expected-exception');
 
     fsMock.readFileSync.throwWith(expectedException);
     fileFragmentLoaderMock.load.returnWith('');
     docDefinitionsLoaderMock.load.returnWith('');
     indentMock.js.returnWith('');
 
-    expect(function() {
+    expect(() => {
       syncFunctionLoader.load(docDefinitionsFile);
     }).to.throw(expectedException.message);
 

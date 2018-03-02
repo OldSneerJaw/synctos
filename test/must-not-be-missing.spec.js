@@ -1,14 +1,14 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Non-missing value constraint', function() {
-  beforeEach(function() {
+describe('Non-missing value constraint', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-must-not-be-missing-sync-function.js');
   });
 
-  describe('with static validation', function() {
-    it('allows a doc with values that are neither null nor undefined', function() {
-      var doc = {
+  describe('with static validation', () => {
+    it('allows a doc with values that are neither null nor undefined', () => {
+      const doc = {
         _id: 'staticDoc',
         stringProp: '',
         integerProp: 0,
@@ -26,8 +26,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with top-level values that are null', function() {
-      var doc = {
+    it('allows a doc with top-level values that are null', () => {
+      const doc = {
         _id: 'staticDoc',
         stringProp: null,
         integerProp: null,
@@ -45,8 +45,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with nested values that are null', function() {
-      var doc = {
+    it('allows a doc with nested values that are null', () => {
+      const doc = {
         _id: 'staticDoc',
         stringProp: 'foobar',
         integerProp: -45,
@@ -64,8 +64,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('blocks a doc with top-level values that are undefined', function() {
-      var doc = {
+    it('blocks a doc with top-level values that are undefined', () => {
+      const doc = {
         _id: 'staticDoc',
         stringProp: void 0,
         integerProp: void 0,
@@ -98,8 +98,8 @@ describe('Non-missing value constraint', function() {
         ]);
     });
 
-    it('blocks a doc with nested values that are undefined', function() {
-      var doc = {
+    it('blocks a doc with nested values that are undefined', () => {
+      const doc = {
         _id: 'staticDoc',
         stringProp: 'foobar',
         integerProp: -45,
@@ -124,8 +124,8 @@ describe('Non-missing value constraint', function() {
         ]);
     });
 
-    it('blocks a doc with top-level values that are missing', function() {
-      var doc = { _id: 'staticDoc' };
+    it('blocks a doc with top-level values that are missing', () => {
+      const doc = { _id: 'staticDoc' };
 
       testHelper.verifyDocumentNotCreated(
         doc,
@@ -145,8 +145,8 @@ describe('Non-missing value constraint', function() {
         ]);
     });
 
-    it('blocks a doc with nested object property values that are missing', function() {
-      var doc = {
+    it('blocks a doc with nested object property values that are missing', () => {
+      const doc = {
         _id: 'staticDoc',
         stringProp: 'foobar',
         integerProp: -45,
@@ -165,9 +165,9 @@ describe('Non-missing value constraint', function() {
     });
   });
 
-  describe('with dynamic validation', function() {
-    it('allows a doc with values that are neither null nor undefined', function() {
-      var doc = {
+  describe('with dynamic validation', () => {
+    it('allows a doc with values that are neither null nor undefined', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: '',
@@ -186,8 +186,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with top-level values that are either null or undefined if enforcement is disabled', function() {
-      var doc = {
+    it('allows a doc with top-level values that are either null or undefined if enforcement is disabled', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: false,
         stringProp: null,
@@ -206,8 +206,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with nested values that are either null or undefined if enforcement is disabled', function() {
-      var doc = {
+    it('allows a doc with nested values that are either null or undefined if enforcement is disabled', () => {
+      const doc = {
         _id: 'dynamicDoc',
         arrayProp: [ null ],
         objectProp: { subProp: void 0 },
@@ -217,8 +217,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with top-level values that are null', function() {
-      var doc = {
+    it('allows a doc with top-level values that are null', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: null,
@@ -237,8 +237,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with nested values that are null', function() {
-      var doc = {
+    it('allows a doc with nested values that are null', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: 'foobar',
@@ -257,8 +257,8 @@ describe('Non-missing value constraint', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('blocks a doc with top-level values that are undefined', function() {
-      var doc = {
+    it('blocks a doc with top-level values that are undefined', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: void 0,
@@ -292,8 +292,8 @@ describe('Non-missing value constraint', function() {
         ]);
     });
 
-    it('blocks a doc with nested values that are undefined', function() {
-      var doc = {
+    it('blocks a doc with nested values that are undefined', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: 'foobar',
@@ -319,8 +319,8 @@ describe('Non-missing value constraint', function() {
         ]);
     });
 
-    it('blocks a doc with top-level values that are missing', function() {
-      var doc = {
+    it('blocks a doc with top-level values that are missing', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true
       };
@@ -343,8 +343,8 @@ describe('Non-missing value constraint', function() {
         ]);
     });
 
-    it('blocks a doc with nested object property values that are missing', function() {
-      var doc = {
+    it('blocks a doc with nested object property values that are missing', () => {
+      const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
         stringProp: 'foobar',

@@ -1,12 +1,12 @@
-var expect = require('chai').expect;
-var path = require('path');
-var simpleMock = require('../../lib/simple-mock/index');
-var mockRequire = require('mock-require');
+const { expect } = require('chai');
+const path = require('path');
+const simpleMock = require('../../lib/simple-mock/index');
+const mockRequire = require('mock-require');
 
-describe('Validation environment maker', function() {
-  var environmentMaker, fsMock, vmMock;
+describe('Validation environment maker', () => {
+  let environmentMaker, fsMock, vmMock;
 
-  beforeEach(function() {
+  beforeEach(() => {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
@@ -17,26 +17,26 @@ describe('Validation environment maker', function() {
     environmentMaker = mockRequire.reRequire('./validation-environment-maker');
   });
 
-  afterEach(function() {
+  afterEach(() => {
     // Restore "require" calls to their original behaviour after each test case
     mockRequire.stopAll();
   });
 
   function verifyParse(rawDocumentDefinitions, originalFilename) {
-    var envTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
+    const envTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
-    var expectedEnvString = envTemplateFileContents.replace(
+    const expectedEnvString = envTemplateFileContents.replace(
       '%DOC_DEFINITIONS_PLACEHOLDER%',
-      function() { return rawDocumentDefinitions; });
+      () => rawDocumentDefinitions);
 
-    var expectedResult = { foo: 'bar' };
-    var mockVmEnvironment = simpleMock.stub();
+    const expectedResult = { foo: 'bar' };
+    const mockVmEnvironment = simpleMock.stub();
     mockVmEnvironment.returnWith(expectedResult);
 
     vmMock.runInThisContext.returnWith(mockVmEnvironment);
 
-    var result = environmentMaker.init(rawDocumentDefinitions, originalFilename);
+    const result = environmentMaker.init(rawDocumentDefinitions, originalFilename);
 
     expect(result).to.eql(expectedResult);
 
@@ -48,7 +48,7 @@ describe('Validation environment maker', function() {
 
     expect(vmMock.runInThisContext.callCount).to.equal(1);
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
-      '(' + expectedEnvString + ');',
+      `(${expectedEnvString});`,
       {
         filename: originalFilename,
         displayErrors: true
@@ -58,11 +58,11 @@ describe('Validation environment maker', function() {
     expect(mockVmEnvironment.callCount).to.equal(1);
   }
 
-  it('creates an environment from the input with a filename for stack traces', function() {
+  it('creates an environment from the input with a filename for stack traces', () => {
     verifyParse('my-doc-definitions-1', 'my-original-filename');
   });
 
-  it('creates an environment from the input but without a filename', function() {
+  it('creates an environment from the input but without a filename', () => {
     verifyParse('my-doc-definitions-2');
   });
 });

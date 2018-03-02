@@ -1,13 +1,13 @@
-var expect = require('chai').expect;
-var simpleMock = require('../../lib/simple-mock/index.js');
-var mockRequire = require('mock-require');
+const { expect } = require('chai');
+const simpleMock = require('../../lib/simple-mock/index');
+const mockRequire = require('mock-require');
 
-describe('Document definitions loader', function() {
-  var docDefinitionsLoader, fsMock, pathMock, vmMock, fileFragmentLoaderMock;
+describe('Document definitions loader', () => {
+  let docDefinitionsLoader, fsMock, pathMock, vmMock, fileFragmentLoaderMock;
 
-  var expectedMacroName = 'importDocumentDefinitionFragment';
+  const expectedMacroName = 'importDocumentDefinitionFragment';
 
-  beforeEach(function() {
+  beforeEach(() => {
     // Mock out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     mockRequire('fs', fsMock);
@@ -21,25 +21,25 @@ describe('Document definitions loader', function() {
     fileFragmentLoaderMock = { load: simpleMock.stub() };
     mockRequire('./file-fragment-loader.js', fileFragmentLoaderMock);
 
-    docDefinitionsLoader = mockRequire.reRequire('./document-definitions-loader.js');
+    docDefinitionsLoader = mockRequire.reRequire('./document-definitions-loader');
   });
 
-  afterEach(function() {
+  afterEach(() => {
     // Restore "require" calls to their original behaviour after each test case
     mockRequire.stopAll();
   });
 
-  it('should load the contents of a document definitions file that exists', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var expectedDir = '/an/arbitrary/directory';
-    var originalFileContents = '\tmy-original-doc-definitions\n';
-    var expectedFileContents = 'my-expected-doc-definitions';
+  it('should load the contents of a document definitions file that exists', () => {
+    const docDefinitionsFile = 'my/doc-definitions.js';
+    const expectedDir = '/an/arbitrary/directory';
+    const originalFileContents = '\tmy-original-doc-definitions\n';
+    const expectedFileContents = 'my-expected-doc-definitions';
 
     fsMock.readFileSync.returnWith(originalFileContents);
     pathMock.dirname.returnWith(expectedDir);
     fileFragmentLoaderMock.load.returnWith(expectedFileContents);
 
-    var result = docDefinitionsLoader.load(docDefinitionsFile);
+    const result = docDefinitionsLoader.load(docDefinitionsFile);
 
     expect(result).to.equal(expectedFileContents);
 
@@ -53,15 +53,15 @@ describe('Document definitions loader', function() {
     expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ expectedDir, expectedMacroName, originalFileContents.trim() ]);
   });
 
-  it('should throw an exception if the document definitions file does not exist', function() {
-    var docDefinitionsFile = 'my/doc-definitions.js';
-    var expectedException = new Error('my-expected-exception');
+  it('should throw an exception if the document definitions file does not exist', () => {
+    const docDefinitionsFile = 'my/doc-definitions.js';
+    const expectedException = new Error('my-expected-exception');
 
     fsMock.readFileSync.throwWith(expectedException);
     pathMock.dirname.returnWith('');
     fileFragmentLoaderMock.load.returnWith('');
 
-    expect(function() {
+    expect(() => {
       docDefinitionsLoader.load(docDefinitionsFile);
     }).to.throw(expectedException.message);
 

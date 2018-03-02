@@ -8,34 +8,34 @@
  */
 exports.init = init;
 
-var fs = require('fs');
-var path = require('path');
-var vm = require('vm');
-var underscore = require('../../lib/underscore/underscore-min');
-var simpleMock = require('../../lib/simple-mock/index');
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+const underscore = require('../../lib/underscore/underscore-min');
+const simpleMock = require('../../lib/simple-mock/index');
 
 function init(rawSyncFunction, syncFunctionFile) {
-  var options = {
+  const options = {
     filename: syncFunctionFile,
     displayErrors: true
   };
 
-  var filePath = path.resolve(__dirname, '../../templates/test-environment-template.js');
-  var environmentTemplate = fs.readFileSync(filePath, 'utf8').trim();
+  const filePath = path.resolve(__dirname, '../../templates/test-environment-template.js');
+  const environmentTemplate = fs.readFileSync(filePath, 'utf8').trim();
 
   // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
   // the sync function
-  var environmentString = environmentTemplate.replace(
+  const environmentString = environmentTemplate.replace(
     '%SYNC_FUNC_PLACEHOLDER%',
-    function() { return unescapeBackticks(rawSyncFunction); });
+    () => unescapeBackticks(rawSyncFunction));
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.
-  var environmentStatement = '(' + environmentString + ');';
+  const environmentStatement = `(${environmentString});`;
 
   // Compile the test environment function within the current virtual machine context so it can share access to the "requireAccess",
   // "channel", "customActionStub", etc. stubs with the test-helper module
-  var environmentFunction = vm.runInThisContext(environmentStatement, options);
+  const environmentFunction = vm.runInThisContext(environmentStatement, options);
 
   return environmentFunction(underscore, simpleMock);
 }
@@ -45,5 +45,5 @@ function init(rawSyncFunction, syncFunctionFile) {
 // However, when loaded by the test helper, a sync function is not inserted into a Sync Gateway configuration file so we must "unescape"
 // backtick characters to preserve the original intention.
 function unescapeBackticks(originalString) {
-  return originalString.replace(/\\`/g, function() { return '`'; });
+  return originalString.replace(/\\`/g, () => '`');
 }

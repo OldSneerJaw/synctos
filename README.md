@@ -87,7 +87,7 @@ Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `
 }
 ```
 
-If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard output. Otherwise, if validation was successful, the utility will exit normally and will not output anything.
+If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard error (stderr). Otherwise, if validation was successful, the utility will exit normally and will not output anything.
 
 See the [Testing](#testing) section for information on writing test cases for custom code in document definitions.
 
@@ -837,7 +837,7 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 });
 ```
 
-The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/validation-error-formatter.js` module in this project for documentation.
+The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/testing/validation-error-formatter.js` module in this project for documentation.
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).
 

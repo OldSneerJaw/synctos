@@ -1,11 +1,11 @@
-var joi = require('../../lib/joi/joi.bundle');
-var propertyValidatorSchema = require('./property-validator-schema');
-var makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
+const joi = require('../../lib/joi/joi.bundle');
+const propertyValidatorSchema = require('./property-validator-schema');
+const makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
-var integerSchema = joi.number().integer();
-var nonEmptyStringSchema = joi.string().min(1);
-var customActionEventSchema = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
-var authorizationSchema = dynamicConstraintSchema(
+const integerSchema = joi.number().integer();
+const nonEmptyStringSchema = joi.string().min(1);
+const customActionEventSchema = joi.func().maxArity(3); // Function parameters: doc, oldDoc, customActionMetadata
+const authorizationSchema = dynamicConstraintSchema(
   joi.object().min(1).keys(
     {
       add: arrayOrSingleItemSchema(nonEmptyStringSchema),
@@ -13,7 +13,7 @@ var authorizationSchema = dynamicConstraintSchema(
       remove: arrayOrSingleItemSchema(nonEmptyStringSchema),
       write: arrayOrSingleItemSchema(nonEmptyStringSchema)
     }));
-var accessAssignmentEntryPropertySchema = dynamicConstraintSchema(arrayOrSingleItemSchema(nonEmptyStringSchema, 1));
+const accessAssignmentEntryPropertySchema = dynamicConstraintSchema(arrayOrSingleItemSchema(nonEmptyStringSchema, 1));
 
 /**
  * The full schema for a single document definition object.

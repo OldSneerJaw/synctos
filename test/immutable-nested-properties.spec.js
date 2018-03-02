@@ -1,14 +1,14 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Immutable nested properties:', function() {
-  beforeEach(function() {
+describe('Immutable nested properties:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-immutable-nested-properties-sync-function.js');
   });
 
-  describe('when an object with an immutable property is nested in an array', function() {
-    it('prevent modification of immutable properties for objects that already exist', function() {
-      var doc = {
+  describe('when an object with an immutable property is nested in an array', () => {
+    it('prevent modification of immutable properties for objects that already exist', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'objectNestedInArrayDoc',
         elementList: [
@@ -19,7 +19,7 @@ describe('Immutable nested properties:', function() {
         ]
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'objectNestedInArrayDoc',
         elementList: [
@@ -36,8 +36,8 @@ describe('Immutable nested properties:', function() {
         [ errorFormatter.immutableItemViolation('elementList[1].id'), errorFormatter.immutableItemViolation('elementList[2].id') ]);
     });
 
-    it('allow modification as long as immutable properties do not change', function() {
-      var doc = {
+    it('allow modification as long as immutable properties do not change', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'objectNestedInArrayDoc',
         elementList: [
@@ -47,7 +47,7 @@ describe('Immutable nested properties:', function() {
         ]
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'objectNestedInArrayDoc',
         elementList: [
@@ -60,9 +60,9 @@ describe('Immutable nested properties:', function() {
     });
   });
 
-  describe('when an object with an immutable property is nested in a hashtable', function() {
-    it('prevent modification of immutable properties for objects that already exist', function() {
-      var doc = {
+  describe('when an object with an immutable property is nested in a hashtable', () => {
+    it('prevent modification of immutable properties for objects that already exist', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'objectNestedInHashtableDoc',
         hash: {
@@ -73,7 +73,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'objectNestedInHashtableDoc',
         hash: {
@@ -90,8 +90,8 @@ describe('Immutable nested properties:', function() {
         [ errorFormatter.immutableItemViolation('hash[one].id'), errorFormatter.immutableItemViolation('hash[three].id') ]);
     });
 
-    it('allow modification as long as immutable properties do not change', function() {
-      var doc = {
+    it('allow modification as long as immutable properties do not change', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'objectNestedInHashtableDoc',
         hash: {
@@ -101,7 +101,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'objectNestedInHashtableDoc',
         hash: {
@@ -114,9 +114,9 @@ describe('Immutable nested properties:', function() {
     });
   });
 
-  describe('when an object with an immutable property is nested in an object', function() {
-    it('prevent modification of immutable properties for objects that already exist', function() {
-      var doc = {
+  describe('when an object with an immutable property is nested in an object', () => {
+    it('prevent modification of immutable properties for objects that already exist', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'objectNestedInObjectDoc',
         object: {
@@ -124,7 +124,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'objectNestedInObjectDoc',
         object: {
@@ -139,8 +139,8 @@ describe('Immutable nested properties:', function() {
         errorFormatter.immutableItemViolation('object.value.id'));
     });
 
-    it('allow modification as long as immutable properties do not change', function() {
-      var doc = {
+    it('allow modification as long as immutable properties do not change', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'objectNestedInObjectDoc',
         object: {
@@ -148,7 +148,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'objectNestedInObjectDoc',
         object: {
@@ -160,9 +160,9 @@ describe('Immutable nested properties:', function() {
     });
   });
 
-  describe('when a hashtable with immutable values is nested in an array', function() {
-    it('prevent modification of immutable values for hashtables that already exist', function() {
-      var doc = {
+  describe('when a hashtable with immutable values is nested in an array', () => {
+    it('prevent modification of immutable values for hashtables that already exist', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'hashtableNestedInArrayDoc',
         elementList: [
@@ -173,7 +173,7 @@ describe('Immutable nested properties:', function() {
         ]
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'hashtableNestedInArrayDoc',
         elementList: [
@@ -193,8 +193,8 @@ describe('Immutable nested properties:', function() {
         ]);
     });
 
-    it('allow modification as long as immutable values do not change', function() {
-      var doc = {
+    it('allow modification as long as immutable values do not change', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'hashtableNestedInArrayDoc',
         elementList: [
@@ -204,7 +204,7 @@ describe('Immutable nested properties:', function() {
         ]
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'hashtableNestedInArrayDoc',
         elementList: [
@@ -217,9 +217,9 @@ describe('Immutable nested properties:', function() {
     });
   });
 
-  describe('when a hashtable with immutable values is nested in an object', function() {
-    it('prevent modification of immutable values for hashtables that already exist', function() {
-      var doc = {
+  describe('when a hashtable with immutable values is nested in an object', () => {
+    it('prevent modification of immutable values for hashtables that already exist', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'hashtableNestedInObjectDoc',
         object: {
@@ -227,7 +227,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'hashtableNestedInObjectDoc',
         object: {
@@ -242,8 +242,8 @@ describe('Immutable nested properties:', function() {
         errorFormatter.immutableItemViolation('object.hash[value]'));
     });
 
-    it('allow modification as long as immutable values do not change', function() {
-      var doc = {
+    it('allow modification as long as immutable values do not change', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'hashtableNestedInObjectDoc',
         object: {
@@ -251,7 +251,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'hashtableNestedInObjectDoc',
         object: {
@@ -263,9 +263,9 @@ describe('Immutable nested properties:', function() {
     });
   });
 
-  describe('when a hashtable with immutable values is nested in a hashtable', function() {
-    it('prevent modification of immutable values for hashtables that already exist', function() {
-      var doc = {
+  describe('when a hashtable with immutable values is nested in a hashtable', () => {
+    it('prevent modification of immutable values for hashtables that already exist', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'hashtableNestedInHashtableDoc',
         hash: {
@@ -276,7 +276,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'hashtableNestedInHashtableDoc',
         hash: {
@@ -296,8 +296,8 @@ describe('Immutable nested properties:', function() {
         ]);
     });
 
-    it('allow modification as long as immutable values do not change', function() {
-      var doc = {
+    it('allow modification as long as immutable values do not change', () => {
+      const doc = {
         _id: 'myDoc',
         type: 'hashtableNestedInHashtableDoc',
         hash: {
@@ -307,7 +307,7 @@ describe('Immutable nested properties:', function() {
         }
       };
 
-      var oldDoc = {
+      const oldDoc = {
         _id: 'myDoc',
         type: 'hashtableNestedInHashtableDoc',
         hash: {

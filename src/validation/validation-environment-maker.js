@@ -11,32 +11,32 @@
  */
 exports.init = init;
 
-var fs = require('fs');
-var path = require('path');
-var vm = require('vm');
-var underscore = require('../../lib/underscore/underscore-min');
-var simpleMock = require('../../lib/simple-mock/index');
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+const underscore = require('../../lib/underscore/underscore-min');
+const simpleMock = require('../../lib/simple-mock/index');
 
 function init(docDefinitionsString, originalFilename) {
-  var options = {
+  const options = {
     filename: originalFilename,
     displayErrors: true
   };
 
-  var filePath = path.resolve(__dirname, '../../templates/validation-environment-template.js');
-  var envTemplateString = fs.readFileSync(filePath, 'utf8').trim();
+  const filePath = path.resolve(__dirname, '../../templates/validation-environment-template.js');
+  const envTemplateString = fs.readFileSync(filePath, 'utf8').trim();
 
   // The test helper environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
   // contents of the document definitions
-  var envString = envTemplateString.replace('%DOC_DEFINITIONS_PLACEHOLDER%', function() { return docDefinitionsString; });
+  const envString = envTemplateString.replace('%DOC_DEFINITIONS_PLACEHOLDER%', () => docDefinitionsString);
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.
-  var envStatement = '(' + envString + ');';
+  const envStatement = `(${envString});`;
 
   // Compile the document definitions environment function within the current virtual machine context so it can share access to the
   // "requireAccess", "channel", "customActionStub", etc. stubs
-  var envFunction = vm.runInThisContext(envStatement, options);
+  const envFunction = vm.runInThisContext(envStatement, options);
 
   return envFunction(underscore, simpleMock);
 }

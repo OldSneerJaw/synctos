@@ -1,16 +1,16 @@
-var expect = require('chai').expect;
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const { expect } = require('chai');
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('File attachment constraints:', function() {
-  beforeEach(function() {
+describe('File attachment constraints:', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-attachment-constraints-sync-function.js');
   });
 
-  describe('with static validation', function() {
-    describe('a document type that does not require an attachment reference for each file attachment', function() {
-      it('should allow creation of a document whose attachments do not violate the constraints', function() {
-        var doc = {
+  describe('with static validation', () => {
+    describe('a document type that does not require an attachment reference for each file attachment', () => {
+      it('should allow creation of a document whose attachments do not violate the constraints', () => {
+        const doc = {
           _id: 'myDoc',
           _attachments: {
             'foo.pdf': {
@@ -33,8 +33,8 @@ describe('File attachment constraints:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('should allow replacement when document attachments do not violate the constraints', function() {
-        var doc = {
+      it('should allow replacement when document attachments do not violate the constraints', () => {
+        const doc = {
           _id: 'myDoc',
           _attachments: {
             'foo.xml': {
@@ -45,7 +45,7 @@ describe('File attachment constraints:', function() {
           type: 'staticRegularAttachmentsDoc',
           attachmentRefProp: 'foo.xml' // The attachmentReference's maximum size of 40 overrides the document's maximum individual size of 25
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'myDoc',
           type: 'staticRegularAttachmentsDoc'
         };
@@ -53,9 +53,9 @@ describe('File attachment constraints:', function() {
         testHelper.verifyDocumentReplaced(doc, oldDoc);
       });
 
-      describe('maximum attachment size constraints', function() {
-        it('should block creation of a document whose attachments exceed the limits', function() {
-          var doc = {
+      describe('maximum attachment size constraints', () => {
+        it('should block creation of a document whose attachments exceed the limits', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.pdf': {
@@ -75,8 +75,8 @@ describe('File attachment constraints:', function() {
             attachmentRefProp: 'bar.html' // The attachmentReference's maximum size of 40 overrides the document's maximum individual size of 25
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc);
             } catch (ex) {
@@ -92,8 +92,8 @@ describe('File attachment constraints:', function() {
             syncFuncError);
         });
 
-        it('should block replacement when document attachments exceed the limits', function() {
-          var doc = {
+        it('should block replacement when document attachments exceed the limits', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.xml': {
@@ -103,13 +103,13 @@ describe('File attachment constraints:', function() {
             },
             type: 'staticRegularAttachmentsDoc'
           };
-          var oldDoc = {
+          const oldDoc = {
             _id: 'myDoc',
             type: 'staticRegularAttachmentsDoc'
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc, oldDoc);
             } catch (ex) {
@@ -126,9 +126,9 @@ describe('File attachment constraints:', function() {
         });
       });
 
-      describe('maximum attachment count constraint', function() {
-        it('should block creation of a document whose attachments exceed the limit', function() {
-          var doc = {
+      describe('maximum attachment count constraint', () => {
+        it('should block creation of a document whose attachments exceed the limit', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.pdf': {
@@ -151,8 +151,8 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc);
             } catch (ex) {
@@ -165,8 +165,8 @@ describe('File attachment constraints:', function() {
           testHelper.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumAttachmentCountViolation(3), syncFuncError);
         });
 
-        it('should block replacement when document attachments exceed the limit', function() {
-          var doc = {
+        it('should block replacement when document attachments exceed the limit', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.xml': {
@@ -188,13 +188,13 @@ describe('File attachment constraints:', function() {
             },
             type: 'staticRegularAttachmentsDoc'
           };
-          var oldDoc = {
+          const oldDoc = {
             _id: 'myDoc',
             type: 'staticRegularAttachmentsDoc'
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc, oldDoc);
             } catch (ex) {
@@ -208,11 +208,11 @@ describe('File attachment constraints:', function() {
         });
       });
 
-      describe('supported file extensions constraint', function() {
-        var expectedExtensions = [ 'html', 'jpg', 'pdf', 'txt', 'xml' ];
+      describe('supported file extensions constraint', () => {
+        const expectedExtensions = [ 'html', 'jpg', 'pdf', 'txt', 'xml' ];
 
-        it('should block creation of a document whose attachments have unsupported extensions', function() {
-          var doc = {
+        it('should block creation of a document whose attachments have unsupported extensions', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.invalid': {
@@ -231,8 +231,8 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc);
             } catch (ex) {
@@ -251,8 +251,8 @@ describe('File attachment constraints:', function() {
             syncFuncError);
         });
 
-        it('should block replacement when document attachments have unsupported extensions', function() {
-          var doc = {
+        it('should block replacement when document attachments have unsupported extensions', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.invalid': {
@@ -267,13 +267,13 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc',
             attachmentRefProp: 'bar.foo' // The attachmentReference's supported extensions override the document's supported extensions
           };
-          var oldDoc = {
+          const oldDoc = {
             _id: 'myDoc',
             type: 'staticRegularAttachmentsDoc'
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc, oldDoc);
             } catch (ex) {
@@ -290,11 +290,11 @@ describe('File attachment constraints:', function() {
         });
       });
 
-      describe('supported content types constraint', function() {
-        var expectedContentTypes = [ 'text/html', 'image/jpeg', 'application/pdf', 'text/plain', 'application/xml' ];
+      describe('supported content types constraint', () => {
+        const expectedContentTypes = [ 'text/html', 'image/jpeg', 'application/pdf', 'text/plain', 'application/xml' ];
 
-        it('should block creation of a document whose attachments have unsupported content types', function() {
-          var doc = {
+        it('should block creation of a document whose attachments have unsupported content types', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.txt': {
@@ -313,8 +313,8 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc);
             } catch (ex) {
@@ -333,8 +333,8 @@ describe('File attachment constraints:', function() {
             syncFuncError);
         });
 
-        it('should block replacement when document attachments have unsupported content types', function() {
-          var doc = {
+        it('should block replacement when document attachments have unsupported content types', () => {
+          const doc = {
             _id: 'myDoc',
             _attachments: {
               'foo.jpg': {
@@ -349,13 +349,13 @@ describe('File attachment constraints:', function() {
             type: 'staticRegularAttachmentsDoc',
             attachmentRefProp: 'bar.txt' // The attachmentReference's supported content types override the document's supported content types
           };
-          var oldDoc = {
+          const oldDoc = {
             _id: 'myDoc',
             type: 'staticRegularAttachmentsDoc'
           };
 
-          var syncFuncError = null;
-          expect(function() {
+          let syncFuncError = null;
+          expect(() => {
             try {
               testHelper.syncFunction(doc, oldDoc);
             } catch (ex) {
@@ -373,9 +373,9 @@ describe('File attachment constraints:', function() {
       });
     });
 
-    describe('a document type that DOES require an attachment reference for each file attachment', function() {
-      it('should allow creation of a document whose attachments do not violate the constraint', function() {
-        var doc = {
+    describe('a document type that DOES require an attachment reference for each file attachment', () => {
+      it('should allow creation of a document whose attachments do not violate the constraint', () => {
+        const doc = {
           _id: 'myDoc',
           _attachments: {
             'foo.pdf': {
@@ -390,8 +390,8 @@ describe('File attachment constraints:', function() {
         testHelper.verifyDocumentCreated(doc);
       });
 
-      it('should block creation of a document whose attachments violate the constraint', function() {
-        var doc = {
+      it('should block creation of a document whose attachments violate the constraint', () => {
+        const doc = {
           _id: 'myDoc',
           _attachments: {
             'foo.pdf': {
@@ -407,8 +407,8 @@ describe('File attachment constraints:', function() {
           attachmentRefProp: 'foo.pdf'
         };
 
-        var syncFuncError = null;
-        expect(function() {
+        let syncFuncError = null;
+        expect(() => {
           try {
             testHelper.syncFunction(doc);
           } catch (ex) {
@@ -424,8 +424,8 @@ describe('File attachment constraints:', function() {
           syncFuncError);
       });
 
-      it('should allow replacement when document attachments do not violate the constraint', function() {
-        var doc = {
+      it('should allow replacement when document attachments do not violate the constraint', () => {
+        const doc = {
           _id: 'myDoc',
           _attachments: {
             'bar.xml': {
@@ -436,7 +436,7 @@ describe('File attachment constraints:', function() {
           type: 'staticAttachmentRefsOnlyDoc',
           attachmentRefProp: 'bar.xml'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'myDoc',
           type: 'staticAttachmentRefsOnlyDoc'
         };
@@ -444,8 +444,8 @@ describe('File attachment constraints:', function() {
         testHelper.verifyDocumentReplaced(doc, oldDoc);
       });
 
-      it('should block replacement when document attachments violate the constraint', function() {
-        var doc = {
+      it('should block replacement when document attachments violate the constraint', () => {
+        const doc = {
           _id: 'myDoc',
           _attachments: {
             'bar.xml': {
@@ -460,13 +460,13 @@ describe('File attachment constraints:', function() {
           type: 'staticAttachmentRefsOnlyDoc',
           attachmentRefProp: 'bar.xml'
         };
-        var oldDoc = {
+        const oldDoc = {
           _id: 'myDoc',
           type: 'staticAttachmentRefsOnlyDoc'
         };
 
-        var syncFuncError = null;
-        expect(function() {
+        let syncFuncError = null;
+        expect(() => {
           try {
             testHelper.syncFunction(doc, oldDoc);
           } catch (ex) {
@@ -484,9 +484,9 @@ describe('File attachment constraints:', function() {
     });
   });
 
-  describe('with dynamic validation', function() {
-    it('should allow creation of a document whose attachments do not violate the constraints', function() {
-      var doc = {
+  describe('with dynamic validation', () => {
+    it('should allow creation of a document whose attachments do not violate the constraints', () => {
+      const doc = {
         _id: 'myDoc',
         _attachments: {
           'foo.pdf': {
@@ -516,10 +516,10 @@ describe('File attachment constraints:', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('should block creation of a document whose attachments violate the constraints', function() {
-      var supportedExtensions = [ 'pdf', 'foo' ];
-      var supportedContentTypes = [ 'application/pdf', 'text/html' ];
-      var doc = {
+    it('should block creation of a document whose attachments violate the constraints', () => {
+      const supportedExtensions = [ 'pdf', 'foo' ];
+      const supportedContentTypes = [ 'application/pdf', 'text/html' ];
+      const doc = {
         _id: 'myDoc',
         _attachments: {
           'foo.pdf': {
@@ -540,8 +540,8 @@ describe('File attachment constraints:', function() {
         maximumIndividualSize: 15,
         maximumTotalSize: 30,
         maximumAttachmentCount: 2,
-        supportedExtensions: supportedExtensions,
-        supportedContentTypes: supportedContentTypes,
+        supportedExtensions,
+        supportedContentTypes,
         requireAttachmentReferences: true,
         attachmentReferences: [ 'foo.pdf', 'bar.html' ]
       };
@@ -559,8 +559,8 @@ describe('File attachment constraints:', function() {
         ]);
     });
 
-    it('should block creation of a document that does not allow attachments at all', function() {
-      var doc = {
+    it('should block creation of a document that does not allow attachments at all', () => {
+      const doc = {
         _id: 'myDoc',
         _attachments: {
           'foo.bar': {

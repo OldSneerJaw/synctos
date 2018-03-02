@@ -1,14 +1,14 @@
-var testHelper = require('../src/testing/test-helper.js');
-var errorFormatter = testHelper.validationErrorFormatter;
+const testHelper = require('../src/testing/test-helper');
+const errorFormatter = testHelper.validationErrorFormatter;
 
-describe('Enum validation type', function() {
-  beforeEach(function() {
+describe('Enum validation type', () => {
+  beforeEach(() => {
     testHelper.initSyncFunction('build/sync-functions/test-enum-sync-function.js');
   });
 
-  describe('static validation', function() {
-    it('accepts an allowed string', function() {
-      var doc = {
+  describe('static validation', () => {
+    it('accepts an allowed string', () => {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 'value1'
       };
@@ -16,8 +16,8 @@ describe('Enum validation type', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts an allowed integer', function() {
-      var doc = {
+    it('accepts an allowed integer', () => {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 2
       };
@@ -25,8 +25,8 @@ describe('Enum validation type', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a string value that is not in the list of predefined values', function() {
-      var doc = {
+    it('rejects a string value that is not in the list of predefined values', () => {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 'value2'
       };
@@ -37,8 +37,8 @@ describe('Enum validation type', function() {
         errorFormatter.enumPredefinedValueViolation('staticEnumProp', [ 'value1', 2 ]));
     });
 
-    it('rejects an integer value that is not in the list of predefined values', function() {
-      var doc = {
+    it('rejects an integer value that is not in the list of predefined values', () => {
+      const doc = {
         _id: 'enumDoc',
         staticEnumProp: 1
       };
@@ -49,8 +49,8 @@ describe('Enum validation type', function() {
         errorFormatter.enumPredefinedValueViolation('staticEnumProp', [ 'value1', 2 ]));
     });
 
-    it('rejects a value when the property does not declare a list of predefined values', function() {
-      var doc = {
+    it('rejects a value when the property does not declare a list of predefined values', () => {
+      const doc = {
         _id: 'enumDoc',
         invalidEnumProp: 2
       };
@@ -62,9 +62,9 @@ describe('Enum validation type', function() {
     });
   });
 
-  describe('dynamic validation', function() {
-    it('accepts an allowed string', function() {
-      var doc = {
+  describe('dynamic validation', () => {
+    it('accepts an allowed string', () => {
+      const doc = {
         _id: 'enumDoc',
         dynamicEnumProp: 'value1',
         dynamicPredefinedValues: [ 'value1', 'value2' ]
@@ -73,8 +73,8 @@ describe('Enum validation type', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('accepts an allowed integer', function() {
-      var doc = {
+    it('accepts an allowed integer', () => {
+      const doc = {
         _id: 'enumDoc',
         dynamicEnumProp: 2,
         dynamicPredefinedValues: [ 1, 2 ]
@@ -83,8 +83,8 @@ describe('Enum validation type', function() {
       testHelper.verifyDocumentCreated(doc);
     });
 
-    it('rejects a value that is not in the list of predefined values', function() {
-      var doc = {
+    it('rejects a value that is not in the list of predefined values', () => {
+      const doc = {
         _id: 'enumDoc',
         dynamicEnumProp: 'value3',
         dynamicPredefinedValues: [ 'value1', 2 ]

@@ -12,5 +12,6 @@
   "shadow": false,
   "strict": false,
   "undef": true,
-  "unused": true
+  "unused": true,
+  "varstmt": true
 }
