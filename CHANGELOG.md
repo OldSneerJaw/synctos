@@ -2,7 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-Nothing yet.
+### Added
+- [#188](https://github.com/Kashoo/synctos/issues/188): Support dynamic definition of channel/role access assignments
 
 ## [2.0.1] - 2018-02-19
 ### Fixed

@@ -272,9 +272,9 @@ authorizedUsers: function(doc, oldDoc) {
 }
 ```
 
-* `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created, replaced or deleted. It is specified as a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a dynamically-constructed list and accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. And, if the old document has been deleted or simply does not exist, the second parameter will be `null`. The assignment types are specified as follows:
+* `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created, replaced or deleted. The constraint can be defined as either a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type, or it can be defined dynamically as a function that accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true` and, if the old document has been deleted or simply does not exist, the second parameter will be `null`. The assignment types are specified as follows:
   * Channel access assignments:
-    * `type`: May be either "channel", `null` or `undefined`.
+    * `type`: May be either "channel", `null` or missing/`undefined`.
     * `channels`: The channels to assign to users and/or roles.
     * `roles`: The roles to which to assign the channels.
     * `users`: The users to which to assign the channels.

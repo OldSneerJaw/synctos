@@ -64,7 +64,7 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
   authorizedRoles: authorizationSchema,
   authorizedUsers: authorizationSchema,
 
-  accessAssignments: joi.array().items(
+  accessAssignments: dynamicConstraintSchema(joi.array().items(
     joi.object().keys({ type: joi.string().only([ 'channel', 'role', null ]) })
       // Each access assignment may be either a role assignment
       .when(
@@ -87,7 +87,7 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
             roles: accessAssignmentEntryPropertySchema,
             users: accessAssignmentEntryPropertySchema
           }).or('roles', 'users') // At least one of "roles" or "users" must be provided
-        })),
+        }))),
 
   customActions: joi.object().min(1).keys({
     onTypeIdentificationSucceeded: customActionEventSchema,

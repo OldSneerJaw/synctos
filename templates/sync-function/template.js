@@ -126,10 +126,13 @@ function synctos(doc, oldDoc) {
     theDocDefinition.customActions.onValidationSucceeded(doc, oldDoc, customActionMetadata);
   }
 
-  if (theDocDefinition.accessAssignments && theDocDefinition.accessAssignments.length > 0) {
-    customActionMetadata.accessAssignments = accessAssignmentModule.assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
+  if (theDocDefinition.accessAssignments) {
+    var accessAssignments = accessAssignmentModule.assignUserAccess(doc, oldDoc, theDocDefinition);
 
-    if (theDocDefinition.customActions && typeof theDocDefinition.customActions.onAccessAssignmentsSucceeded === 'function') {
+    if (theDocDefinition.customActions &&
+        typeof theDocDefinition.customActions.onAccessAssignmentsSucceeded === 'function' &&
+        accessAssignments.length > 0) {
+      customActionMetadata.accessAssignments = accessAssignments;
       theDocDefinition.customActions.onAccessAssignmentsSucceeded(doc, oldDoc, customActionMetadata);
     }
   }

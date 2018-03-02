@@ -87,9 +87,19 @@ function accessAssignmentModule() {
     };
   }
 
+  // Transforms the given access assignments definition into an array of access assignment entries (e.g. if it was defined as a function)
+  function resolveAccessAssignmentsDefinition(doc, oldDoc, accessAssignmentsDefinition) {
+    if (typeof accessAssignmentsDefinition === 'function') {
+      return accessAssignmentsDefinition(doc, oldDoc);
+    } else {
+      return accessAssignmentsDefinition || [ ];
+    }
+  }
+
   // Assigns role access to users and/or channel access to users/roles according to the given access assignment definitions
-  function assignUserAccess(doc, oldDoc, accessAssignmentDefinitions) {
+  function assignUserAccess(doc, oldDoc, documentDefinition) {
     var effectiveOldDoc = getEffectiveOldDoc(oldDoc);
+    var accessAssignmentDefinitions = resolveAccessAssignmentsDefinition(doc, effectiveOldDoc, documentDefinition.accessAssignments);
 
     var effectiveAssignments = [ ];
     for (var assignmentIndex = 0; assignmentIndex < accessAssignmentDefinitions.length; assignmentIndex++) {
