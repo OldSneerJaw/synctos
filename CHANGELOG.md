@@ -2,7 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-Nothing yet.
+### Fixed:
+- [#243](https://github.com/Kashoo/synctos/issues/243): The test-helper module incorrectly represents an old document that does not exist as undefined
 
 ## [2.0.1] - 2018-02-19
 ### Fixed
