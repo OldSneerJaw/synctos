@@ -125,9 +125,9 @@ describe('Custom actions:', function() {
       verifyCustomActionExecuted(doc, oldDoc, 'onAccessAssignmentsSucceeded');
     });
 
-    it('executes a custom action when a document is deleted', function() {
+    it('does not execute a custom action when a document is deleted', () => {
       testHelper.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(getDeletedDoc(docType), oldDoc, 'onAccessAssignmentsSucceeded');
+      verifyCustomActionNotExecuted();
     });
 
     it('does not execute a custom action if the document definition does not define access assignments', function() {

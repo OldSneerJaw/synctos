@@ -126,7 +126,7 @@ function synctos(doc, oldDoc) {
     theDocDefinition.customActions.onValidationSucceeded(doc, oldDoc, customActionMetadata);
   }
 
-  if (theDocDefinition.accessAssignments && theDocDefinition.accessAssignments.length > 0) {
+  if (theDocDefinition.accessAssignments && theDocDefinition.accessAssignments.length > 0 && !doc._deleted) {
     customActionMetadata.accessAssignments = accessAssignmentModule.assignUserAccess(doc, oldDoc, theDocDefinition.accessAssignments);
 
     if (theDocDefinition.customActions && typeof theDocDefinition.customActions.onAccessAssignmentsSucceeded === 'function') {
