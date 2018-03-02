@@ -89,7 +89,7 @@ Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `
 
 If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard error (stderr). Otherwise, if validation was successful, the utility will exit normally and will not output anything.
 
-See the [Testing](#testing) section for information on writing test cases for custom code in document definitions.
+Be aware that the validation utility cannot verify the behaviour of custom functions (e.g. dynamic constraints, custom actions, custom validation functions) in a document definition. However, the [Testing](#testing) section of the README describes how to write test cases for such custom code.
 
 ### Specifications
 
@@ -841,4 +841,4 @@ The `testHelper.validationErrorFormatter` object in the preceding example provid
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).
 
-See the [Validating](#validating) section for information on using the validation utility to verify the structure and semantics of a document definitions file.
+Refer to the [Validating](#validating) section of the README for information on using the validation utility to verify the structure and semantics of a document definitions file.

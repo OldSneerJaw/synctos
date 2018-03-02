@@ -288,7 +288,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
             break;
           case 'enum':
             var enumPredefinedValues = resolveItemConstraint(validator.predefinedValues);
-            if (!(enumPredefinedValues instanceof Array)) {
+            if (!Array.isArray(enumPredefinedValues)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" belongs to an enum that has no predefined values');
             } else if (enumPredefinedValues.indexOf(itemValue) < 0) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be one of the predefined values: ' + enumPredefinedValues.join(','));
@@ -301,7 +301,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
             break;
           case 'object':
             var childPropertyValidators = resolveItemConstraint(validator.propertyValidators);
-            if (typeof itemValue !== 'object' || itemValue instanceof Array) {
+            if (typeof itemValue !== 'object' || Array.isArray(itemValue)) {
               validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object');
             } else if (childPropertyValidators) {
               validateProperties(childPropertyValidators, resolveItemConstraint(validator.allowUnknownProperties));
@@ -335,7 +335,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
     function storeOptionalValidationErrors(errorMessages) {
       if (typeof errorMessages === 'string') {
         validationErrors.push(errorMessages);
-      } else if (errorMessages instanceof Array) {
+      } else if (Array.isArray(errorMessages)) {
         for (var errorMessageIndex = 0; errorMessageIndex < errorMessages.length; errorMessageIndex++) {
           validationErrors.push(errorMessages[errorMessageIndex]);
         }
@@ -370,7 +370,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
       var itemValue = currentItemEntry.itemValue;
       var oldItemValue = currentItemEntry.oldItemValue;
 
-      if (!(itemValue instanceof Array)) {
+      if (!Array.isArray(itemValue)) {
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an array');
       } else if (elementValidator) {
         // Validate each element in the array
@@ -401,7 +401,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
       var oldItemValue = currentItemEntry.oldItemValue;
       var hashtablePath = buildItemPath(itemStack);
 
-      if (typeof itemValue !== 'object' || itemValue instanceof Array) {
+      if (typeof itemValue !== 'object' || Array.isArray(itemValue)) {
         validationErrors.push('item "' + buildItemPath(itemStack) + '" must be an object/hashtable');
       } else {
         var size = 0;
@@ -463,7 +463,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
 
       var customValidationErrors = validator.customValidation(doc, oldDoc, currentItemEntry, customValidationItemStack);
 
-      if (customValidationErrors instanceof Array) {
+      if (Array.isArray(customValidationErrors)) {
         for (var errorIndex = 0; errorIndex < customValidationErrors.length; errorIndex++) {
           validationErrors.push(customValidationErrors[errorIndex]);
         }

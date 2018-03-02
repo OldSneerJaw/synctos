@@ -291,11 +291,11 @@ function verifyChannelAssignment(expectedChannels) {
 }
 
 function checkAuthorizations(expectedAuthorizations, actualAuthorizations, authorizationType) {
-  if (!(expectedAuthorizations instanceof Array)) {
+  if (!Array.isArray(expectedAuthorizations)) {
     expectedAuthorizations = [ expectedAuthorizations ];
   }
 
-  if (!(actualAuthorizations instanceof Array)) {
+  if (!Array.isArray(actualAuthorizations)) {
     actualAuthorizations = [ actualAuthorizations ];
   }
 
@@ -334,7 +334,7 @@ function prefixRoleName(role) {
 function verifyChannelAccessAssignment(expectedAssignment) {
   const expectedUsersAndRoles = [ ];
   if (expectedAssignment.expectedUsers) {
-    if (expectedAssignment.expectedUsers instanceof Array) {
+    if (Array.isArray(expectedAssignment.expectedUsers)) {
       expectedUsersAndRoles.push(...expectedAssignment.expectedUsers);
     } else {
       expectedUsersAndRoles.push(expectedAssignment.expectedUsers);
@@ -344,7 +344,7 @@ function verifyChannelAccessAssignment(expectedAssignment) {
   if (expectedAssignment.expectedRoles) {
     // The prefix "role:" must be applied to roles when calling the access function, as specified by
     // http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#access-username-channelname
-    if (expectedAssignment.expectedRoles instanceof Array) {
+    if (Array.isArray(expectedAssignment.expectedRoles)) {
       expectedAssignment.expectedRoles.forEach((expectedRole) => {
         expectedUsersAndRoles.push(prefixRoleName(expectedRole));
       });
@@ -355,7 +355,7 @@ function verifyChannelAccessAssignment(expectedAssignment) {
 
   const expectedChannels = [ ];
   if (expectedAssignment.expectedChannels) {
-    if (expectedAssignment.expectedChannels instanceof Array) {
+    if (Array.isArray(expectedAssignment.expectedChannels)) {
       expectedChannels.push(...expectedAssignment.expectedChannels);
     } else {
       expectedChannels.push(expectedAssignment.expectedChannels);
@@ -370,7 +370,7 @@ function verifyChannelAccessAssignment(expectedAssignment) {
 function verifyRoleAccessAssignment(expectedAssignment) {
   const expectedUsers = [ ];
   if (expectedAssignment.expectedUsers) {
-    if (expectedAssignment.expectedUsers instanceof Array) {
+    if (Array.isArray(expectedAssignment.expectedUsers)) {
       expectedUsers.push(...expectedAssignment.expectedUsers);
     } else {
       expectedUsers.push(expectedAssignment.expectedUsers);
@@ -381,7 +381,7 @@ function verifyRoleAccessAssignment(expectedAssignment) {
   if (expectedAssignment.expectedRoles) {
     // The prefix "role:" must be applied to roles when calling the role function, as specified by
     // http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#role-username-rolename
-    if (expectedAssignment.expectedRoles instanceof Array) {
+    if (Array.isArray(expectedAssignment.expectedRoles)) {
       expectedAssignment.expectedRoles.forEach((expectedRole) => {
         expectedRoles.push(prefixRoleName(expectedRole));
       });
@@ -425,7 +425,7 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
   }
 
   const actualChannels = exports.channel.calls[0].arg;
-  if (expectedChannels instanceof Array) {
+  if (Array.isArray(expectedChannels)) {
     expectedChannels.forEach((expectedChannel) => {
       assert.ok(
         actualChannels.includes(expectedChannel),
@@ -440,7 +440,7 @@ function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
 
 function verifyAuthorization(expectedAuthorization) {
   let expectedOperationChannels = [ ];
-  if (typeof expectedAuthorization === 'string' || expectedAuthorization instanceof Array) {
+  if (typeof expectedAuthorization === 'string' || Array.isArray(expectedAuthorization)) {
     // For backward compatibility, if the authorization parameter is not an object, treat it as the collection of channels that are required
     // for authorization
     expectedOperationChannels = expectedAuthorization;
@@ -528,7 +528,7 @@ function verifyDocumentNotDeleted(oldDoc, docType, expectedErrorMessages, expect
 }
 
 function verifyValidationErrors(docType, expectedErrorMessages, exception) {
-  if (!(expectedErrorMessages instanceof Array)) {
+  if (!Array.isArray(expectedErrorMessages)) {
     expectedErrorMessages = [ expectedErrorMessages ];
   }
 
@@ -599,7 +599,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
   }
 
   if (syncFuncError) {
-    if (typeof expectedAuthorization === 'string' || expectedAuthorization instanceof Array) {
+    if (typeof expectedAuthorization === 'string' || Array.isArray(expectedAuthorization)) {
       assert.equal(
         syncFuncError,
         channelAccessDeniedError,

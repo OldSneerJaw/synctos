@@ -8,7 +8,7 @@ function accessAssignmentModule(utils) {
   function resolveCollectionItems(originalItems, itemPrefix) {
     if (utils.isValueNullOrUndefined(originalItems)) {
       return [ ];
-    } else if (originalItems instanceof Array) {
+    } else if (Array.isArray(originalItems)) {
       var resultItems = [ ];
       for (var i = 0; i < originalItems.length; i++) {
         var item = originalItems[i];
