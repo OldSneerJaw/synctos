@@ -283,7 +283,7 @@ authorizedUsers: function(doc, oldDoc) {
     * `roles`: The roles to assign to users.
     * `users`: The users to which to assign the roles.
 
-An example of a mix of channel and role access assignments:
+An example of a static mix of channel and role access assignments:
 
 ```
 accessAssignments: [
@@ -310,6 +310,35 @@ accessAssignments: [
     }
   },
 ]
+```
+
+And an example of dynamic channel and role access assignments:
+
+```
+accessAssignments: function(doc, oldDoc) {
+  var accessAssignments = [ ];
+
+  if (doc.channels) {
+    accessAssignments.push(
+      {
+        type: 'channel',
+        channels: doc.channels,
+        roles: doc.channelRoles,
+        users: doc.channelUsers
+      });
+  }
+
+  if (doc.roles) {
+    accessAssignments.push(
+      {
+        type: 'role',
+        roles: doc.roles,
+        users: doc.roleUsers
+      });
+  }
+
+  return assignments;
+}
 ```
 
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/references/sync-gateway/rest-api/index.html#!/attachment/put_db_doc_attachment) for the document type. In addition to a static value (e.g. `allowAttachments: true`), this property may also be assigned a value dynamically via a function (e.g. `allowAttachments: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files. See the `attachmentConstraints` property and the `attachmentReference` validation type for more options.
