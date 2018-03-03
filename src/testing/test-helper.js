@@ -88,12 +88,6 @@ exports.verifyDocumentReplaced = verifyDocumentReplaced;
  *                                                    - expectedChannels: an optional list of channels that are authorized
  *                                                    - expectedRoles: an optional list of roles that are authorized
  *                                                    - expectedUsers: an optional list of users that are authorized
- * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
- *                                               that contains the following fields:
- *                                               - expectedType: an optional string that indicates whether this is a "channel" (default) or "role" assignment
- *                                               - expectedChannels: an optional list of channels to assign to the users and roles
- *                                               - expectedUsers: an optional list of users to which to assign the channels
- *                                               - expectedRoles: an optional list of roles to which to assign the channels
  */
 exports.verifyDocumentDeleted = verifyDocumentDeleted;
 
@@ -527,8 +521,8 @@ function verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, expectedAcce
   verifyDocumentAccepted(doc, oldDoc, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
 }
 
-function verifyDocumentDeleted(oldDoc, expectedAuthorization, expectedAccessAssignments) {
-  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
+function verifyDocumentDeleted(oldDoc, expectedAuthorization) {
+  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedAuthorization || defaultWriteChannel);
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {

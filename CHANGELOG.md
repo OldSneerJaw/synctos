@@ -1,6 +1,10 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
+## [Unreleased]
+### Security
+- [#246](https://github.com/Kashoo/synctos/issues/246): Access assignments are not revoked when the corresponding document is deleted
+
 ## [2.0.1] - 2018-02-19
 ### Fixed
 - [#98](https://github.com/Kashoo/synctos/issues/98): Final argument of custom validation constraint receives incorrect value
