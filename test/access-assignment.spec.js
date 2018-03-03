@@ -44,10 +44,10 @@ describe('User and role access assignment:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedStaticAssignments);
     });
 
-    it('is applied when deleting an existing document', () => {
+    it('is NOT applied when deleting an existing document', () => {
       const oldDoc = { _id: 'staticAccessDoc' };
 
-      testHelper.verifyDocumentDeleted(oldDoc, 'write', expectedStaticAssignments);
+      testHelper.verifyDocumentDeleted(oldDoc, 'write');
     });
 
     it('is NOT applied when creating an invalid document', () => {
@@ -128,14 +128,19 @@ describe('User and role access assignment:', () => {
       testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
-    it('is applied when deleting an existing document', () => {
-      const oldDoc = { _id: 'dynamicAccessDoc' };
+    it('is applied even when the roles and users are not defined', () => {
+      const doc = { _id: 'dynamicAccessDoc' };
 
-      const expectedDeleteAssignments = [
+      const expectedTestAssignments = [
         {
           expectedType: 'channel',
           expectedUsers: null,
           expectedChannels: [ `${doc._id}-channel3` ]
+        },
+        {
+          expectedType: 'role',
+          expectedUsers: null,
+          expectedRoles: null
         },
         {
           expectedType: 'channel',
@@ -147,15 +152,16 @@ describe('User and role access assignment:', () => {
           expectedUsers: null,
           expectedRoles: null,
           expectedChannels: [ `${doc._id}-channel2`, `${doc._id}-channel1` ]
-        },
-        {
-          expectedType: 'role',
-          expectedUsers: null,
-          expectedRoles: null
         }
       ];
 
-      testHelper.verifyDocumentDeleted(oldDoc, 'write', expectedDeleteAssignments);
+      testHelper.verifyDocumentCreated(doc, 'write', expectedTestAssignments);
+    });
+
+    it('is NOT applied when deleting an existing document', () => {
+      const oldDoc = { _id: 'dynamicAccessDoc' };
+
+      testHelper.verifyDocumentDeleted(oldDoc, 'write');
     });
 
     it('is NOT applied when creating an invalid document', () => {
