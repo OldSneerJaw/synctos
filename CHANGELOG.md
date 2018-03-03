@@ -1,7 +1,7 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
-## [Unreleased]
+## [2.0.2] - 2018-03-02
 ### Security
 - [#246](https://github.com/Kashoo/synctos/issues/246): Access assignments are not revoked when the corresponding document is deleted
 
@@ -152,7 +152,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.0.1...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.0.2...HEAD
+[2.0.2]: https://github.com/Kashoo/synctos/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/Kashoo/synctos/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Kashoo/synctos/compare/v1.10.0...v2.0.0
 [1.10.0]: https://github.com/Kashoo/synctos/compare/v1.9.4...v1.10.0
