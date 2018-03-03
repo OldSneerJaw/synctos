@@ -289,10 +289,6 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
     expectedAuthorizations = [ expectedAuthorizations ];
   }
 
-  if (!(actualAuthorizations instanceof Array)) {
-    actualAuthorizations = [ actualAuthorizations ];
-  }
-
   // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
   // that neither list of channels/roles/users contains an element that does not exist in the other
   expectedAuthorizations.forEach((expectedAuth) => {

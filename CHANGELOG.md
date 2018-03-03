@@ -2,7 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-Nothing yet.
+### Added
+- [#250](https://github.com/Kashoo/synctos/issues/250): Allow a document with an unknown type to be deleted via the admin API
 
 ## [2.0.2] - 2018-03-02
 ### Security
