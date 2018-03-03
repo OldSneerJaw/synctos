@@ -272,16 +272,16 @@ authorizedUsers: function(doc, oldDoc) {
 }
 ```
 
-* `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created, replaced or deleted. The constraint can be defined as either a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type, or it can be defined dynamically as a function that accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true` and, if the old document has been deleted or simply does not exist, the second parameter will be `null`. The assignment types are specified as follows:
+* `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created or replaced. The constraint can be defined as either a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type, or it can be defined dynamically as a function that accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: If the old document has been deleted or simply does not exist, the second parameter will be `null`. When a document that included access assignments is deleted, its access assignments will be revoked. The assignment types are specified as follows:
   * Channel access assignments:
     * `type`: May be either "channel", `null` or missing/`undefined`.
-    * `channels`: The channels to assign to users and/or roles.
-    * `roles`: The roles to which to assign the channels.
-    * `users`: The users to which to assign the channels.
+    * `channels`: An array of channel names to assign to users and/or roles.
+    * `roles`: An array of role names to which to assign the channels.
+    * `users`: An array of usernames to which to assign the channels.
   * Role access assignments:
     * `type`: Must be "role".
-    * `roles`: The roles to assign to users.
-    * `users`: The users to which to assign the roles.
+    * `roles`: An array of role names to assign to users.
+    * `users`: An array of usernames to which to assign the roles.
 
 An example of a static mix of channel and role access assignments:
 
