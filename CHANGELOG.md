@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Added
 - [#250](https://github.com/Kashoo/synctos/issues/250): Allow a document with an unknown type to be deleted via the admin API
 
+### Fixed:
+- [#243](https://github.com/Kashoo/synctos/issues/243): The test-helper module incorrectly represents an old document that does not exist as undefined
+
 ## [2.0.2] - 2018-03-02
 ### Security
 - [#246](https://github.com/Kashoo/synctos/issues/246): Access assignments are not revoked when the corresponding document is deleted
