@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
+### Added
+- [#250](https://github.com/Kashoo/synctos/issues/250): Allow a document with an unknown type to be deleted via the admin API
+
 ### Fixed:
 - [#243](https://github.com/Kashoo/synctos/issues/243): The test-helper module incorrectly represents an old document that does not exist as undefined
 
