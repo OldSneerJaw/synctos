@@ -57,13 +57,17 @@ To execute the full test suite and lint the project's JS files with JSHint, run 
 
 Whenever configuration elements are added or updated, the document definitions schema (see the `src/validation/document-definition-schema` and `src/validation/property-validator-schema` modules) must also be updated for use by the document-definitions-validator module. The schema is defined according to the [Joi](https://github.com/hapijs/joi) library's API. See the project's official API [documentation](https://github.com/hapijs/joi/blob/v13.1.2/API.md) for more info.
 
+### Content validation
+
+Where possible, make use of the `importSyncFunctionFragment` macro to split new type validation logic out of the `templates/sync-function/validation-module` module into its own submodule. Furthermore, the addition of a new property/element validation type must be accompanied by an entry in the `src/testing/validation-error-formatter` module's `getTypeDescription` function.
+
 ### Documentation
 
 The project includes comprehensive end user documentation and, to ensure it stays that way over time, every new feature must be described in detail in the project's `README.md`. In many cases (e.g. when adding a new validation type) you should be able to simply follow the documentation examples provided for existing features. Be sure to update the table of contents whenever new headings are added and include code/configuration samples wherever it is appropriate to do so.
 
 Bugs do not generally need to be documented in `README.md` unless there is some caveat that users should be aware of. For example, the need to double-escape backslashes in document definitions for older versions of Sync Gateway (see sync_gateway issue [#1866](https://github.com/couchbase/sync_gateway/issues/1866)).
 
-In either case, include an entry for each change in `CHANGELOG.md`'s "Unreleased" section according to the guidelines at [Keep a Changelog](http://keepachangelog.com).
+A change that addresses a GitHub issue with either of the [bug](https://github.com/Kashoo/synctos/issues?q=is%3Aissue+label%3Abug) or [enhancement](https://github.com/Kashoo/synctos/issues?q=is%3Aissue+label%3Aenhancement) labels must include an entry in `CHANGELOG.md`'s "Unreleased" section according to the guidelines at [Keep a Changelog](http://keepachangelog.com). Whenever a component is marked for deprecation, its name must be listed under the "Deprecated" heading (e.g. "`etc/test-helper` module"). Likewise, when a component has been deleted, its name must be listed under the "Removed" heading. Other issue types that do not have a functional impact on the application's behaviour (e.g. a [task](https://github.com/Kashoo/synctos/issues?&q=is%3Aissue+label%3Atask)) generally should not be listed in the changelog.
 
 ### Example document definitions
 
