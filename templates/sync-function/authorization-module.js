@@ -1,8 +1,8 @@
-function authorizationModule() {
+function authorizationModule(utils) {
   // A document definition may define its authorizations (channels, roles or users) for each operation type (view, add, replace, delete or
   // write) as either a string or an array of strings. In either case, add them to the list if they are not already present.
   function appendToAuthorizationList(allAuthorizations, authorizationsToAdd) {
-    if (!isValueNullOrUndefined(authorizationsToAdd)) {
+    if (!utils.isValueNullOrUndefined(authorizationsToAdd)) {
       if (authorizationsToAdd instanceof Array) {
         for (var i = 0; i < authorizationsToAdd.length; i++) {
           var authorization = authorizationsToAdd[i];
@@ -19,7 +19,7 @@ function authorizationModule() {
   // A document definition may define its authorized channels, roles or users as either a function or an object/hashtable
   function getAuthorizationMap(doc, oldDoc, authorizationDefinition) {
     if (typeof authorizationDefinition === 'function') {
-      return authorizationDefinition(doc, getEffectiveOldDoc(oldDoc));
+      return authorizationDefinition(doc, utils.resolveOldDoc(oldDoc));
     } else {
       return authorizationDefinition;
     }
@@ -45,7 +45,7 @@ function authorizationModule() {
   function getRequiredAuthorizations(doc, oldDoc, authorizationDefinition) {
     var authorizationMap = getAuthorizationMap(doc, oldDoc, authorizationDefinition);
 
-    if (isValueNullOrUndefined(authorizationMap)) {
+    if (utils.isValueNullOrUndefined(authorizationMap)) {
       // This document type does not define any authorizations (channels, roles, users) at all
       return null;
     }
@@ -62,10 +62,10 @@ function authorizationModule() {
         writeAuthorizationFound = true;
         appendToAuthorizationList(requiredAuthorizations, authorizationMap.remove);
       }
-    } else if (!isDocumentMissingOrDeleted(oldDoc) && authorizationMap.replace) {
+    } else if (!utils.isDocumentMissingOrDeleted(oldDoc) && authorizationMap.replace) {
       writeAuthorizationFound = true;
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.replace);
-    } else if (isDocumentMissingOrDeleted(oldDoc) && authorizationMap.add) {
+    } else if (utils.isDocumentMissingOrDeleted(oldDoc) && authorizationMap.add) {
       writeAuthorizationFound = true;
       appendToAuthorizationList(requiredAuthorizations, authorizationMap.add);
     }

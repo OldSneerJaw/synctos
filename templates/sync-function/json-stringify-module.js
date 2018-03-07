@@ -5,7 +5,7 @@ function jsonStringify(value) {
   var escMap = {'"': '\\"', '\\': '\\\\', '\b': '\\b', '\f': '\\f', '\n': '\\n', '\r': '\\r', '\t': '\\t'};
   var escFunc = function (m) { return escMap[m] || '\\u' + (m.charCodeAt(0) + 0x10000).toString(16).substr(1); };
   var escRegex = /[\\"\u0000-\u001F\u2028\u2029]/g;
-  if (isValueNullOrUndefined(value)) {
+  if (value === null || value === void 0) {
     return 'null';
   } else if (typeof value === 'number') {
     return isFinite(value) ? value.toString() : 'null';

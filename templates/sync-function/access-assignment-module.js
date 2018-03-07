@@ -1,4 +1,4 @@
-function accessAssignmentModule() {
+function accessAssignmentModule(utils) {
   // Adds a prefix to the specified item if the prefix is defined
   function prefixItem(item, prefix) {
     return prefix ? prefix + item : item.toString();
@@ -6,14 +6,14 @@ function accessAssignmentModule() {
 
   // Transforms the given item or items into a new list of items with the specified prefix (if any) appended to each element
   function resolveCollectionItems(originalItems, itemPrefix) {
-    if (isValueNullOrUndefined(originalItems)) {
+    if (utils.isValueNullOrUndefined(originalItems)) {
       return [ ];
     } else if (originalItems instanceof Array) {
       var resultItems = [ ];
       for (var i = 0; i < originalItems.length; i++) {
         var item = originalItems[i];
 
-        if (isValueNullOrUndefined(item)) {
+        if (utils.isValueNullOrUndefined(item)) {
           continue;
         }
 
@@ -30,7 +30,7 @@ function accessAssignmentModule() {
   // Transforms the given collection definition, which may have been defined as a single item, a list of items or a function that returns a
   // list of items into a simple list, where each item has the specified prefix, if any
   function resolveCollectionDefinition(doc, oldDoc, collectionDefinition, itemPrefix) {
-    if (isValueNullOrUndefined(collectionDefinition)) {
+    if (utils.isValueNullOrUndefined(collectionDefinition)) {
       return [ ];
     } else {
       if (typeof collectionDefinition === 'function') {
@@ -98,7 +98,7 @@ function accessAssignmentModule() {
 
   // Assigns role access to users and/or channel access to users/roles according to the given access assignment definitions
   function assignUserAccess(doc, oldDoc, documentDefinition) {
-    var effectiveOldDoc = getEffectiveOldDoc(oldDoc);
+    var effectiveOldDoc = utils.resolveOldDoc(oldDoc);
     var accessAssignmentDefinitions = resolveAccessAssignmentsDefinition(doc, effectiveOldDoc, documentDefinition.accessAssignments);
 
     var effectiveAssignments = [ ];
@@ -107,7 +107,7 @@ function accessAssignmentModule() {
 
       if (definition.type === 'role') {
         effectiveAssignments.push(assignRolesToUsers(doc, effectiveOldDoc, definition));
-      } else if (definition.type === 'channel' || isValueNullOrUndefined(definition.type)) {
+      } else if (definition.type === 'channel' || utils.isValueNullOrUndefined(definition.type)) {
         effectiveAssignments.push(assignChannelsToUsersAndRoles(doc, effectiveOldDoc, definition));
       }
     }
