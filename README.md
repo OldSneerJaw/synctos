@@ -713,7 +713,7 @@ As demonstrated above, the advantage of defining a function rather than an objec
 
 Document definitions are also modular. By invoking the `importDocumentDefinitionFragment` macro, the contents of external files can be imported into the main document definitions file. For example, each individual document definition from the example above can be specified as a fragment in its own separate file:
 
-* `my-doc-type1.js`:
+* `my-doc-type1-fragment.js`:
 
 ```
     {
@@ -728,7 +728,7 @@ Document definitions are also modular. By invoking the `importDocumentDefinition
     }
 ```
 
-* `my-doc-type2.js`:
+* `my-doc-type2-fragment.js`:
 
 ```
     {
