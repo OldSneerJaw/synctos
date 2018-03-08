@@ -20,7 +20,7 @@ describe('Custom actions:', () => {
 
     it('executes a custom action when a document is created', () => {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, void 0, 'onTypeIdentificationSucceeded');
+      verifyCustomActionExecuted(doc, null, 'onTypeIdentificationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
@@ -40,7 +40,7 @@ describe('Custom actions:', () => {
       let syncFuncError = null;
       expect(() => {
         try {
-          testHelper.syncFunction(doc, expectedAuthorization);
+          testHelper.syncFunction(doc);
         } catch (ex) {
           syncFuncError = ex;
 
@@ -60,7 +60,7 @@ describe('Custom actions:', () => {
 
     it('executes a custom action when a document is created', () => {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, void 0, 'onAuthorizationSucceeded');
+      verifyCustomActionExecuted(doc, null, 'onAuthorizationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
@@ -86,7 +86,7 @@ describe('Custom actions:', () => {
 
     it('executes a custom action when a document is created', () => {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, void 0, 'onValidationSucceeded');
+      verifyCustomActionExecuted(doc, null, 'onValidationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
@@ -117,7 +117,7 @@ describe('Custom actions:', () => {
 
     it('executes a custom action when a document is created', () => {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, void 0, 'onAccessAssignmentsSucceeded');
+      verifyCustomActionExecuted(doc, null, 'onAccessAssignmentsSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
@@ -125,9 +125,9 @@ describe('Custom actions:', () => {
       verifyCustomActionExecuted(doc, oldDoc, 'onAccessAssignmentsSucceeded');
     });
 
-    it('executes a custom action when a document is deleted', () => {
+    it('does not execute a custom action when a document is deleted', () => {
       testHelper.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(getDeletedDoc(docType), oldDoc, 'onAccessAssignmentsSucceeded');
+      verifyCustomActionNotExecuted();
     });
 
     it('does not execute a custom action if the document definition does not define access assignments', () => {
@@ -152,7 +152,7 @@ describe('Custom actions:', () => {
 
     it('executes a custom action when a document is created', () => {
       testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, void 0, 'onDocumentChannelAssignmentSucceeded');
+      verifyCustomActionExecuted(doc, null, 'onDocumentChannelAssignmentSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {

@@ -38,8 +38,7 @@ describe('Sample business notification doc definition', () => {
   function verifyNotificationDeleted(businessId, oldDoc) {
     testHelper.verifyDocumentDeleted(
       oldDoc,
-      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_${expectedBasePrivilege}` ]),
-      getExpectedAccessAssignments({ }, oldDoc._id));
+      sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_${expectedBasePrivilege}` ]));
   }
 
   function verifyNotificationNotCreated(businessId, doc, expectedErrorMessages) {

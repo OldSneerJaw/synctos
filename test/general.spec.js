@@ -21,28 +21,27 @@ describe('Functionality that is common to all documents:', () => {
       testHelper.verifyUnknownDocumentType(doc, oldDoc);
     });
 
-    it('rejects document deletion with an unrecognized doc type', () => {
-      const doc = { _id: 'my-invalid-doc', _deleted: true };
-      const oldDoc = { _id: 'my-invalid-doc' };
+    it('allows a document to be deleted by an administrator even if the type is unrecognized', () => {
+      const oldDoc = { _id: 'my-invalid-doc', _deleted: true };
 
-      testHelper.verifyUnknownDocumentType(doc, oldDoc);
+      testHelper.verifyDocumentDeleted(oldDoc, [ ]);
     });
 
-    it('allows a missing document to be "deleted" even if the type is unrecognized', () => {
+    it('allows a missing document to be "deleted" by an administrator even if the type is unrecognized', () => {
       const doc = { _id: 'my-invalid-doc', _deleted: true };
 
       // When deleting a document that does not exist and the document's type cannot be determined, the fallback
-      // behaviour is to allow it to be deleted and assign the public channel to it
-      testHelper.verifyDocumentAccepted(doc, void 0, [ '!' ]);
+      // behaviour is to allow it to be deleted by an admin
+      testHelper.verifyDocumentAccepted(doc, void 0, [ ]);
     });
 
-    it('allows a deleted document to be deleted again even if the type is unrecognized', () => {
+    it('allows a deleted document to be deleted again by an administrator even if the type is unrecognized', () => {
       const doc = { _id: 'my-invalid-doc', _deleted: true };
       const oldDoc = { _id: 'my-invalid-doc', _deleted: true };
 
       // When deleting a document that was already deleted and the document's type cannot be determined, the fallback
-      // behaviour is to allow it to be deleted and assign the public channel to it
-      testHelper.verifyDocumentAccepted(doc, oldDoc, [ '!' ]);
+      // behaviour is to allow it to be deleted by an admin
+      testHelper.verifyDocumentAccepted(doc, oldDoc, [ ]);
     });
   });
 

@@ -88,12 +88,6 @@ exports.verifyDocumentReplaced = verifyDocumentReplaced;
  *                                                    - expectedChannels: an optional list of channels that are authorized
  *                                                    - expectedRoles: an optional list of roles that are authorized
  *                                                    - expectedUsers: an optional list of users that are authorized
- * @param {Object[]} [expectedAccessAssignments] An optional list of expected user and role channel assignments. Each entry is an object
- *                                               that contains the following fields:
- *                                               - expectedType: an optional string that indicates whether this is a "channel" (default) or "role" assignment
- *                                               - expectedChannels: an optional list of channels to assign to the users and roles
- *                                               - expectedUsers: an optional list of users to which to assign the channels
- *                                               - expectedRoles: an optional list of roles to which to assign the channels
  */
 exports.verifyDocumentDeleted = verifyDocumentDeleted;
 
@@ -295,10 +289,6 @@ function checkAuthorizations(expectedAuthorizations, actualAuthorizations, autho
     expectedAuthorizations = [ expectedAuthorizations ];
   }
 
-  if (!Array.isArray(actualAuthorizations)) {
-    actualAuthorizations = [ actualAuthorizations ];
-  }
-
   // Rather than compare the sizes of the two lists, which leads to an obtuse error message on failure (e.g. "expected 2 to be 3"), ensure
   // that neither list of channels/roles/users contains an element that does not exist in the other
   expectedAuthorizations.forEach((expectedAuth) => {
@@ -419,7 +409,7 @@ function verifyAccessAssignments(expectedAccessAssignments) {
   }
 }
 
-function verifyOperationChannelsAssigned(doc, oldDoc, expectedChannels) {
+function verifyOperationChannelsAssigned(doc, expectedChannels) {
   if (exports.channel.callCount !== 1) {
     assert.fail('Document channels were not assigned');
   }
@@ -474,7 +464,7 @@ function verifyAuthorization(expectedAuthorization) {
 }
 
 function verifyDocumentAccepted(doc, oldDoc, expectedAuthorization, expectedAccessAssignments) {
-  exports.syncFunction(doc, oldDoc);
+  exports.syncFunction(doc, oldDoc || null);
 
   if (expectedAccessAssignments) {
     verifyAccessAssignments(expectedAccessAssignments);
@@ -482,25 +472,25 @@ function verifyDocumentAccepted(doc, oldDoc, expectedAuthorization, expectedAcce
 
   const expectedOperationChannels = verifyAuthorization(expectedAuthorization);
 
-  verifyOperationChannelsAssigned(doc, oldDoc, expectedOperationChannels);
+  verifyOperationChannelsAssigned(doc, expectedOperationChannels);
 }
 
 function verifyDocumentCreated(doc, expectedAuthorization, expectedAccessAssignments) {
-  verifyDocumentAccepted(doc, void 0, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
+  verifyDocumentAccepted(doc, null, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
 }
 
 function verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, expectedAccessAssignments) {
   verifyDocumentAccepted(doc, oldDoc, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
 }
 
-function verifyDocumentDeleted(oldDoc, expectedAuthorization, expectedAccessAssignments) {
-  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
+function verifyDocumentDeleted(oldDoc, expectedAuthorization) {
+  verifyDocumentAccepted({ _id: oldDoc._id, _deleted: true }, oldDoc, expectedAuthorization || defaultWriteChannel);
 }
 
 function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {
   let syncFuncError = null;
   try {
-    exports.syncFunction(doc, oldDoc);
+    exports.syncFunction(doc, oldDoc || null);
   } catch (ex) {
     syncFuncError = ex;
   }
@@ -516,7 +506,7 @@ function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, exp
 }
 
 function verifyDocumentNotCreated(doc, docType, expectedErrorMessages, expectedAuthorization) {
-  verifyDocumentRejected(doc, void 0, docType, expectedErrorMessages, expectedAuthorization || defaultWriteChannel);
+  verifyDocumentRejected(doc, null, docType, expectedErrorMessages, expectedAuthorization || defaultWriteChannel);
 }
 
 function verifyDocumentNotReplaced(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {
@@ -593,7 +583,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
 
   let syncFuncError = null;
   try {
-    exports.syncFunction(doc, oldDoc);
+    exports.syncFunction(doc, oldDoc || null);
   } catch (ex) {
     syncFuncError = ex;
   }
@@ -637,7 +627,7 @@ function verifyAccessDenied(doc, oldDoc, expectedAuthorization) {
 function verifyUnknownDocumentType(doc, oldDoc) {
   let syncFuncError = null;
   try {
-    exports.syncFunction(doc, oldDoc);
+    exports.syncFunction(doc, oldDoc || null);
   } catch (ex) {
     syncFuncError = ex;
   }
