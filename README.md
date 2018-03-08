@@ -272,18 +272,18 @@ authorizedUsers: function(doc, oldDoc) {
 }
 ```
 
-* `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created or replaced. It is specified as a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type. The value of each property can be either a list of strings that specify the raw user/role/channel names or a function that returns the corresponding values as a dynamically-constructed list and accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: If the old document has been deleted or simply does not exist, the second parameter will be `null`. When a document that included access assignments is deleted, its access assignments will be revoked. The assignment types are specified as follows:
+* `accessAssignments`: (optional) Defines either the channel access to assign to users/roles or the role access to assign to users when a document of the corresponding type is successfully created or replaced. The constraint can be defined as either a list, where each entry is an object that defines `users`, `roles` and/or `channels` properties, depending on the access assignment type, or it can be defined dynamically as a function that accepts the following parameters: (1) the new document and (2) the old document that is being replaced/deleted (if any). NOTE: If the old document has been deleted or simply does not exist, the second parameter will be `null`. When a document that included access assignments is deleted, its access assignments will be revoked. The assignment types are specified as follows:
   * Channel access assignments:
-    * `type`: May be either "channel", `null` or `undefined`.
-    * `channels`: The channels to assign to users and/or roles.
-    * `roles`: The roles to which to assign the channels.
-    * `users`: The users to which to assign the channels.
+    * `type`: May be either "channel", `null` or missing/`undefined`.
+    * `channels`: An array of channel names to assign to users and/or roles.
+    * `roles`: An array of role names to which to assign the channels.
+    * `users`: An array of usernames to which to assign the channels.
   * Role access assignments:
     * `type`: Must be "role".
-    * `roles`: The roles to assign to users.
-    * `users`: The users to which to assign the roles.
+    * `roles`: An array of role names to assign to users.
+    * `users`: An array of usernames to which to assign the roles.
 
-An example of a mix of channel and role access assignments:
+An example of a static mix of channel and role access assignments:
 
 ```
 accessAssignments: [
@@ -310,6 +310,35 @@ accessAssignments: [
     }
   },
 ]
+```
+
+And an example of dynamic channel and role access assignments:
+
+```
+accessAssignments: function(doc, oldDoc) {
+  var accessAssignments = [ ];
+
+  if (doc.channels) {
+    accessAssignments.push(
+      {
+        type: 'channel',
+        channels: doc.channels,
+        roles: doc.channelRoles,
+        users: doc.channelUsers
+      });
+  }
+
+  if (doc.roles) {
+    accessAssignments.push(
+      {
+        type: 'role',
+        roles: doc.roles,
+        users: doc.roleUsers
+      });
+  }
+
+  return assignments;
+}
 ```
 
 * `allowAttachments`: (optional) Whether to allow the addition of [file attachments](http://developer.couchbase.com/documentation/mobile/current/references/sync-gateway/rest-api/index.html#!/attachment/put_db_doc_attachment) for the document type. In addition to a static value (e.g. `allowAttachments: true`), this property may also be assigned a value dynamically via a function (e.g. `allowAttachments: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false` to prevent malicious/misbehaving clients from polluting the bucket/database with unwanted files. See the `attachmentConstraints` property and the `attachmentReference` validation type for more options.

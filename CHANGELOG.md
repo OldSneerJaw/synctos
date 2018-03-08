@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [Unreleased]
 ### Added
 - [#250](https://github.com/Kashoo/synctos/issues/250): Allow a document with an unknown type to be deleted via the admin API
+- [#188](https://github.com/Kashoo/synctos/issues/188): Support dynamic definition of channel/role access assignments
 
 ### Fixed:
 - [#243](https://github.com/Kashoo/synctos/issues/243): The test-helper module incorrectly represents an old document that does not exist as undefined

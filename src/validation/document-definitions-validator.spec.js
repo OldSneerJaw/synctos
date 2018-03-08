@@ -19,14 +19,28 @@ describe('Document definitions validator:', () => {
         immutable: true,
         cannotDelete: true, // Must not be defined if "immutable" is also defined
         attachmentConstraints: (a, b) => b, // "allowAttachments" must also be defined,
-        customActions: {
-          onTypeIdentificationSucceeded: (a, b, c, extraParam) => { // Too many parameters
-            return extraParam;
+        accessAssignments: [
+          { // Must include either a "roles" or "users" property
+            channels: [ ] // Must not be empty
           },
-          onAuthorizationSucceeded: 5, // Must be a function
-          invalidEvent: function (a, b, c) { // Unsupported event type
-            return c;
+          { // Must include a "channels" property
+            type: 'channel',
+            roles: [ ], // Must not be empty
+          },
+          {
+            type: 'role',
+            roles: [ 1 ], // Must only contain strings
+            users: [ ], // Must not be empty
+            channels: [ 'foo' ] // The "channels" property is not supported for the "role" type of assignment
+          },
+          {
+            type: 'invalid-type' // Must be either "role", "channel" or null
           }
+        ],
+        customActions: {
+          onTypeIdentificationSucceeded: (a, b, c, extraParam) => extraParam, // Too many parameters
+          onAuthorizationSucceeded: 5, // Must be a function
+          invalidEvent: (a, b, c) => c // Unsupported event type
         }
       }
     };
@@ -41,6 +55,14 @@ describe('Document definitions validator:', () => {
         'myDoc1.allowUnknownProperties: \"allowUnknownProperties\" must be a boolean',
         'myDoc1.immutable: \"immutable\" conflict with forbidden peer \"cannotDelete\"',
         'myDoc1.allowAttachments: \"allowAttachments\" is required',
+        'myDoc1.accessAssignments.0: \"value\" must contain at least one of [roles, users]',
+        'myDoc1.accessAssignments.0.channels: \"channels\" must contain at least 1 items',
+        'myDoc1.accessAssignments.1.channels: \"channels\" is required',
+        'myDoc1.accessAssignments.1.roles: \"roles\" must contain at least 1 items',
+        'myDoc1.accessAssignments.2.roles.0: \"0\" must be a string',
+        'myDoc1.accessAssignments.2.users: \"users\" must contain at least 1 items',
+        'myDoc1.accessAssignments.2.channels: \"channels\" is not allowed',
+        'myDoc1.accessAssignments.3.type: \"type\" must be one of [channel, role, null]',
         'myDoc1.customActions.onTypeIdentificationSucceeded: \"onTypeIdentificationSucceeded\" must have an arity lesser or equal to 3',
         'myDoc1.customActions.onAuthorizationSucceeded: \"onAuthorizationSucceeded\" must be a Function',
         'myDoc1.customActions.invalidEvent: \"invalidEvent\" is not allowed'
@@ -62,11 +84,10 @@ describe('Document definitions validator:', () => {
             maximumAttachmentCount: 0, // Must be at least 1
             maximumIndividualSize: 20971521, // Must be no greater than 20971520 (the max Sync Gateway attachment size)
             maximumTotalSize: 20971520, // Must be greater or equal to "maximumIndividualSize"
-            supportedExtensions: (doc, oldDoc, extraParam) => { // Has too many params
-              return [ extraParam ];
-            },
+            supportedExtensions: (doc, oldDoc, extraParam) => [ extraParam ], // Has too many params
             supportedContentTypes: [ ] // Must have at least one element
           },
+          accessAssignments: (a, b, extraParam) => extraParam, // Too many parameters
           customActions: { }, // Must have at least one property
           propertyValidators: {
             timeProperty: {
@@ -99,9 +120,7 @@ describe('Document definitions validator:', () => {
                   immutableWhenSet: false, // Must not be defined in conjunction with "immutable"
                   maximumValue: '2018-01-31T17:31:27.283-08:00', // Should not include time and time zone components
                   mustEqualStrict: new Date('1578-11-30'), // Must be a date string for equality
-                  customValidation: (a, b, c, d, extraParam) => { // Too many parameters
-                    return extraParam;
-                  }
+                  customValidation: (a, b, c, d, extraParam) => extraParam // Too many parameters
                 },
                 enumProperty: {
                   type: 'enum',
@@ -135,9 +154,7 @@ describe('Document definitions validator:', () => {
                   arrayElementsValidator: {
                     type: 'object',
                     allowUnknownProperties: true,
-                    required: (doc, oldDoc, value, oldValue) => {
-                      return oldValue === true;
-                    },
+                    required: (doc, oldDoc, value, oldValue) => oldValue === true,
                     propertyValidators: {
                       stringProperty: {
                         type: 'string',
@@ -219,6 +236,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.attachmentConstraints.maximumTotalSize: \"maximumTotalSize\" must be larger than or equal to 20971521',
         'myDoc1.attachmentConstraints.supportedExtensions: "supportedExtensions" must have an arity lesser or equal to 2',
         'myDoc1.attachmentConstraints.supportedContentTypes: \"supportedContentTypes\" must contain at least 1 items',
+        'myDoc1.accessAssignments: \"accessAssignments\" must have an arity lesser or equal to 2',
         'myDoc1.customActions: \"customActions\" must have at least 1 children',
         'myDoc1.propertyValidators.timeProperty.immutable: \"immutable\" must be a boolean',
         'myDoc1.propertyValidators.timeProperty.minimumValue: \"minimumValue\" with value \"15\" fails to match the required pattern: /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\\.[0-9]{1,3})?)?$/',
