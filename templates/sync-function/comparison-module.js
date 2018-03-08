@@ -88,7 +88,7 @@ function comparisonModule(utils, buildItemPath, timeModule) {
       // One has a value while the other does not
       return false;
     } else {
-      if (itemValue instanceof Array || expectedItemValue instanceof Array) {
+      if (Array.isArray(itemValue) || Array.isArray(expectedItemValue)) {
         return checkArrayEquality(itemValue, expectedItemValue);
       } else if (typeof itemValue === 'object' || typeof expectedItemValue === 'object') {
         return checkObjectEquality(itemValue, expectedItemValue);
@@ -99,7 +99,7 @@ function comparisonModule(utils, buildItemPath, timeModule) {
   }
 
   function checkArrayEquality(itemValue, expectedItemValue) {
-    if (!(itemValue instanceof Array && expectedItemValue instanceof Array)) {
+    if (!Array.isArray(itemValue) || !Array.isArray(expectedItemValue)) {
       return false;
     } else if (itemValue.length !== expectedItemValue.length) {
       return false;

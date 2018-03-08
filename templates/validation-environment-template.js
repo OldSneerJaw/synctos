@@ -1,19 +1,19 @@
 function makeValidationEnvironment(_, simple) {
-  var doc = { };
-  var oldDoc = { };
-  var typeIdValidator = { type: 'string' };
-  var simpleTypeFilter = simple.stub();
-  var isDocumentMissingOrDeleted = simple.stub();
-  var isValueNullOrUndefined = simple.stub();
-  var jsonStringify = simple.stub();
-  var requireAccess = simple.stub();
-  var requireRole = simple.stub();
-  var requireUser = simple.stub();
-  var channel = simple.stub();
-  var access = simple.stub();
-  var role = simple.stub();
+  const doc = { };
+  const oldDoc = { };
+  const typeIdValidator = { type: 'string' };
+  const simpleTypeFilter = simple.stub();
+  const isDocumentMissingOrDeleted = simple.stub();
+  const isValueNullOrUndefined = simple.stub();
+  const jsonStringify = simple.stub();
+  const requireAccess = simple.stub();
+  const requireRole = simple.stub();
+  const requireUser = simple.stub();
+  const channel = simple.stub();
+  const access = simple.stub();
+  const role = simple.stub();
 
-  var customActionStub = simple.stub();
+  const customActionStub = simple.stub();
 
   return {
     _: _,

@@ -11,36 +11,14 @@ describe('Functionality that is common to all documents:', () => {
     it('rejects document creation with an unrecognized doc type', () => {
       const doc = { _id: 'my-invalid-doc' };
 
-      let syncFuncError = null;
-      expect(() => {
-        try {
-          testHelper.syncFunction(doc);
-        } catch (ex) {
-          syncFuncError = ex;
-
-          throw ex;
-        }
-      }).to.throw();
-
-      expect(syncFuncError).to.eql({ forbidden: 'Unknown document type' });
+      testHelper.verifyUnknownDocumentType(doc, null);
     });
 
     it('rejects document replacement with an unrecognized doc type', () => {
       const doc = { _id: 'my-invalid-doc', foo: 'bar' };
       const oldDoc = { _id: 'my-invalid-doc' };
 
-      let syncFuncError = null;
-      expect(() => {
-        try {
-          testHelper.syncFunction(doc, oldDoc);
-        } catch (ex) {
-          syncFuncError = ex;
-
-          throw ex;
-        }
-      }).to.throw();
-
-      expect(syncFuncError).to.eql({ forbidden: 'Unknown document type' });
+      testHelper.verifyUnknownDocumentType(doc, oldDoc);
     });
 
     it('allows a document to be deleted by an administrator even if the type is unrecognized', () => {

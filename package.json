@@ -16,11 +16,12 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "jshint": "^2.9.5",
-    "mocha": "^5.0.0",
+    "mocha": "^5.0.4",
     "mock-require": "^3.0.1",
     "nyc": "^11.4.1"
   },
   "scripts": {
+    "clean": "rm -rf build .nyc_output",
     "test": "etc/prepare-tests.sh && nyc mocha \"**/*.spec.js\"",
     "test-report": "etc/prepare-tests.sh && mkdir -p build/test-reports/ && nyc mocha -R xunit \"**/*.spec.js\" > build/test-reports/synctos.xml"
   },

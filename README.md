@@ -89,7 +89,7 @@ Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `
 
 If the specified document definitions contain any violations, the utility will exit with a non-zero status code and output a list of the violations to standard error (stderr). Otherwise, if validation was successful, the utility will exit normally and will not output anything.
 
-See the [Testing](#testing) section for information on writing test cases for custom code in document definitions.
+Be aware that the validation utility cannot verify the behaviour of custom functions (e.g. dynamic constraints, custom actions, custom validation functions) in a document definition. However, the [Testing](#testing) section of the README describes how to write test cases for such custom code.
 
 ### Specifications
 
@@ -157,10 +157,10 @@ typeFilter: function(doc, oldDoc, currentDocType) {
 
 * `channels`: (required if `authorizedRoles` and `authorizedUsers` are undefined - see the [Advanced document properties](#advanced-document-properties) section for more info) The [channels](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/channels/index.html) to assign to documents of this type. If used in combination with the `authorizedRoles` and/or `authorizedUsers` properties, authorization will be granted if the user making the modification matches at least one of the channels and/or authorized roles/usernames for the corresponding operation type (add, replace or remove). May be specified as either a plain object or a function that returns a dynamically-constructed object and accepts as parameters (1) the new document and (2) the old document that is being replaced (if any). NOTE: In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, and if the old document has been deleted or simply does not exist, the second parameter will be `null`. Either way the object is specified, it may include the following properties, each of which may be either an array of channel names or a single channel name as a string:
   * `view`: (optional) The channel(s) that confer read-only access to documents of this type.
-  * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access.
-  * `replace`: (required if `write` is undefined) The channel(s) that confer the ability to replace existing documents of this type. Any user with a matching channel also gains implicit read access.
-  * `remove`: (required if `write` is undefined) The channel(s) that confer the ability to delete documents of this type. Any user with a matching channel also gains implicit read access.
-  * `write`: (required if one or more of `add`, `replace` or `remove` are undefined) The channel(s) that confer the ability to add, replace or remove documents of this type. Exists as a convenience in cases where the add, replace and remove operations should share the same channel(s). Any user with a matching channel also gains implicit read access.
+  * `add`: (required if `write` is undefined) The channel(s) that confer the ability to create new documents of this type. Any user with a matching channel also gains implicit read access. Use the [special channel](https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/channels/index.html#special-channels) "!" to allow any authenticated user to add a document of this type.
+  * `replace`: (required if `write` is undefined) The channel(s) that confer the ability to replace existing documents of this type. Any user with a matching channel also gains implicit read access. Use the special channel "!" to allow any authenticated user to replace a document of this type.
+  * `remove`: (required if `write` is undefined) The channel(s) that confer the ability to delete documents of this type. Any user with a matching channel also gains implicit read access. Use the special channel "!" to allow any authenticated user to delete a document of this type.
+  * `write`: (required if one or more of `add`, `replace` or `remove` are undefined) The channel(s) that confer the ability to add, replace or remove documents of this type. Exists as a convenience in cases where the add, replace and remove operations should share the same channel(s). Any user with a matching channel also gains implicit read access. Use the special channel "!" to allow any authenticated user to write a document of this type.
 
 For example:
 
@@ -713,7 +713,7 @@ As demonstrated above, the advantage of defining a function rather than an objec
 
 Document definitions are also modular. By invoking the `importDocumentDefinitionFragment` macro, the contents of external files can be imported into the main document definitions file. For example, each individual document definition from the example above can be specified as a fragment in its own separate file:
 
-* `my-doc-type1.js`:
+* `my-doc-type1-fragment.js`:
 
 ```
     {
@@ -728,7 +728,7 @@ Document definitions are also modular. By invoking the `importDocumentDefinition
     }
 ```
 
-* `my-doc-type2.js`:
+* `my-doc-type2-fragment.js`:
 
 ```
     {
@@ -870,4 +870,4 @@ The `testHelper.validationErrorFormatter` object in the preceding example provid
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).
 
-See the [Validating](#validating) section for information on using the validation utility to verify the structure and semantics of a document definitions file.
+Refer to the [Validating](#validating) section of the README for information on using the validation utility to verify the structure and semantics of a document definitions file.

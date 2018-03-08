@@ -23,7 +23,7 @@ validationErrors.forEach((validationError) => {
   console.error(validationError);
 });
 
-const exitStatus = (validationErrors.length > 0) ? 1 : 0;
+const exitStatus = (validationErrors.length > 0) ? errorStatus : 0;
 process.exit(exitStatus);
 
 function showUsage() {

@@ -3,7 +3,7 @@ function authorizationModule(utils) {
   // write) as either a string or an array of strings. In either case, add them to the list if they are not already present.
   function appendToAuthorizationList(allAuthorizations, authorizationsToAdd) {
     if (!utils.isValueNullOrUndefined(authorizationsToAdd)) {
-      if (authorizationsToAdd instanceof Array) {
+      if (Array.isArray(authorizationsToAdd)) {
         for (var i = 0; i < authorizationsToAdd.length; i++) {
           var authorization = authorizationsToAdd[i];
           if (allAuthorizations.indexOf(authorization) < 0) {
