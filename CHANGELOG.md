@@ -1,7 +1,7 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
-## [Unreleased]
+## [2.1.0] - 2018-03-08
 ### Added
 - [#250](https://github.com/Kashoo/synctos/issues/250): Allow a document with an unknown type to be deleted via the admin API
 - [#188](https://github.com/Kashoo/synctos/issues/188): Support dynamic definition of channel/role access assignments
@@ -160,7 +160,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.0.2...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/Kashoo/synctos/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/Kashoo/synctos/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/Kashoo/synctos/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/Kashoo/synctos/compare/v1.10.0...v2.0.0
