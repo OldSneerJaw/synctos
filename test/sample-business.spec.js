@@ -1,26 +1,31 @@
-const sampleSpecHelper = require('./helpers/sample-spec-helper');
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelperMaker = require('./helpers/sample-spec-helper-maker');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Sample Business config doc definition', () => {
+  let testFixture;
+  let errorFormatter;
+  let sampleSpecHelper;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    errorFormatter = testFixture.validationErrorFormatter;
+    sampleSpecHelper = sampleSpecHelperMaker.init(testFixture);
   });
 
   function verifyBusinessConfigCreated(businessId, doc) {
-    testHelper.verifyDocumentCreated(doc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
+    testFixture.verifyDocumentCreated(doc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigReplaced(businessId, doc, oldDoc) {
-    testHelper.verifyDocumentReplaced(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
+    testFixture.verifyDocumentReplaced(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigDeleted(businessId, oldDoc) {
-    testHelper.verifyDocumentDeleted(oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_BUSINESS` ]));
+    testFixture.verifyDocumentDeleted(oldDoc, sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_BUSINESS` ]));
   }
 
   function verifyBusinessConfigRejected(businessId, doc, oldDoc, expectedErrorMessages) {
-    testHelper.verifyDocumentNotReplaced(
+    testFixture.verifyDocumentNotReplaced(
       doc,
       oldDoc,
       'business',

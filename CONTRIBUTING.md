@@ -39,14 +39,14 @@ Files in the project are organized into the following directories:
 Individual commits for an issue should reference the GitHub issue's ticket number in the commit message and provide a brief description of what has changed. For example:
 
 ```
-Issue #100: Allow test-helper module to initialize from document definitions
+Issue #199: Allow only date strings that can be parsed by Date.parse
 ```
 
 ### Testing
 
 Every change should include comprehensive test cases. There are two different categories for specifications/tests in the project:
 
-- Document definition configuration: Specifications for configuration elements that are defined in the `templates` directory are stored in the `test` directory. Document definitions that are to be referenced in such test cases should be stored in the `test/resources` directory. For example, the specifications for the `mustEqual` constraint are stored at `test/must-equal.spec.js` and the corresponding test document definitions are stored at `test/resources/must-equal-doc-definitions.js`. Be sure to make use of the built-in test-helper module to simplify test cases wherever possible. See the synctos [Testing](https://github.com/Kashoo/synctos/blob/master/README.md#testing) documentation for more info.
+- Document definition configuration: Specifications for configuration elements that are defined in the `templates` directory are stored in the `test` directory. Document definitions that are to be referenced in such test cases should be stored in the `test/resources` directory. For example, the specifications for the `mustEqual` constraint are stored at `test/must-equal.spec.js` and the corresponding test document definitions are stored at `test/resources/must-equal-doc-definitions.js`. Be sure to make use of the built-in test-fixture-maker module to simplify test cases wherever possible. See the synctos [Testing](https://github.com/Kashoo/synctos/blob/master/README.md#testing) documentation for more info.
 - Node.js supporting code: Specifications for Node.js code that is defined in the `src` directory are stored alongside the corresponding source code files in the `src` directory. Except in special cases, the specifications file's name should match that of the file under test. For example, the specifications for `src/loading/sync-function-loader.js` are stored at `src/loading/sync-function-loader.spec.js`.
 
 In either case, specification files must be denoted by the `.spec.js` filename suffix to be executed by the [Mocha](http://mochajs.org/) test runner. Test cases should use the [Chai](http://chaijs.com/) assertion library's [expect](http://chaijs.com/api/bdd/) assertion style.
@@ -67,7 +67,7 @@ The project includes comprehensive end user documentation and, to ensure it stay
 
 Bugs do not generally need to be documented in `README.md` unless there is some caveat that users should be aware of. For example, the need to double-escape backslashes in document definitions for older versions of Sync Gateway (see sync_gateway issue [#1866](https://github.com/couchbase/sync_gateway/issues/1866)).
 
-A change that addresses a GitHub issue with either of the [bug](https://github.com/Kashoo/synctos/issues?q=is%3Aissue+label%3Abug) or [enhancement](https://github.com/Kashoo/synctos/issues?q=is%3Aissue+label%3Aenhancement) labels must include an entry in `CHANGELOG.md`'s "Unreleased" section according to the guidelines at [Keep a Changelog](http://keepachangelog.com). Whenever a component is marked for deprecation, its name must be listed under the "Deprecated" heading (e.g. "`etc/test-helper` module"). Likewise, when a component has been deleted, its name must be listed under the "Removed" heading. Other issue types that do not have a functional impact on the application's behaviour (e.g. a [task](https://github.com/Kashoo/synctos/issues?&q=is%3Aissue+label%3Atask)) generally should not be listed in the changelog.
+A change that addresses a GitHub issue with either of the [bug](https://github.com/Kashoo/synctos/issues?q=is%3Aissue+label%3Abug) or [enhancement](https://github.com/Kashoo/synctos/issues?q=is%3Aissue+label%3Aenhancement) labels must include an entry in `CHANGELOG.md`'s "Unreleased" section according to the guidelines at [Keep a Changelog](http://keepachangelog.com). Whenever a component is marked for [deprecation](https://nodejs.org/dist/latest-v8.x/docs/api/util.html#util_util_deprecate_function_string), its name must be listed under the "Deprecated" heading (e.g. "`src/testing/test-helper` module"). Likewise, when a component has been deleted, its name must be listed under the "Removed" heading. Other issue types that do not have a functional impact on the application's behaviour (e.g. a [task](https://github.com/Kashoo/synctos/issues?&q=is%3Aissue+label%3Atask)) generally should not be listed in the changelog.
 
 ### Example document definitions
 

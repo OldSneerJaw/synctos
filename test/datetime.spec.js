@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Date/time validation type', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-datetime-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-datetime-sync-function.js');
   });
 
   describe('format validation', () => {
@@ -13,7 +15,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid date/time with a time component but no time zone', () => {
@@ -22,7 +24,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09.348'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid date/time with neither time nor time zone components', () => {
@@ -31,7 +33,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid date/time without a day', () => {
@@ -40,7 +42,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07T15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid date/time without month and day', () => {
@@ -49,7 +51,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016T15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid date/time with only a year', () => {
@@ -58,7 +60,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid date/time without milliseconds', () => {
@@ -67,7 +69,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09-07:00'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid date/time without seconds and milliseconds', () => {
@@ -76,7 +78,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20-07:00'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a date/time with an invalid year', () => {
@@ -85,7 +87,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '10000-07-17T15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with an invalid month', () => {
@@ -94,7 +96,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-00-17T15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with an invalid day', () => {
@@ -103,7 +105,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-00T15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with an invalid hour', () => {
@@ -112,7 +114,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T25:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with invalid minutes', () => {
@@ -121,7 +123,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:60:09.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with invalid seconds', () => {
@@ -130,7 +132,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:60.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with invalid milliseconds', () => {
@@ -139,7 +141,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09.1000-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with an invalid time zone hour', () => {
@@ -148,7 +150,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09.348-24:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with invalid time zone minutes', () => {
@@ -157,7 +159,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09.348-07:60'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with a comma as the separator between seconds and milliseconds', () => {
@@ -166,7 +168,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09,348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with a time zone of lowercase "z"', () => {
@@ -175,7 +177,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-06-24T08:22:17.123z'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time without minutes in the time zone component', () => {
@@ -184,7 +186,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15:20:09.348-07'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time where a blank space is used to separate date and time components', () => {
@@ -193,7 +195,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17 15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time with a time zone component but no time', () => {
@@ -202,7 +204,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17TZ'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time without minutes', () => {
@@ -211,7 +213,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: '2016-07-17T15-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a date/time without a date component', () => {
@@ -220,7 +222,7 @@ describe('Date/time validation type', () => {
         formatValidationProp: 'T15:20:09.348-07:00'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
   });
 
@@ -231,7 +233,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatetimesProp: '2016-06-24T08:22:17.123+0230'  // Same date/time as the min and max values, different time zone
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('cannot create a doc with a date/time that is less than the minimum value', () => {
@@ -240,7 +242,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatetimesProp: '2016-06-24T05:52:17.122Z'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
@@ -252,7 +254,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatetimesProp: '2016-06-24'  // Treated as midnight UTC when time component is missing, making it less than the min value
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
@@ -264,7 +266,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatetimesProp: '2016-06-23T21:52:17.124-08:00'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.maximumValueViolation('inclusiveRangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
@@ -276,7 +278,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatetimesProp: '2016-06-25'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.maximumValueViolation('inclusiveRangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
@@ -289,7 +291,7 @@ describe('Date/time validation type', () => {
       };
 
       // While the invalid input is not considered out of range, the document is still rejected because the format is invalid
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('inclusiveRangeValidationAsDatetimesProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('inclusiveRangeValidationAsDatetimesProp'));
     });
   });
 
@@ -300,7 +302,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatesOnlyProp: '2016-06-23T16:30:00.000-07:30'  // When adjusted to UTC, this matches the min and max dates
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('can create a doc with a date without time and time zone components that is within the minimum and maximum values', () => {
@@ -309,7 +311,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatesOnlyProp: '2016-06-24'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('cannot create a doc with a date/time that is less than the minimum value', () => {
@@ -318,7 +320,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatesOnlyProp: '2016-06-23T23:59:59.999Z'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatesOnlyProp', '2016-06-24T00:00:00.000Z'));
@@ -330,7 +332,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatesOnlyProp: '2016-06-23'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatesOnlyProp', '2016-06-24T00:00:00.000Z'));
@@ -342,7 +344,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatesOnlyProp: '2016-06-24T00:00:00.001Z'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.maximumValueViolation('inclusiveRangeValidationAsDatesOnlyProp', '2016-06-24'));
@@ -354,7 +356,7 @@ describe('Date/time validation type', () => {
         inclusiveRangeValidationAsDatesOnlyProp: '2016-06-25'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.maximumValueViolation('inclusiveRangeValidationAsDatesOnlyProp', '2016-06-24'));
@@ -367,7 +369,7 @@ describe('Date/time validation type', () => {
       };
 
       // While the invalid input is not considered out of range, the document is still rejected because the format is invalid
-      testHelper.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('inclusiveRangeValidationAsDatesOnlyProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('inclusiveRangeValidationAsDatesOnlyProp'));
     });
   });
 
@@ -378,7 +380,7 @@ describe('Date/time validation type', () => {
         exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:38').toISOString() // Output as UTC
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a date/time that is less than the minimum value', () => {
@@ -387,7 +389,7 @@ describe('Date/time validation type', () => {
         exclusiveRangeValidationAsDatetimesProp: '2018-02-07'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9'));
@@ -401,7 +403,7 @@ describe('Date/time validation type', () => {
 
       console.log('exclusiveRangeValidationAsDatetimesProp: ' + doc.exclusiveRangeValidationAsDatetimesProp);
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9'));
@@ -413,7 +415,7 @@ describe('Date/time validation type', () => {
         exclusiveRangeValidationAsDatetimesProp: '2018-02-08T19:35'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.maximumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:38.1'));
@@ -425,7 +427,7 @@ describe('Date/time validation type', () => {
         exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:38.10').toISOString() // Output as UTC
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
         errorFormatter.maximumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:38.1'));
@@ -439,7 +441,7 @@ describe('Date/time validation type', () => {
         equalityValidationProp: '2018-01-01T11:00:00.000+09:30'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a datetime with a different time zone and without optional components that matches the expected datetime', () => {
@@ -448,7 +450,7 @@ describe('Date/time validation type', () => {
         equalityValidationProp: '2018T01:30Z'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a datetime that does not match the expected datetime', () => {
@@ -457,7 +459,7 @@ describe('Date/time validation type', () => {
         equalityValidationProp: '2018-01-01T01:30:00.001Z'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeMustEqualDocType',
         [ errorFormatter.mustEqualViolation('equalityValidationProp', '2018-01-01T11:00:00.000+09:30') ]);
@@ -476,7 +478,7 @@ describe('Date/time validation type', () => {
         immutabilityValidationProp: '2018-02-11T19:40:13.822-08:00'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('allows a datetime with omitted optional components that matches the existing datetime', () => {
@@ -490,7 +492,7 @@ describe('Date/time validation type', () => {
         immutabilityValidationProp: '2018-02T13:40+13:40'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('rejects a datetime that does not match the existing datetime', () => {
@@ -504,7 +506,7 @@ describe('Date/time validation type', () => {
         immutabilityValidationProp: '1999-12-31T23:59:59.999-0700'
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'datetimeDoc',

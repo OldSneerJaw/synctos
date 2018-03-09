@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Array validation type', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-array-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-array-sync-function.js');
   });
 
   describe('length constraints', () => {
@@ -14,7 +16,7 @@ describe('Array validation type', () => {
           staticLengthValidationProp: [ 'foo', 'bar' ]
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('cannot create a doc with an array that is shorter than the minimum length', () => {
@@ -23,7 +25,7 @@ describe('Array validation type', () => {
           staticLengthValidationProp: [ 'foo' ]
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.minimumLengthViolation('staticLengthValidationProp', 2));
+        testFixture.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.minimumLengthViolation('staticLengthValidationProp', 2));
       });
 
       it('cannot create a doc with an array that is longer than the maximum length', () => {
@@ -32,7 +34,7 @@ describe('Array validation type', () => {
           staticLengthValidationProp: [ 'foo', 'bar', 'baz' ]
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.maximumLengthViolation('staticLengthValidationProp', 2));
+        testFixture.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.maximumLengthViolation('staticLengthValidationProp', 2));
       });
     });
 
@@ -44,7 +46,7 @@ describe('Array validation type', () => {
           dynamicLengthPropertyIsValid: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with an array whose length is outside the allowed bounds', () => {
@@ -54,7 +56,7 @@ describe('Array validation type', () => {
           dynamicLengthPropertyIsValid: false
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'arrayDoc',
           [
@@ -73,7 +75,7 @@ describe('Array validation type', () => {
           staticNonEmptyValidationProp: [ 'foo' ]
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with an empty array', () => {
@@ -82,7 +84,7 @@ describe('Array validation type', () => {
           staticNonEmptyValidationProp: [ ]
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyValidationProp'));
       });
     });
 
@@ -94,7 +96,7 @@ describe('Array validation type', () => {
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a doc with an array that is empty if the constraint is disabled', () => {
@@ -104,7 +106,7 @@ describe('Array validation type', () => {
           dynamicMustNotBeEmptyPropertiesEnforced: false
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with an empty array if the constraint is enabled', () => {
@@ -114,7 +116,7 @@ describe('Array validation type', () => {
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'arrayDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyValidationProp'));
       });
     });
   });
@@ -127,7 +129,7 @@ describe('Array validation type', () => {
           staticArrayElementsValidatorProp: [ 0, 1, 2 ]
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc when the array elements fail validation', () => {
@@ -136,7 +138,7 @@ describe('Array validation type', () => {
           staticArrayElementsValidatorProp: [ 0, null, void 0, 'foo', -1, 3 ]
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'arrayDoc',
           [
@@ -158,7 +160,7 @@ describe('Array validation type', () => {
           dynamicArrayElementsRequired: false
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc when the array elements fail validation', () => {
@@ -169,7 +171,7 @@ describe('Array validation type', () => {
           dynamicArrayElementsRequired: true
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'arrayDoc',
           [

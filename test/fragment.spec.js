@@ -1,8 +1,10 @@
-const testHelper = require('../src/testing/test-helper');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Document definition fragments:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-fragment-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-fragment-sync-function.js');
   });
 
   it('can create documents for a document type whose definition was imported with a single-quoted filename', () => {
@@ -11,7 +13,7 @@ describe('Document definition fragments:', () => {
       stringProp: '2017-01-06'
     };
 
-    testHelper.verifyDocumentCreated(doc);
+    testFixture.verifyDocumentCreated(doc);
   });
 
   it('can create documents for a document type whose definition was imported with a double-quoted filename', () => {
@@ -20,7 +22,7 @@ describe('Document definition fragments:', () => {
       booleanProp: true
     };
 
-    testHelper.verifyDocumentCreated(doc);
+    testFixture.verifyDocumentCreated(doc);
   });
 
   it('can create documents with nested imports', () => {
@@ -30,6 +32,6 @@ describe('Document definition fragments:', () => {
       objectProp: { nestedProperty: -58 }
     };
 
-    testHelper.verifyDocumentCreated(doc);
+    testFixture.verifyDocumentCreated(doc);
   });
 });

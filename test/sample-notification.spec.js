@@ -1,10 +1,15 @@
-const sampleSpecHelper = require('./helpers/sample-spec-helper');
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelperMaker = require('./helpers/sample-spec-helper-maker');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Sample business notification doc definition', () => {
+  let testFixture;
+  let errorFormatter;
+  let sampleSpecHelper;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    errorFormatter = testFixture.validationErrorFormatter;
+    sampleSpecHelper = sampleSpecHelperMaker.init(testFixture);
   });
 
   const expectedDocType = 'notification';
@@ -21,14 +26,14 @@ describe('Sample business notification doc definition', () => {
   }
 
   function verifyNotificationCreated(businessId, doc) {
-    testHelper.verifyDocumentCreated(
+    testFixture.verifyDocumentCreated(
       doc,
       sampleSpecHelper.getExpectedAuthorization('notification-add'),
       getExpectedAccessAssignments(doc, doc._id));
   }
 
   function verifyNotificationReplaced(businessId, doc, oldDoc) {
-    testHelper.verifyDocumentReplaced(
+    testFixture.verifyDocumentReplaced(
       doc,
       oldDoc,
       sampleSpecHelper.getExpectedAuthorization([ `${businessId}-CHANGE_${expectedBasePrivilege}` ]),
@@ -36,13 +41,13 @@ describe('Sample business notification doc definition', () => {
   }
 
   function verifyNotificationDeleted(businessId, oldDoc) {
-    testHelper.verifyDocumentDeleted(
+    testFixture.verifyDocumentDeleted(
       oldDoc,
       sampleSpecHelper.getExpectedAuthorization([ `${businessId}-REMOVE_${expectedBasePrivilege}` ]));
   }
 
   function verifyNotificationNotCreated(businessId, doc, expectedErrorMessages) {
-    testHelper.verifyDocumentNotCreated(
+    testFixture.verifyDocumentNotCreated(
       doc,
       expectedDocType,
       expectedErrorMessages,
@@ -50,7 +55,7 @@ describe('Sample business notification doc definition', () => {
   }
 
   function verifyNotificationNotReplaced(businessId, doc, oldDoc, expectedErrorMessages) {
-    testHelper.verifyDocumentNotReplaced(
+    testFixture.verifyDocumentNotReplaced(
       doc,
       oldDoc,
       expectedDocType,

@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Type identifier validator', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-type-id-validator-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-type-id-validator-sync-function.js');
   });
 
   it('allows a valid string value', () => {
@@ -12,7 +14,7 @@ describe('Type identifier validator', () => {
       typeIdProp: 'my-doc-type'
     };
 
-    testHelper.verifyDocumentCreated(doc);
+    testFixture.verifyDocumentCreated(doc);
   });
 
   it('rejects a non-string value', () => {
@@ -21,7 +23,7 @@ describe('Type identifier validator', () => {
       typeIdProp: 15
     };
 
-    testHelper.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.typeConstraintViolation('typeIdProp', 'string') ]);
+    testFixture.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.typeConstraintViolation('typeIdProp', 'string') ]);
   });
 
   it('rejects an empty string value', () => {
@@ -30,7 +32,7 @@ describe('Type identifier validator', () => {
       typeIdProp: ''
     };
 
-    testHelper.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.mustNotBeEmptyViolation('typeIdProp') ]);
+    testFixture.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.mustNotBeEmptyViolation('typeIdProp') ]);
   });
 
   it('rejects a null value', () => {
@@ -39,7 +41,7 @@ describe('Type identifier validator', () => {
       typeIdProp: null
     };
 
-    testHelper.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.requiredValueViolation('typeIdProp') ]);
+    testFixture.verifyDocumentNotCreated(doc, 'typeIdDoc', [ errorFormatter.requiredValueViolation('typeIdProp') ]);
   });
 
   it('rejects a value that has been modified', () => {
@@ -52,6 +54,6 @@ describe('Type identifier validator', () => {
       typeIdProp: 'my-doc-type'
     };
 
-    testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'typeIdDoc', [ errorFormatter.immutableItemViolation('typeIdProp') ]);
+    testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'typeIdDoc', [ errorFormatter.immutableItemViolation('typeIdProp') ]);
   });
 });

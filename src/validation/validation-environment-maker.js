@@ -26,7 +26,7 @@ function init(docDefinitionsString, originalFilename) {
   const filePath = path.resolve(__dirname, '../../templates/validation-environment-template.js');
   const envTemplateString = fs.readFileSync(filePath, 'utf8').trim();
 
-  // The test helper environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
+  // The validation environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
   // contents of the document definitions
   const envString = envTemplateString.replace('%DOC_DEFINITIONS_PLACEHOLDER%', () => docDefinitionsString);
 

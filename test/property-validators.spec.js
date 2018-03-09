@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Property validators:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-property-validators-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-property-validators-sync-function.js');
   });
 
   describe('static validation at the document level', () => {
@@ -13,7 +15,7 @@ describe('Property validators:', () => {
         unknownProperty1: 15
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allow unknown properties when a document is replaced and the option is enabled', () => {
@@ -26,7 +28,7 @@ describe('Property validators:', () => {
         unknownProperty2: true
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('reject unknown properties when a document is created and the option is disabled', () => {
@@ -35,7 +37,7 @@ describe('Property validators:', () => {
         unknownProperty1: 15
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
+      testFixture.verifyDocumentNotCreated(doc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
     });
 
     it('reject unknown properties when a document is replaced and the option is disabled', () => {
@@ -45,7 +47,7 @@ describe('Property validators:', () => {
       };
       const oldDoc = { _id: 'staticPreventUnknownDoc' };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'staticPreventUnknownDoc', [ errorFormatter.unsupportedProperty('unknownProperty1') ]);
     });
   });
 
@@ -58,7 +60,7 @@ describe('Property validators:', () => {
         unknownPropertiesAllowed: false
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a document with unknown properties when they are enabled', () => {
@@ -69,7 +71,7 @@ describe('Property validators:', () => {
         unknownPropertiesAllowed: true
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('blocks a document with unknown properties when they are disabled', () => {
@@ -81,7 +83,7 @@ describe('Property validators:', () => {
         unknownPropertiesAllowed: false
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicPropertiesValidationDoc',
         [
@@ -101,7 +103,7 @@ describe('Property validators:', () => {
         }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allow unknown properties when a document is replaced and the option is enabled', () => {
@@ -114,7 +116,7 @@ describe('Property validators:', () => {
       };
       const oldDoc = { _id: 'staticPreventUnknownDoc' };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('reject unknown properties when a document is created and the option is disabled', () => {
@@ -126,7 +128,7 @@ describe('Property validators:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticAllowUnknownDoc',
         [ errorFormatter.unsupportedProperty('preventUnknownProp.myUnknownProp') ]);
@@ -142,7 +144,7 @@ describe('Property validators:', () => {
       };
       const oldDoc = { _id: 'staticAllowUnknownDoc' };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'staticAllowUnknownDoc',
@@ -161,7 +163,7 @@ describe('Property validators:', () => {
         }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a document with nested unknown properties when they are enabled', () => {
@@ -174,7 +176,7 @@ describe('Property validators:', () => {
         }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('blocks a document with nested unknown properties when they are disabled', () => {
@@ -188,7 +190,7 @@ describe('Property validators:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicObjectValidationDoc',
         [

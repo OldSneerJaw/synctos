@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Hashtable validation type', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-hashtable-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-hashtable-sync-function.js');
   });
 
   describe('size constraints', () => {
@@ -17,7 +19,7 @@ describe('Hashtable validation type', () => {
           }
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a hashtable that is smaller than the minimum size', () => {
@@ -28,7 +30,7 @@ describe('Hashtable validation type', () => {
           }
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMinimumSizeViolation('staticSizeValidationProp', 2));
+        testFixture.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMinimumSizeViolation('staticSizeValidationProp', 2));
       });
 
       it('rejects a hashtable that is larger than the maximum size', () => {
@@ -41,7 +43,7 @@ describe('Hashtable validation type', () => {
           }
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMaximumSizeViolation('staticSizeValidationProp', 2));
+        testFixture.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMaximumSizeViolation('staticSizeValidationProp', 2));
       });
     });
 
@@ -55,7 +57,7 @@ describe('Hashtable validation type', () => {
           dynamicSize: 1
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a hashtable that is smaller than the minimum size', () => {
@@ -67,7 +69,7 @@ describe('Hashtable validation type', () => {
           dynamicSize: 2
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMinimumSizeViolation('dynamicSizeValidationProp', 2));
+        testFixture.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMinimumSizeViolation('dynamicSizeValidationProp', 2));
       });
 
       it('rejects a hashtable that is larger than the maximum size', () => {
@@ -80,7 +82,7 @@ describe('Hashtable validation type', () => {
           dynamicSize: 1
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMaximumSizeViolation('dynamicSizeValidationProp', 1));
+        testFixture.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableMaximumSizeViolation('dynamicSizeValidationProp', 1));
       });
     });
   });
@@ -93,7 +95,7 @@ describe('Hashtable validation type', () => {
           staticNonEmptyKeyValidationProp: { 'foo': 'bar' }
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with an empty key', () => {
@@ -102,7 +104,7 @@ describe('Hashtable validation type', () => {
           staticNonEmptyKeyValidationProp: { '': 'bar' }
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('staticNonEmptyKeyValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('staticNonEmptyKeyValidationProp'));
       });
     });
 
@@ -114,7 +116,7 @@ describe('Hashtable validation type', () => {
           dynamicKeysMustNotBeEmpty: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a doc with an empty key when the constraint is disabled', () => {
@@ -124,7 +126,7 @@ describe('Hashtable validation type', () => {
           dynamicKeysMustNotBeEmpty: false
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with an empty key when the constraint is enabled', () => {
@@ -134,7 +136,7 @@ describe('Hashtable validation type', () => {
           dynamicKeysMustNotBeEmpty: true
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicNonEmptyKeyValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicNonEmptyKeyValidationProp'));
       });
     });
   });
@@ -150,7 +152,7 @@ describe('Hashtable validation type', () => {
           }
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc when a key does not match the expected pattern', () => {
@@ -162,7 +164,7 @@ describe('Hashtable validation type', () => {
           }
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'hashtableDoc',
           errorFormatter.regexPatternHashtableKeyViolation('staticKeyRegexPatternValidationProp[123]', /^[a-zA-Z]+(`[a-zA-Z]+)?$/));
@@ -182,7 +184,7 @@ describe('Hashtable validation type', () => {
           dynamicKeyRegex: testRegexPattern
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with a string that does not match the expected pattern', () => {
@@ -195,7 +197,7 @@ describe('Hashtable validation type', () => {
           dynamicKeyRegex: testRegexPattern
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'hashtableDoc',
           errorFormatter.regexPatternHashtableKeyViolation('dynamicKeyRegexPatternValidationProp[bar]', new RegExp(testRegexPattern)));
@@ -215,7 +217,7 @@ describe('Hashtable validation type', () => {
         }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a hashtable with an empty key when that option is enabled', () => {
@@ -226,7 +228,7 @@ describe('Hashtable validation type', () => {
         dynamicKeysValidatorProp: { '': 'foo' }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('blocks a hashtable with an empty key when that option is disabled', () => {
@@ -240,7 +242,7 @@ describe('Hashtable validation type', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicKeysValidatorProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'hashtableDoc', errorFormatter.hashtableKeyEmpty('dynamicKeysValidatorProp'));
     });
   });
 
@@ -256,7 +258,7 @@ describe('Hashtable validation type', () => {
           }
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a hashtable with invalid element values', () => {
@@ -271,7 +273,7 @@ describe('Hashtable validation type', () => {
           }
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'hashtableDoc',
           [
@@ -295,7 +297,7 @@ describe('Hashtable validation type', () => {
           dynamicValuesType: 'string'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a hashtable with invalid element values', () => {
@@ -308,7 +310,7 @@ describe('Hashtable validation type', () => {
           dynamicValuesType: 'float'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'hashtableDoc',
           [ errorFormatter.typeConstraintViolation('dynamicValuesValidatorProp[2]', 'float') ]);

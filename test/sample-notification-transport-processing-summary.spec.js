@@ -1,18 +1,23 @@
-const sampleSpecHelper = require('./helpers/sample-spec-helper');
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const sampleSpecHelperMaker = require('./helpers/sample-spec-helper-maker');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Sample notification transport processing summary doc definition', () => {
+  let testFixture;
+  let errorFormatter;
+  let sampleSpecHelper;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    errorFormatter = testFixture.validationErrorFormatter;
+    sampleSpecHelper = sampleSpecHelperMaker.init(testFixture);
   });
 
   function verifyProcessingSummaryWritten(doc, oldDoc) {
-    testHelper.verifyDocumentAccepted(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization('notification-transport-write'));
+    testFixture.verifyDocumentAccepted(doc, oldDoc, sampleSpecHelper.getExpectedAuthorization('notification-transport-write'));
   }
 
   function verifyProcessingSummaryNotWritten(doc, oldDoc, expectedErrorMessages) {
-    testHelper.verifyDocumentRejected(
+    testFixture.verifyDocumentRejected(
       doc,
       oldDoc,
       'notificationTransportProcessingSummary',

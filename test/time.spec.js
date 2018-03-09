@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Time validation type:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-time-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-time-sync-function.js');
   });
 
   describe('format', () => {
@@ -14,7 +16,7 @@ describe('Time validation type:', () => {
         formatValidationProp: '23:59:59.999'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid time without the millisecond component', () => {
@@ -24,7 +26,7 @@ describe('Time validation type:', () => {
         formatValidationProp: '23:59:59'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts a valid time without the second and millisecond components', () => {
@@ -34,7 +36,7 @@ describe('Time validation type:', () => {
         formatValidationProp: '23:59'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a time without the minute, second and millisecond components', () => {
@@ -44,7 +46,7 @@ describe('Time validation type:', () => {
         formatValidationProp: '23'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a time that is above the maximum value', () => {
@@ -54,7 +56,7 @@ describe('Time validation type:', () => {
         formatValidationProp: '24:00:00.000'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a time that is formatted incorrectly', () => {
@@ -64,7 +66,7 @@ describe('Time validation type:', () => {
         formatValidationProp: '235959.999'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
     });
 
     it('rejects a time that is not a string', () => {
@@ -74,7 +76,7 @@ describe('Time validation type:', () => {
         formatValidationProp: 235959.999
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'time'));
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'time'));
     });
 
     it('rejects a time with a comma for a decimal separator', () => {
@@ -84,7 +86,7 @@ describe('Time validation type:', () => {
         formatValidationProp: '23:59:59,999'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'time'));
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'time'));
     });
   });
 
@@ -96,7 +98,7 @@ describe('Time validation type:', () => {
         minAndMaxInclusiveValuesProp: '01:08:53.115'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allow a time without milliseconds that is within the minimum and maximum value range', () => {
@@ -106,7 +108,7 @@ describe('Time validation type:', () => {
         minAndMaxInclusiveValuesProp: '01:09:01'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allow a time without seconds and milliseconds that is within the minimum and maximum value range', () => {
@@ -116,7 +118,7 @@ describe('Time validation type:', () => {
         minAndMaxInclusiveValuesProp: '01:08'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('reject a time that is less than the minimum value constraint', () => {
@@ -126,7 +128,7 @@ describe('Time validation type:', () => {
         minAndMaxInclusiveValuesProp: '01:07:59.999'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'timeDoc',
         errorFormatter.minimumValueViolation('minAndMaxInclusiveValuesProp', '01:08:00.000'));
@@ -139,7 +141,7 @@ describe('Time validation type:', () => {
         minAndMaxInclusiveValuesProp: '01:09:01.001'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'timeDoc',
         errorFormatter.maximumValueViolation('minAndMaxInclusiveValuesProp', '01:09:01'));
@@ -154,7 +156,7 @@ describe('Time validation type:', () => {
         minAndMaxExclusiveValuesProp: '13:42:01.001'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allow a time without milliseconds that is within the minimum and maximum value range', () => {
@@ -164,7 +166,7 @@ describe('Time validation type:', () => {
         minAndMaxExclusiveValuesProp: '13:42:01'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('reject a time that is less than the minimum value constraint', () => {
@@ -174,7 +176,7 @@ describe('Time validation type:', () => {
         minAndMaxExclusiveValuesProp: '13:42:00.9'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'timeDoc',
         errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.999'));
@@ -187,7 +189,7 @@ describe('Time validation type:', () => {
         minAndMaxExclusiveValuesProp: '13:42:00.999'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'timeDoc',
         errorFormatter.minimumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:00.999'));
@@ -200,7 +202,7 @@ describe('Time validation type:', () => {
         minAndMaxExclusiveValuesProp: '13:42:01.01'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'timeDoc',
         errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:01.002'));
@@ -213,7 +215,7 @@ describe('Time validation type:', () => {
         minAndMaxExclusiveValuesProp: '13:42:01.002'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'timeDoc',
         errorFormatter.maximumValueExclusiveViolation('minAndMaxExclusiveValuesProp', '13:42:01.002'));
@@ -228,7 +230,7 @@ describe('Time validation type:', () => {
         equalityValidationProp: '22:56:00.000'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a time that matches the expected time without all millisecond digits', () => {
@@ -238,7 +240,7 @@ describe('Time validation type:', () => {
         equalityValidationProp: '22:56:00.0'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a time that matches the expected time without any millisecond digits', () => {
@@ -248,7 +250,7 @@ describe('Time validation type:', () => {
         equalityValidationProp: '22:56:00'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a time that matches the expected time without seconds', () => {
@@ -258,7 +260,7 @@ describe('Time validation type:', () => {
         equalityValidationProp: '22:56'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a time that does not match the expected time', () => {
@@ -268,7 +270,7 @@ describe('Time validation type:', () => {
         equalityValidationProp: '22:56:00.001'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'timeMustEqualDocType',
         [ errorFormatter.mustEqualViolation('equalityValidationProp', '22:56:00.000') ]);
@@ -289,7 +291,7 @@ describe('Time validation type:', () => {
         immutableValidationProp: '01:45:15.9'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('allows a time with omitted optional components that matches the existing time', () => {
@@ -305,7 +307,7 @@ describe('Time validation type:', () => {
         immutableValidationProp: '08:11'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('rejects a time that does not match the existing time', () => {
@@ -321,7 +323,7 @@ describe('Time validation type:', () => {
         immutableValidationProp: '12:34:56.78'
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'timeDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'timeDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
     });
   });
 });

@@ -1,9 +1,11 @@
 const { expect } = require('chai');
-const testHelper = require('../src/testing/test-helper');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('User and role access assignment:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-access-assignment-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-access-assignment-sync-function.js');
   });
 
   describe('Static assignment of channels to users and roles and assignment of roles to users', () => {
@@ -34,20 +36,20 @@ describe('User and role access assignment:', () => {
     it('is applied when creating a valid document', () => {
       const doc = { _id: 'staticAccessDoc' };
 
-      testHelper.verifyDocumentCreated(doc, 'write', expectedStaticAssignments);
+      testFixture.verifyDocumentCreated(doc, 'write', expectedStaticAssignments);
     });
 
     it('is applied when replacing an existing valid document', () => {
       const doc = { _id: 'staticAccessDoc' };
       const oldDoc = { _id: 'staticAccessDoc' };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedStaticAssignments);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, 'write', expectedStaticAssignments);
     });
 
     it('is NOT applied when deleting an existing document', () => {
       const oldDoc = { _id: 'staticAccessDoc' };
 
-      testHelper.verifyDocumentDeleted(oldDoc, 'write');
+      testFixture.verifyDocumentDeleted(oldDoc, 'write');
     });
 
     it('is NOT applied when creating an invalid document', () => {
@@ -57,9 +59,9 @@ describe('User and role access assignment:', () => {
       };
 
       expect(() => {
-        testHelper.syncFunction(doc);
+        testFixture.syncFunction(doc);
       }).to.throw();
-      expect(testHelper.access.callCount).to.equal(0);
+      expect(testFixture.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', () => {
@@ -70,9 +72,9 @@ describe('User and role access assignment:', () => {
       const oldDoc = { _id: 'staticAccessDoc' };
 
       expect(() => {
-        testHelper.syncFunction(doc, oldDoc);
+        testFixture.syncFunction(doc, oldDoc);
       }).to.throw();
-      expect(testHelper.access.callCount).to.equal(0);
+      expect(testFixture.access.callCount).to.equal(0);
     });
   });
 
@@ -107,7 +109,7 @@ describe('User and role access assignment:', () => {
     ];
 
     it('is applied when creating a valid document', () => {
-      testHelper.verifyDocumentCreated(doc, 'write', expectedDynamicAssignments);
+      testFixture.verifyDocumentCreated(doc, 'write', expectedDynamicAssignments);
     });
 
     it('is applied when replacing a deleted document', () => {
@@ -119,13 +121,13 @@ describe('User and role access assignment:', () => {
       // The access assignment functions for this document type are set up to return different values if they receive an oldDoc parameter
       // that has _deleted set to true. However, that should never happen because the sync function template is supposed to replace such
       // cases with a null value. This test verifies that replacement occurs as expected.
-      testHelper.verifyDocumentAccepted(doc, oldDoc, 'write', expectedDynamicAssignments);
+      testFixture.verifyDocumentAccepted(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
     it('is applied when replacing an existing valid document', () => {
       const oldDoc = { _id: 'dynamicAccessConstraintDoc' };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedDynamicAssignments);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
     it('is applied even when the roles and users are not defined', () => {
@@ -155,13 +157,13 @@ describe('User and role access assignment:', () => {
         }
       ];
 
-      testHelper.verifyDocumentCreated(doc, 'write', expectedTestAssignments);
+      testFixture.verifyDocumentCreated(doc, 'write', expectedTestAssignments);
     });
 
     it('is NOT applied when deleting an existing document', () => {
       const oldDoc = { _id: 'dynamicAccessConstraintDoc' };
 
-      testHelper.verifyDocumentDeleted(oldDoc, 'write');
+      testFixture.verifyDocumentDeleted(oldDoc, 'write');
     });
 
     it('is NOT applied when creating an invalid document', () => {
@@ -173,9 +175,9 @@ describe('User and role access assignment:', () => {
       };
 
       expect(() => {
-        testHelper.syncFunction(doc);
+        testFixture.syncFunction(doc);
       }).to.throw();
-      expect(testHelper.access.callCount).to.equal(0);
+      expect(testFixture.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', () => {
@@ -188,9 +190,9 @@ describe('User and role access assignment:', () => {
       const oldDoc = { _id: 'dynamicAccessConstraintDoc' };
 
       expect(() => {
-        testHelper.syncFunction(doc, oldDoc);
+        testFixture.syncFunction(doc, oldDoc);
       }).to.throw();
-      expect(testHelper.access.callCount).to.equal(0);
+      expect(testFixture.access.callCount).to.equal(0);
     });
   });
 
@@ -225,7 +227,7 @@ describe('User and role access assignment:', () => {
     ];
 
     it('is applied when creating a valid document', () => {
-      testHelper.verifyDocumentCreated(doc, 'write', expectedDynamicAssignments);
+      testFixture.verifyDocumentCreated(doc, 'write', expectedDynamicAssignments);
     });
 
     it('is applied when replacing a deleted document', () => {
@@ -237,13 +239,13 @@ describe('User and role access assignment:', () => {
       // The access assignment functions for this document type are set up to return different values if they receive an oldDoc parameter
       // that has _deleted set to true. However, that should never happen because the sync function template is supposed to replace such
       // cases with a null value. This test verifies that replacement occurs as expected.
-      testHelper.verifyDocumentAccepted(doc, oldDoc, 'write', expectedDynamicAssignments);
+      testFixture.verifyDocumentAccepted(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
     it('is applied when replacing an existing valid document', () => {
       const oldDoc = { _id: 'dynamicAccessEntryItemsDoc' };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, 'write', expectedDynamicAssignments);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, 'write', expectedDynamicAssignments);
     });
 
     it('is applied when deleting an existing document', () => {
@@ -273,7 +275,7 @@ describe('User and role access assignment:', () => {
         }
       ];
 
-      testHelper.verifyDocumentDeleted(oldDoc, 'write', expectedDeleteAssignments);
+      testFixture.verifyDocumentDeleted(oldDoc, 'write', expectedDeleteAssignments);
     });
 
     it('is NOT applied when creating an invalid document', () => {
@@ -285,9 +287,9 @@ describe('User and role access assignment:', () => {
       };
 
       expect(() => {
-        testHelper.syncFunction(doc);
+        testFixture.syncFunction(doc);
       }).to.throw();
-      expect(testHelper.access.callCount).to.equal(0);
+      expect(testFixture.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', () => {
@@ -300,9 +302,9 @@ describe('User and role access assignment:', () => {
       const oldDoc = { _id: 'dynamicAccessEntryItemsDoc' };
 
       expect(() => {
-        testHelper.syncFunction(doc, oldDoc);
+        testFixture.syncFunction(doc, oldDoc);
       }).to.throw();
-      expect(testHelper.access.callCount).to.equal(0);
+      expect(testFixture.access.callCount).to.equal(0);
     });
   });
 });

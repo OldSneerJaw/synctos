@@ -3,7 +3,7 @@ function() {
     return function(doc, oldDoc, customActionMetadata) {
       customActionMetadata.actionType = actionType;
 
-      // This function is defined as a stub by the test-helper module to make it easy to verify whether a custom action has been executed
+      // This function is defined as a stub by the test-fixture-maker module to make it easy to verify whether a custom action has been executed
       customActionStub(doc, oldDoc, customActionMetadata);
     };
   }

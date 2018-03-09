@@ -1,8 +1,10 @@
-const testHelper = require('../src/testing/test-helper');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Underscore.js library', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-underscore-js-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-underscore-js-sync-function.js');
   });
 
   it('allows a document that satisfies a custom validation constraint implemented with Underscore.js', () => {
@@ -12,7 +14,7 @@ describe('Underscore.js library', () => {
       myProp: 'foo.bar'
     };
 
-    testHelper.verifyDocumentCreated(doc);
+    testFixture.verifyDocumentCreated(doc);
   });
 
   it('rejects a document that fails a custom validation constraint implemented with Underscore.js', () => {
@@ -22,6 +24,6 @@ describe('Underscore.js library', () => {
       myProp: 'foo & bar'
     };
 
-    testHelper.verifyDocumentNotCreated(doc, 'underscoreDoc', 'escaped value of "myProp" does not match raw value');
+    testFixture.verifyDocumentNotCreated(doc, 'underscoreDoc', 'escaped value of "myProp" does not match raw value');
   });
 });

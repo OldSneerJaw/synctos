@@ -1,9 +1,10 @@
-const testHelper = require('../src/testing/test-helper');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Channel assignment:', () => {
+  let testFixture;
 
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-authorization-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-authorization-sync-function.js');
   });
 
   describe('for a document with explicit channel definitions', () => {
@@ -12,23 +13,23 @@ describe('Channel assignment:', () => {
     it('includes all configured channels when assigning channels to a new document', () => {
       const doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyDocumentCreated(doc, 'add');
-      testHelper.verifyChannelAssignment(allChannels);
+      testFixture.verifyDocumentCreated(doc, 'add');
+      testFixture.verifyChannelAssignment(allChannels);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', () => {
       const doc = { _id: 'explicitChannelsDoc', stringProp: 'foobaz' };
       const oldDoc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, [ 'replace', 'update' ]);
-      testHelper.verifyChannelAssignment(allChannels);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, [ 'replace', 'update' ]);
+      testFixture.verifyChannelAssignment(allChannels);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', () => {
       const doc = { _id: 'explicitChannelsDoc', _deleted: true };
 
-      testHelper.verifyDocumentDeleted(doc, [ 'remove', 'delete' ]);
-      testHelper.verifyChannelAssignment(allChannels);
+      testFixture.verifyDocumentDeleted(doc, [ 'remove', 'delete' ]);
+      testFixture.verifyChannelAssignment(allChannels);
     });
   });
 
@@ -38,23 +39,23 @@ describe('Channel assignment:', () => {
     it('includes all configured channels when assigning channels to a new document', () => {
       const doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyDocumentCreated(doc, writeChannels);
-      testHelper.verifyChannelAssignment(writeChannels);
+      testFixture.verifyDocumentCreated(doc, writeChannels);
+      testFixture.verifyChannelAssignment(writeChannels);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', () => {
       const doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobaz' };
       const oldDoc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, writeChannels);
-      testHelper.verifyChannelAssignment(writeChannels);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, writeChannels);
+      testFixture.verifyChannelAssignment(writeChannels);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', () => {
       const doc = { _id: 'writeOnlyChannelsDoc', _deleted: true };
 
-      testHelper.verifyDocumentDeleted(doc, writeChannels);
-      testHelper.verifyChannelAssignment(writeChannels);
+      testFixture.verifyDocumentDeleted(doc, writeChannels);
+      testFixture.verifyChannelAssignment(writeChannels);
     });
   });
 
@@ -77,8 +78,8 @@ describe('Channel assignment:', () => {
         users: expectedWriteUsers
       };
 
-      testHelper.verifyDocumentCreated(doc, expectedAuthorization);
-      testHelper.verifyChannelAssignment(allExpectedChannels);
+      testFixture.verifyDocumentCreated(doc, expectedAuthorization);
+      testFixture.verifyChannelAssignment(allExpectedChannels);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', () => {
@@ -92,8 +93,8 @@ describe('Channel assignment:', () => {
         users: expectedWriteUsers
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization);
-      testHelper.verifyChannelAssignment(allExpectedChannels);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization);
+      testFixture.verifyChannelAssignment(allExpectedChannels);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', () => {
@@ -103,8 +104,8 @@ describe('Channel assignment:', () => {
         users: expectedWriteUsers
       };
 
-      testHelper.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      testHelper.verifyChannelAssignment(allExpectedChannels);
+      testFixture.verifyDocumentDeleted(oldDoc, expectedAuthorization);
+      testFixture.verifyChannelAssignment(allExpectedChannels);
     });
   });
 
@@ -115,8 +116,8 @@ describe('Channel assignment:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentCreated(doc, { expectedRoles: 'add' });
-      testHelper.verifyChannelAssignment([ ]);
+      testFixture.verifyDocumentCreated(doc, { expectedRoles: 'add' });
+      testFixture.verifyChannelAssignment([ ]);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', () => {
@@ -128,8 +129,8 @@ describe('Channel assignment:', () => {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, { expectedRoles: 'replace' });
-      testHelper.verifyChannelAssignment([ ]);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, { expectedRoles: 'replace' });
+      testFixture.verifyChannelAssignment([ ]);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', () => {
@@ -137,8 +138,8 @@ describe('Channel assignment:', () => {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
-      testHelper.verifyDocumentDeleted(oldDoc, { expectedRoles: 'remove' });
-      testHelper.verifyChannelAssignment([ ]);
+      testFixture.verifyDocumentDeleted(oldDoc, { expectedRoles: 'remove' });
+      testFixture.verifyChannelAssignment([ ]);
     });
   });
 
@@ -149,8 +150,8 @@ describe('Channel assignment:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentCreated(doc, { expectedUsers: [ 'add1', 'add2' ] });
-      testHelper.verifyChannelAssignment([ ]);
+      testFixture.verifyDocumentCreated(doc, { expectedUsers: [ 'add1', 'add2' ] });
+      testFixture.verifyChannelAssignment([ ]);
     });
 
     it('includes all configured channels when assigning channels to a replaced document', () => {
@@ -162,8 +163,8 @@ describe('Channel assignment:', () => {
         _id: 'noChannelsAndStaticUsersDoc'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, { expectedUsers: [ 'replace1', 'replace2' ] });
-      testHelper.verifyChannelAssignment([ ]);
+      testFixture.verifyDocumentReplaced(doc, oldDoc, { expectedUsers: [ 'replace1', 'replace2' ] });
+      testFixture.verifyChannelAssignment([ ]);
     });
 
     it('includes all configured channels when assigning channels to a deleted document', () => {
@@ -171,8 +172,8 @@ describe('Channel assignment:', () => {
         _id: 'noChannelsAndStaticUsersDoc'
       };
 
-      testHelper.verifyDocumentDeleted(oldDoc, { expectedUsers: [ 'remove1', 'remove2' ] });
-      testHelper.verifyChannelAssignment([ ]);
+      testFixture.verifyDocumentDeleted(oldDoc, { expectedUsers: [ 'remove1', 'remove2' ] });
+      testFixture.verifyChannelAssignment([ ]);
     });
   });
 });

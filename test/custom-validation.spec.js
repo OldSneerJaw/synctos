@@ -1,8 +1,10 @@
-const testHelper = require('../src/testing/test-helper.js');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Custom validation constraint:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-custom-validation-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-custom-validation-sync-function.js');
   });
 
   it('allows a document if custom validation succeeds', () => {
@@ -15,7 +17,7 @@ describe('Custom validation constraint:', () => {
       }
     };
 
-    testHelper.verifyDocumentCreated(doc);
+    testFixture.verifyDocumentCreated(doc);
   });
 
   it('blocks a document if custom validation fails', () => {
@@ -52,7 +54,7 @@ describe('Custom validation constraint:', () => {
       }
     ];
 
-    testHelper.verifyDocumentNotReplaced(
+    testFixture.verifyDocumentNotReplaced(
       doc,
       oldDoc,
       'customValidationDoc',

@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Immutable nested properties:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-immutable-nested-properties-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-immutable-nested-properties-sync-function.js');
   });
 
   describe('when an object with an immutable property is nested in an array', () => {
@@ -29,7 +31,7 @@ describe('Immutable nested properties:', () => {
         ]
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'objectNestedInArrayDoc',
@@ -56,7 +58,7 @@ describe('Immutable nested properties:', () => {
         ]
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
   });
 
@@ -83,7 +85,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'objectNestedInHashtableDoc',
@@ -110,7 +112,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
   });
 
@@ -132,7 +134,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'objectNestedInObjectDoc',
@@ -156,7 +158,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
   });
 
@@ -183,7 +185,7 @@ describe('Immutable nested properties:', () => {
         ]
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'hashtableNestedInArrayDoc',
@@ -213,7 +215,7 @@ describe('Immutable nested properties:', () => {
         ]
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
   });
 
@@ -235,7 +237,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'hashtableNestedInObjectDoc',
@@ -259,7 +261,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
   });
 
@@ -286,7 +288,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'hashtableNestedInHashtableDoc',
@@ -316,7 +318,7 @@ describe('Immutable nested properties:', () => {
         }
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
   });
 });

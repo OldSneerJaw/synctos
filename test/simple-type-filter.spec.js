@@ -1,8 +1,10 @@
-const testHelper = require('../src/testing/test-helper');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Simple type filter:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-simple-type-filter-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-simple-type-filter-sync-function.js');
   });
 
   function testSimpleTypeFilter(docTypeId) {
@@ -12,7 +14,7 @@ describe('Simple type filter:', () => {
         type: docTypeId
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('identifies a new document that is replacing a deleted document by its type property', () => {
@@ -25,7 +27,7 @@ describe('Simple type filter:', () => {
         _deleted: true
       };
 
-      testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
+      testFixture.verifyDocumentAccepted(doc, oldDoc, 'write');
     });
 
     it('identifies an updated document by its type property when it matches that of the old document', () => {
@@ -38,7 +40,7 @@ describe('Simple type filter:', () => {
         type: docTypeId
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('identifies a deleted document by the type property of the old document', () => {
@@ -47,7 +49,7 @@ describe('Simple type filter:', () => {
         type: docTypeId
       };
 
-      testHelper.verifyDocumentDeleted(oldDoc);
+      testFixture.verifyDocumentDeleted(oldDoc);
     });
 
     it('refuses to identify an updated document by its type property when it differs from that of the old document', () => {
@@ -60,7 +62,7 @@ describe('Simple type filter:', () => {
         type: 'somethingElse'
       };
 
-      testHelper.verifyUnknownDocumentType(doc, oldDoc);
+      testFixture.verifyUnknownDocumentType(doc, oldDoc);
     });
 
     it('cannot identify a document when the type property is not set', () => {
@@ -68,7 +70,7 @@ describe('Simple type filter:', () => {
         _id: 'my-doc'
       };
 
-      testHelper.verifyUnknownDocumentType(doc);
+      testFixture.verifyUnknownDocumentType(doc);
     });
 
     it('cannot identify a document when the type property is set to an unknown type', () => {
@@ -77,7 +79,7 @@ describe('Simple type filter:', () => {
         type: 'somethingElse'
       };
 
-      testHelper.verifyUnknownDocumentType(doc);
+      testFixture.verifyUnknownDocumentType(doc);
     });
 
     it('cannot identify a deleted document when the old document does not exist', () => {
@@ -88,7 +90,7 @@ describe('Simple type filter:', () => {
 
       // When deleting a document that does not exist and the document's type cannot be determined, the fallback
       // behaviour is to allow it to be deleted by admins only
-      testHelper.verifyDocumentAccepted(doc, void 0, [ ]);
+      testFixture.verifyDocumentAccepted(doc, void 0, [ ]);
     });
 
     it('cannot identify a deleted document when the old document is also deleted', () => {
@@ -103,7 +105,7 @@ describe('Simple type filter:', () => {
 
       // When deleting a document that was already deleted and the document's type cannot be determined, the fallback
       // behaviour is to allow it to be deleted by admins only
-      testHelper.verifyDocumentAccepted(doc, oldDoc, [ ]);
+      testFixture.verifyDocumentAccepted(doc, oldDoc, [ ]);
     });
   }
 

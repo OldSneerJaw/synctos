@@ -34,7 +34,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   const environmentStatement = `(${environmentString});`;
 
   // Compile the test environment function within the current virtual machine context so it can share access to the "requireAccess",
-  // "channel", "customActionStub", etc. stubs with the test-helper module
+  // "channel", "customActionStub", etc. stubs with the test-fixture-maker module
   const environmentFunction = vm.runInThisContext(environmentStatement, options);
 
   return environmentFunction(underscore, simpleMock);
@@ -42,7 +42,7 @@ function init(rawSyncFunction, syncFunctionFile) {
 
 // Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string. The sync function
 // generator script automatically escapes backtick characters with the sequence "\`" so that it produces a valid multiline string.
-// However, when loaded by the test helper, a sync function is not inserted into a Sync Gateway configuration file so we must "unescape"
+// However, when loaded by the test fixture, a sync function is not inserted into a Sync Gateway configuration file so we must "unescape"
 // backtick characters to preserve the original intention.
 function unescapeBackticks(originalString) {
   return originalString.replace(/\\`/g, () => '`');

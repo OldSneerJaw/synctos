@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Strict equality constraint:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-must-equal-strict-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-must-equal-strict-sync-function.js');
   });
 
   describe('array type with static property validation', () => {
@@ -15,7 +17,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ]
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a document when the array is null', () => {
@@ -24,13 +26,13 @@ describe('Strict equality constraint:', () => {
         arrayProp: null
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
     it('rejects a document when the array is missing', () => {
       const doc = { _id: 'staticArrayDoc' };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
     it('rejects a document when a top-level array element is not equal', () => {
@@ -39,7 +41,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 0, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, [ ] ]
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
     it('rejects a document when a nested array element is not equal', () => {
@@ -48,7 +50,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'baz' }, [ ] ]
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
     it('rejects a document when the array is a subset of the expected elements', () => {
@@ -57,7 +59,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' } ]
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
 
     it('rejects a document when nested complex type elements are not of the same type', () => {
@@ -66,7 +68,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], null, { foo: 'bar' }, { } ]
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticArrayDoc',
         errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
@@ -78,7 +80,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 16.2, [ 'foobar', 3, false ], [ 45.9 ], [ ], { foo: 'bar' }, null ]
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticArrayDoc', errorFormatter.mustEqualViolation('arrayProp', expectedArrayValue));
     });
   });
 
@@ -90,7 +92,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 'barfoo', -72.0, true, 3.9 ]
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a document when the array elements are different', () => {
@@ -100,7 +102,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ '#4' ]
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'dynamicArrayDoc', errorFormatter.mustEqualViolation('arrayProp', doc.expectedDynamicValue));
+      testFixture.verifyDocumentNotCreated(doc, 'dynamicArrayDoc', errorFormatter.mustEqualViolation('arrayProp', doc.expectedDynamicValue));
     });
   });
 
@@ -127,7 +129,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a document when the object is null', () => {
@@ -136,13 +138,13 @@ describe('Strict equality constraint:', () => {
         objectProp: null
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
     it('rejects a document when the object is missing', () => {
       const doc = { _id: 'staticObjectDoc' };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
     it('rejects a document when the top-level properties do not match', () => {
@@ -158,7 +160,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
     it('rejects a document when the nested properties of the object do not match', () => {
@@ -174,7 +176,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
 
     it('rejects a document when a nested object property is missing', () => {
@@ -190,7 +192,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
+      testFixture.verifyDocumentNotCreated(doc, 'staticObjectDoc', errorFormatter.mustEqualViolation('objectProp', expectedObjectValue));
     });
   });
 
@@ -205,7 +207,7 @@ describe('Strict equality constraint:', () => {
         objectProp: { myFloatProp: 88.92 }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a document when the object properties do not match', () => {
@@ -215,7 +217,7 @@ describe('Strict equality constraint:', () => {
         objectProp: { myStringProp: 'foo', bar: 0 }
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'dynamicObjectDoc', errorFormatter.mustEqualViolation('objectProp', doc.expectedDynamicValue));
+      testFixture.verifyDocumentNotCreated(doc, 'dynamicObjectDoc', errorFormatter.mustEqualViolation('objectProp', doc.expectedDynamicValue));
     });
   });
 
@@ -242,7 +244,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a document when the hashtable is null', () => {
@@ -251,7 +253,7 @@ describe('Strict equality constraint:', () => {
         hashtableProp: null
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticHashtableDoc',
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
@@ -260,7 +262,7 @@ describe('Strict equality constraint:', () => {
     it('rejects a document when the hashtable is missing', () => {
       const doc = { _id: 'staticHashtableDoc' };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticHashtableDoc',
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
@@ -279,7 +281,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticHashtableDoc',
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
@@ -298,7 +300,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticHashtableDoc',
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
@@ -317,7 +319,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticHashtableDoc',
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
@@ -337,7 +339,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticHashtableDoc',
         errorFormatter.mustEqualViolation('hashtableProp', expectedHashtableValue));
@@ -352,7 +354,7 @@ describe('Strict equality constraint:', () => {
         hashtableProp: { myDateProp: '2017-04-07' }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a document when the hashtable property does not match', () => {
@@ -362,7 +364,7 @@ describe('Strict equality constraint:', () => {
         hashtableProp: { myStringProp: 'foo', myIntegerProp: null }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicHashtableDoc',
         errorFormatter.mustEqualViolation('hashtableProp', doc.expectedDynamicValue));
@@ -376,7 +378,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 'foobar', 'foobar' ]
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects array element values that do not match', () => {
@@ -385,7 +387,7 @@ describe('Strict equality constraint:', () => {
         arrayProp: [ 'foobar', 'foobar', 'fubar' ]
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'arrayElementConstraintDoc',
         errorFormatter.mustEqualViolation('arrayProp[2]', 'foobar'));
@@ -402,7 +404,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects hashtable element values that do not match', () => {
@@ -415,7 +417,7 @@ describe('Strict equality constraint:', () => {
         }
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'hashtableElementConstraintDoc',
         errorFormatter.mustEqualViolation('hashtableProp[c]', -15));
@@ -433,7 +435,7 @@ describe('Strict equality constraint:', () => {
         uuidProp: '25f5f392-2c4d-4ab1-9056-52d227dd9a37'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('reject values that are semantically equal to the expected values but not strictly equal', () => {
@@ -446,7 +448,7 @@ describe('Strict equality constraint:', () => {
         uuidProp: '25F5F392-2C4D-4AB1-9056-52D227DD9A37'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'specializedStringsDoc',
         [
@@ -466,13 +468,13 @@ describe('Strict equality constraint:', () => {
         stringProp: null
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a document with a missing value', () => {
       const doc = { _id: 'nullExpectedValueDoc' };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a document with a value that is neither null nor undefined', () => {
@@ -481,7 +483,7 @@ describe('Strict equality constraint:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'nullExpectedValueDoc',
         errorFormatter.mustEqualViolation('stringProp', null));
