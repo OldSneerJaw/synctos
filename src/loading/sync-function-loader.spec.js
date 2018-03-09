@@ -32,34 +32,18 @@ describe('Sync function loader', () => {
     mockRequire.stopAll();
   });
 
-  it('should load a sync function', () => {
-    const docDefinitionsFile = 'my/doc-definitions.js';
-    const docDefinitionsContent = 'my-doc-definitions';
-    const originalSyncFuncTemplate = 'my-original-sync-fync-template';
-    const updatedSyncFuncTemplate = 'function my-sync-func-template() { %SYNC_DOCUMENT_DEFINITIONS%; }';
-    const indentedSyncFunc = 'my\n  \r\nfinal\rsync `func`';
+  it('should load a sync function as a multi-line JavaScript block', () => {
+    validateLoadSuccess(
+      'my\n  \r\nfinal\rsync `func`',
+      null,
+      'my\n\nfinal\nsync \\`func\\`');
+  });
 
-    fsMock.readFileSync.returnWith(originalSyncFuncTemplate);
-    fileFragmentLoaderMock.load.returnWith(updatedSyncFuncTemplate);
-    docDefinitionsLoaderMock.load.returnWith(docDefinitionsContent);
-    indentMock.js.returnWith(indentedSyncFunc);
-
-    const result = syncFunctionLoader.load(docDefinitionsFile);
-
-    expect(result).to.equal('my\n\nfinal\nsync \\`func\\`');
-
-    expect(fsMock.readFileSync.callCount).to.equal(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ syncFuncTemplateFile, 'utf8' ]);
-
-    expect(fileFragmentLoaderMock.load.callCount).to.equal(1);
-    expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ syncFuncTemplateDir, expectedMacroName, originalSyncFuncTemplate ]);
-
-    expect(docDefinitionsLoaderMock.load.callCount).to.equal(1);
-    expect(docDefinitionsLoaderMock.load.calls[0].args).to.eql([ docDefinitionsFile ]);
-
-    expect(indentMock.js.callCount).to.equal(1);
-    expect(indentMock.js.calls[0].args).to.eql(
-      [ `function my-sync-func-template() { ${docDefinitionsContent}; }`, { tabString: '  ' } ]);
+  it('should load a validation function as a JSON string', () => {
+    validateLoadSuccess(
+      'my\n  \r\n"final"\r`sync` \\func\\',
+      { jsonString: true },
+      '"my\\n\\n\\"final\\"\\n`sync` \\\\func\\\\"');
   });
 
   it('should throw an exception if the sync function template file does not exist', () => {
@@ -84,4 +68,33 @@ describe('Sync function loader', () => {
 
     expect(indentMock.js.callCount).to.equal(0);
   });
+
+  function validateLoadSuccess(indentedSyncFunc, formatOptions, expectedSyncFunc) {
+    const docDefinitionsFile = 'my/doc-definitions.js';
+    const docDefinitionsContent = 'my-doc-definitions';
+    const originalSyncFuncTemplate = 'my-original-sync-fync-template';
+    const updatedSyncFuncTemplate = 'function my-sync-func-template() { %SYNC_DOCUMENT_DEFINITIONS%; }';
+
+    fsMock.readFileSync.returnWith(originalSyncFuncTemplate);
+    fileFragmentLoaderMock.load.returnWith(updatedSyncFuncTemplate);
+    docDefinitionsLoaderMock.load.returnWith(docDefinitionsContent);
+    indentMock.js.returnWith(indentedSyncFunc);
+
+    const result = syncFunctionLoader.load(docDefinitionsFile, formatOptions);
+
+    expect(result).to.equal(expectedSyncFunc);
+
+    expect(fsMock.readFileSync.callCount).to.equal(1);
+    expect(fsMock.readFileSync.calls[0].args).to.eql([ syncFuncTemplateFile, 'utf8' ]);
+
+    expect(fileFragmentLoaderMock.load.callCount).to.equal(1);
+    expect(fileFragmentLoaderMock.load.calls[0].args).to.eql([ syncFuncTemplateDir, expectedMacroName, originalSyncFuncTemplate ]);
+
+    expect(docDefinitionsLoaderMock.load.callCount).to.equal(1);
+    expect(docDefinitionsLoaderMock.load.calls[0].args).to.eql([ docDefinitionsFile ]);
+
+    expect(indentMock.js.callCount).to.equal(1);
+    expect(indentMock.js.calls[0].args).to.eql(
+      [ `function my-sync-func-template() { ${docDefinitionsContent}; }`, { tabString: '  ' } ]);
+  }
 });
