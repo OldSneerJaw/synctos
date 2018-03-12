@@ -412,7 +412,7 @@ describe('Date/time validation type', () => {
     it('rejects a date/time that is greater than the maximum value', () => {
       const doc = {
         _id: 'datetimeDoc',
-        exclusiveRangeValidationAsDatetimesProp: '2018-02-08T19:35'
+        exclusiveRangeValidationAsDatetimesProp: '2018-02-08T19:35-11:30'
       };
 
       testFixture.verifyDocumentNotCreated(
