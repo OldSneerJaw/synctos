@@ -1,23 +1,28 @@
-const sampleSpecHelper = require('./helpers/sample-spec-helper');
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
 const { expect } = require('chai');
+const sampleSpecHelperMaker = require('./helpers/sample-spec-helper-maker');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Sample business notification transport doc definition', () => {
+  let testFixture;
+  let errorFormatter;
+  let sampleSpecHelper;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-sample-sync-function.js');
+    errorFormatter = testFixture.validationErrorFormatter;
+    sampleSpecHelper = sampleSpecHelperMaker.init(testFixture);
   });
 
   const expectedDocType = 'notificationTransport';
   const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
   function verifyAuthorizationCustomAction(docId, action) {
-    expect(testHelper.requireAccess.callCount).to.equal(2);
-    expect(testHelper.requireAccess.calls[1].arg).to.equal(`${docId}-${action}`);
+    expect(testFixture.requireAccess.callCount).to.equal(2);
+    expect(testFixture.requireAccess.calls[1].arg).to.equal(`${docId}-${action}`);
   }
 
   function verifyNoAuthorizationCustomAction() {
-    expect(testHelper.requireAccess.callCount).to.equal(1);
+    expect(testFixture.requireAccess.callCount).to.equal(1);
   }
 
   it('successfully creates a valid notification transport document', () => {

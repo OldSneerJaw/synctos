@@ -1,16 +1,26 @@
+// DEPRECATION NOTICE: This module has been deprecated in favour of the test-fixture-maker module
+
+/* istanbul ignore file */
+
+const util = require('util');
+
 /**
  * Initializes the module with the sync function at the specified file path.
  *
  * @param {string} filePath The path to the sync function to load
  */
-exports.initSyncFunction = initSyncFunction;
+exports.initSyncFunction = util.deprecate(
+  initSyncFunction,
+  'The test-helper module is deprecated. Use test-fixture-maker instead.');
 
 /**
  * Initializes the test helper module with the document definitions at the specified file path.
  *
  * @param {string} filePath The path to the document definitions to load
  */
-exports.initDocumentDefinitions = initDocumentDefinitions;
+exports.initDocumentDefinitions = util.deprecate(
+  initDocumentDefinitions,
+  'The test-helper module is deprecated. Use test-fixture-maker instead.');
 
 /**
  * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be

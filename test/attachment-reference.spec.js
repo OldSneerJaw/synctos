@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Attachment reference validation type', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-attachment-reference-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-attachment-reference-sync-function.js');
   });
 
   describe('file extensions constraint', () => {
@@ -15,7 +17,7 @@ describe('Attachment reference validation type', () => {
           staticExtensionsValidationProp: 'bar.htm'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects an attachment reference with an invalid file extension', () => {
@@ -25,7 +27,7 @@ describe('Attachment reference validation type', () => {
           staticExtensionsValidationProp: 'bar.pdf'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'attachmentsDoc',
           errorFormatter.supportedExtensionsAttachmentReferenceViolation('staticExtensionsValidationProp', [ 'html', 'htm' ]));
@@ -41,7 +43,7 @@ describe('Attachment reference validation type', () => {
           dynamicSupportedExtensions: [ 'txt' ]
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects an attachment reference with an invalid file extension', () => {
@@ -53,7 +55,7 @@ describe('Attachment reference validation type', () => {
           dynamicSupportedExtensions: expectedSupportedExtensions
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'attachmentsDoc',
           errorFormatter.supportedExtensionsAttachmentReferenceViolation('dynamicExtensionsValidationProp', expectedSupportedExtensions));
@@ -73,7 +75,7 @@ describe('Attachment reference validation type', () => {
           staticContentTypesValidationProp: 'foo.bar'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects an attachment reference with an invalid content type', () => {
@@ -86,7 +88,7 @@ describe('Attachment reference validation type', () => {
           staticContentTypesValidationProp: 'foo.bar'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'attachmentsDoc',
           errorFormatter.supportedContentTypesAttachmentReferenceViolation('staticContentTypesValidationProp', [ 'text/plain', 'text/html' ]));
@@ -105,7 +107,7 @@ describe('Attachment reference validation type', () => {
           dynamicSupportedContentTypes: [ 'text/plain' ]
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects an attachment reference with an invalid content type', () => {
@@ -120,7 +122,7 @@ describe('Attachment reference validation type', () => {
           dynamicSupportedContentTypes: expectedSupportedContentTypes
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'attachmentsDoc',
           errorFormatter.supportedContentTypesAttachmentReferenceViolation('dynamicContentTypesValidationProp', expectedSupportedContentTypes));
@@ -140,7 +142,7 @@ describe('Attachment reference validation type', () => {
           staticMaxSizeValidationProp: 'foo.bar'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects an attachment larger than the maximum size', () => {
@@ -153,7 +155,7 @@ describe('Attachment reference validation type', () => {
           staticMaxSizeValidationProp: 'foo.bar'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'attachmentsDoc',
           errorFormatter.maximumSizeAttachmentViolation('staticMaxSizeValidationProp', 200));
@@ -172,7 +174,7 @@ describe('Attachment reference validation type', () => {
           dynamicMaxSize: 150
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects an attachment larger than the maximum size', () => {
@@ -186,7 +188,7 @@ describe('Attachment reference validation type', () => {
           dynamicMaxSize: 150
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'attachmentsDoc',
           errorFormatter.maximumSizeAttachmentViolation('dynamicMaxSizeValidationProp', 150));

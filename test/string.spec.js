@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('String validation type', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-string-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-string-sync-function.js');
   });
 
   describe('length constraints', () => {
@@ -14,7 +16,7 @@ describe('String validation type', () => {
           staticLengthValidationProp: 'foo'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('cannot create a doc with a string that is shorter than the minimum length', () => {
@@ -23,7 +25,7 @@ describe('String validation type', () => {
           staticLengthValidationProp: 'fo'
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.minimumLengthViolation('staticLengthValidationProp', 3));
+        testFixture.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.minimumLengthViolation('staticLengthValidationProp', 3));
       });
 
       it('cannot create a doc with a string that is longer than the maximum length', () => {
@@ -32,7 +34,7 @@ describe('String validation type', () => {
           staticLengthValidationProp: 'foob'
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.maximumLengthViolation('staticLengthValidationProp', 3));
+        testFixture.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.maximumLengthViolation('staticLengthValidationProp', 3));
       });
     });
 
@@ -44,7 +46,7 @@ describe('String validation type', () => {
           dynamicLengthPropertyIsValid: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with a string that is shorter than the minimum length', () => {
@@ -54,7 +56,7 @@ describe('String validation type', () => {
           dynamicLengthPropertyIsValid: false
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [
@@ -73,7 +75,7 @@ describe('String validation type', () => {
           staticNonEmptyValidationProp: 'foo'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with an empty string', () => {
@@ -82,7 +84,7 @@ describe('String validation type', () => {
           staticNonEmptyValidationProp: ''
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('staticNonEmptyValidationProp'));
       });
     });
 
@@ -94,7 +96,7 @@ describe('String validation type', () => {
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a doc with a string that is empty if the constraint is disabled', () => {
@@ -104,7 +106,7 @@ describe('String validation type', () => {
           dynamicMustNotBeEmptyPropertiesEnforced: false
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with an empty string if the constraint is enabled', () => {
@@ -114,7 +116,7 @@ describe('String validation type', () => {
           dynamicMustNotBeEmptyPropertiesEnforced: true
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustNotBeEmptyViolation('dynamicNonEmptyValidationProp'));
       });
     });
   });
@@ -127,7 +129,7 @@ describe('String validation type', () => {
           staticRegexPatternValidationProp: '0472`foo'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with a string that does not match the expected pattern', () => {
@@ -136,7 +138,7 @@ describe('String validation type', () => {
           staticRegexPatternValidationProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           errorFormatter.regexPatternItemViolation('staticRegexPatternValidationProp', /^\d+`[a-z]+$/));
@@ -153,7 +155,7 @@ describe('String validation type', () => {
           dynamicRegex: testRegexPattern
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a doc with a string that does not match the expected pattern', () => {
@@ -163,7 +165,7 @@ describe('String validation type', () => {
           dynamicRegex: testRegexPattern
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           errorFormatter.regexPatternItemViolation('dynamicRegexPatternValidationProp', new RegExp(testRegexPattern)));
@@ -179,7 +181,7 @@ describe('String validation type', () => {
           staticMustBeTrimmedValidationProp: ''
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a string that has no leading or trailing whitespace', () => {
@@ -188,7 +190,7 @@ describe('String validation type', () => {
           staticMustBeTrimmedValidationProp: 'foo bar'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a string that has leading whitespace', () => {
@@ -197,7 +199,7 @@ describe('String validation type', () => {
           staticMustBeTrimmedValidationProp: '\tfoo bar'
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('staticMustBeTrimmedValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('staticMustBeTrimmedValidationProp'));
       });
 
       it('blocks a string that has trailing whitespace', () => {
@@ -206,7 +208,7 @@ describe('String validation type', () => {
           staticMustBeTrimmedValidationProp: 'foo bar\n'
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('staticMustBeTrimmedValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('staticMustBeTrimmedValidationProp'));
       });
     });
 
@@ -218,7 +220,7 @@ describe('String validation type', () => {
           dynamicMustBeTrimmedState: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a string that has leading whitespace if the constraint is disabled', () => {
@@ -228,7 +230,7 @@ describe('String validation type', () => {
           dynamicMustBeTrimmedState: false
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a string that has trailing whitespace if the constraint is disabled', () => {
@@ -238,7 +240,7 @@ describe('String validation type', () => {
           dynamicMustBeTrimmedState: false
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('blocks a string that has leading and trailing whitespace if the constraint is enabled', () => {
@@ -248,7 +250,7 @@ describe('String validation type', () => {
           dynamicMustBeTrimmedState: true
         };
 
-        testHelper.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('dynamicMustBeTrimmedValidationProp'));
+        testFixture.verifyDocumentNotCreated(doc, 'stringDoc', errorFormatter.mustBeTrimmedViolation('dynamicMustBeTrimmedValidationProp'));
       });
     });
   });
@@ -261,7 +263,7 @@ describe('String validation type', () => {
           staticInclusiveRangeValidationProp: 'Right'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a value that matches the minimum value', () => {
@@ -270,7 +272,7 @@ describe('String validation type', () => {
           staticInclusiveRangeValidationProp: 'A'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a value that matches the maximum value', () => {
@@ -279,7 +281,7 @@ describe('String validation type', () => {
           staticInclusiveRangeValidationProp: 'Z'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a value that is less than the minimum value', () => {
@@ -288,7 +290,7 @@ describe('String validation type', () => {
           staticInclusiveRangeValidationProp: '9'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.minimumValueViolation('staticInclusiveRangeValidationProp', 'A') ]);
@@ -300,7 +302,7 @@ describe('String validation type', () => {
           staticInclusiveRangeValidationProp: 'wrong'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.maximumValueViolation('staticInclusiveRangeValidationProp', 'Z') ]);
@@ -316,7 +318,7 @@ describe('String validation type', () => {
           dynamicInclusiveRangeValidationProp: '54'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a value that is less than the minimum value', () => {
@@ -327,7 +329,7 @@ describe('String validation type', () => {
           dynamicInclusiveRangeValidationProp: '2.99999'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.minimumValueViolation('dynamicInclusiveRangeValidationProp', '3') ]);
@@ -341,7 +343,7 @@ describe('String validation type', () => {
           dynamicInclusiveRangeValidationProp: '{'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.maximumValueViolation('dynamicInclusiveRangeValidationProp', 'z') ]);
@@ -357,7 +359,7 @@ describe('String validation type', () => {
           staticExclusiveRangeValidationProp: 'aaa'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a value that matches the minimum value', () => {
@@ -366,7 +368,7 @@ describe('String validation type', () => {
           staticExclusiveRangeValidationProp: 'aa'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.minimumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'aa') ]);
@@ -378,7 +380,7 @@ describe('String validation type', () => {
           staticExclusiveRangeValidationProp: 'c'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.maximumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'c') ]);
@@ -390,7 +392,7 @@ describe('String validation type', () => {
           staticExclusiveRangeValidationProp: 'a'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.minimumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'aa') ]);
@@ -402,7 +404,7 @@ describe('String validation type', () => {
           staticExclusiveRangeValidationProp: 'cc'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.maximumValueExclusiveViolation('staticExclusiveRangeValidationProp', 'c') ]);
@@ -418,7 +420,7 @@ describe('String validation type', () => {
           dynamicExclusiveRangeValidationProp: 'Good'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('rejects a value that matches the minimum value', () => {
@@ -429,7 +431,7 @@ describe('String validation type', () => {
           dynamicExclusiveRangeValidationProp: 'F'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.minimumValueExclusiveViolation('dynamicExclusiveRangeValidationProp', 'F') ]);
@@ -443,7 +445,7 @@ describe('String validation type', () => {
           dynamicExclusiveRangeValidationProp: '}'
         };
 
-        testHelper.verifyDocumentNotCreated(
+        testFixture.verifyDocumentNotCreated(
           doc,
           'stringDoc',
           [ errorFormatter.maximumValueExclusiveViolation('dynamicExclusiveRangeValidationProp', '}') ]);

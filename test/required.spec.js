@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Required value constraint', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-required-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-required-sync-function.js');
   });
 
   describe('with static validation', () => {
@@ -23,7 +25,7 @@ describe('Required value constraint', () => {
         hashtableProp: { 'key': 0.0 }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('blocks a doc with top-level values that are null', () => {
@@ -42,7 +44,7 @@ describe('Required value constraint', () => {
         hashtableProp: null,
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -76,7 +78,7 @@ describe('Required value constraint', () => {
         hashtableProp: { 'key': null },
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -102,7 +104,7 @@ describe('Required value constraint', () => {
         hashtableProp: void 0,
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -136,7 +138,7 @@ describe('Required value constraint', () => {
         hashtableProp: { 'key': void 0 },
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -149,7 +151,7 @@ describe('Required value constraint', () => {
     it('blocks a doc with top-level values that are missing', () => {
       const doc = { _id: 'staticDoc' };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -183,7 +185,7 @@ describe('Required value constraint', () => {
         hashtableProp: { },
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticDoc', errorFormatter.requiredValueViolation('objectProp.subProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'staticDoc', errorFormatter.requiredValueViolation('objectProp.subProp'));
     });
   });
 
@@ -205,7 +207,7 @@ describe('Required value constraint', () => {
         hashtableProp: { 'key': 0.0 }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with top-level values that are either null or undefined if enforcement is disabled', () => {
@@ -225,7 +227,7 @@ describe('Required value constraint', () => {
         hashtableProp: null
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with nested values that are either null or undefined if enforcement is disabled', () => {
@@ -236,7 +238,7 @@ describe('Required value constraint', () => {
         hashtableProp: { 'key': null }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('blocks a doc with top-level values that are null', () => {
@@ -256,7 +258,7 @@ describe('Required value constraint', () => {
         hashtableProp: null,
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -291,7 +293,7 @@ describe('Required value constraint', () => {
         hashtableProp: { 'key': null },
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -318,7 +320,7 @@ describe('Required value constraint', () => {
         hashtableProp: void 0,
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -353,7 +355,7 @@ describe('Required value constraint', () => {
         hashtableProp: { 'key': void 0 },
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -369,7 +371,7 @@ describe('Required value constraint', () => {
         dynamicPropsRequired: true
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -404,7 +406,7 @@ describe('Required value constraint', () => {
         hashtableProp: { },
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'dynamicDoc', errorFormatter.requiredValueViolation('objectProp.subProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'dynamicDoc', errorFormatter.requiredValueViolation('objectProp.subProp'));
     });
   });
 });

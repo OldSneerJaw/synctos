@@ -4,7 +4,7 @@
 
 Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
 
-With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for [sync functions](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/sync-function-api-guide/index.html) with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation, sync functions generated with synctos return specific, detailed error messages that make it easy for a client app developer to figure out exactly what went wrong. An included test helper module also provides a simple framework to write unit tests for generated sync functions.
+With this utility, you define all your JSON document types in a declarative JavaScript object format that eliminates much of the boilerplate normally required for [sync functions](http://developer.couchbase.com/documentation/mobile/current/develop/guides/sync-gateway/sync-function-api-guide/index.html) with comprehensive validation of document contents and permissions. Not only is it invaluable in protecting the integrity of the documents that are stored in a Sync Gateway database, whenever a document fails validation, sync functions generated with synctos return specific, detailed error messages that make it easy for a client app developer to figure out exactly what went wrong. An included test fixture module also provides a simple framework to write unit tests for generated sync functions.
 
 To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/index.html). And, for a comprehensive introduction to synctos, see the post [Validating your Sync Gateway documents with synctos](https://blog.couchbase.com/validating-your-sync-gateway-documents-with-synctos/) on the official Couchbase blog.
 
@@ -35,7 +35,9 @@ To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com
 
 Synctos is distributed as an [npm](https://www.npmjs.com/) package and it requires that [Node.js](https://nodejs.org/) is installed in order to run. NOTE: The minimum officially supported version of Node.js is v8.9.0.
 
-To add synctos to your project, run `npm install synctos` from the project's root directory to install the package locally. Or, better yet, if you define a package.json file in your project, you can run `npm install synctos --savedev` to automatically install locally and insert the package into your package.json's developer dependencies.
+If your project does not already have an npm `package.json` file, run `npm init` to create one. Don't worry too much about the answers to the questions it asks right now; the file it produces can be updated as needed later.
+
+Next, to install synctos locally (i.e. in your project's `node_modules` directory) and to add it to your project as a development dependency automatically, run `npm install synctos --save-dev` from the project's root directory.
 
 For more info on npm package management, see the official npm documentation for [How to install local packages](https://docs.npmjs.com/getting-started/installing-npm-packages-locally) and [Working with package.json](https://docs.npmjs.com/getting-started/using-a-package.json).
 
@@ -775,11 +777,11 @@ Custom code (e.g. type filters, custom validation functions, custom actions) wit
 
 # Testing
 
-The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test helper module (`src/testing/test-helper.js`) that is useful in automating much of the work that can go into writing test cases.
+The synctos project includes a variety of specifications/test cases to verify the behaviours of its various features. However, if you need to write a custom validation function, dynamic type filter, dynamic assignment of channels to users/roles, etc. or you would otherwise like to verify a generated sync function, this project includes a test fixture module (`src/testing/test-fixture-maker.js`) that is useful in automating much of the work that can go into writing test cases.
 
 The post [Testing your Sync Gateway functions with synctos](https://blog.couchbase.com/testing-sync-gateway-functions-synctos/) on the official Couchbase blog provides a detailed walkthrough, with examples, for setting up and running tests. The following section also provides a brief overview of the process.
 
-The synctos project uses the [mocha](https://mochajs.org/) test framework for writing and executing test cases, and the following instructions assume that you will too. Similarly, the [Chai](http://chaijs.com/) assertion library is used by synctos. But, by no means are your projects restricted to using either of these libraries for their own tests.
+Note that synctos uses the [mocha](https://mochajs.org/) test framework for writing and executing test cases and the [Chai](http://chaijs.com/) library for assertions. The following instructions assume that you will too, but by no means are your projects restricted to using either of these libraries for their own tests.
 
 Some other test runners/frameworks that might be of interest:
 
@@ -792,27 +794,29 @@ And some alternate assertion libraries:
 * [expect.js](https://www.npmjs.com/package/expect.js)
 * [should.js](https://www.npmjs.com/package/should)
 
-Once your testing libraries have been set up as development dependencies in your project's [package.json](https://docs.npmjs.com/getting-started/using-a-package.json), run `npm install` to download them.
+Install the testing libraries locally and add them as development dependencies in the project's [`package.json`](https://docs.npmjs.com/getting-started/using-a-package.json) file (e.g. `npm install mocha --save-dev`, `npm install chai --save-dev`).
 
-After that, create a new specification file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test helper module into the empty spec:
+After that, create a new specification file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test fixture module into the empty spec:
 
 ```
-var testHelper = require('synctos').testHelper;
+var testFixtureMaker = require('synctos').testFixtureMaker;
 ```
 
-Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test helper before each test case using the `beforeEach` function. For example:
+Create a new `describe` block to encapsulate the forthcoming test cases and also initialize the synctos test fixture before each test case using the `beforeEach` function. For example:
 
 ```
 describe('My new sync function', function() {
+  var testFixture;
+
   beforeEach(function() {
-    testHelper.initDocumentDefinitions('/path/to/my-doc-definitions.js');
+    testFixture = testFixtureMaker.initFromDocumentDefinitions('/path/to/my-doc-definitions.js');
   });
 
   ...
 });
 ```
 
-Now you can begin writing specs/test cases inside the `describe` block using the test helper's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a new document passes validation, specifies the correct channels, roles and usernames for authorization, and assigns the desired channel access to a list of users:
+Now you can begin writing specs/test cases inside the `describe` block using the test fixture's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a new document passes validation, specifies the correct channels, roles and usernames for authorization, and assigns the desired channel access to a list of users:
 
 ```
 it('can create a myDocType document', function() {
@@ -822,9 +826,9 @@ it('can create a myDocType document', function() {
     foo: 'bar',
     bar: -32,
     members: [ 'joe', 'nancy' ]
-  }
+  };
 
-  testHelper.verifyDocumentCreated(
+  testFixture.verifyDocumentCreated(
     doc,
     {
       expectedChannels: [ 'my-add-channel1', 'my-add-channel2' ],
@@ -854,10 +858,10 @@ it('cannot create a myDocType doc when required property foo is missing', functi
     bar: 79
   };
 
-  testHelper.verifyDocumentNotCreated(
+  testFixture.verifyDocumentNotCreated(
     doc,
     'myDocType',
-    [ testHelper.validationErrorFormatter.requiredValueViolation('foo') ],
+    [ testFixture.validationErrorFormatter.requiredValueViolation('foo') ],
     {
       expectedChannels: [ 'my-add-channel1', 'my-add-channel2' ],
       expectedRoles: [ 'my-add-role' ],
@@ -866,7 +870,15 @@ it('cannot create a myDocType doc when required property foo is missing', functi
 });
 ```
 
-The `testHelper.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/testing/validation-error-formatter.js` module in this project for documentation.
+The `testFixture.validationErrorFormatter` object in the preceding example provides a variety of functions that can be used to specify expected validation error messages. See the `src/testing/validation-error-formatter.js` module in this project for documentation.
+
+To execute the tests in the `test/` directory, ensure that the project's `package.json` file contains a "test" script. For example:
+
+```
+"scripts": {
+  "test": "mocha test/"
+}
+```
 
 You will find many more examples in this project's `test/` directory and in the example project [synctos-test-examples](https://github.com/OldSneerJaw/synctos-test-examples).
 

@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Non-missing value constraint', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-must-not-be-missing-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-must-not-be-missing-sync-function.js');
   });
 
   describe('with static validation', () => {
@@ -23,7 +25,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': 0.0 }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with top-level values that are null', () => {
@@ -42,7 +44,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: null,
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with nested values that are null', () => {
@@ -61,7 +63,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': null },
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('blocks a doc with top-level values that are undefined', () => {
@@ -80,7 +82,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: void 0,
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -114,7 +116,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': void 0 },
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -127,7 +129,7 @@ describe('Non-missing value constraint', () => {
     it('blocks a doc with top-level values that are missing', () => {
       const doc = { _id: 'staticDoc' };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'staticDoc',
         [
@@ -161,7 +163,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { },
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'staticDoc', errorFormatter.mustNotBeMissingValueViolation('objectProp.subProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'staticDoc', errorFormatter.mustNotBeMissingValueViolation('objectProp.subProp'));
     });
   });
 
@@ -183,7 +185,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': 0.0 }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with top-level values that are either null or undefined if enforcement is disabled', () => {
@@ -203,7 +205,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: null
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with nested values that are either null or undefined if enforcement is disabled', () => {
@@ -214,7 +216,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': null }
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with top-level values that are null', () => {
@@ -234,7 +236,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: null,
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a doc with nested values that are null', () => {
@@ -254,7 +256,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': null },
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('blocks a doc with top-level values that are undefined', () => {
@@ -274,7 +276,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: void 0,
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -309,7 +311,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': void 0 },
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -325,7 +327,7 @@ describe('Non-missing value constraint', () => {
         dynamicPropsRequired: true
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDoc',
         [
@@ -360,7 +362,7 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { },
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'dynamicDoc', errorFormatter.mustNotBeMissingValueViolation('objectProp.subProp'));
+      testFixture.verifyDocumentNotCreated(doc, 'dynamicDoc', errorFormatter.mustNotBeMissingValueViolation('objectProp.subProp'));
     });
   });
 });

@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [Unreleased]
 ### Added
 - [#35](https://github.com/Kashoo/synctos/issues/35): Option to output a generated sync function as a single-line JSON string
+- [#252](https://github.com/Kashoo/synctos/issues/252): Isolate test fixtures
+
+### Deprecated
+- `src/testing/test-helper.js` module
 
 ## [2.1.0] - 2018-03-08
 ### Added

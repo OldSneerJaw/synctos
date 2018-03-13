@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Strict immutable when set constraint:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-immutable-when-set-strict-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-immutable-when-set-strict-sync-function.js');
   });
 
   describe('a property with static validation', () => {
@@ -13,7 +15,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: 'foobar'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('can be left undefined in a new document', () => {
@@ -21,7 +23,7 @@ describe('Strict immutable when set constraint:', () => {
         _id: 'myDoc'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('can be set to null in a new document', () => {
@@ -30,7 +32,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: null
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('can be set to the same value as was already assigned in the old document', () => {
@@ -43,7 +45,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: 'foobar'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can be set to a value if it was left undefined in the old document', () => {
@@ -55,7 +57,7 @@ describe('Strict immutable when set constraint:', () => {
         _id: 'myDoc'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can be set to null if it was undefined in the old document', () => {
@@ -67,7 +69,7 @@ describe('Strict immutable when set constraint:', () => {
         _id: 'myDoc'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can be set to undefined if it was null in the old document', () => {
@@ -79,7 +81,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: null
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can be set to a value if it was null in the old document', () => {
@@ -92,7 +94,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: null
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('cannot be changed to a new value if it was set to a value in the old document', () => {
@@ -105,7 +107,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: 'foobar'
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
     it('cannot be change to undefined if it was set to a value in the old document', () => {
@@ -117,7 +119,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: 'foobar'
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
     it('cannot be changed to null if it was set to a value in the old document', () => {
@@ -130,7 +132,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: 'foobar'
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('staticValidationProp'));
     });
 
     it('does not prevent a document from being deleted if it is set to a value', () => {
@@ -139,7 +141,7 @@ describe('Strict immutable when set constraint:', () => {
         staticValidationProp: 'foobar'
       };
 
-      testHelper.verifyDocumentDeleted(oldDoc);
+      testFixture.verifyDocumentDeleted(oldDoc);
     });
   });
 
@@ -156,7 +158,7 @@ describe('Strict immutable when set constraint:', () => {
         dynamicPropertiesAreImmutable: true
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('can be set to a new value if the property is not immutable', () => {
@@ -171,7 +173,7 @@ describe('Strict immutable when set constraint:', () => {
         dynamicPropertiesAreImmutable: false
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('cannot be set to a new value if the property is immutable', () => {
@@ -186,7 +188,7 @@ describe('Strict immutable when set constraint:', () => {
         dynamicPropertiesAreImmutable: true
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('dynamicValidationProp'));
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'myDoc', errorFormatter.immutableItemViolation('dynamicValidationProp'));
     });
   });
 
@@ -210,7 +212,7 @@ describe('Strict immutable when set constraint:', () => {
         staticImmutableUuidProp: '91d7ba3c-e827-4619-842d-3d1b07bf39f7'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('reject values that are semantically equal to the old values but not strictly equal', () => {
@@ -232,7 +234,7 @@ describe('Strict immutable when set constraint:', () => {
         staticImmutableUuidProp: oldDoc.staticImmutableUuidProp.toUpperCase()
       };
 
-      testHelper.verifyDocumentNotReplaced(
+      testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'myDoc',

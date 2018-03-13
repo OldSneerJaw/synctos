@@ -1,29 +1,30 @@
-const testHelper = require('../src/testing/test-helper');
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Authorization:', () => {
+  let testFixture;
 
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-authorization-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-authorization-sync-function.js');
   });
 
   describe('for a document with explicit channel definitions', () => {
     it('rejects document creation for a user with no matching channels', () => {
       const doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyAccessDenied(doc, void 0, 'add');
+      testFixture.verifyAccessDenied(doc, void 0, 'add');
     });
 
     it('rejects document replacement for a user with no matching channels', () => {
       const doc = { _id: 'explicitChannelsDoc', stringProp: 'foobar' };
       const oldDoc = { _id: 'explicitChannelsDoc' };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, [ 'replace', 'update' ]);
+      testFixture.verifyAccessDenied(doc, oldDoc, [ 'replace', 'update' ]);
     });
 
     it('rejects document deletion for a user with no matching channels', () => {
       const doc = { _id: 'explicitChannelsDoc', _deleted: true };
 
-      testHelper.verifyAccessDenied(doc, void 0, { expectedChannels: [ 'remove', 'delete' ] });
+      testFixture.verifyAccessDenied(doc, void 0, { expectedChannels: [ 'remove', 'delete' ] });
     });
   });
 
@@ -33,20 +34,20 @@ describe('Authorization:', () => {
     it('rejects document creation for a user with no matching channels', () => {
       const doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
 
-      testHelper.verifyAccessDenied(doc, void 0, writeChannels);
+      testFixture.verifyAccessDenied(doc, void 0, writeChannels);
     });
 
     it('rejects document replacement for a user with no matching channels', () => {
       const doc = { _id: 'writeOnlyChannelsDoc', stringProp: 'foobar' };
       const oldDoc = { _id: 'writeOnlyChannelsDoc' };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, writeChannels);
+      testFixture.verifyAccessDenied(doc, oldDoc, writeChannels);
     });
 
     it('rejects document deletion for a user with no matching channels', () => {
       const doc = { _id: 'writeOnlyChannelsDoc', _deleted: true };
 
-      testHelper.verifyAccessDenied(doc, void 0, writeChannels);
+      testFixture.verifyAccessDenied(doc, void 0, writeChannels);
     });
   });
 
@@ -54,7 +55,7 @@ describe('Authorization:', () => {
     it('allows document addition for a user with only the add channel', () => {
       const doc = { _id: 'writeAndAddChannelsDoc' };
 
-      testHelper.verifyDocumentCreated(doc, [ 'edit', 'add' ]);
+      testFixture.verifyDocumentCreated(doc, [ 'edit', 'add' ]);
     });
 
     it('rejects document replacement for a user with only the add channel', () => {
@@ -64,7 +65,7 @@ describe('Authorization:', () => {
       };
       const oldDoc = { _id: 'writeAndAddChannelsDoc' };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, 'edit');
+      testFixture.verifyAccessDenied(doc, oldDoc, 'edit');
     });
 
     it('rejects document deletion for a user with only the add channel', () => {
@@ -74,7 +75,7 @@ describe('Authorization:', () => {
       };
       const oldDoc = { _id: 'writeAndAddChannelsDoc' };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, 'edit');
+      testFixture.verifyAccessDenied(doc, oldDoc, 'edit');
     });
   });
 
@@ -96,7 +97,7 @@ describe('Authorization:', () => {
         users: expectedWriteUsers
       };
 
-      testHelper.verifyAccessDenied(doc, null, expectedAuthorization);
+      testFixture.verifyAccessDenied(doc, null, expectedAuthorization);
     });
 
     it('rejects document replacement for a user with no matching channels, roles or users', () => {
@@ -110,7 +111,7 @@ describe('Authorization:', () => {
         users: expectedWriteUsers
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization);
+      testFixture.verifyAccessDenied(doc, oldDoc, expectedAuthorization);
     });
 
     it('rejects document deletion for a user with no matching channels, roles or users', () => {
@@ -124,7 +125,7 @@ describe('Authorization:', () => {
         users: expectedWriteUsers
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, expectedAuthorization);
+      testFixture.verifyAccessDenied(doc, oldDoc, expectedAuthorization);
     });
   });
 
@@ -135,7 +136,7 @@ describe('Authorization:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, null, { expectedRoles: [ 'add' ] });
+      testFixture.verifyAccessDenied(doc, null, { expectedRoles: [ 'add' ] });
     });
 
     it('rejects document replacement for a user with no matching roles', () => {
@@ -147,7 +148,7 @@ describe('Authorization:', () => {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'replace' ] });
+      testFixture.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'replace' ] });
     });
 
     it('rejects document deletion for a user with no matching roles', () => {
@@ -159,7 +160,7 @@ describe('Authorization:', () => {
         _id: 'noChannelsAndStaticRolesDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'remove' ] });
+      testFixture.verifyAccessDenied(doc, oldDoc, { expectedRoles: [ 'remove' ] });
     });
   });
 
@@ -170,7 +171,7 @@ describe('Authorization:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, null, { expectedUsers: [ 'add1', 'add2' ] });
+      testFixture.verifyAccessDenied(doc, null, { expectedUsers: [ 'add1', 'add2' ] });
     });
 
     it('rejects document replacement for a user without a matching username', () => {
@@ -182,7 +183,7 @@ describe('Authorization:', () => {
         _id: 'noChannelsAndStaticUsersDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { expectedUsers: [ 'replace1', 'replace2' ] });
+      testFixture.verifyAccessDenied(doc, oldDoc, { expectedUsers: [ 'replace1', 'replace2' ] });
     });
 
     it('rejects document deletion for a user without a matching username', () => {
@@ -194,7 +195,7 @@ describe('Authorization:', () => {
         _id: 'noChannelsAndStaticUsersDoc'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, { expectedUsers: [ 'remove1', 'remove2' ] });
+      testFixture.verifyAccessDenied(doc, oldDoc, { expectedUsers: [ 'remove1', 'remove2' ] });
     });
   });
 
@@ -205,7 +206,7 @@ describe('Authorization:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, null, []);
+      testFixture.verifyAccessDenied(doc, null, []);
     });
 
     it('allows document replacement', () => {
@@ -218,7 +219,7 @@ describe('Authorization:', () => {
         stringProp: 'barfoo'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc, { expectedRoles: [ 'replace' ] });
+      testFixture.verifyDocumentReplaced(doc, oldDoc, { expectedRoles: [ 'replace' ] });
     });
 
     it('rejects document deletion for a user with only replace role', () => {
@@ -231,7 +232,7 @@ describe('Authorization:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, []);
+      testFixture.verifyAccessDenied(doc, oldDoc, []);
     });
   });
 
@@ -242,7 +243,7 @@ describe('Authorization:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyDocumentCreated(doc, { expectedRoles: [ 'add' ] });
+      testFixture.verifyDocumentCreated(doc, { expectedRoles: [ 'add' ] });
     });
 
     it('rejects document replacement', () => {
@@ -255,7 +256,7 @@ describe('Authorization:', () => {
         stringProp: 'barfoo'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, []);
+      testFixture.verifyAccessDenied(doc, oldDoc, []);
     });
 
     it('rejects document deletion for a user with only add role', () => {
@@ -268,7 +269,7 @@ describe('Authorization:', () => {
         stringProp: 'foobar'
       };
 
-      testHelper.verifyAccessDenied(doc, oldDoc, []);
+      testFixture.verifyAccessDenied(doc, oldDoc, []);
     });
   });
 });

@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('UUID validation type:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-uuid-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-uuid-sync-function.js');
   });
 
   describe('format validation', () => {
@@ -14,7 +16,7 @@ describe('UUID validation type:', () => {
         formatValidationProp: '1511fba4-e039-42cc-9ac2-9f2fa29eecfc'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a valid UUID with uppercase letters', () => {
@@ -24,7 +26,7 @@ describe('UUID validation type:', () => {
         formatValidationProp: 'DFF421EA-0AB2-45C9-989C-12C76E7282B8'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a UUID with invalid characters', () => {
@@ -34,7 +36,7 @@ describe('UUID validation type:', () => {
         formatValidationProp: 'g78d516e-cb95-4ef7-b593-2ee7ce375738'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
+      testFixture.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
     });
 
     it('rejects a UUID without hyphens', () => {
@@ -44,7 +46,7 @@ describe('UUID validation type:', () => {
         formatValidationProp: '1511fba4e03942cc9ac29f2fa29eecfc'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
+      testFixture.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
     });
 
     it('rejects a UUID with too many characters', () => {
@@ -54,7 +56,7 @@ describe('UUID validation type:', () => {
         formatValidationProp: '1511fba4-e039-42cc-9ac2-9f2fa29eecfc3'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
+      testFixture.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
     });
 
     it('rejects a UUID with too few characters', () => {
@@ -64,7 +66,7 @@ describe('UUID validation type:', () => {
         formatValidationProp: '1511fba4-e03-42cc-9ac2-9f2fa29eecfc'
       };
 
-      testHelper.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
+      testFixture.verifyDocumentNotCreated(doc, 'uuidDocType', [ errorFormatter.uuidFormatInvalid('formatValidationProp') ]);
     });
   });
 
@@ -76,7 +78,7 @@ describe('UUID validation type:', () => {
         rangeValidationProp: 'ABCDEF01-2345-6789-0ABC-DEF012345678'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a UUID that is less than the minimum value', () => {
@@ -86,7 +88,7 @@ describe('UUID validation type:', () => {
         rangeValidationProp: '9aaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'uuidDocType',
         [ errorFormatter.minimumValueViolation('rangeValidationProp', 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa') ]);
@@ -99,7 +101,7 @@ describe('UUID validation type:', () => {
         rangeValidationProp: 'dddddddd-dddd-dddd-dddd-ddddddddddde'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'uuidDocType',
         [ errorFormatter.maximumValueViolation('rangeValidationProp', 'DDDDDDDD-DDDD-DDDD-DDDD-DDDDDDDDDDDD') ]);
@@ -114,7 +116,7 @@ describe('UUID validation type:', () => {
         equalityValidationProp: '5e7f697b-fe56-4b98-a68b-aae104bff1d4'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('allows a UUID that differs only from the expected value by case', () => {
@@ -124,7 +126,7 @@ describe('UUID validation type:', () => {
         equalityValidationProp: '5E7F697B-FE56-4B98-A68B-AAE104BFF1D4'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a UUID that differs from the expected value by one character', () => {
@@ -134,7 +136,7 @@ describe('UUID validation type:', () => {
         equalityValidationProp: '5e7f697b-fe56-4b98-a68b-aae104bff1d3'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'uuidMustEqualDocType',
         [ errorFormatter.mustEqualViolation('equalityValidationProp', '5e7f697b-fe56-4b98-a68b-aae104bff1d4') ]);
@@ -155,7 +157,7 @@ describe('UUID validation type:', () => {
         immutableValidationProp: '30fc7749-649d-472b-88b5-38b82d7f69ce'
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('allows a UUID that differs from the existing UUID only in case', () => {
@@ -171,7 +173,7 @@ describe('UUID validation type:', () => {
         immutableValidationProp: oldDoc.immutableValidationProp.toUpperCase()
       };
 
-      testHelper.verifyDocumentReplaced(doc, oldDoc);
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 
     it('rejects a UUID that differs from the existing UUID', () => {
@@ -187,7 +189,7 @@ describe('UUID validation type:', () => {
         immutableValidationProp: '35ba6044-3775-41ea-864f-db584531a6be'
       };
 
-      testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'uuidDocType', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'uuidDocType', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
     });
   });
 });

@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Immutable document validation:', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-immutable-docs-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-immutable-docs-sync-function.js');
   });
 
   describe('full document immutability constraint', () => {
@@ -14,7 +16,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a document to be created if the old document was deleted', () => {
@@ -24,7 +26,7 @@ describe('Immutable document validation:', () => {
         };
         const oldDoc = { _id: 'staticImmutableDoc', _deleted: true };
 
-        testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
+        testFixture.verifyDocumentAccepted(doc, oldDoc, 'write');
       });
 
       it('allows a document to be deleted if the old document was already deleted', () => {
@@ -32,7 +34,7 @@ describe('Immutable document validation:', () => {
         // that it works properly
         const oldDoc = { _id: 'staticImmutableDoc', _deleted: true };
 
-        testHelper.verifyDocumentDeleted(oldDoc);
+        testFixture.verifyDocumentDeleted(oldDoc);
       });
 
       it('allows a document to be deleted if the old document does not exist', () => {
@@ -43,7 +45,7 @@ describe('Immutable document validation:', () => {
           _deleted: true
         };
 
-        testHelper.verifyDocumentAccepted(doc, void 0, 'write');
+        testFixture.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
       it('refuses to replace an existing document even if its properties have not been modified', () => {
@@ -56,7 +58,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
+        testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
       });
 
       it('refuses to delete an existing document', () => {
@@ -65,7 +67,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotDeleted(oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
+        testFixture.verifyDocumentNotDeleted(oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
       });
 
       it('refuses to allow modification of attachments after the document has been created', () => {
@@ -88,7 +90,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
+        testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'staticImmutableDoc', errorFormatter.immutableDocViolation());
       });
     });
 
@@ -100,7 +102,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a document to be replaced if the constraint is disabled', () => {
@@ -115,7 +117,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: false
         };
 
-        testHelper.verifyDocumentReplaced(doc, oldDoc);
+        testFixture.verifyDocumentReplaced(doc, oldDoc);
       });
 
       it('allows a document to be deleted if the constraint is disabled', () => {
@@ -125,7 +127,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: false
         };
 
-        testHelper.verifyDocumentDeleted(oldDoc);
+        testFixture.verifyDocumentDeleted(oldDoc);
       });
 
       it('blocks a document from being replaced if the constraint is enabled', () => {
@@ -140,7 +142,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'dynamicImmutableDoc', errorFormatter.immutableDocViolation());
+        testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'dynamicImmutableDoc', errorFormatter.immutableDocViolation());
       });
 
       it('blocks a document from being deleted if the constraint is enabled', () => {
@@ -150,7 +152,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentNotDeleted(oldDoc, 'dynamicImmutableDoc', errorFormatter.immutableDocViolation());
+        testFixture.verifyDocumentNotDeleted(oldDoc, 'dynamicImmutableDoc', errorFormatter.immutableDocViolation());
       });
     });
   });
@@ -163,7 +165,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a document to be created if the old document was deleted', () => {
@@ -173,7 +175,7 @@ describe('Immutable document validation:', () => {
         };
         const oldDoc = { _id: 'staticCannotReplaceDoc', _deleted: true };
 
-        testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
+        testFixture.verifyDocumentAccepted(doc, oldDoc, 'write');
       });
 
       it('allows a document to be deleted', () => {
@@ -182,7 +184,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentDeleted(oldDoc);
+        testFixture.verifyDocumentDeleted(oldDoc);
       });
 
       it('allows a document to be deleted if the old document was already deleted', () => {
@@ -190,7 +192,7 @@ describe('Immutable document validation:', () => {
         // that it works properly
         const oldDoc = { _id: 'staticCannotReplaceDoc', _deleted: true };
 
-        testHelper.verifyDocumentDeleted(oldDoc);
+        testFixture.verifyDocumentDeleted(oldDoc);
       });
 
       it('allows a document to be deleted if the old document does not exist', () => {
@@ -201,7 +203,7 @@ describe('Immutable document validation:', () => {
           _deleted: true
         };
 
-        testHelper.verifyDocumentAccepted(doc, void 0, 'write');
+        testFixture.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
       it('refuses to replace an existing document even if its properties have not been modified', () => {
@@ -214,7 +216,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticCannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
+        testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'staticCannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
       });
 
       it('refuses to allow modification of attachments after the document has been created', () => {
@@ -237,7 +239,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'staticCannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
+        testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'staticCannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
       });
     });
 
@@ -249,7 +251,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a document to be deleted', () => {
@@ -259,7 +261,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentDeleted(oldDoc);
+        testFixture.verifyDocumentDeleted(oldDoc);
       });
 
       it('allows a document to be replaced if the constraint is disabled', () => {
@@ -274,7 +276,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: false
         };
 
-        testHelper.verifyDocumentReplaced(doc, oldDoc);
+        testFixture.verifyDocumentReplaced(doc, oldDoc);
       });
 
       it('blocks a document from being replaced if the constraint is enabled', () => {
@@ -289,7 +291,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentNotReplaced(doc, oldDoc, 'dynamicCannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
+        testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'dynamicCannotReplaceDoc', errorFormatter.cannotReplaceDocViolation());
       });
     });
   });
@@ -302,7 +304,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a document to be created if the old document was deleted', () => {
@@ -312,7 +314,7 @@ describe('Immutable document validation:', () => {
         };
         const oldDoc = { _id: 'staticCannotDeleteDoc', _deleted: true };
 
-        testHelper.verifyDocumentAccepted(doc, oldDoc, 'write');
+        testFixture.verifyDocumentAccepted(doc, oldDoc, 'write');
       });
 
       it('allows a document to be deleted if the old document was already deleted', () => {
@@ -320,7 +322,7 @@ describe('Immutable document validation:', () => {
         // that it works properly
         const oldDoc = { _id: 'staticCannotDeleteDoc', _deleted: true };
 
-        testHelper.verifyDocumentDeleted(oldDoc);
+        testFixture.verifyDocumentDeleted(oldDoc);
       });
 
       it('allows a document to be deleted if the old document does not exist', () => {
@@ -331,7 +333,7 @@ describe('Immutable document validation:', () => {
           _deleted: true
         };
 
-        testHelper.verifyDocumentAccepted(doc, void 0, 'write');
+        testFixture.verifyDocumentAccepted(doc, void 0, 'write');
       });
 
       it('allows a document to be replaced', () => {
@@ -344,7 +346,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentReplaced(doc, oldDoc);
+        testFixture.verifyDocumentReplaced(doc, oldDoc);
       });
 
       it('allows modifification of attachments after the document has been created', () => {
@@ -367,7 +369,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentReplaced(doc, oldDoc);
+        testFixture.verifyDocumentReplaced(doc, oldDoc);
       });
 
       it('refuses to delete an existing document', () => {
@@ -376,7 +378,7 @@ describe('Immutable document validation:', () => {
           stringProp: 'foobar'
         };
 
-        testHelper.verifyDocumentNotDeleted(oldDoc, 'staticCannotDeleteDoc', errorFormatter.cannotDeleteDocViolation());
+        testFixture.verifyDocumentNotDeleted(oldDoc, 'staticCannotDeleteDoc', errorFormatter.cannotDeleteDocViolation());
       });
     });
 
@@ -388,7 +390,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentCreated(doc);
+        testFixture.verifyDocumentCreated(doc);
       });
 
       it('allows a document to be replaced', () => {
@@ -403,7 +405,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentReplaced(doc, oldDoc);
+        testFixture.verifyDocumentReplaced(doc, oldDoc);
       });
 
       it('allows a document to be deleted if the constraint is disabled', () => {
@@ -413,7 +415,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: false
         };
 
-        testHelper.verifyDocumentDeleted(oldDoc);
+        testFixture.verifyDocumentDeleted(oldDoc);
       });
 
       it('blocks a document from being deleted if the constraint is enabled', () => {
@@ -423,7 +425,7 @@ describe('Immutable document validation:', () => {
           applyImmutability: true
         };
 
-        testHelper.verifyDocumentNotDeleted(oldDoc, 'dynamicCannotDeleteDoc', errorFormatter.cannotDeleteDocViolation());
+        testFixture.verifyDocumentNotDeleted(oldDoc, 'dynamicCannotDeleteDoc', errorFormatter.cannotDeleteDocViolation());
       });
     });
   });

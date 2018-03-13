@@ -1,9 +1,11 @@
-const testHelper = require('../src/testing/test-helper');
-const errorFormatter = testHelper.validationErrorFormatter;
+const testFixtureMaker = require('../src/testing/test-fixture-maker');
+const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Enum validation type', () => {
+  let testFixture;
+
   beforeEach(() => {
-    testHelper.initSyncFunction('build/sync-functions/test-enum-sync-function.js');
+    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-enum-sync-function.js');
   });
 
   describe('static validation', () => {
@@ -13,7 +15,7 @@ describe('Enum validation type', () => {
         staticEnumProp: 'value1'
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts an allowed integer', () => {
@@ -22,7 +24,7 @@ describe('Enum validation type', () => {
         staticEnumProp: 2
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a string value that is not in the list of predefined values', () => {
@@ -31,7 +33,7 @@ describe('Enum validation type', () => {
         staticEnumProp: 'value2'
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'enumDoc',
         errorFormatter.enumPredefinedValueViolation('staticEnumProp', [ 'value1', 2 ]));
@@ -43,7 +45,7 @@ describe('Enum validation type', () => {
         staticEnumProp: 1
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'enumDoc',
         errorFormatter.enumPredefinedValueViolation('staticEnumProp', [ 'value1', 2 ]));
@@ -55,7 +57,7 @@ describe('Enum validation type', () => {
         invalidEnumProp: 2
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'enumDoc',
         'item "invalidEnumProp" belongs to an enum that has no predefined values');
@@ -70,7 +72,7 @@ describe('Enum validation type', () => {
         dynamicPredefinedValues: [ 'value1', 'value2' ]
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('accepts an allowed integer', () => {
@@ -80,7 +82,7 @@ describe('Enum validation type', () => {
         dynamicPredefinedValues: [ 1, 2 ]
       };
 
-      testHelper.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentCreated(doc);
     });
 
     it('rejects a value that is not in the list of predefined values', () => {
@@ -90,7 +92,7 @@ describe('Enum validation type', () => {
         dynamicPredefinedValues: [ 'value1', 2 ]
       };
 
-      testHelper.verifyDocumentNotCreated(
+      testFixture.verifyDocumentNotCreated(
         doc,
         'enumDoc',
         errorFormatter.enumPredefinedValueViolation('dynamicEnumProp', [ 'value1', 2 ]));
