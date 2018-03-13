@@ -39,10 +39,12 @@ function loadFromFile(docDefinitionsFile, formatOptions) {
 }
 
 function formatSyncFunction(rawSyncFuncString, formatOptions) {
-  // Normalize code block indentation, normalize line endings and then replace blank lines with empty lines
+  // Normalize code block indentation, normalize line endings, replace blank lines with empty lines and then escape any
+  // occurrence of the backtick character so the sync function can be used in a Sync Gateway config file
   const normalizedFuncString = indent.js(rawSyncFuncString, { tabString: '  ' })
     .replace(/(?:\r\n)|(?:\r)/g, () => '\n')
-    .replace(/^\s+$/gm, () => '');
+    .replace(/^\s+$/gm, () => '')
+    .replace(/`/g, () => '\\`');
 
   if (formatOptions.jsonString) {
     // Escape all escape sequences, backslash characters and line ending characters then wrap the result in quotes to
@@ -53,8 +55,6 @@ function formatSyncFunction(rawSyncFuncString, formatOptions) {
 
     return `"${formattedFuncString}"`;
   } else {
-    // Escape any occurrence of the backtick character so the sync function can be used in a Sync Gateway configuration
-    // file multiline string
-    return normalizedFuncString.replace(/`/g, () => '\\`');
+    return normalizedFuncString;
   }
 }
