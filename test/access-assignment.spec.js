@@ -59,9 +59,9 @@ describe('User and role access assignment:', () => {
       };
 
       expect(() => {
-        testFixture.syncFunction(doc);
+        testFixture.testEnvironment.syncFunction(doc);
       }).to.throw();
-      expect(testFixture.access.callCount).to.equal(0);
+      expect(testFixture.testEnvironment.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', () => {
@@ -72,9 +72,9 @@ describe('User and role access assignment:', () => {
       const oldDoc = { _id: 'staticAccessDoc' };
 
       expect(() => {
-        testFixture.syncFunction(doc, oldDoc);
+        testFixture.testEnvironment.syncFunction(doc, oldDoc);
       }).to.throw();
-      expect(testFixture.access.callCount).to.equal(0);
+      expect(testFixture.testEnvironment.access.callCount).to.equal(0);
     });
   });
 
@@ -175,9 +175,9 @@ describe('User and role access assignment:', () => {
       };
 
       expect(() => {
-        testFixture.syncFunction(doc);
+        testFixture.testEnvironment.syncFunction(doc);
       }).to.throw();
-      expect(testFixture.access.callCount).to.equal(0);
+      expect(testFixture.testEnvironment.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', () => {
@@ -190,9 +190,9 @@ describe('User and role access assignment:', () => {
       const oldDoc = { _id: 'dynamicAccessConstraintDoc' };
 
       expect(() => {
-        testFixture.syncFunction(doc, oldDoc);
+        testFixture.testEnvironment.syncFunction(doc, oldDoc);
       }).to.throw();
-      expect(testFixture.access.callCount).to.equal(0);
+      expect(testFixture.testEnvironment.access.callCount).to.equal(0);
     });
   });
 
@@ -287,9 +287,9 @@ describe('User and role access assignment:', () => {
       };
 
       expect(() => {
-        testFixture.syncFunction(doc);
+        testFixture.testEnvironment.syncFunction(doc);
       }).to.throw();
-      expect(testFixture.access.callCount).to.equal(0);
+      expect(testFixture.testEnvironment.access.callCount).to.equal(0);
     });
 
     it('is NOT applied when replacing an invalid document', () => {
@@ -302,9 +302,9 @@ describe('User and role access assignment:', () => {
       const oldDoc = { _id: 'dynamicAccessEntryItemsDoc' };
 
       expect(() => {
-        testFixture.syncFunction(doc, oldDoc);
+        testFixture.testEnvironment.syncFunction(doc, oldDoc);
       }).to.throw();
-      expect(testFixture.access.callCount).to.equal(0);
+      expect(testFixture.testEnvironment.access.callCount).to.equal(0);
     });
   });
 });

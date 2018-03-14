@@ -80,7 +80,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc);
+              testFixture.testEnvironment.syncFunction(doc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -113,7 +113,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc, oldDoc);
+              testFixture.testEnvironment.syncFunction(doc, oldDoc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -156,7 +156,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc);
+              testFixture.testEnvironment.syncFunction(doc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -198,7 +198,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc, oldDoc);
+              testFixture.testEnvironment.syncFunction(doc, oldDoc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -236,7 +236,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc);
+              testFixture.testEnvironment.syncFunction(doc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -277,7 +277,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc, oldDoc);
+              testFixture.testEnvironment.syncFunction(doc, oldDoc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -318,7 +318,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc);
+              testFixture.testEnvironment.syncFunction(doc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -359,7 +359,7 @@ describe('File attachment constraints:', () => {
           let syncFuncError = null;
           expect(() => {
             try {
-              testFixture.syncFunction(doc, oldDoc);
+              testFixture.testEnvironment.syncFunction(doc, oldDoc);
             } catch (ex) {
               syncFuncError = ex;
 
@@ -412,7 +412,7 @@ describe('File attachment constraints:', () => {
         let syncFuncError = null;
         expect(() => {
           try {
-            testFixture.syncFunction(doc);
+            testFixture.testEnvironment.syncFunction(doc);
           } catch (ex) {
             syncFuncError = ex;
 
@@ -470,7 +470,7 @@ describe('File attachment constraints:', () => {
         let syncFuncError = null;
         expect(() => {
           try {
-            testFixture.syncFunction(doc, oldDoc);
+            testFixture.testEnvironment.syncFunction(doc, oldDoc);
           } catch (ex) {
             syncFuncError = ex;
 

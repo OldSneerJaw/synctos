@@ -31,19 +31,6 @@ function init(rawSyncFunction, syncFunctionFile) {
 
   const fixture = {
     /**
-     * The generated document sync function to use for testing.
-     *
-     * @param {Object} doc The document to write. May include property "_deleted=true" to simulate a delete operation.
-     * @param {Object} oldDoc The document to replace or delete. May be null or undefined or include property "_deleted=true" to simulate a
-     *                        create operation.
-     * @param {Object} userContext The CouchDB [user context](http://docs.couchdb.org/en/latest/json-structure.html#userctx-object)
-     *                             of the authenticated user
-     * @param {Object} securityInfo The CouchDB [security object](http://docs.couchdb.org/en/latest/json-structure.html#security-object)
-     *                              for the database
-     */
-    syncFunction: testEnvironment.syncFunction,
-
-    /**
      * An object that contains functions that are used to format expected validation error messages in specifications. Documentation can be
      * found in the "validation-error-formatter" module.
      */
@@ -256,88 +243,53 @@ function init(rawSyncFunction, syncFunctionFile) {
     verifyUnknownDocumentType,
 
     /**
-     * A stub of the requireAccess function from the Sync Gateway sync function API:
-     * https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireaccesschannels
+     * The test environment that the test fixture uses to simulate execution of the sync function. Exposes the sync
+     * function itself via the "syncFunction" property along with several simple-mock stubs for the following Sync
+     * Gateway API functions:
      *
-     * @param {string|string[]} channels The names of one or more channels that are authorized to perform the operation,
-     *                                   specified either as a list or a single string
+     * - requireAccess: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireaccesschannels
+     * - requireRole: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requirerolerolename
+     * - requireUser: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireuserusername
+     * - channel: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#channel-name
+     * - access: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#access-username-channelname
+     * - role: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#role-username-rolename
      */
-    requireAccess: testEnvironment.requireAccess,
-
-    /**
-     * A stub of the requireRole function from the Sync Gateway sync function API:
-     * https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requirerolerolename
-     *
-     * @param {string|string[]} role The names of one or more roles that are authorized to perform the operation,
-     *                               specified either as a list or a single string
-     */
-    requireRole: testEnvironment.requireRole,
-
-    /**
-     * A stub of the requireUser function from the Sync Gateway sync function API:
-     * https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireuserusername
-     *
-     * @param {string|string[]} username The names of one or more users that are authorized to perform the operation,
-     *                                   specified either as a list or a single string
-     */
-    requireUser: testEnvironment.requireUser,
-
-    /**
-     * A stub of the channel function from the Sync Gateway sync function API:
-     * https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#channel-name
-     *
-     * @param {string|string[]} name The names of one or more channels to be assigned to the document, specified either
-     *                               as a list or a single string
-     */
-    channel: testEnvironment.channel,
-
-    /**
-     * A stub of the access function from the Sync Gateway sync function API:
-     * https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#access-username-channelname
-     *
-     * @param {string|string[]} username The names of one or more users or roles that are to be granted access to the
-     *                                   channel(s), specified either as a list or a single string. Role names must be
-     *                                   prefixed with "role:" to distinguish them from usernames.
-     * @param {string|string[]} channels The names of one or more channels to assign the specified users/roles to
-     */
-    access: testEnvironment.access,
-
-    /**
-     * A stub of the role function from the Sync Gateway sync function API:
-     * https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#role-username-rolename
-     * @param {string|string[]} username The names of one or more users that are to be granted access to the role(s),
-     *                                   specified either as a list or a single string
-     * @param {string|string[]} role The names of one or more roles to assign the specified users to
-     */
-    role: testEnvironment.role,
-
-    customActionStub: testEnvironment.customActionStub
+    testEnvironment
   };
 
   const defaultWriteChannel = 'write';
 
   function verifyRequireAccess(expectedChannels) {
-    assert.ok(fixture.requireAccess.callCount > 0, `Document does not specify required channels. Expected: ${expectedChannels}`);
+    assert.ok(
+      testEnvironment.requireAccess.callCount > 0,
+      `Document does not specify required channels. Expected: ${expectedChannels}`);
 
-    checkAuthorizations(expectedChannels, fixture.requireAccess.calls[0].arg, 'channel');
+    checkAuthorizations(expectedChannels, testEnvironment.requireAccess.calls[0].arg, 'channel');
   }
 
   function verifyRequireRole(expectedRoles) {
-    assert.ok(fixture.requireRole.callCount > 0, `Document does not specify required roles. Expected: ${expectedRoles}`);
+    assert.ok(
+      testEnvironment.requireRole.callCount > 0,
+      `Document does not specify required roles. Expected: ${expectedRoles}`);
 
-    checkAuthorizations(expectedRoles, fixture.requireRole.calls[0].arg, 'role');
+    checkAuthorizations(expectedRoles, testEnvironment.requireRole.calls[0].arg, 'role');
   }
 
   function verifyRequireUser(expectedUsers) {
-    assert.ok(fixture.requireUser.callCount > 0, `Document does not specify required users. Expected: ${expectedUsers}`);
+    assert.ok(
+      testEnvironment.requireUser.callCount > 0,
+      `Document does not specify required users. Expected: ${expectedUsers}`);
 
-    checkAuthorizations(expectedUsers, fixture.requireUser.calls[0].arg, 'user');
+    checkAuthorizations(expectedUsers, testEnvironment.requireUser.calls[0].arg, 'user');
   }
 
   function verifyChannelAssignment(expectedChannels) {
-    assert.equal(fixture.channel.callCount, 1, `Document was not assigned to any channels. Expected: ${expectedChannels}`);
+    assert.equal(
+      testEnvironment.channel.callCount,
+      1,
+      `Document was not assigned to any channels. Expected: ${expectedChannels}`);
 
-    checkAuthorizations(expectedChannels, fixture.channel.calls[0].arg, 'channel');
+    checkAuthorizations(expectedChannels, testEnvironment.channel.calls[0].arg, 'channel');
   }
 
   function checkAuthorizations(expectedAuthorizations, actualAuthorizations, authorizationType) {
@@ -408,7 +360,7 @@ function init(rawSyncFunction, syncFunctionFile) {
       }
     }
 
-    if (!accessAssignmentCallExists(fixture.access, expectedUsersAndRoles, expectedChannels)) {
+    if (!accessAssignmentCallExists(testEnvironment.access, expectedUsersAndRoles, expectedChannels)) {
       assert.fail(`Missing expected call to assign channel access (${JSON.stringify(expectedChannels)}) to users and roles (${JSON.stringify(expectedUsersAndRoles)})`);
     }
   }
@@ -436,7 +388,7 @@ function init(rawSyncFunction, syncFunctionFile) {
       }
     }
 
-    if (!accessAssignmentCallExists(fixture.role, expectedUsers, expectedRoles)) {
+    if (!accessAssignmentCallExists(testEnvironment.role, expectedUsers, expectedRoles)) {
       assert.fail(`Missing expected call to assign role access (${JSON.stringify(expectedRoles)}) to users (${JSON.stringify(expectedUsers)})`);
     }
   }
@@ -456,21 +408,21 @@ function init(rawSyncFunction, syncFunctionFile) {
       }
     });
 
-    if (fixture.access.callCount !== expectedAccessCalls) {
-      assert.fail(`Number of calls to assign channel access (${fixture.access.callCount}) does not match expected (${expectedAccessCalls})`);
+    if (testEnvironment.access.callCount !== expectedAccessCalls) {
+      assert.fail(`Number of calls to assign channel access (${testEnvironment.access.callCount}) does not match expected (${expectedAccessCalls})`);
     }
 
-    if (fixture.role.callCount !== expectedRoleCalls) {
-      assert.fail(`Number of calls to assign role access (${fixture.role.callCount}) does not match expected (${expectedRoleCalls})`);
+    if (testEnvironment.role.callCount !== expectedRoleCalls) {
+      assert.fail(`Number of calls to assign role access (${testEnvironment.role.callCount}) does not match expected (${expectedRoleCalls})`);
     }
   }
 
   function verifyOperationChannelsAssigned(doc, expectedChannels) {
-    if (fixture.channel.callCount !== 1) {
+    if (testEnvironment.channel.callCount !== 1) {
       assert.fail('Document channels were not assigned');
     }
 
-    const actualChannels = fixture.channel.calls[0].arg;
+    const actualChannels = testEnvironment.channel.calls[0].arg;
     if (Array.isArray(expectedChannels)) {
       expectedChannels.forEach((expectedChannel) => {
         assert.ok(
@@ -491,8 +443,14 @@ function init(rawSyncFunction, syncFunctionFile) {
       // for authorization
       expectedOperationChannels = expectedAuthorization;
       verifyRequireAccess(expectedAuthorization);
-      assert.equal(fixture.requireRole.callCount, 0, `Unexpected document roles assigned: ${JSON.stringify(fixture.requireRole.calls)}`);
-      assert.equal(fixture.requireUser.callCount, 0, `Unexpected document users assigned: ${JSON.stringify(fixture.requireUser.calls)}`);
+      assert.equal(
+        testEnvironment.requireRole.callCount,
+        0,
+        `Unexpected document roles assigned: ${JSON.stringify(testEnvironment.requireRole.calls)}`);
+      assert.equal(
+        testEnvironment.requireUser.callCount,
+        0,
+        `Unexpected document users assigned: ${JSON.stringify(testEnvironment.requireUser.calls)}`);
     } else {
       if (expectedAuthorization.expectedChannels) {
         expectedOperationChannels = expectedAuthorization.expectedChannels;
@@ -502,13 +460,19 @@ function init(rawSyncFunction, syncFunctionFile) {
       if (expectedAuthorization.expectedRoles) {
         verifyRequireRole(expectedAuthorization.expectedRoles);
       } else {
-        assert.equal(fixture.requireRole.callCount, 0, `Unexpected document roles assigned: ${JSON.stringify(fixture.requireRole.calls)}`);
+        assert.equal(
+          testEnvironment.requireRole.callCount,
+          0,
+          `Unexpected document roles assigned: ${JSON.stringify(testEnvironment.requireRole.calls)}`);
       }
 
       if (expectedAuthorization.expectedUsers) {
         verifyRequireUser(expectedAuthorization.expectedUsers);
       } else {
-        assert.equal(fixture.requireUser.callCount, 0, `Unexpected document users assigned: ${JSON.stringify(fixture.requireUser.calls)}`);
+        assert.equal(
+          testEnvironment.requireUser.callCount,
+          0,
+          `Unexpected document users assigned: ${JSON.stringify(testEnvironment.requireUser.calls)}`);
       }
 
       if (!expectedAuthorization.expectedChannels && !expectedAuthorization.expectedRoles && !expectedAuthorization.expectedUsers) {
@@ -520,7 +484,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   }
 
   function verifyDocumentAccepted(doc, oldDoc, expectedAuthorization, expectedAccessAssignments) {
-    fixture.syncFunction(doc, oldDoc || null);
+    testEnvironment.syncFunction(doc, oldDoc || null);
 
     if (expectedAccessAssignments) {
       verifyAccessAssignments(expectedAccessAssignments);
@@ -546,7 +510,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   function verifyDocumentRejected(doc, oldDoc, docType, expectedErrorMessages, expectedAuthorization) {
     let syncFuncError = null;
     try {
-      fixture.syncFunction(doc, oldDoc || null);
+      testEnvironment.syncFunction(doc, oldDoc || null);
     } catch (ex) {
       syncFuncError = ex;
     }
@@ -555,7 +519,10 @@ function init(rawSyncFunction, syncFunctionFile) {
       verifyValidationErrors(docType, expectedErrorMessages, syncFuncError);
       verifyAuthorization(expectedAuthorization);
 
-      assert.equal(fixture.channel.callCount, 0, `Document was erroneously assigned to channels: ${JSON.stringify(fixture.channel.calls)}`);
+      assert.equal(
+        testEnvironment.channel.callCount,
+        0,
+        `Document was erroneously assigned to channels: ${JSON.stringify(testEnvironment.channel.calls)}`);
     } else {
       assert.fail('Document validation succeeded when it was expected to fail');
     }
@@ -633,13 +600,13 @@ function init(rawSyncFunction, syncFunctionFile) {
     const userAccessDeniedError = new Error('User access denied!');
     const generalAuthFailedMessage = 'missing channel access';
 
-    fixture.requireAccess.throwWith(channelAccessDeniedError);
-    fixture.requireRole.throwWith(roleAccessDeniedError);
-    fixture.requireUser.throwWith(userAccessDeniedError);
+    testEnvironment.requireAccess.throwWith(channelAccessDeniedError);
+    testEnvironment.requireRole.throwWith(roleAccessDeniedError);
+    testEnvironment.requireUser.throwWith(userAccessDeniedError);
 
     let syncFuncError = null;
     try {
-      fixture.syncFunction(doc, oldDoc || null);
+      testEnvironment.syncFunction(doc, oldDoc || null);
     } catch (ex) {
       syncFuncError = ex;
     }
@@ -683,7 +650,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   function verifyUnknownDocumentType(doc, oldDoc) {
     let syncFuncError = null;
     try {
-      fixture.syncFunction(doc, oldDoc || null);
+      testEnvironment.syncFunction(doc, oldDoc || null);
     } catch (ex) {
       syncFuncError = ex;
     }
@@ -694,10 +661,22 @@ function init(rawSyncFunction, syncFunctionFile) {
         'Unknown document type',
         `Document validation error does not indicate the document type is unrecognized. Actual: ${JSON.stringify(syncFuncError)}`);
 
-      assert.equal(fixture.channel.callCount, 0, `Document was erroneously assigned to channels: ${JSON.stringify(fixture.channel.calls)}`);
-      assert.equal(fixture.requireAccess.callCount, 0, `Unexpected attempt to specify required channels: ${JSON.stringify(fixture.requireAccess.calls)}`);
-      assert.equal(fixture.requireRole.callCount, 0, `Unexpected attempt to specify required roles: ${JSON.stringify(fixture.requireRole.calls)}`);
-      assert.equal(fixture.requireUser.callCount, 0, `Unexpected attempt to specify required users: ${JSON.stringify(fixture.requireUser.calls)}`);
+      assert.equal(
+        testEnvironment.channel.callCount,
+        0,
+        `Document was erroneously assigned to channels: ${JSON.stringify(testEnvironment.channel.calls)}`);
+      assert.equal(
+        testEnvironment.requireAccess.callCount,
+        0,
+        `Unexpected attempt to specify required channels: ${JSON.stringify(testEnvironment.requireAccess.calls)}`);
+      assert.equal(
+        testEnvironment.requireRole.callCount,
+        0,
+        `Unexpected attempt to specify required roles: ${JSON.stringify(testEnvironment.requireRole.calls)}`);
+      assert.equal(
+        testEnvironment.requireUser.callCount,
+        0,
+        `Unexpected attempt to specify required users: ${JSON.stringify(testEnvironment.requireUser.calls)}`);
     } else {
       assert.fail('Document type was successfully identified when it was expected to be unknown');
     }

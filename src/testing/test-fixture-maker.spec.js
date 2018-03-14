@@ -53,7 +53,7 @@ describe('Test fixture maker:', () => {
       expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
       expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, fakeFilePath ]);
 
-      verifyTestEnvironment(testFixture);
+      expect(testFixture.testEnvironment).to.deep.equal(fakeTestEnvironment);
     });
 
     it('can initialize directly from document definitions', () => {
@@ -67,19 +67,8 @@ describe('Test fixture maker:', () => {
       expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
       expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, void 0 ]);
 
-      verifyTestEnvironment(testFixture);
+      expect(testFixture.testEnvironment).to.deep.equal(fakeTestEnvironment);
     });
-
-    function verifyTestEnvironment(testFixture) {
-      expect(testFixture.requireAccess).to.equal(fakeTestEnvironment.requireAccess);
-      expect(testFixture.requireRole).to.equal(fakeTestEnvironment.requireRole);
-      expect(testFixture.requireUser).to.equal(fakeTestEnvironment.requireUser);
-      expect(testFixture.channel).to.equal(fakeTestEnvironment.channel);
-      expect(testFixture.access).to.equal(fakeTestEnvironment.access);
-      expect(testFixture.role).to.equal(fakeTestEnvironment.role);
-      expect(testFixture.customActionStub).to.equal(fakeTestEnvironment.customActionStub);
-      expect(testFixture.syncFunction).to.equal(fakeTestEnvironment.syncFunction);
-    }
   });
 
   describe('when verifying that document authorization is denied', () => {
@@ -93,8 +82,8 @@ describe('Test fixture maker:', () => {
       const actualChannels = [ 'my-channel-1', 'my-channel-2' ];
       const expectedChannels = [ 'my-channel-1' ];
 
-      testFixture.syncFunction = () => {
-        testFixture.requireAccess(actualChannels);
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.requireAccess(actualChannels);
       };
 
       expect(() => {
@@ -106,8 +95,8 @@ describe('Test fixture maker:', () => {
       const actualChannels = [ 'my-channel-1' ];
       const expectedChannels = [ 'my-channel-1', 'my-channel-2' ];
 
-      testFixture.syncFunction = () => {
-        testFixture.requireAccess(actualChannels);
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.requireAccess(actualChannels);
       };
 
       expect(() => {
@@ -116,7 +105,7 @@ describe('Test fixture maker:', () => {
     });
 
     it('fails if the sync function does not throw an error', () => {
-      testFixture.syncFunction = () => { };
+      testFixture.testEnvironment.syncFunction = () => { };
 
       expect(() => {
         testFixture.verifyAccessDenied({ }, null, [ ]);
@@ -124,8 +113,8 @@ describe('Test fixture maker:', () => {
     });
 
     it('succeeds if there are no expected channels, roles or users allowed', () => {
-      testFixture.syncFunction = () => {
-        testFixture.requireAccess([ ]);
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.requireAccess([ ]);
       };
 
       expect(() => {
@@ -142,7 +131,7 @@ describe('Test fixture maker:', () => {
     });
 
     it('fails if the document type is recognized', () => {
-      testFixture.syncFunction = () => { };
+      testFixture.testEnvironment.syncFunction = () => { };
 
       expect(() => {
         testFixture.verifyUnknownDocumentType({ });
@@ -159,7 +148,7 @@ describe('Test fixture maker:', () => {
     });
 
     it('fails if the sync function does not throw an error', () => {
-      testFixture.syncFunction = () => { };
+      testFixture.testEnvironment.syncFunction = () => { };
 
       expect(() => {
         testFixture.verifyDocumentRejected({ }, null, docType, [ ], { expectedRoles: 'my-role' });
@@ -169,7 +158,7 @@ describe('Test fixture maker:', () => {
     it('fails if the validation error message format is invalid', () => {
       const errorMessage = 'Foo: bar';
 
-      testFixture.syncFunction = () => {
+      testFixture.testEnvironment.syncFunction = () => {
         throw { forbidden: errorMessage };
       };
 
@@ -182,7 +171,7 @@ describe('Test fixture maker:', () => {
       const expectedErrors = [ 'my-error-1', 'my-error-2' ];
       const errorMessage = `Invalid ${docType} document: ${expectedErrors[0]}`;
 
-      testFixture.syncFunction = () => {
+      testFixture.testEnvironment.syncFunction = () => {
         throw { forbidden: errorMessage };
       };
 
@@ -197,7 +186,7 @@ describe('Test fixture maker:', () => {
       const expectedErrors = [ actualErrors[0] ];
       const expectedErrorMessage = `Invalid ${docType} document: ${expectedErrors[0]}`;
 
-      testFixture.syncFunction = () => {
+      testFixture.testEnvironment.syncFunction = () => {
         throw { forbidden: actualErrorMessage };
       };
 
@@ -215,8 +204,8 @@ describe('Test fixture maker:', () => {
     });
 
     it('fails if the channel assignment function was not called', () => {
-      testFixture.syncFunction = () => {
-        testFixture.requireAccess([ ]);
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.requireAccess([ ]);
       };
 
       expect(() => {
@@ -241,8 +230,8 @@ describe('Test fixture maker:', () => {
       };
       const expectedEffectiveRoles = expectedChannelAccessAssignment.expectedRoles.map((role) => `role:${role}`);
 
-      testFixture.syncFunction = () => {
-        testFixture.access(expectedEffectiveRoles, actualChannels);
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.access(expectedEffectiveRoles, actualChannels);
       };
 
       expect(() => {
@@ -259,8 +248,8 @@ describe('Test fixture maker:', () => {
       const expectedEffectiveRoles = expectedRoleAccessAssignment.expectedRoles.map((role) => `role:${role}`);
       const actualUsers = [ 'my-user-1', 'my-user-2', 'my-user-2' ];
 
-      testFixture.syncFunction = () => {
-        testFixture.role(actualUsers, expectedEffectiveRoles);
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.role(actualUsers, expectedEffectiveRoles);
       };
 
       expect(() => {
@@ -269,8 +258,8 @@ describe('Test fixture maker:', () => {
     });
 
     it('fails if there is a call to assign channel access when none is expected', () => {
-      testFixture.syncFunction = () => {
-        testFixture.access();
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.access();
       };
 
       expect(() => {
@@ -279,8 +268,8 @@ describe('Test fixture maker:', () => {
     });
 
     it('fails if there is a call to assign role access when none is expected', () => {
-      testFixture.syncFunction = () => {
-        testFixture.role();
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.role();
       };
 
       expect(() => {
@@ -295,7 +284,7 @@ describe('Test fixture maker:', () => {
         expectedUsers: [ 'my-user-1' ]
       };
 
-      testFixture.syncFunction = () => { };
+      testFixture.testEnvironment.syncFunction = () => { };
 
       expect(() => {
         testFixture.verifyDocumentAccepted({ }, void 0, [ ], [ expectedInvalidAccessAssignment ]);
