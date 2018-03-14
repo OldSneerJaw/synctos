@@ -228,7 +228,7 @@ describe('Functionality that is common to all documents:', () => {
       let syncFuncError = null;
       expect(() => {
         try {
-          testFixture.syncFunction(doc);
+          testFixture.testEnvironment.syncFunction(doc);
         } catch (ex) {
           syncFuncError = ex;
 
@@ -263,7 +263,7 @@ describe('Functionality that is common to all documents:', () => {
     let syncFuncError = null;
     expect(() => {
       try {
-        testFixture.syncFunction(doc);
+        testFixture.testEnvironment.syncFunction(doc);
       } catch (ex) {
         syncFuncError = ex;
 

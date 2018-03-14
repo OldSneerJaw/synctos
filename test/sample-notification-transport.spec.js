@@ -17,12 +17,12 @@ describe('Sample business notification transport doc definition', () => {
   const expectedBasePrivilege = 'NOTIFICATIONS_CONFIG';
 
   function verifyAuthorizationCustomAction(docId, action) {
-    expect(testFixture.requireAccess.callCount).to.equal(2);
-    expect(testFixture.requireAccess.calls[1].arg).to.equal(`${docId}-${action}`);
+    expect(testFixture.testEnvironment.requireAccess.callCount).to.equal(2);
+    expect(testFixture.testEnvironment.requireAccess.calls[1].arg).to.equal(`${docId}-${action}`);
   }
 
   function verifyNoAuthorizationCustomAction() {
-    expect(testFixture.requireAccess.callCount).to.equal(1);
+    expect(testFixture.testEnvironment.requireAccess.callCount).to.equal(1);
   }
 
   it('successfully creates a valid notification transport document', () => {

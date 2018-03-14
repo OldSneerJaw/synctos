@@ -42,7 +42,7 @@ describe('Custom actions:', () => {
       let syncFuncError = null;
       expect(() => {
         try {
-          testFixture.syncFunction(doc);
+          testFixture.testEnvironment.syncFunction(doc);
         } catch (ex) {
           syncFuncError = ex;
 
@@ -170,10 +170,10 @@ describe('Custom actions:', () => {
 
     it('does not execute a custom action if doc channel assignment fails', () => {
       const expectedError = new Error('bad channels!');
-      testFixture.channel.throwWith(expectedError);
+      testFixture.testEnvironment.channel.throwWith(expectedError);
 
       expect(() => {
-        testFixture.syncFunction(doc);
+        testFixture.testEnvironment.syncFunction(doc);
       }).to.throw(expectedError);
 
       verifyCustomActionNotExecuted();
@@ -181,15 +181,15 @@ describe('Custom actions:', () => {
   });
 
   function verifyCustomActionExecuted(doc, oldDoc, expectedActionType) {
-    expect(testFixture.customActionStub.callCount).to.equal(1);
-    expect(testFixture.customActionStub.calls[0].args[0]).to.eql(doc);
-    expect(testFixture.customActionStub.calls[0].args[1]).to.eql(oldDoc);
+    expect(testFixture.testEnvironment.customActionStub.callCount).to.equal(1);
+    expect(testFixture.testEnvironment.customActionStub.calls[0].args[0]).to.eql(doc);
+    expect(testFixture.testEnvironment.customActionStub.calls[0].args[1]).to.eql(oldDoc);
 
-    verifyCustomActionMetadata(testFixture.customActionStub.calls[0].args[2], doc._id, expectedActionType);
+    verifyCustomActionMetadata(testFixture.testEnvironment.customActionStub.calls[0].args[2], doc._id, expectedActionType);
   }
 
   function verifyCustomActionNotExecuted() {
-    expect(testFixture.customActionStub.callCount).to.equal(0);
+    expect(testFixture.testEnvironment.customActionStub.callCount).to.equal(0);
   }
 
   function verifyCustomActionMetadata(actualMetadata, docType, expectedActionType) {
