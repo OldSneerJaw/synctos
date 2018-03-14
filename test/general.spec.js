@@ -1,4 +1,3 @@
-const { expect } = require('chai');
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
@@ -225,18 +224,8 @@ describe('Functionality that is common to all documents:', () => {
         }
       };
 
-      let syncFuncError = null;
-      expect(() => {
-        try {
-          testFixture.testEnvironment.syncFunction(doc);
-        } catch (ex) {
-          syncFuncError = ex;
-
-          throw ex;
-        }
-      }).to.throw();
-
-      testFixture.verifyValidationErrors(
+      testFixture.verifyDocumentNotCreated(
+        doc,
         'generalDoc',
         [
           errorFormatter.unsupportedProperty('objectProp._id'),
@@ -245,7 +234,7 @@ describe('Functionality that is common to all documents:', () => {
           errorFormatter.unsupportedProperty('objectProp._revisions'),
           errorFormatter.unsupportedProperty('objectProp._attachments')
         ],
-        syncFuncError);
+        [ 'add' ]);
     });
   });
 
@@ -260,17 +249,6 @@ describe('Functionality that is common to all documents:', () => {
       }
     };
 
-    let syncFuncError = null;
-    expect(() => {
-      try {
-        testFixture.testEnvironment.syncFunction(doc);
-      } catch (ex) {
-        syncFuncError = ex;
-
-        throw ex;
-      }
-    }).to.throw();
-
-    testFixture.verifyValidationErrors('generalDoc', errorFormatter.allowAttachmentsViolation(), syncFuncError);
+    testFixture.verifyDocumentNotCreated(doc, 'generalDoc', errorFormatter.allowAttachmentsViolation(), [ 'add' ]);
   });
 });
