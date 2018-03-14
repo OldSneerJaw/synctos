@@ -43,7 +43,7 @@ describe('Sync function loader', () => {
     validateLoadSuccess(
       'my\n  \r\n"final"\r`sync` \\func\\',
       { jsonString: true },
-      '"my\\n\\n\\"final\\"\\n`sync` \\\\func\\\\"');
+      '"my\\n\\n\\"final\\"\\n\\\\`sync\\\\` \\\\func\\\\"');
   });
 
   it('should throw an exception if the sync function template file does not exist', () => {
