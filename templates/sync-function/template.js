@@ -52,8 +52,9 @@ function synctos(doc, oldDoc) {
     return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
   }
 
-  // Converts a given value to a JSON string. Exists because JSON.stringify is not supported by Sync Gateway's JavaScript engine.
-  var jsonStringify = importSyncFunctionFragment('json-stringify-module.js');
+  // Converts a given value to a JSON string. Exists because JSON.stringify is not supported by all versions of Sync
+  // Gateway's JavaScript engine.
+  var jsonStringify = (JSON && JSON.stringify) ? JSON.stringify : importSyncFunctionFragment('json-stringify-module.js');
 
   var utils = {
     isDocumentMissingOrDeleted: isDocumentMissingOrDeleted,

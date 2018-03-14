@@ -20,10 +20,10 @@ function jsonStringify(value) {
       return arrayString + ']';
     } else {
       var properties = [];
-      for (var k in value) {
-        // in case "hasOwnProperty" has been shadowed
-        if (hasOwnProperty.call(value, k)) {
-          properties.push(jsonStringify(k) + ':' + jsonStringify(value[k]));
+      for (var objectPropertyName in value) {
+        var objectPropertyValue = value[objectPropertyName];
+        if (objectPropertyValue !== void 0 && hasOwnProperty.call(value, objectPropertyName)) {
+          properties.push(jsonStringify(objectPropertyName) + ':' + jsonStringify(value[objectPropertyName]));
         }
       }
       return '{' + properties.join(',') + '}';

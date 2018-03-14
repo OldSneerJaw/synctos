@@ -1,4 +1,8 @@
 function makeTestEnvironment(_, simple) {
+  const JSON = {
+    parse: global.JSON.parse,
+    stringify: global.JSON.stringify
+  };
   const requireAccess = simple.stub();
   const requireRole = simple.stub();
   const requireUser = simple.stub();
@@ -10,6 +14,7 @@ function makeTestEnvironment(_, simple) {
 
   return {
     _: _,
+    JSON: JSON,
     requireAccess: requireAccess,
     requireRole: requireRole,
     requireUser: requireUser,

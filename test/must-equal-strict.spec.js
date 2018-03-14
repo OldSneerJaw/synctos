@@ -489,4 +489,29 @@ describe('Strict equality constraint:', () => {
         errorFormatter.mustEqualViolation('stringProp', null));
     });
   });
+
+  describe('when using the custom polyfill for JSON.stringify', () => {
+    const expectedObjectValue = {
+      myStringProp: 'foobar',
+      myIntegerProp: 8,
+      myBooleanProp: true,
+      myFloatProp: 88.92,
+      myArrayProp: [ 'foobar', 3, false, 45.9, [ null ], { } ],
+      myObjectProp: { foo: 'bar', baz: 73, qux: [ ] }
+    };
+
+    it('rejects a document and writes the error message with the correct JSON string value', () => {
+      const expectedErrorMessage = errorFormatter.mustEqualViolation('objectProp', expectedObjectValue);
+
+      // Force the sync function to use the jsonStringify polyfill
+      delete testFixture.testEnvironment.JSON.stringify;
+
+      const doc = {
+        _id: 'staticObjectDoc',
+        objectProp: null
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'staticObjectDoc', expectedErrorMessage);
+    });
+  });
 });
