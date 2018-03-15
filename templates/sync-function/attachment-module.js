@@ -6,7 +6,7 @@ function attachmentModule(utils, buildItemPath, resolveDocConstraint, resolveIte
     validateAttachments: validateAttachments
   };
 
-  function validateAttachmentReference(validator, itemStack, docAttachments) {
+  function validateAttachmentReference(doc, validator, itemStack) {
     var validationErrors = [ ];
     var currentItemEntry = itemStack[itemStack.length - 1];
     var itemValue = currentItemEntry.itemValue;
@@ -29,8 +29,8 @@ function attachmentModule(utils, buildItemPath, resolveDocConstraint, resolveIte
       // validate it if it's present. The good news is that, because adding an attachment is a two part operation (create/update the
       // document and add the attachment), the sync function will be run once for each part, thus ensuring the content is verified once
       // both parts have been synced.
-      if (docAttachments && docAttachments[itemValue]) {
-        var attachment = docAttachments[itemValue];
+      if (doc._attachments && doc._attachments[itemValue]) {
+        var attachment = doc._attachments[itemValue];
 
         var supportedContentTypes = resolveItemConstraint(validator.supportedContentTypes);
         if (supportedContentTypes && supportedContentTypes.indexOf(attachment.content_type) < 0) {
@@ -47,25 +47,25 @@ function attachmentModule(utils, buildItemPath, resolveDocConstraint, resolveIte
     return validationErrors;
   }
 
-  function validateAttachments(doc, oldDoc, docDefinition) {
+  function validateAttachments(doc, docDefinition) {
     var validationErrors = [ ];
-    var attachmentConstraints = resolveDocConstraint(doc, oldDoc, docDefinition.attachmentConstraints);
+    var attachmentConstraints = resolveDocConstraint(docDefinition.attachmentConstraints);
 
     var maximumAttachmentCount =
-      attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumAttachmentCount) : null;
+      attachmentConstraints ? resolveDocConstraint(attachmentConstraints.maximumAttachmentCount) : null;
     var maximumIndividualAttachmentSize =
-      attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumIndividualSize) : null;
+      attachmentConstraints ? resolveDocConstraint(attachmentConstraints.maximumIndividualSize) : null;
     var maximumTotalAttachmentSize =
-      attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.maximumTotalSize) : null;
+      attachmentConstraints ? resolveDocConstraint(attachmentConstraints.maximumTotalSize) : null;
 
-    var supportedExtensions = attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.supportedExtensions) : null;
+    var supportedExtensions = attachmentConstraints ? resolveDocConstraint(attachmentConstraints.supportedExtensions) : null;
     var supportedExtensionsRegex = supportedExtensions ? buildSupportedExtensionsRegex(supportedExtensions) : null;
 
     var supportedContentTypes =
-      attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.supportedContentTypes) : null;
+      attachmentConstraints ? resolveDocConstraint(attachmentConstraints.supportedContentTypes) : null;
 
     var requireAttachmentReferences =
-      attachmentConstraints ? resolveDocConstraint(doc, oldDoc, attachmentConstraints.requireAttachmentReferences) : false;
+      attachmentConstraints ? resolveDocConstraint(attachmentConstraints.requireAttachmentReferences) : false;
 
     var totalSize = 0;
     var attachmentCount = 0;
@@ -117,7 +117,7 @@ function attachmentModule(utils, buildItemPath, resolveDocConstraint, resolveIte
       validationErrors.push('documents of this type must not have more than ' + maximumAttachmentCount + ' attachments');
     }
 
-    if (!resolveDocConstraint(doc, oldDoc, docDefinition.allowAttachments) && attachmentCount > 0) {
+    if (!resolveDocConstraint(docDefinition.allowAttachments) && attachmentCount > 0) {
       validationErrors.push('document type does not support attachments');
     }
 

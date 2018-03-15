@@ -15,6 +15,7 @@ describe('Document definitions validator:', () => {
   it('performs validation on a document definitions object', () => {
     const fakeDocDefinitions = {
       myDoc1: {
+        documentIdRegexPattern: { }, // Must be a RegExp object
         allowUnknownProperties: 1, // Must be a boolean
         immutable: true,
         cannotDelete: true, // Must not be defined if "immutable" is also defined
@@ -52,6 +53,7 @@ describe('Document definitions validator:', () => {
         'myDoc1: "value" must contain at least one of [channels, authorizedRoles, authorizedUsers]',
         'myDoc1.typeFilter: "typeFilter" is required',
         'myDoc1.propertyValidators: "propertyValidators" is required',
+        'myDoc1.documentIdRegexPattern: \"documentIdRegexPattern\" must be an instance of \"RegExp\"',
         'myDoc1.allowUnknownProperties: \"allowUnknownProperties\" must be a boolean',
         'myDoc1.immutable: \"immutable\" conflict with forbidden peer \"cannotDelete\"',
         'myDoc1.allowAttachments: \"allowAttachments\" is required',
@@ -77,6 +79,7 @@ describe('Document definitions validator:', () => {
           channels: { }, // Must have at least one permission type
           authorizedRoles: { }, // Must have at least one permission type
           authorizedUsers: { }, // Must have at least one permission type
+          documentIdRegexPattern: (a, extraParam) => extraParam, // Too many parameters
           immutable: true,
           cannotReplace: false, // Must not be defined if "immutable" is also defined
           allowAttachments: false, // Must be true since "attachmentConstraints" is defined
@@ -229,6 +232,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.channels: \"channels\" must have at least 1 children',
         'myDoc1.authorizedRoles: \"authorizedRoles\" must have at least 1 children',
         'myDoc1.authorizedUsers: \"authorizedUsers\" must have at least 1 children',
+        'myDoc1.documentIdRegexPattern: \"documentIdRegexPattern\" must have an arity lesser or equal to 1',
         'myDoc1.immutable: \"immutable\" conflict with forbidden peer \"cannotReplace\"',
         'myDoc1.allowAttachments: \"allowAttachments\" must be one of [true]',
         'myDoc1.attachmentConstraints.maximumAttachmentCount: \"maximumAttachmentCount\" must be larger than or equal to 1',
