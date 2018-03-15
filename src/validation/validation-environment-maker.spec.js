@@ -42,7 +42,7 @@ describe('Validation environment maker', () => {
 
     expect(fsMock.readFileSync.callCount).to.equal(1);
     expect(fsMock.readFileSync.calls[0].args).to.eql([
-      path.resolve(__dirname, '../../templates/validation-environment-template.js'),
+      path.resolve(__dirname, '../../templates/environments/validation-environment-template.js'),
       'utf8'
     ]);
 
