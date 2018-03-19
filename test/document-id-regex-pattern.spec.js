@@ -101,7 +101,7 @@ describe('Document ID regular expression pattern constraint:', () => {
       testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDocumentIdRegexPatternDoc',
-        [ errorFormatter.documentIdRegexPatternViolation(new RegExp('^entity\\.' + entityId + '$')) ]);
+        [ errorFormatter.documentIdRegexPatternViolation(new RegExp(`^entity\\.${entityId}$`)) ]);
     });
   });
 });

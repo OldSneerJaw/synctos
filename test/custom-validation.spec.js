@@ -59,10 +59,10 @@ describe('Custom validation constraint:', () => {
       oldDoc,
       'customValidationDoc',
       [
-        'doc: ' + JSON.stringify(doc),
-        'oldDoc: ' + JSON.stringify(oldDoc),
-        'currentItemEntry: ' + JSON.stringify(expectedCurrentItemEntry),
-        'validationItemStack: ' + JSON.stringify(expectedValidationItemStack)
+        `doc: ${JSON.stringify(doc)}`,
+        `oldDoc: ${JSON.stringify(oldDoc)}`,
+        `currentItemEntry: ${JSON.stringify(expectedCurrentItemEntry)}`,
+        `validationItemStack: ${JSON.stringify(expectedValidationItemStack)}`
       ]);
   });
 });
