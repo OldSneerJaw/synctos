@@ -24,6 +24,7 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
   immutable: dynamicConstraintSchema(joi.boolean()),
   cannotReplace: dynamicConstraintSchema(joi.boolean()),
   cannotDelete: dynamicConstraintSchema(joi.boolean()),
+  documentIdRegexPattern: makeConstraintSchemaDynamic(joi.object().type(RegExp), 1), // Only one function parameter: doc
 
   allowAttachments: joi.any().when(
     // This property must be true or a function if "attachmentConstraints" is defined

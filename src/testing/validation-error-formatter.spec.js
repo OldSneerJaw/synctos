@@ -15,6 +15,12 @@ describe('Validation error formatter', () => {
       expect(errorFormatter.cannotReplaceDocViolation()).to.equal('documents of this type cannot be replaced');
     });
 
+    it('produces documentIdRegexPattern violation messages', () => {
+      const expectedRegex = /\d+/;
+      expect(errorFormatter.documentIdRegexPatternViolation(expectedRegex))
+        .to.equal(`document ID must conform to expected pattern ${expectedRegex}`);
+    });
+
     it('produces immutable violation messages', () => {
       expect(errorFormatter.immutableDocViolation()).to.equal('documents of this type cannot be replaced or deleted');
     });

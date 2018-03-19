@@ -40,6 +40,13 @@ exports.datetimeFormatInvalid = (itemPath) => {
 };
 
 /**
+ * Formats a message for the error that occurs when the document ID does not match the expected regular expression pattern.
+ *
+ * @param {RegExp} expectedRegex The regular expression pattern to which the document ID must conform
+ */
+exports.documentIdRegexPatternViolation = (expectedRegex) => `document ID must conform to expected pattern ${expectedRegex}`;
+
+/**
  * Formats a message for the error that occurs when the value of an enum field is not one of the predefined values.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[3].enumProp")
