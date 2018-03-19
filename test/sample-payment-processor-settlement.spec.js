@@ -59,10 +59,8 @@ describe('Sample payment processor settlement doc definition', () => {
       doc,
       void 0,
       [
-        errorFormatter.maximumValueViolation('businessId', 12345),
+        errorFormatter.documentIdRegexPatternViolation(/^biz\.54321\.paymentProcessor\.ZYX\.processedSettlement\.not-foo-bar$/),
         errorFormatter.requiredValueViolation('transferId'),
-        errorFormatter.regexPatternItemViolation('processorId', /^XYZ$/),
-        errorFormatter.regexPatternItemViolation('settlementId', /^foo-bar$/),
         errorFormatter.datetimeFormatInvalid('capturedAt'),
         errorFormatter.typeConstraintViolation('processedAt', 'datetime'),
         errorFormatter.requiredValueViolation('amount'),
