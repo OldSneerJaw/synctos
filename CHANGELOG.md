@@ -1,7 +1,7 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
-## [Unreleased]
+## [2.2.0] - 2018-03-20
 ### Added
 - [#35](https://github.com/Kashoo/synctos/issues/35): Option to output a generated sync function as a single-line JSON string
 - [#252](https://github.com/Kashoo/synctos/issues/252): Isolate test fixtures
@@ -170,7 +170,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/Kashoo/synctos/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Kashoo/synctos/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/Kashoo/synctos/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/Kashoo/synctos/compare/v2.0.0...v2.0.1
