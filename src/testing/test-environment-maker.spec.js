@@ -50,7 +50,7 @@ describe('Test environment maker', () => {
 
     expect(fsMock.readFileSync.callCount).to.equal(1);
     expect(fsMock.readFileSync.calls[0].args).to.eql([
-      path.resolve(__dirname, '../../templates/test-environment-template.js'),
+      path.resolve(__dirname, '../../templates/environments/test-environment-template.js'),
       'utf8'
     ]);
 

@@ -1,4 +1,3 @@
-const { expect } = require('chai');
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
@@ -77,21 +76,10 @@ describe('File attachment constraints:', () => {
             attachmentRefProp: 'bar.html' // The attachmentReference's maximum size of 40 overrides the document's maximum individual size of 25
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors(
+          testFixture.verifyDocumentNotCreated(
+            doc,
             'staticRegularAttachmentsDoc',
-            errorFormatter.maximumTotalAttachmentSizeViolation(40),
-            syncFuncError);
+            errorFormatter.maximumTotalAttachmentSizeViolation(40));
         });
 
         it('should block replacement when document attachments exceed the limits', () => {
@@ -110,21 +98,14 @@ describe('File attachment constraints:', () => {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc, oldDoc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors(
+          testFixture.verifyDocumentNotReplaced(
+            doc,
+            oldDoc,
             'staticRegularAttachmentsDoc',
-            [ errorFormatter.maximumTotalAttachmentSizeViolation(40), errorFormatter.maximumIndividualAttachmentSizeViolation('foo.xml', 25) ],
-            syncFuncError);
+            [
+              errorFormatter.maximumTotalAttachmentSizeViolation(40),
+              errorFormatter.maximumIndividualAttachmentSizeViolation('foo.xml', 25)
+            ]);
         });
       });
 
@@ -153,18 +134,10 @@ describe('File attachment constraints:', () => {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumAttachmentCountViolation(3), syncFuncError);
+          testFixture.verifyDocumentNotCreated(
+            doc,
+            'staticRegularAttachmentsDoc',
+            errorFormatter.maximumAttachmentCountViolation(3));
         });
 
         it('should block replacement when document attachments exceed the limit', () => {
@@ -195,18 +168,11 @@ describe('File attachment constraints:', () => {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc, oldDoc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors('staticRegularAttachmentsDoc', errorFormatter.maximumAttachmentCountViolation(3), syncFuncError);
+          testFixture.verifyDocumentNotReplaced(
+            doc,
+            oldDoc,
+            'staticRegularAttachmentsDoc',
+            errorFormatter.maximumAttachmentCountViolation(3));
         });
       });
 
@@ -233,24 +199,13 @@ describe('File attachment constraints:', () => {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors(
+          testFixture.verifyDocumentNotCreated(
+            doc,
             'staticRegularAttachmentsDoc',
             [
               errorFormatter.supportedExtensionsRawAttachmentViolation('baz.unknown', expectedExtensions),
               errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions)
-            ],
-            syncFuncError);
+            ]);
         });
 
         it('should block replacement when document attachments have unsupported extensions', () => {
@@ -274,21 +229,11 @@ describe('File attachment constraints:', () => {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc, oldDoc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors(
+          testFixture.verifyDocumentNotReplaced(
+            doc,
+            oldDoc,
             'staticRegularAttachmentsDoc',
-            errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions),
-            syncFuncError);
+            errorFormatter.supportedExtensionsRawAttachmentViolation('foo.invalid', expectedExtensions));
         });
       });
 
@@ -315,24 +260,13 @@ describe('File attachment constraints:', () => {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors(
+          testFixture.verifyDocumentNotCreated(
+            doc,
             'staticRegularAttachmentsDoc',
             [
               errorFormatter.supportedContentTypesRawAttachmentViolation('baz.xml', expectedContentTypes),
               errorFormatter.supportedContentTypesRawAttachmentViolation('foo.txt', expectedContentTypes)
-            ],
-            syncFuncError);
+            ]);
         });
 
         it('should block replacement when document attachments have unsupported content types', () => {
@@ -356,21 +290,11 @@ describe('File attachment constraints:', () => {
             type: 'staticRegularAttachmentsDoc'
           };
 
-          let syncFuncError = null;
-          expect(() => {
-            try {
-              testFixture.testEnvironment.syncFunction(doc, oldDoc);
-            } catch (ex) {
-              syncFuncError = ex;
-
-              throw ex;
-            }
-          }).to.throw();
-
-          testFixture.verifyValidationErrors(
+          testFixture.verifyDocumentNotReplaced(
+            doc,
+            oldDoc,
             'staticRegularAttachmentsDoc',
-            errorFormatter.supportedContentTypesRawAttachmentViolation('foo.jpg', expectedContentTypes),
-            syncFuncError);
+            errorFormatter.supportedContentTypesRawAttachmentViolation('foo.jpg', expectedContentTypes));
         });
       });
     });
@@ -409,21 +333,10 @@ describe('File attachment constraints:', () => {
           attachmentRefProp: 'foo.pdf'
         };
 
-        let syncFuncError = null;
-        expect(() => {
-          try {
-            testFixture.testEnvironment.syncFunction(doc);
-          } catch (ex) {
-            syncFuncError = ex;
-
-            throw ex;
-          }
-        }).to.throw();
-
-        testFixture.verifyValidationErrors(
+        testFixture.verifyDocumentNotCreated(
+          doc,
           'staticAttachmentRefsOnlyDoc',
-          errorFormatter.requireAttachmentReferencesViolation('bar.txt'),
-          syncFuncError);
+          errorFormatter.requireAttachmentReferencesViolation('bar.txt'));
       });
 
       it('should allow replacement when document attachments do not violate the constraint', () => {
@@ -467,21 +380,11 @@ describe('File attachment constraints:', () => {
           type: 'staticAttachmentRefsOnlyDoc'
         };
 
-        let syncFuncError = null;
-        expect(() => {
-          try {
-            testFixture.testEnvironment.syncFunction(doc, oldDoc);
-          } catch (ex) {
-            syncFuncError = ex;
-
-            throw ex;
-          }
-        }).to.throw();
-
-        testFixture.verifyValidationErrors(
+        testFixture.verifyDocumentNotReplaced(
+          doc,
+          oldDoc,
           'staticAttachmentRefsOnlyDoc',
-          errorFormatter.requireAttachmentReferencesViolation('baz.jpg'),
-          syncFuncError);
+          errorFormatter.requireAttachmentReferencesViolation('baz.jpg'));
       });
     });
   });

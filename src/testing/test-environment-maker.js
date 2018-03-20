@@ -20,7 +20,7 @@ function init(rawSyncFunction, syncFunctionFile) {
     displayErrors: true
   };
 
-  const filePath = path.resolve(__dirname, '../../templates/test-environment-template.js');
+  const filePath = path.resolve(__dirname, '../../templates/environments/test-environment-template.js');
   const environmentTemplate = fs.readFileSync(filePath, 'utf8').trim();
 
   // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of

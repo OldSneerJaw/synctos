@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#35](https://github.com/Kashoo/synctos/issues/35): Option to output a generated sync function as a single-line JSON string
 - [#252](https://github.com/Kashoo/synctos/issues/252): Isolate test fixtures
 - [#257](https://github.com/Kashoo/synctos/issues/257): Regular expression pattern constraint for document ID
+- [#259](https://github.com/Kashoo/synctos/issues/259): Ensure compatibility with Sync Gateway 2.x
 
 ### Deprecated
 - `src/testing/test-helper.js` module

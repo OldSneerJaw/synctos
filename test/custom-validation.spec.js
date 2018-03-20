@@ -38,7 +38,6 @@ describe('Custom validation constraint:', () => {
 
     const expectedCurrentItemEntry = {
       itemValue: doc.baseProp.customValidationProp,
-      oldItemValue: null,
       itemName: 'customValidationProp'
     };
     const expectedValidationItemStack = [

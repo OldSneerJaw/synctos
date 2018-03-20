@@ -23,7 +23,7 @@ function init(docDefinitionsString, originalFilename) {
     displayErrors: true
   };
 
-  const filePath = path.resolve(__dirname, '../../templates/validation-environment-template.js');
+  const filePath = path.resolve(__dirname, '../../templates/environments/validation-environment-template.js');
   const envTemplateString = fs.readFileSync(filePath, 'utf8').trim();
 
   // The validation environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the

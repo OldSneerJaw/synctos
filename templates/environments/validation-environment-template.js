@@ -16,21 +16,21 @@ function makeValidationEnvironment(_, simple) {
   const customActionStub = simple.stub();
 
   return {
-    _: _,
-    doc: doc,
-    oldDoc: oldDoc,
-    typeIdValidator: typeIdValidator,
-    simpleTypeFilter: simpleTypeFilter,
-    isDocumentMissingOrDeleted: isDocumentMissingOrDeleted,
-    isValueNullOrUndefined: isValueNullOrUndefined,
-    jsonStringify: jsonStringify,
-    requireAccess: requireAccess,
-    requireRole: requireRole,
-    requireUser: requireUser,
-    channel: channel,
-    access: access,
-    role: role,
-    customActionStub: customActionStub,
+    _,
+    doc,
+    oldDoc,
+    typeIdValidator,
+    simpleTypeFilter,
+    isDocumentMissingOrDeleted,
+    isValueNullOrUndefined,
+    jsonStringify,
+    requireAccess,
+    requireRole,
+    requireUser,
+    channel,
+    access,
+    role,
+    customActionStub,
     documentDefinitions: %DOC_DEFINITIONS_PLACEHOLDER%
   };
 }

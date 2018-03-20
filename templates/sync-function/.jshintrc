@@ -9,6 +9,7 @@
     "channel": false,
     "customActionStub": false,
     "importSyncFunctionFragment": false,
+    "JSON": false,
     "requireAccess": false,
     "requireRole": false,
     "requireUser": false,
