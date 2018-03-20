@@ -1,6 +1,9 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
+## [Unreleased]
+Nothing yet.
+
 ## [2.2.0] - 2018-03-20
 ### Added
 - [#35](https://github.com/Kashoo/synctos/issues/35): Option to output a generated sync function as a single-line JSON string
