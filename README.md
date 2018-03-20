@@ -8,6 +8,8 @@ With this utility, you define all your JSON document types in a declarative Java
 
 To learn more about Sync Gateway, check out [Couchbase](http://www.couchbase.com/)'s comprehensive [developer documentation](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/index.html). And, for a comprehensive introduction to synctos, see the post [Validating your Sync Gateway documents with synctos](https://blog.couchbase.com/validating-your-sync-gateway-documents-with-synctos/) on the official Couchbase blog.
 
+For validation of documents in Apache CouchDB, see the [couchster](https://github.com/OldSneerJaw/couchster) project.
+
 # Table of Contents
 
 - [Introduction](#introduction)
