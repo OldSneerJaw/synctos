@@ -3,41 +3,31 @@
 /**
  * Formats a message for the error that occurs when a document includes an attachment when they are not allowed for the document type.
  */
-exports.allowAttachmentsViolation = () => {
-  return 'document type does not support attachments';
-};
+exports.allowAttachmentsViolation = () => 'document type does not support attachments';
 
 /**
  * Formats a message for the error that occurs when there is an attempt to delete a document that cannot be deleted.
  */
-exports.cannotDeleteDocViolation = () => {
-  return 'documents of this type cannot be deleted';
-};
+exports.cannotDeleteDocViolation = () => 'documents of this type cannot be deleted';
 
 /**
  * Formats a message for the error that occurs when there is an attempt to replace a document that cannot be replaced.
  */
-exports.cannotReplaceDocViolation = () => {
-  return 'documents of this type cannot be replaced';
-};
+exports.cannotReplaceDocViolation = () => 'documents of this type cannot be replaced';
 
 /**
  * Formats a message for the error that occurs when the format for a date without time and timezone (i.e. a date) is invalid.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].dateProp")
  */
-exports.dateFormatInvalid = (itemPath) => {
-  return `item "${itemPath}" must be ${getTypeDescription('date')}`;
-};
+exports.dateFormatInvalid = (itemPath) => `item "${itemPath}" must be ${getTypeDescription('date')}`;
 
 /**
  * Formats a message for the error that occurs when the format for a date with optional time and timezone (i.e. a datetime) is invalid.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].datetimeProp")
  */
-exports.datetimeFormatInvalid = (itemPath) => {
-  return `item "${itemPath}" must be ${getTypeDescription('datetime')}`;
-};
+exports.datetimeFormatInvalid = (itemPath) => `item "${itemPath}" must be ${getTypeDescription('datetime')}`;
 
 /**
  * Formats a message for the error that occurs when the document ID does not match the expected regular expression pattern.
@@ -52,18 +42,15 @@ exports.documentIdRegexPatternViolation = (expectedRegex) => `document ID must c
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[3].enumProp")
  * @param {(string[]|integer[])} expectedPredefinedValues A list of predefined values that are allowed for the item in question
  */
-exports.enumPredefinedValueViolation = (itemPath, expectedPredefinedValues) => {
-  return `item "${itemPath}" must be one of the predefined values: ${expectedPredefinedValues.join(',')}`;
-};
+exports.enumPredefinedValueViolation =
+  (itemPath, expectedPredefinedValues) => `item "${itemPath}" must be one of the predefined values: ${expectedPredefinedValues.join(',')}`;
 
 /**
  * Formats a message for the error that occurs when a hashtable key is an empty string.
  *
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  */
-exports.hashtableKeyEmpty = (hashtablePath) => {
-  return `hashtable "${hashtablePath}" must not have an empty key`;
-};
+exports.hashtableKeyEmpty = (hashtablePath) => `hashtable "${hashtablePath}" must not have an empty key`;
 
 /**
  * Formats a message for the error that occurs when a hashtable has more than the maximum number of elements.
@@ -71,9 +58,8 @@ exports.hashtableKeyEmpty = (hashtablePath) => {
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  * @param {integer} expectedMaximumSize The maximum number of elements
  */
-exports.hashtableMaximumSizeViolation = (hashtablePath, expectedMaximumSize) => {
-  return `hashtable "${hashtablePath}" must not be larger than ${expectedMaximumSize} elements`;
-};
+exports.hashtableMaximumSizeViolation =
+  (hashtablePath, expectedMaximumSize) => `hashtable "${hashtablePath}" must not be larger than ${expectedMaximumSize} elements`;
 
 /**
  * Formats a message for the error that occurs when a hashtable has less than the minimum number of elements.
@@ -81,16 +67,13 @@ exports.hashtableMaximumSizeViolation = (hashtablePath, expectedMaximumSize) => 
  * @param {string} hashtablePath The full path of the hashtable in which the error occurs (e.g. "objectProp.arrayProp[2].hashtableProp")
  * @param {integer} expectedMinimumSize The minimum number of elements
  */
-exports.hashtableMinimumSizeViolation = (hashtablePath, expectedMinimumSize) => {
-  return `hashtable "${hashtablePath}" must not be smaller than ${expectedMinimumSize} elements`;
-};
+exports.hashtableMinimumSizeViolation =
+  (hashtablePath, expectedMinimumSize) => `hashtable "${hashtablePath}" must not be smaller than ${expectedMinimumSize} elements`;
 
 /**
  * Formats a message for the error that occurs when there is an attempt to replace or delete an immutable document.
  */
-exports.immutableDocViolation = () => {
-  return 'documents of this type cannot be replaced or deleted';
-};
+exports.immutableDocViolation = () => 'documents of this type cannot be replaced or deleted';
 
 /**
  * Formats a message for the error that occurs when there is an attempt to reassign the value of an immutable property or element.
@@ -98,18 +81,15 @@ exports.immutableDocViolation = () => {
  * @param {string} itemPath The full path of the property or element in which the error occurs
  *                          (e.g. "arrayProp[1].hashtableProp[my-key].integerProp")
  */
-exports.immutableItemViolation = (itemPath) => {
-  return `item "${itemPath}" cannot be modified`;
-};
+exports.immutableItemViolation = (itemPath) => `item "${itemPath}" cannot be modified`;
 
 /**
  * Formats a message for the error that occurs when a document has more than the maximum number of attachments.
  *
  * @param {integer} maxCount The maximum number of attachments that are allowed
  */
-exports.maximumAttachmentCountViolation = (maxCount) => {
-  return `documents of this type must not have more than ${maxCount} attachments`;
-};
+exports.maximumAttachmentCountViolation =
+  (maxCount) => `documents of this type must not have more than ${maxCount} attachments`;
 
 /**
  * Formats a message for the error that occurs when a document's attachment exceeds the maximum individual attachment size.
@@ -117,9 +97,8 @@ exports.maximumAttachmentCountViolation = (maxCount) => {
  * @param {string} attachmentName The name of the attachment in question
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
-exports.maximumIndividualAttachmentSizeViolation = (attachmentName, maxSize) => {
-  return `attachment ${attachmentName} must not exceed ${maxSize} bytes`;
-};
+exports.maximumIndividualAttachmentSizeViolation =
+  (attachmentName, maxSize) => `attachment ${attachmentName} must not exceed ${maxSize} bytes`;
 
 /**
  * Formats a message for the error that occurs when a string or array's length is greater than the maximum allowed.
@@ -127,9 +106,8 @@ exports.maximumIndividualAttachmentSizeViolation = (attachmentName, maxSize) => 
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].stringProp")
  * @param {integer} maxLength The maximum length that is allowed
  */
-exports.maximumLengthViolation = (itemPath, maxLength) => {
-  return `length of item "${itemPath}" must not be greater than ${maxLength}`;
-};
+exports.maximumLengthViolation =
+  (itemPath, maxLength) => `length of item "${itemPath}" must not be greater than ${maxLength}`;
 
 /**
  * Formats a message for the error that occurs when an attachment reference points to a file that is larger than the maximum allowed size.
@@ -138,18 +116,16 @@ exports.maximumLengthViolation = (itemPath, maxLength) => {
  *                          (e.g. "hashtableProp[my-key].attachmentRefProp")
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
-exports.maximumSizeAttachmentViolation = (itemPath, maxSize) => {
-  return `attachment reference "${itemPath}" must not be larger than ${maxSize} bytes`;
-};
+exports.maximumSizeAttachmentViolation =
+  (itemPath, maxSize) => `attachment reference "${itemPath}" must not be larger than ${maxSize} bytes`;
 
 /**
  * Formats a message for the error that occurs when a document's attachments exceed the maximum total attachment size.
  *
  * @param {integer} maxSize The maximum size, in bytes, that is allowed
  */
-exports.maximumTotalAttachmentSizeViolation = (maxSize) => {
-  return `documents of this type must not have a combined attachment size greater than ${maxSize} bytes`;
-};
+exports.maximumTotalAttachmentSizeViolation =
+  (maxSize) => `documents of this type must not have a combined attachment size greater than ${maxSize} bytes`;
 
 /**
  * Formats a message for the error that occurs when a value is greater than the maximum allowed.
@@ -157,9 +133,7 @@ exports.maximumTotalAttachmentSizeViolation = (maxSize) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].integerProp")
  * @param {(float|integer|string)} maxValue The maximum value that is allowed
  */
-exports.maximumValueViolation = (itemPath, maxValue) => {
-  return `item "${itemPath}" must not be greater than ${maxValue}`;
-};
+exports.maximumValueViolation = (itemPath, maxValue) => `item "${itemPath}" must not be greater than ${maxValue}`;
 
 /**
  * Formats a message for the error that occurs when a value is greater than or equal to the maximum allowed.
@@ -167,9 +141,8 @@ exports.maximumValueViolation = (itemPath, maxValue) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.dateProp")
  * @param {(float|integer|string)} maxValue The maximum value (exclusive) that is allowed
  */
-exports.maximumValueExclusiveViolation = (itemPath, maxValue) => {
-  return `item "${itemPath}" must not be greater than or equal to ${maxValue}`;
-};
+exports.maximumValueExclusiveViolation =
+  (itemPath, maxValue) => `item "${itemPath}" must not be greater than or equal to ${maxValue}`;
 
 /**
  * Formats a message for the error that occurs when a string or array's length is less than the minimum allowed.
@@ -177,9 +150,8 @@ exports.maximumValueExclusiveViolation = (itemPath, maxValue) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp")
  * @param {integer} minLength The minimum length that is allowed
  */
-exports.minimumLengthViolation = (itemPath, minLength) => {
-  return `length of item "${itemPath}" must not be less than ${minLength}`;
-};
+exports.minimumLengthViolation =
+  (itemPath, minLength) => `length of item "${itemPath}" must not be less than ${minLength}`;
 
 /**
  * Formats a message for the error that occurs when a value is less than the minimum allowed.
@@ -187,9 +159,7 @@ exports.minimumLengthViolation = (itemPath, minLength) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].floatProp")
  * @param {(float|integer|string)} minValue The minimum value that is allowed
  */
-exports.minimumValueViolation = (itemPath, minValue) => {
-  return `item "${itemPath}" must not be less than ${minValue}`;
-};
+exports.minimumValueViolation = (itemPath, minValue) => `item "${itemPath}" must not be less than ${minValue}`;
 
 /**
  * Formats a message for the error that occurs when a value is less than or equal to the minimum allowed.
@@ -197,18 +167,15 @@ exports.minimumValueViolation = (itemPath, minValue) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[0].datetimeProp")
  * @param {(float|integer|string)} minValue The minimum value (exclusive) that is allowed
  */
-exports.minimumValueExclusiveViolation = (itemPath, minValue) => {
-  return `item "${itemPath}" must not be less than or equal to ${minValue}`;
-};
+exports.minimumValueExclusiveViolation =
+  (itemPath, minValue) => `item "${itemPath}" must not be less than or equal to ${minValue}`;
 
 /**
  * Formats a message for the error that occurs when a string has leading or trailing whitespace even though it is forbidden.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  */
-exports.mustBeTrimmedViolation = (itemPath) => {
-  return `item "${itemPath}" must not have any leading or trailing whitespace`;
-};
+exports.mustBeTrimmedViolation = (itemPath) => `item "${itemPath}" must not have any leading or trailing whitespace`;
 
 /**
  * Formats a message for the error that occurs when a value does not equal the expected value.
@@ -216,9 +183,8 @@ exports.mustBeTrimmedViolation = (itemPath) => {
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.integerProp")
  * @param {*} expectedItemValue The value that is expected
  */
-exports.mustEqualViolation = (itemPath, expectedItemValue) => {
-  return `value of item "${itemPath}" must equal ${JSON.stringify(expectedItemValue)}`;
-};
+exports.mustEqualViolation =
+  (itemPath, expectedItemValue) => `value of item "${itemPath}" must equal ${JSON.stringify(expectedItemValue)}`;
 
 /**
  * Formats a message for the error that occurs when there is an attempt to assign an empty string or array to a property or element where
@@ -226,27 +192,21 @@ exports.mustEqualViolation = (itemPath, expectedItemValue) => {
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  */
-exports.mustNotBeEmptyViolation = (itemPath) => {
-  return `item "${itemPath}" must not be empty`;
-};
+exports.mustNotBeEmptyViolation = (itemPath) => `item "${itemPath}" must not be empty`;
 
 /**
  * Formats a message for the error that occurs when a property or element value is not allowed to be missing/undefined.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
  */
-exports.mustNotBeMissingValueViolation = (itemPath) => {
-  return `item "${itemPath}" must not be missing`;
-};
+exports.mustNotBeMissingValueViolation = (itemPath) => `item "${itemPath}" must not be missing`;
 
 /**
  * Formats a message for the error that occurs when a property or element value is not allowed to be null.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].integerProp")
  */
-exports.mustNotBeNullValueViolation = (itemPath) => {
-  return `item "${itemPath}" must not be null`;
-};
+exports.mustNotBeNullValueViolation = (itemPath) => `item "${itemPath}" must not be null`;
 
 /**
  * Formats a message for the error that occurs when a hashtable key fails to satisfy the regular expression pattern.
@@ -255,9 +215,8 @@ exports.mustNotBeNullValueViolation = (itemPath) => {
  *                                  (e.g. "objectProp.hashtableProp[my-key]")
  * @param {RegExp} expectedRegex The regular expression pattern that is expected
  */
-exports.regexPatternHashtableKeyViolation = (hashtableKeyPath, expectedRegex) => {
-  return `hashtable key "${hashtableKeyPath}" must conform to expected format ${expectedRegex}`;
-};
+exports.regexPatternHashtableKeyViolation =
+  (hashtableKeyPath, expectedRegex) => `hashtable key "${hashtableKeyPath}" must conform to expected format ${expectedRegex}`;
 
 /**
  * Formats a message for the error that occurs when a property or element value fails to satisfy the regular expression pattern.
@@ -265,9 +224,8 @@ exports.regexPatternHashtableKeyViolation = (hashtableKeyPath, expectedRegex) =>
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key].stringProp")
  * @param {RegExp} expectedRegex The regular expression pattern that is expected
  */
-exports.regexPatternItemViolation = (itemPath, expectedRegex) => {
-  return `item "${itemPath}" must conform to expected format ${expectedRegex}`;
-};
+exports.regexPatternItemViolation =
+  (itemPath, expectedRegex) => `item "${itemPath}" must conform to expected format ${expectedRegex}`;
 
 /**
  * Formats a message for the error that occurs when a file attachment violates the constraint that all of that document type's file
@@ -275,18 +233,15 @@ exports.regexPatternItemViolation = (itemPath, expectedRegex) => {
  *
  * @param {string} attachmentName The name of the attachment in question
  */
-exports.requireAttachmentReferencesViolation = (attachmentName) => {
-  return `attachment ${attachmentName} must have a corresponding attachment reference property`;
-};
+exports.requireAttachmentReferencesViolation =
+  (attachmentName) => `attachment ${attachmentName} must have a corresponding attachment reference property`;
 
 /**
  * Formats a message for the error that occurs when a required property or element value is null or undefined.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].booleanProp")
  */
-exports.requiredValueViolation = (itemPath) => {
-  return `item "${itemPath}" must not be null or missing`;
-};
+exports.requiredValueViolation = (itemPath) => `item "${itemPath}" must not be null or missing`;
 
 /**
  * Formats a message for the error that occurs when a file attachment reference is not one of the supported content types.
@@ -345,18 +300,14 @@ exports.supportedExtensionsRawAttachmentViolation = (attachmentName, expectedFil
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[2].timeProp")
  */
-exports.timeFormatInvalid = (itemPath) => {
-  return `item "${itemPath}" must be ${getTypeDescription('time')}`;
-};
+exports.timeFormatInvalid = (itemPath) => `item "${itemPath}" must be ${getTypeDescription('time')}`;
 
 /**
  * Formats a message for the error that occurs when the format for a time zone is invalid.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.timezoneProp")
  */
-exports.timezoneFormatInvalid = (itemPath) => {
-  return `item "${itemPath}" must be ${getTypeDescription('timezone')}`;
-};
+exports.timezoneFormatInvalid = (itemPath) => `item "${itemPath}" must be ${getTypeDescription('timezone')}`;
 
 /**
  * Formats a message for the error that occurs when a property or element's type does not match what is defined by the validator.
@@ -365,16 +316,13 @@ exports.timezoneFormatInvalid = (itemPath) => {
  * @param {string} expectedType The validation type that was expected (e.g. "array", "attachmentReference", "boolean", "date", "datetime",
  *                              "float", "hashtable", "integer", "object", "string"). Throws an exception if the type is not recognized.
  */
-exports.typeConstraintViolation = (itemPath, expectedType) => {
-  return `item "${itemPath}" must be ${getTypeDescription(expectedType)}`;
-};
+exports.typeConstraintViolation =
+  (itemPath, expectedType) => `item "${itemPath}" must be ${getTypeDescription(expectedType)}`;
 
 /**
  * Formats a message for the error that occurs when the document type is unrecognized.
  */
-exports.unknownDocumentType = () => {
-  return 'Unknown document type';
-};
+exports.unknownDocumentType = () => 'Unknown document type';
 
 /**
  * Formats a message for the error that occurs when an unrecognized property is discovered at the root level of a document or in an
@@ -383,18 +331,14 @@ exports.unknownDocumentType = () => {
  * @param {string} propertyPath The full path of the property or element in which the error occurs
  *                              (e.g. "arrayProp[1].objectProp.unknownProp")
  */
-exports.unsupportedProperty = (propertyPath) => {
-  return `property "${propertyPath}" is not supported`;
-};
+exports.unsupportedProperty = (propertyPath) => `property "${propertyPath}" is not supported`;
 
 /**
  * Formats a message for the error that occurs when the format for a UUID is invalid.
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.arrayProp[10].uuidProp")
  */
-exports.uuidFormatInvalid = (itemPath) => {
-  return `item "${itemPath}" must be ${getTypeDescription('uuid')}`;
-};
+exports.uuidFormatInvalid = (itemPath) => `item "${itemPath}" must be ${getTypeDescription('uuid')}`;
 
 function getTypeDescription(type) {
   switch (type) {
