@@ -18,7 +18,7 @@
     "jshint": "^2.9.5",
     "mocha": "^5.0.4",
     "mock-require": "^3.0.1",
-    "nyc": "^11.4.1"
+    "nyc": "^11.6.0"
   },
   "scripts": {
     "clean": "rm -rf build .nyc_output",
