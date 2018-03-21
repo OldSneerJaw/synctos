@@ -1,8 +1,9 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
-## [Unreleased]
-Nothing yet.
+## [2.2.1] - 2018-03-21
+### Fixed
+- [#270](https://github.com/Kashoo/synctos/issues/270): JavaScript error on document write in Sync Gateway 1.x
 
 ## [2.2.0] - 2018-03-20
 ### Added
@@ -173,7 +174,8 @@ Nothing yet.
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/Kashoo/synctos/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/Kashoo/synctos/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Kashoo/synctos/compare/v2.0.2...v2.1.0
 [2.0.2]: https://github.com/Kashoo/synctos/compare/v2.0.1...v2.0.2
