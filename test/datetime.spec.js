@@ -511,4 +511,30 @@ describe('Date/time validation type', () => {
         [ errorFormatter.immutableItemViolation('immutabilityValidationProp') ]);
     });
   });
+
+  describe('interpretation of years between 0 and 99', () => {
+    it('does not treat year 1900 as less than or equal to year 99', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        twoDigitYearValidationProp: '1900-04-09T08:38:29Z'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        [ errorFormatter.maximumValueViolation('twoDigitYearValidationProp', '0099-12-31T23:59:59.999+12:00')]);
+    });
+
+    it('does not treat year 1999 as less than or equal to year 99', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        twoDigitYearValidationProp: '1999-06-01T15:44Z'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        [ errorFormatter.maximumValueViolation('twoDigitYearValidationProp', '0099-12-31T23:59:59.999+12:00')]);
+    });
+  });
 });

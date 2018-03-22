@@ -296,4 +296,30 @@ describe('Date validation type:', () => {
       testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'dateDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
     });
   });
+
+  describe('interpretation of years between 0 and 99', () => {
+    it('does not treat year 0 as 1900', () => {
+      const doc = {
+        _id: 'dateDoc',
+        twoDigitYearValidationProp: '0000-03-23'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dateDoc',
+        [ errorFormatter.minimumValueViolation('twoDigitYearValidationProp', '1900-01-01')]);
+    });
+
+    it('does not treat year 99 as 1999', () => {
+      const doc = {
+        _id: 'dateDoc',
+        twoDigitYearValidationProp: '0099-09-09'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dateDoc',
+        [ errorFormatter.minimumValueViolation('twoDigitYearValidationProp', '1900-01-01')]);
+    });
+  });
 });

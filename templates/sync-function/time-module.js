@@ -155,14 +155,16 @@ function timeModule(utils) {
         return NaN;
       }
 
-      return Date.UTC(
-        date.year,
-        date.month - 1,
-        date.day,
-        time.hour,
-        time.minute - time.timezoneOffsetMinutes,
-        time.second,
-        time.millisecond);
+      var dateAndTime = new Date();
+      dateAndTime.setUTCFullYear(date.year);
+      dateAndTime.setUTCMonth(date.month - 1);
+      dateAndTime.setUTCDate(date.day);
+      dateAndTime.setUTCHours(time.hour);
+      dateAndTime.setUTCMinutes(time.minute - time.timezoneOffsetMinutes);
+      dateAndTime.setUTCSeconds(time.second);
+      dateAndTime.setUTCMilliseconds(time.millisecond);
+
+      return dateAndTime.getTime();
     } else {
       return NaN;
     }

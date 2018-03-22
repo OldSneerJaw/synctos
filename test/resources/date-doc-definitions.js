@@ -21,6 +21,10 @@
       immutableValidationProp: {
         type: 'date',
         immutableWhenSet: true
+      },
+      twoDigitYearValidationProp: {
+        type: 'date',
+        minimumValue: '1900-01-01'
       }
     }
   },
