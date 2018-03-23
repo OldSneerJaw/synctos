@@ -155,7 +155,7 @@ function timeModule(utils) {
         return NaN;
       }
 
-      var dateAndTime = new Date();
+      var dateAndTime = new Date(0);
       dateAndTime.setUTCFullYear(date.year);
       dateAndTime.setUTCMonth(date.month - 1);
       dateAndTime.setUTCDate(date.day);

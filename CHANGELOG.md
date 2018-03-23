@@ -3,7 +3,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 
 ## [Unreleased]
 ### Fixed
-- [#276](https://github.com/Kashoo/synctos/issues/276): Date range validation fails for dates between year 0 and 99
+- [#276](https://github.com/Kashoo/synctos/issues/276): Date range validation is incorrect for dates between years 0 and 99
 
 ## [2.2.1] - 2018-03-21
 ### Fixed
