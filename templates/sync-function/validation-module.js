@@ -187,12 +187,12 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
         }
 
         var expectedEqualValue = resolveItemConstraint(validator.mustEqual);
-        if (typeof expectedEqualValue !== 'undefined') {
+        if (expectedEqualValue !== void 0) {
           storeOptionalValidationErrors(comparisonModule.validateEquality(itemStack, expectedEqualValue, validator.type));
         }
 
         var expectedStrictEqualValue = resolveItemConstraint(validator.mustEqualStrict);
-        if (typeof expectedStrictEqualValue !== 'undefined') {
+        if (expectedStrictEqualValue !== void 0) {
           // Omitting validator type forces it to perform strict equality comparisons for specialized string types
           // (e.g. "date", "datetime", "time", "timezone", "uuid")
           storeOptionalValidationErrors(comparisonModule.validateEquality(itemStack, expectedStrictEqualValue));
@@ -319,7 +319,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
         } else if (resolveItemConstraint(validator.required)) {
           // The item has no value (either it's null or undefined), but the validator indicates it is required
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be null or missing');
-        } else if (resolveItemConstraint(validator.mustNotBeMissing) && typeof itemValue === 'undefined') {
+        } else if (resolveItemConstraint(validator.mustNotBeMissing) && itemValue === void 0) {
           // The item is missing (i.e. it's undefined), but the validator indicates it must not be
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be missing');
         } else if (resolveItemConstraint(validator.mustNotBeNull) && itemValue === null) {

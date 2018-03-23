@@ -10,8 +10,6 @@ function makeTestEnvironment(_, simple) {
   const access = simple.stub();
   const role = simple.stub();
 
-  const customActionStub = simple.stub();
-
   return {
     _,
     JSON,
@@ -21,7 +19,6 @@ function makeTestEnvironment(_, simple) {
     channel,
     access,
     role,
-    customActionStub,
     syncFunction: %SYNC_FUNC_PLACEHOLDER%
   };
 }

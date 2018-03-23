@@ -264,9 +264,6 @@ function init(rawSyncFunction, syncFunctionFile) {
   exports.access = testHelperEnvironment.access;
   exports.role = testHelperEnvironment.role;
 
-  // A function stub that can be used in document definitions for test cases to verify custom actions
-  exports.customActionStub = testHelperEnvironment.customActionStub;
-
   exports.syncFunction = testHelperEnvironment.syncFunction;
 }
 

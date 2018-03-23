@@ -13,8 +13,6 @@ function makeValidationEnvironment(_, simple) {
   const access = simple.stub();
   const role = simple.stub();
 
-  const customActionStub = simple.stub();
-
   return {
     _,
     doc,
@@ -30,7 +28,6 @@ function makeValidationEnvironment(_, simple) {
     channel,
     access,
     role,
-    customActionStub,
     documentDefinitions: %DOC_DEFINITIONS_PLACEHOLDER%
   };
 }

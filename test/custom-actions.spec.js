@@ -21,18 +21,15 @@ describe('Custom actions:', () => {
     const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', () => {
-      testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, null, 'onTypeIdentificationSucceeded');
+      verifyCustomActionExecution(doc, null, docType, 'onTypeIdentificationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
-      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, oldDoc, 'onTypeIdentificationSucceeded');
+      verifyCustomActionExecution(doc, oldDoc, docType, 'onTypeIdentificationSucceeded');
     });
 
     it('executes a custom action when a document is deleted', () => {
-      testFixture.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(getDeletedDoc(docType), oldDoc, 'onTypeIdentificationSucceeded');
+      verifyCustomActionExecution(getDeletedDoc(docType), oldDoc, docType, 'onTypeIdentificationSucceeded');
     });
 
     it('does not execute a custom action if the type cannot be identified', () => {
@@ -51,7 +48,6 @@ describe('Custom actions:', () => {
       }).to.throw();
 
       testFixture.verifyValidationErrors(unknownDocType, errorFormatter.unknownDocumentType(), syncFuncError);
-      verifyCustomActionNotExecuted();
     });
   });
 
@@ -61,23 +57,19 @@ describe('Custom actions:', () => {
     const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', () => {
-      testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, null, 'onAuthorizationSucceeded');
+      verifyCustomActionExecution(doc, null, docType, 'onAuthorizationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
-      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, oldDoc, 'onAuthorizationSucceeded');
+      verifyCustomActionExecution(doc, oldDoc, docType, 'onAuthorizationSucceeded');
     });
 
     it('executes a custom action when a document is deleted', () => {
-      testFixture.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(getDeletedDoc(docType), oldDoc, 'onAuthorizationSucceeded');
+      verifyCustomActionExecution(getDeletedDoc(docType), oldDoc, docType, 'onAuthorizationSucceeded');
     });
 
     it('does not execute a custom action if authorization was denied', () => {
       testFixture.verifyAccessDenied(doc, null, expectedAuthorization);
-      verifyCustomActionNotExecuted();
     });
   });
 
@@ -87,18 +79,15 @@ describe('Custom actions:', () => {
     const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', () => {
-      testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, null, 'onValidationSucceeded');
+      verifyCustomActionExecution(doc, null, docType, 'onValidationSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
-      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, oldDoc, 'onValidationSucceeded');
+      verifyCustomActionExecution(doc, oldDoc, docType, 'onValidationSucceeded');
     });
 
     it('executes a custom action when a document is deleted', () => {
-      testFixture.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(getDeletedDoc(docType), oldDoc, 'onValidationSucceeded');
+      verifyCustomActionExecution(getDeletedDoc(docType), oldDoc, docType, 'onValidationSucceeded');
     });
 
     it('does not execute a custom action if the document contents are invalid', () => {
@@ -108,7 +97,6 @@ describe('Custom actions:', () => {
       };
 
       testFixture.verifyDocumentNotCreated(doc, docType, errorFormatter.unsupportedProperty('unsupportedProperty'), expectedAuthorization);
-      verifyCustomActionNotExecuted();
     });
   });
 
@@ -118,32 +106,27 @@ describe('Custom actions:', () => {
     const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', () => {
-      testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, null, 'onAccessAssignmentsSucceeded');
+      verifyCustomActionExecution(doc, null, docType, 'onAccessAssignmentsSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
-      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, oldDoc, 'onAccessAssignmentsSucceeded');
+      verifyCustomActionExecution(doc, oldDoc, docType, 'onAccessAssignmentsSucceeded');
     });
 
     it('does not execute a custom action when a document is deleted', () => {
       testFixture.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      verifyCustomActionNotExecuted();
     });
 
     it('does not execute a custom action if the document definition does not define access assignments', () => {
       const doc = { _id: 'missingAccessAssignmentsDoc' };
 
       testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionNotExecuted();
     });
 
     it('does not execute a custom action if the document definition has an empty access assignments definition', () => {
       const doc = { _id: 'emptyAccessAssignmentsDoc' };
 
       testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionNotExecuted();
     });
   });
 
@@ -153,19 +136,15 @@ describe('Custom actions:', () => {
     const oldDoc = { _id: docType };
 
     it('executes a custom action when a document is created', () => {
-      testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, null, 'onDocumentChannelAssignmentSucceeded');
+      verifyCustomActionExecution(doc, null, docType, 'onDocumentChannelAssignmentSucceeded');
     });
 
     it('executes a custom action when a document is replaced', () => {
-
-      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(doc, oldDoc, 'onDocumentChannelAssignmentSucceeded');
+      verifyCustomActionExecution(doc, oldDoc, docType, 'onDocumentChannelAssignmentSucceeded');
     });
 
     it('executes a custom action when a document is deleted', () => {
-      testFixture.verifyDocumentDeleted(oldDoc, expectedAuthorization);
-      verifyCustomActionExecuted(getDeletedDoc(docType), oldDoc, 'onDocumentChannelAssignmentSucceeded');
+      verifyCustomActionExecution(getDeletedDoc(docType), oldDoc, docType, 'onDocumentChannelAssignmentSucceeded');
     });
 
     it('does not execute a custom action if doc channel assignment fails', () => {
@@ -175,29 +154,47 @@ describe('Custom actions:', () => {
       expect(() => {
         testFixture.testEnvironment.syncFunction(doc);
       }).to.throw(expectedError);
-
-      verifyCustomActionNotExecuted();
     });
   });
 
-  function verifyCustomActionExecuted(doc, oldDoc, expectedActionType) {
-    expect(testFixture.testEnvironment.customActionStub.callCount).to.equal(1);
-    expect(testFixture.testEnvironment.customActionStub.calls[0].args[0]).to.eql(doc);
-    expect(testFixture.testEnvironment.customActionStub.calls[0].args[1]).to.eql(oldDoc);
+  function verifyCustomActionExecution(doc, oldDoc, docType, expectedActionType) {
+    let syncFuncError = null;
+    expect(() => {
+      try {
+        testFixture.testEnvironment.syncFunction(doc, oldDoc);
+      } catch (ex) {
+        syncFuncError = ex;
+        throw ex;
+      }
+    }).to.throw();
 
-    verifyCustomActionMetadata(testFixture.testEnvironment.customActionStub.calls[0].args[2], doc._id, expectedActionType);
-  }
+    expect(syncFuncError.doc).to.eql(doc);
+    expect(syncFuncError.oldDoc).to.eql(oldDoc);
+    expect(syncFuncError.actionType).to.eql(expectedActionType);
 
-  function verifyCustomActionNotExecuted() {
-    expect(testFixture.testEnvironment.customActionStub.callCount).to.equal(0);
+    verifyCustomActionMetadata(syncFuncError.customActionMetadata, docType, expectedActionType);
   }
 
   function verifyCustomActionMetadata(actualMetadata, docType, expectedActionType) {
     verifyTypeMetadata(actualMetadata, docType);
+
+    if (expectedActionType === 'onTypeIdentificationSucceeded') {
+      return;
+    }
+
     verifyAuthorizationMetadata(actualMetadata);
+
+    if (expectedActionType === 'onAuthorizationSucceeded' || expectedActionType === 'onValidationSucceeded') {
+      return;
+    }
+
     verifyAccessAssignmentMetadata(actualMetadata);
+
+    if (expectedActionType === 'onAccessAssignmentsSucceeded') {
+      return;
+    }
+
     verifyDocChannelsMetadata(actualMetadata);
-    verifyCustomActionTypeMetadata(actualMetadata, expectedActionType);
   }
 
   function verifyTypeMetadata(actualMetadata, docType) {
@@ -230,10 +227,6 @@ describe('Custom actions:', () => {
 
   function verifyDocChannelsMetadata(actualMetadata) {
     expect(actualMetadata.documentChannels).to.eql([ 'write-channel' ]);
-  }
-
-  function verifyCustomActionTypeMetadata(actualMetadata, expectedActionType) {
-    expect(actualMetadata.actionType).to.equal(expectedActionType);
   }
 
   function getDeletedDoc(docType) {

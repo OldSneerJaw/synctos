@@ -7,7 +7,6 @@
     "_": false,
     "access": false,
     "channel": false,
-    "customActionStub": false,
     "importSyncFunctionFragment": false,
     "JSON": false,
     "requireAccess": false,
