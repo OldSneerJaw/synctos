@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
+### Added
+- [#278](https://github.com/Kashoo/synctos/issues/278): Extended year format in date strings
+
 ### Fixed
 - [#276](https://github.com/Kashoo/synctos/issues/276): Date range validation is incorrect for dates between years 0 and 99
 

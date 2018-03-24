@@ -1,4 +1,10 @@
 function timeModule(utils) {
+  var utcTimeZone = {
+    multiplicationFactor: 1,
+    hour: 0,
+    minute: 0
+  };
+
   return {
     isIso8601DateTimeString: isIso8601DateTimeString,
     isIso8601DateString: isIso8601DateString,
@@ -11,49 +17,124 @@ function timeModule(utils) {
 
   // Check that a given value is a valid ISO 8601 format date string with optional time and time zone components
   function isIso8601DateTimeString(value) {
-    var regex = /^(([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?)(T([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))?)?$/;
+    var dateAndTimePieces = splitDateAndTime(value);
+    var date = extractDateStructureFromDateAndTime(dateAndTimePieces);
+    if (date) {
+      var timeAndTimezone = extractTimeStructuresFromDateAndTime(dateAndTimePieces);
+      var time = timeAndTimezone.time;
+      var timezone = timeAndTimezone.timezone;
 
-    // Verify that it's in ISO 8601 format (via the regex) and that it represents a valid point in time (via Date.parse)
-    return regex.test(value) && !isNaN(Date.parse(value));
+      return isValidDateStructure(date) &&
+        isValidTimeStructure(time) &&
+        (timezone === null || isValidTimeZoneStructure(timezone));
+    } else {
+      return false;
+    }
   }
 
   // Check that a given value is a valid ISO 8601 date string without time and time zone components
   function isIso8601DateString(value) {
-    var regex = /^([0-9]{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?)?$/;
-
-    // Verify that it's in ISO 8601 format (via the regex) and that it represents a valid day (via Date.parse)
-    return regex.test(value) && !isNaN(Date.parse(value));
+    return isValidDateStructure(parseIso8601Date(value));
   }
 
   // Check that a given value is a valid ISO 8601 time string without date and time zone components
   function isIso8601TimeString(value) {
-    var regex = /^([01][0-9]|2[0-3])(:[0-5][0-9])(:[0-5][0-9](\.[0-9]{1,3})?)?$/;
-
-    return regex.test(value);
+    return isValidTimeStructure(parseIso8601Time(value));
   }
 
   // Check that a given value is a valid ISO 8601 time zone
   function isIso8601TimeZoneString(value) {
-    var regex = /^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/;
-
-    return regex.test(value);
+    return isValidTimeZoneStructure(parseIso8601TimeZone(value));
   }
 
-  // Converts an ISO 8601 time into an array of its component pieces
-  function extractIso8601TimePieces(value) {
-    var timePieces = /^(\d{2}):(\d{2})(?:\:(\d{2}))?(?:\.(\d{1,3}))?$/.exec(value);
-    if (timePieces === null) {
-      return null;
+  function isValidDateStructure(date) {
+    return isSupportedYear(date.year) &&
+      date.month >= 1 && date.month <= 12 &&
+      isValidDayOfMonth(date);
+  }
+
+  function isValidTimeStructure(time) {
+    return time.hour <= 23 && time.minute <= 59 && time.second <= 59 && time.millisecond <= 999;
+  }
+
+  function isValidTimeZoneStructure(timezone) {
+    return (timezone.multiplicationFactor === 1 || timezone.multiplicationFactor === -1) &&
+      timezone.hour <= 23 &&
+      timezone.minute <= 59;
+  }
+
+  function isValidDayOfMonth(date) {
+    if (date.day < 1) {
+      return false;
     }
 
-    var hour = timePieces[1] ? parseInt(timePieces[1], 10) : 0;
-    var minute = timePieces[2] ? parseInt(timePieces[2], 10) : 0;
-    var second = timePieces[3] ? parseInt(timePieces[3], 10) : 0;
+    switch (date.month) {
+      case 1: // Jan
+      case 3: // Mar
+      case 5: // May
+      case 7: // Jul
+      case 8: // Aug
+      case 10: // Oct
+      case 12: // Dec
+        return date.day <= 31;
+      case 4: // Apr
+      case 6: // Jun
+      case 9: // Sep
+      case 11: // Nov
+        return date.day <= 30;
+      case 2: // Feb
+        return (date.day === 29) ? isLeapYear(date.year) : date.day <= 28;
+      default:
+        return false;
+    }
+  }
 
-    // The millisecond component has a variable length; normalize the length by padding it with zeros
-    var millisecond = timePieces[4] ? parseInt(utils.padRight(timePieces[4], 3, '0'), 10) : 0;
+  function isLeapYear(year) {
+    if (year % 4 !== 0) {
+      // The year is not a multiple of 4, so it cannot be a leap year
+      return false;
+    } else if (year % 100 !== 0) {
+      // The year is a multiple of 4 but not a multiple of 100, so it must be a leap year
+      return true;
+    } else if (year % 400 !== 0) {
+      // The year is a multiple of 4 and 100, but it is not a multiple of 400, so it cannot be a leap year
+      return false;
+    } else {
+      // The year is a multiple of 4 and 400, so it must be a leap year
+      return true;
+    }
+  }
 
-    return [ hour, minute, second, millisecond ];
+  function isSupportedYear(year) {
+    // The year must fall within the range specified by the ECMAScript extended year format:
+    // https://www.ecma-international.org/ecma-262/5.1/#sec-15.9.1.15.1
+    return year >= -283457 && year <= 287396;
+  }
+
+  function splitDateAndTime(value) {
+    return value.split('T', 2);
+  }
+
+  function parseIso8601Time(value) {
+    var timePieces = /^(\d{2}):(\d{2})(?:\:(\d{2})(?:\.(\d{1,3}))?)?$/.exec(value);
+    if (timePieces !== null) {
+      // The millisecond component has a variable length; normalize the length by padding it with zeros
+      var millisecond = timePieces[4] ? parseInt(utils.padRight(timePieces[4], 3, '0'), 10) : 0;
+
+      return {
+        hour: parseInt(timePieces[1], 10),
+        minute: parseInt(timePieces[2], 10),
+        second: timePieces[3] ? parseInt(timePieces[3], 10) : 0,
+        millisecond: millisecond
+      };
+    } else {
+      return {
+        hour: NaN,
+        minute: NaN,
+        second: NaN,
+        millisecond: NaN
+      };
+    }
   }
 
   // Compares the given time strings. Returns a negative number if a is less than b, a positive number if a is greater
@@ -63,13 +144,14 @@ function timeModule(utils) {
       return NaN;
     }
 
-    var aTimePieces = extractIso8601TimePieces(a);
-    var bTimePieces = extractIso8601TimePieces(b);
-
-    if (aTimePieces === null || bTimePieces === null) {
+    var aTime = parseIso8601Time(a);
+    var bTime = parseIso8601Time(b);
+    if (!isValidTimeStructure(aTime) || !isValidTimeStructure(bTime)) {
       return NaN;
     }
 
+    var aTimePieces = [ aTime.hour, aTime.minute, aTime.second, aTime.millisecond ];
+    var bTimePieces = [ bTime.hour, bTime.minute, bTime.second, bTime.millisecond ];
     for (var timePieceIndex = 0; timePieceIndex < aTimePieces.length; timePieceIndex++) {
       if (aTimePieces[timePieceIndex] < bTimePieces[timePieceIndex]) {
         return -1;
@@ -82,58 +164,56 @@ function timeModule(utils) {
     return 0;
   }
 
-  function extractIso8601DateOnlyPieces(value) {
-    var datePieces = /^(\d{4})(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(value);
-    if (datePieces === null) {
-      return null;
+  function parseIso8601Date(value) {
+    var datePieces = /^((?:[+-]\d{6})|(?:\d{4}))(?:-(\d{2}))?(?:-(\d{2}))?$/.exec(value);
+    if (datePieces !== null) {
+      return {
+        year: parseInt(datePieces[1], 10),
+        month: datePieces[2] ? parseInt(datePieces[2], 10) : 1,
+        day: datePieces[3] ? parseInt(datePieces[3], 10) : 1
+      };
+    } else {
+      return {
+        year: NaN,
+        month: NaN,
+        day: NaN
+      };
     }
-
-    var year = datePieces[1] ? parseInt(datePieces[1], 10) : 0;
-    var month = datePieces[2] ? parseInt(datePieces[2], 10) : 1;
-    var day = datePieces[3] ? parseInt(datePieces[3], 10) : 1;
-
-    return [ year, month, day ];
   }
 
-  function extractDateFromPieces(dateAndTimePieces) {
-    var dateString = dateAndTimePieces.length > 0 ? dateAndTimePieces[0] : '';
-    var datePieces = extractIso8601DateOnlyPieces(dateString);
-    if (datePieces === null) {
-      return null;
-    }
-
-    return {
-      year: datePieces[0],
-      month: datePieces[1],
-      day: datePieces[2]
-    };
+  function extractDateStructureFromDateAndTime(dateAndTimePieces) {
+    return (dateAndTimePieces.length > 0) ? parseIso8601Date(dateAndTimePieces[0]) : null;
   }
 
-  function extractTimeFromPieces(dateAndTimePieces) {
-      // Default to midnight UTC if the candidate value represents a date only
-      var timeAndTimezoneString = dateAndTimePieces.length > 1 ? dateAndTimePieces[1] : '00:00:00.000Z';
+  function extractTimeStructuresFromDateAndTime(dateAndTimePieces) {
+    if (dateAndTimePieces.length <= 1) {
+      // Default to midnight UTC since the candidate value represents a date only
+      return {
+        time: {
+          hour: 0,
+          minute: 0,
+          second: 0,
+          millisecond: 0
+        },
+        timezone: utcTimeZone
+      };
+    } else {
+      var timeAndTimezoneString = dateAndTimePieces[1];
       var timezoneSeparatorIndex =
         Math.max(timeAndTimezoneString.indexOf('-'), timeAndTimezoneString.indexOf('+'), timeAndTimezoneString.indexOf('Z'));
 
-      var timeString = (timezoneSeparatorIndex >= 0) ? timeAndTimezoneString.substr(0, timezoneSeparatorIndex) : timeAndTimezoneString;
-      var timePieces = extractIso8601TimePieces(timeString);
-      if (timePieces === null)
-      {
-        return null;
-      }
+      var timeString =
+        (timezoneSeparatorIndex >= 0) ? timeAndTimezoneString.substr(0, timezoneSeparatorIndex) : timeAndTimezoneString;
+      var time = parseIso8601Time(timeString);
 
       var timezoneString = (timezoneSeparatorIndex >= 0) ? timeAndTimezoneString.substr(timezoneSeparatorIndex) : null;
-
-      // Default to the server's local time zone offset if time zone is missing from the input
-      var timezoneOffsetMinutes = timezoneString !== null ? normalizeIso8601TimeZone(timezoneString) : -(new Date().getTimezoneOffset());
+      var timezone = (timezoneString !== null) ? parseIso8601TimeZone(timezoneString) : null;
 
       return {
-        hour: timePieces[0],
-        minute: timePieces[1],
-        second: timePieces[2],
-        millisecond: timePieces[3],
-        timezoneOffsetMinutes: timezoneOffsetMinutes
+        time: time,
+        timezone: timezone
       };
+    }
   }
 
   // Converts the given date representation to a timestamp that represents the number of ms since the Unix epoch
@@ -143,24 +223,30 @@ function timeModule(utils) {
     } else if (typeof value === 'number') {
       return Math.floor(value);
     } else if (typeof value === 'string') {
-      var dateAndTimePieces = value.split('T', 2);
+      var dateAndTimePieces = splitDateAndTime(value);
 
-      var date = extractDateFromPieces(dateAndTimePieces);
-      if (date === null) {
+      var date = extractDateStructureFromDateAndTime(dateAndTimePieces);
+      if (!isValidDateStructure(date)) {
         return NaN;
       }
 
-      var time = extractTimeFromPieces(dateAndTimePieces);
-      if (time === null) {
+      var timeAndTimezone = extractTimeStructuresFromDateAndTime(dateAndTimePieces);
+      var time = timeAndTimezone.time;
+      var timezone = timeAndTimezone.timezone;
+      if (!isValidTimeStructure(time)) {
+        return NaN;
+      } else if (timezone !== null && !isValidTimeZoneStructure(timezone)) {
         return NaN;
       }
+
+      var timezoneOffsetMinutes = normalizeIso8601TimeZone(timezone);
 
       var dateAndTime = new Date(0);
       dateAndTime.setUTCFullYear(date.year);
       dateAndTime.setUTCMonth(date.month - 1);
       dateAndTime.setUTCDate(date.day);
       dateAndTime.setUTCHours(time.hour);
-      dateAndTime.setUTCMinutes(time.minute - time.timezoneOffsetMinutes);
+      dateAndTime.setUTCMinutes(time.minute - timezoneOffsetMinutes);
       dateAndTime.setUTCSeconds(time.second);
       dateAndTime.setUTCMilliseconds(time.millisecond);
 
@@ -183,23 +269,30 @@ function timeModule(utils) {
     }
   }
 
+  function parseIso8601TimeZone(value) {
+    if (value === 'Z') {
+      return utcTimeZone;
+    } else {
+      var matches = /^([+-])(\d\d):?(\d\d)$/.exec(value);
+      if (matches !== null) {
+        return {
+          multiplicationFactor: (matches[1] === '+') ? 1 : -1,
+          hour: parseInt(matches[2], 10),
+          minute: parseInt(matches[3], 10)
+        };
+      } else {
+        return {
+          multiplicationFactor: NaN,
+          hour: NaN,
+          minute: NaN
+        };
+      }
+    }
+  }
+
   // Converts an ISO 8601 time zone into the number of minutes offset from UTC
   function normalizeIso8601TimeZone(value) {
-    if (value === 'Z') {
-      return 0;
-    }
-
-    var regex = /^([+-])(\d\d):?(\d\d)$/;
-    var matches = regex.exec(value);
-    if (matches === null) {
-      return NaN;
-    } else {
-      var multiplicationFactor = (matches[1] === '+') ? 1 : -1;
-      var hour = parseInt(matches[2], 10);
-      var minute = parseInt(matches[3], 10);
-
-      return multiplicationFactor * ((hour * 60) + minute);
-    }
+    return value ? value.multiplicationFactor * ((value.hour * 60) + value.minute) : -(new Date().getTimezoneOffset());
   }
 
   // Compares the given time zone representations. Returns a negative number if a is less than b, a positive number if
@@ -209,6 +302,6 @@ function timeModule(utils) {
       return NaN;
     }
 
-    return normalizeIso8601TimeZone(a) - normalizeIso8601TimeZone(b);
+    return normalizeIso8601TimeZone(parseIso8601TimeZone(a)) - normalizeIso8601TimeZone(parseIso8601TimeZone(b));
   }
 }
