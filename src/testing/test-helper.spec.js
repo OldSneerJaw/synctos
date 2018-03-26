@@ -17,7 +17,6 @@ describe('Test helper:', () => {
       channel: simpleMock.stub(),
       access: simpleMock.stub(),
       role: simpleMock.stub(),
-      customActionStub: simpleMock.stub(),
       syncFunction: simpleMock.stub()
     };
 
@@ -77,7 +76,6 @@ describe('Test helper:', () => {
       expect(testHelper.channel).to.equal(fakeTestEnvironment.channel);
       expect(testHelper.access).to.equal(fakeTestEnvironment.access);
       expect(testHelper.role).to.equal(fakeTestEnvironment.role);
-      expect(testHelper.customActionStub).to.equal(fakeTestEnvironment.customActionStub);
       expect(testHelper.syncFunction).to.equal(fakeTestEnvironment.syncFunction);
     }
   });

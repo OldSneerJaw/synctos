@@ -17,7 +17,6 @@ describe('Test fixture maker:', () => {
       channel: simpleMock.stub(),
       access: simpleMock.stub(),
       role: simpleMock.stub(),
-      customActionStub: simpleMock.stub(),
       syncFunction: simpleMock.stub()
     };
 

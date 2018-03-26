@@ -103,7 +103,7 @@ Once a change has been posted as a GitHub pull request, a synctos project contri
 
 Special care should be taken to ensure that each submission is captured as a GitHub issue, thoroughly documented in `README.md` and in `CHANGELOG.md`'s "Unreleased" section, comprehensively covered by test cases, includes examples in the sample document definitions directory, does not introduce breaking changes to public APIs, does not introduce new package dependencies and does not make use of advanced JavaScript/ECMAScript language features that are not supported by the [version](https://github.com/robertkrimen/otto/tree/5282a5a45ba989692b3ae22f730fa6b9dd67662f) of the otto JavaScript engine/interpreter that is used by Sync Gateway.
 
-If/when a change is deemed satisfactory, it is the responsibility of the reviewer to merge the pull request and delete its feature branch, where possible.
+If/when a change is deemed satisfactory, it is the responsibility of the reviewer to merge the pull request and delete its feature branch, where possible. Be sure to close the corresponding GitHub issue if its requirements have been fully satisfied by the pull request's changes.
 
 # Publishing
 

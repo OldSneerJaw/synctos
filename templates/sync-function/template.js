@@ -2,7 +2,7 @@
 function synctos(doc, oldDoc) {
   // Whether the given value is either null or undefined
   function isValueNullOrUndefined(value) {
-    return typeof value === 'undefined' || value === null;
+    return value === void 0 || value === null;
   }
 
   // Whether the given document is missing/nonexistant (i.e. null or undefined) or deleted (its "_deleted" property is true)

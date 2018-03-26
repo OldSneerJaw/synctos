@@ -34,7 +34,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   const environmentStatement = `(${environmentString});`;
 
   // Compile the test environment function within the current virtual machine context so it can share access to the "requireAccess",
-  // "channel", "customActionStub", etc. stubs with the test-fixture-maker module
+  // "channel", etc. stubs with the test-fixture-maker module
   const environmentFunction = vm.runInThisContext(environmentStatement, options);
 
   return environmentFunction(underscore, simpleMock);
