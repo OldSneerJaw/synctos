@@ -26,6 +26,10 @@
       immutabilityValidationProp: {
         type: 'datetime',
         immutable: true
+      },
+      twoDigitYearValidationProp: {
+        type: 'datetime',
+        maximumValue: '0099-12-31T23:59:59.999+12:00'
       }
     }
   },
