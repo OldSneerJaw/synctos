@@ -28,6 +28,6 @@ function makeValidationEnvironment(_, simple) {
     channel,
     access,
     role,
-    documentDefinitions: %DOC_DEFINITIONS_PLACEHOLDER%
+    documentDefinitions: $DOC_DEFINITIONS_PLACEHOLDER$
   };
 }

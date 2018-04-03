@@ -31,11 +31,11 @@ describe('Test environment maker', () => {
   });
 
   function verifyParse(rawSyncFunction, originalFilename) {
-    const envTemplateFileContents = 'template: %SYNC_FUNC_PLACEHOLDER%';
+    const envTemplateFileContents = 'template: $SYNC_FUNC_PLACEHOLDER$';
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
     const expectedTestEnvString = envTemplateFileContents.replace(
-      '%SYNC_FUNC_PLACEHOLDER%',
+      '$SYNC_FUNC_PLACEHOLDER$',
       () => rawSyncFunction.replace(/\\`/g, () => '`'));
 
     const expectedResult = { bar: 'foo' };

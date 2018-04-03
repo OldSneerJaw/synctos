@@ -1,0 +1,7 @@
+{
+  "extends": "../../.jshintrc",
+  "globals": {
+    "$DOC_DEFINITIONS_PLACEHOLDER$": false,
+    "$SYNC_FUNC_PLACEHOLDER$": false
+  }
+}

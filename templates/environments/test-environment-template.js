@@ -19,6 +19,6 @@ function makeTestEnvironment(_, simple) {
     channel,
     access,
     role,
-    syncFunction: %SYNC_FUNC_PLACEHOLDER%
+    syncFunction: $SYNC_FUNC_PLACEHOLDER$
   };
 }
