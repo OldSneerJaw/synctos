@@ -10,7 +10,7 @@ const regexSchema = joi.object().type(RegExp);
 // date-time strings that cannot be parsed when a generated sync function is used in Sync Gateway, strings with explicit
 // regular expression definitions are used for the "date" and "datetime" types rather than `joi.date().iso()`.
 const datetimeStringSchema = joi.string()
-  .regex(/^(([+-]\d{6}|\d{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?)?)(T((([01]\d|2[0-3])(:[0-5]\d)(:[0-5]\d(\.\d{1,3})?)?))(Z|([+-])([01]\d|2[0-3]):?([0-5]\d))?)?$/);
+  .regex(/^([+-]\d{6}|\d{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?)?(T([01]\d|2[0-3])(:[0-5]\d)(:[0-5]\d(\.\d{1,3})?)?(Z|([+-])([01]\d|2[0-3]):?([0-5]\d))?)?$/);
 const datetimeSchema = joi.any().when(
   joi.string(),
   {
