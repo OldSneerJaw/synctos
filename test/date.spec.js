@@ -126,6 +126,24 @@ describe('Date validation type:', () => {
       testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
     });
 
+    it('rejects a date with a positive signed year', () => {
+      const doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '+2016-07-17'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date with a negative signed year', () => {
+      const doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '-2016-07-17'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
     it('rejects a value that is not a string', () => {
       const doc = {
         _id: 'dateDoc',
@@ -222,6 +240,42 @@ describe('Date validation type:', () => {
       const doc = {
         _id: 'dateDoc',
         formatValidationProp: '-098765-02-29'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a positive year with too many digits', () => {
+      const doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '+0123456-07-04'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a negative year with too many digits', () => {
+      const doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '-0123456-05-30'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a positive year with too few digits', () => {
+      const doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '+12345-06-17'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a negative year with too few digits', () => {
+      const doc = {
+        _id: 'dateDoc',
+        formatValidationProp: '-12345-06-01'
       };
 
       testFixture.verifyDocumentNotCreated(doc, 'dateDoc', errorFormatter.dateFormatInvalid('formatValidationProp'));
