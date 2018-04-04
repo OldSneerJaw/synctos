@@ -54,7 +54,11 @@ function timeModule(utils) {
   }
 
   function isValidTimeStructure(time) {
-    return time.hour <= 23 && time.minute <= 59 && time.second <= 59 && time.millisecond <= 999;
+    if (time.hour === 24) {
+      return time.minute === 0 && time.second === 0 && time.millisecond === 0;
+    } else {
+      return time.hour <= 23 && time.minute <= 59 && time.second <= 59 && time.millisecond <= 999;
+    }
   }
 
   function isValidTimeZoneStructure(timezone) {

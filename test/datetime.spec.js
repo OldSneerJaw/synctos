@@ -108,6 +108,51 @@ describe('Date/time validation type', () => {
       testFixture.verifyDocumentCreated(doc);
     });
 
+    it('accepts a date/time with midnight specified as hour zero', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2018-04-03T00:00:00.000Z'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a date/time with midnight specified as hour 24', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2018-04-02T24:00:00+0300'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a date/time with a time that is one millisecond over the maximum', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2018-04-02T24:00:00.001+0300'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with a time that is one second over the maximum', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2018-04-02T24:00:01.000+0300'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with a time that is one minute over the maximum', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '2018-04-02T24:01:00.000+0300'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
     it('rejects a date/time with an invalid year', () => {
       const doc = {
         _id: 'datetimeDoc',
@@ -730,6 +775,20 @@ describe('Date/time validation type', () => {
       const doc = {
         _id: 'datetimeDoc',
         immutabilityValidationProp: '2018-02T13:40+13:40'
+      };
+
+      testFixture.verifyDocumentReplaced(doc, oldDoc);
+    });
+
+    it('allows a datetime where midnight specified as hour zero is equal to midnight specified as hour 24 of the preceding day', () => {
+      const oldDoc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '1984-03-01T24:00-01:00'
+      };
+
+      const doc = {
+        _id: 'datetimeDoc',
+        immutabilityValidationProp: '1984-03-02T00:00:00-01:00'
       };
 
       testFixture.verifyDocumentReplaced(doc, oldDoc);

@@ -4,6 +4,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [Unreleased]
 ### Added
 - [#278](https://github.com/Kashoo/synctos/issues/278): Extended year format in date strings
+- [#282](https://github.com/Kashoo/synctos/issues/282): Support hour 24 in date and time validation types
 
 ### Fixed
 - [#276](https://github.com/Kashoo/synctos/issues/276): Date range validation is incorrect for dates between years 0 and 99
