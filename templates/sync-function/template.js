@@ -75,7 +75,7 @@ function synctos(doc, oldDoc) {
   // The access assignment module is responsible for dynamically assigning channels and roles to users
   var accessAssignmentModule = importSyncFunctionFragment('./access-assignment-module.js')(utils);
 
-  var rawDocDefinitions = %SYNC_DOCUMENT_DEFINITIONS%;
+  var rawDocDefinitions = $DOCUMENT_DEFINITIONS$;
 
   var docDefinitions;
   if (typeof rawDocDefinitions === 'function') {
