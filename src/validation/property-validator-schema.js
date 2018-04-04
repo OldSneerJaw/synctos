@@ -27,7 +27,7 @@ const dateOnlySchema = joi.any().when(
   });
 
 const timeOnlySchema = joi.string().regex(/^((([01]\d|2[0-3])(:[0-5]\d)(:[0-5]\d(\.\d{1,3})?)?)|(24:00(:00(\.0{1,3})?)?))$/);
-const timezoneSchema = joi.string().regex(/^(Z|([+-])([01][0-9]|2[0-3]):?([0-5][0-9]))$/);
+const timezoneSchema = joi.string().regex(/^(Z|([+-])([01]\d|2[0-3]):?([0-5]\d))$/);
 
 const typeEqualitySchemas = {
   string: joi.string(),
