@@ -117,7 +117,11 @@ function synctos(doc, oldDoc) {
 
       return;
     } else {
-      throw { forbidden: 'Unknown document type' };
+      var errorMessage = 'Unknown document type';
+      var error = new Error(errorMessage);
+      error.forbidden = errorMessage;
+
+      throw error;
     }
   }
 
