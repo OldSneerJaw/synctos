@@ -26,9 +26,9 @@ function init(docDefinitionsString, originalFilename) {
   const filePath = path.resolve(__dirname, '../../templates/environments/validation-environment-template.js');
   const envTemplateString = fs.readFileSync(filePath, 'utf8').trim();
 
-  // The validation environment includes a placeholder string called "%DOC_DEFINITIONS_PLACEHOLDER%" that is to be replaced with the
+  // The validation environment includes a placeholder string called "$DOC_DEFINITIONS_PLACEHOLDER$" that is to be replaced with the
   // contents of the document definitions
-  const envString = envTemplateString.replace('%DOC_DEFINITIONS_PLACEHOLDER%', () => docDefinitionsString);
+  const envString = envTemplateString.replace('$DOC_DEFINITIONS_PLACEHOLDER$', () => docDefinitionsString);
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a
   // valid statement.

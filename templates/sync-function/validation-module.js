@@ -41,7 +41,11 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
     }
 
     if (validationErrors.length > 0) {
-      throw { forbidden: 'Invalid ' + docType + ' document: ' + validationErrors.join('; ') };
+      var errorMessage = 'Invalid ' + docType + ' document: ' + validationErrors.join('; ');
+      var error = new Error(errorMessage);
+      error.forbidden = errorMessage;
+
+      throw error;
     } else {
       return true;
     }
@@ -314,7 +318,7 @@ function validationModule(utils, simpleTypeFilter, typeIdValidator) {
               break;
             default:
               // This is not a document validation error; the item validator is configured incorrectly and must be fixed
-              throw { forbidden: 'No data type defined for validator of item "' + buildItemPath(itemStack) + '"' };
+              throw new Error('No data type defined for validator of item "' + buildItemPath(itemStack) + '"');
           }
         } else if (resolveItemConstraint(validator.required)) {
           // The item has no value (either it's null or undefined), but the validator indicates it is required

@@ -134,7 +134,11 @@ function authorizationModule(utils) {
       requireAccess([ ]);
     } else if (!channelMatch && !roleMatch && !userMatch) {
       // None of the authorization methods (e.g. channels, roles, users) succeeded
-      throw { forbidden: 'missing channel access' };
+      var errorMessage = 'missing channel access';
+      var error = new Error(errorMessage);
+      error.forbidden = errorMessage;
+
+      throw error;
     }
 
     return {
