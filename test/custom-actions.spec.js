@@ -3,7 +3,8 @@ const errorFormatter = require('../src/testing/validation-error-formatter');
 const { expect } = require('chai');
 
 describe('Custom actions:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-custom-actions-sync-function.js');
 
   const expectedAuthorization = {
     expectedChannels: [ 'write-channel' ],
@@ -11,8 +12,8 @@ describe('Custom actions:', () => {
     expectedUsers: [ 'write-user' ]
   };
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-custom-actions-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('the onTypeIdentificationSucceeded event', () => {

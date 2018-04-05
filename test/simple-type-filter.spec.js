@@ -1,10 +1,11 @@
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Simple type filter:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-simple-type-filter-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-simple-type-filter-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   function testSimpleTypeFilter(docTypeId) {
