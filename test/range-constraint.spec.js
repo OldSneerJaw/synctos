@@ -2,10 +2,11 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Range constraints:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-range-constraint-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-range-constraint-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('static inclusive ranges', () => {

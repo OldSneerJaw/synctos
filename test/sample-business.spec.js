@@ -2,14 +2,12 @@ const sampleSpecHelperMaker = require('./helpers/sample-spec-helper-maker');
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Sample Business config doc definition', () => {
-  let testFixture;
-  let errorFormatter;
-  let sampleSpecHelper;
+  const testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-sample-sync-function.js');
+  const errorFormatter = testFixture.validationErrorFormatter;
+  const sampleSpecHelper = sampleSpecHelperMaker.init(testFixture);
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-sample-sync-function.js');
-    errorFormatter = testFixture.validationErrorFormatter;
-    sampleSpecHelper = sampleSpecHelperMaker.init(testFixture);
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   function verifyBusinessConfigCreated(businessId, doc) {

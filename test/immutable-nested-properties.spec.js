@@ -2,10 +2,11 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Immutable nested properties:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-immutable-nested-properties-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-immutable-nested-properties-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('when an object with an immutable property is nested in an array', () => {

@@ -37,6 +37,12 @@ function init(rawSyncFunction, syncFunctionFile) {
     validationErrorFormatter,
 
     /**
+     * Resets the test fixture's environment to its initial state. Should be called after each test case to ensure the
+     * environment is in a pristine state at all times.
+     */
+    resetTestEnvironment,
+
+    /**
      * Attempts to write the specified doc and then verifies that it completed successfully with the expected channels.
      *
      * @param {Object} doc The document to write. May include property "_deleted=true" to simulate a delete operation.
@@ -258,6 +264,13 @@ function init(rawSyncFunction, syncFunctionFile) {
   };
 
   const defaultWriteChannel = 'write';
+
+  function resetTestEnvironment() {
+    const newEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
+    Object.assign(testEnvironment, newEnvironment);
+
+    return testEnvironment;
+  }
 
   function verifyRequireAccess(expectedChannels) {
     assert.ok(

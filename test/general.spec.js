@@ -2,10 +2,10 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Functionality that is common to all documents:', () => {
-  let testFixture;
+  const testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-general-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-general-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('the document type identifier', () => {
@@ -47,10 +47,6 @@ describe('Functionality that is common to all documents:', () => {
   });
 
   describe('type validation', () => {
-    beforeEach(() => {
-      testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-general-sync-function.js');
-    });
-
     it('rejects an array property value that is not the right type', () => {
       const doc = {
         _id: 'generalDoc',

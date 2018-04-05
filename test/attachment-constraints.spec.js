@@ -2,10 +2,11 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('File attachment constraints:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-attachment-constraints-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-attachment-constraints-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('with static validation', () => {

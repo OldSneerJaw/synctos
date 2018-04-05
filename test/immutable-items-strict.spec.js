@@ -2,10 +2,11 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Strict immutable item constraint:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-immutable-items-strict-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-immutable-items-strict-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('array type with static property validation', () => {
