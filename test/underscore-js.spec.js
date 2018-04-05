@@ -1,10 +1,10 @@
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Underscore.js library', () => {
-  let testFixture;
+  const testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-underscore-js-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-underscore-js-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   it('allows a document that satisfies a custom validation constraint implemented with Underscore.js', () => {

@@ -2,10 +2,11 @@ const { expect } = require('chai');
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('User and role access assignment:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-access-assignment-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-access-assignment-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('Static assignment of channels to users and roles and assignment of roles to users', () => {

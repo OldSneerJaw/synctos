@@ -1,10 +1,10 @@
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Channel assignment:', () => {
-  let testFixture;
+  const testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-authorization-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-authorization-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('for a document with explicit channel definitions', () => {

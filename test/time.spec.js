@@ -2,10 +2,10 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Time validation type:', () => {
-  let testFixture;
+  const testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-time-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-time-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('format', () => {

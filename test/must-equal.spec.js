@@ -2,10 +2,10 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Equality constraint:', () => {
-  let testFixture;
+  const testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-must-equal-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-must-equal-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   describe('array type with static property validation', () => {
