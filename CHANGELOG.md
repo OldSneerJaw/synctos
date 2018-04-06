@@ -3,6 +3,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 
 ## [Unreleased]
 ### Added
+- [#285](https://github.com/Kashoo/synctos/issues/285): Throw an Error object when there is an authorization or validation failure
+- [#281](https://github.com/Kashoo/synctos/issues/281): Mechanism to reset test environment between test cases
 - [#278](https://github.com/Kashoo/synctos/issues/278): Extended year format in date strings
 - [#282](https://github.com/Kashoo/synctos/issues/282): Support hour 24 in date and time validation types
 

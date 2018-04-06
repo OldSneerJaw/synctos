@@ -23,11 +23,11 @@ describe('Validation environment maker', () => {
   });
 
   function verifyParse(rawDocumentDefinitions, originalFilename) {
-    const envTemplateFileContents = 'template: %DOC_DEFINITIONS_PLACEHOLDER%';
+    const envTemplateFileContents = 'template: $DOC_DEFINITIONS_PLACEHOLDER$';
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
     const expectedEnvString = envTemplateFileContents.replace(
-      '%DOC_DEFINITIONS_PLACEHOLDER%',
+      '$DOC_DEFINITIONS_PLACEHOLDER$',
       () => rawDocumentDefinitions);
 
     const expectedResult = { foo: 'bar' };

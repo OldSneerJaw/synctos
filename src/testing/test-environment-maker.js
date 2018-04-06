@@ -23,10 +23,10 @@ function init(rawSyncFunction, syncFunctionFile) {
   const filePath = path.resolve(__dirname, '../../templates/environments/test-environment-template.js');
   const environmentTemplate = fs.readFileSync(filePath, 'utf8').trim();
 
-  // The test environment includes a placeholder string called "%SYNC_FUNC_PLACEHOLDER%" that is to be replaced with the contents of
+  // The test environment includes a placeholder string called "$SYNC_FUNC_PLACEHOLDER$" that is to be replaced with the contents of
   // the sync function
   const environmentString = environmentTemplate.replace(
-    '%SYNC_FUNC_PLACEHOLDER%',
+    '$SYNC_FUNC_PLACEHOLDER$',
     () => unescapeBackticks(rawSyncFunction));
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with parentheses makes it a

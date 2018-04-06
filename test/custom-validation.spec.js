@@ -1,10 +1,11 @@
 const testFixtureMaker = require('../src/testing/test-fixture-maker');
 
 describe('Custom validation constraint:', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-custom-validation-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-custom-validation-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   it('allows a document if custom validation succeeds', () => {

@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const simpleMock = require('../../lib/simple-mock/index');
 const mockRequire = require('mock-require');
 
-describe('Test helper:', () => {
+describe('Test helper (DEPRECATED):', () => {
   let testHelper, fsMock, syncFunctionLoaderMock, testEnvironmentMakerMock, fakeTestEnvironment;
 
   const fakeFilePath = 'my-file-path';

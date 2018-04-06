@@ -73,7 +73,7 @@ describe('Sync function loader', () => {
     const docDefinitionsFile = 'my/doc-definitions.js';
     const docDefinitionsContent = 'my-doc-definitions';
     const originalSyncFuncTemplate = 'my-original-sync-fync-template';
-    const updatedSyncFuncTemplate = 'function my-sync-func-template() { %SYNC_DOCUMENT_DEFINITIONS%; }';
+    const updatedSyncFuncTemplate = 'function my-sync-func-template() { $DOCUMENT_DEFINITIONS$; }';
 
     fsMock.readFileSync.returnWith(originalSyncFuncTemplate);
     fileFragmentLoaderMock.load.returnWith(updatedSyncFuncTemplate);

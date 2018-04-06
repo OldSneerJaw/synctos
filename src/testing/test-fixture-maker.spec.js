@@ -3,23 +3,12 @@ const mockRequire = require('mock-require');
 const simpleMock = require('../../lib/simple-mock/index');
 
 describe('Test fixture maker:', () => {
-  let testFixtureMaker, fsMock, syncFunctionLoaderMock, testEnvironmentMakerMock, fakeTestEnvironment;
+  let testFixtureMaker, fsMock, syncFunctionLoaderMock, testEnvironmentMakerMock;
 
   const fakeFilePath = 'my-file-path';
   const fakeSyncFunctionContents = 'my-sync-function';
 
   beforeEach(() => {
-    fakeTestEnvironment = {
-      _: simpleMock.stub(),
-      requireAccess: simpleMock.stub(),
-      requireRole: simpleMock.stub(),
-      requireUser: simpleMock.stub(),
-      channel: simpleMock.stub(),
-      access: simpleMock.stub(),
-      role: simpleMock.stub(),
-      syncFunction: simpleMock.stub()
-    };
-
     // Stub out the "require" calls in the module under test
     fsMock = { readFileSync: simpleMock.stub() };
     fsMock.readFileSync.returnWith(fakeSyncFunctionContents);
@@ -30,7 +19,7 @@ describe('Test fixture maker:', () => {
     mockRequire('../loading/sync-function-loader', syncFunctionLoaderMock);
 
     testEnvironmentMakerMock = { init: simpleMock.stub() };
-    testEnvironmentMakerMock.init.returnWith(fakeTestEnvironment);
+    testEnvironmentMakerMock.init.callFn(fakeTestEnvironment);
     mockRequire('./test-environment-maker', testEnvironmentMakerMock);
 
     testFixtureMaker = mockRequire.reRequire('./test-fixture-maker');
@@ -52,7 +41,7 @@ describe('Test fixture maker:', () => {
       expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
       expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, fakeFilePath ]);
 
-      expect(testFixture.testEnvironment).to.deep.equal(fakeTestEnvironment);
+      verifyTestEnvironment(testFixture);
     });
 
     it('can initialize directly from document definitions', () => {
@@ -66,15 +55,26 @@ describe('Test fixture maker:', () => {
       expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
       expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, void 0 ]);
 
-      expect(testFixture.testEnvironment).to.deep.equal(fakeTestEnvironment);
+      verifyTestEnvironment(testFixture);
     });
+
+    function verifyTestEnvironment(testFixture) {
+      // Verify the validation function source code
+      expect(testFixture.testEnvironment.syncFunction).to.be.a('function');
+      expect(testFixture.testEnvironment.syncFunction.toString())
+        .to.equal(fakeTestEnvironment().syncFunction.toString());
+    }
   });
 
   describe('when verifying that document authorization is denied', () => {
-    let testFixture;
+    let testFixture = null;
 
     beforeEach(() => {
-      testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      if (testFixture === null) {
+        testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      } else {
+        testFixture.resetTestEnvironment();
+      }
     });
 
     it('fails if it encounters a required channel that was not expected', () => {
@@ -123,10 +123,14 @@ describe('Test fixture maker:', () => {
   });
 
   describe('when verifying that a document type is unknown', () => {
-    let testFixture;
+    let testFixture = null;
 
     beforeEach(() => {
-      testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      if (testFixture === null) {
+        testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      } else {
+        testFixture.resetTestEnvironment();
+      }
     });
 
     it('fails if the document type is recognized', () => {
@@ -140,10 +144,14 @@ describe('Test fixture maker:', () => {
 
   describe('when verifying that document contents are invalid', () => {
     const docType = 'my-doc-type';
-    let testFixture;
+    let testFixture = null;
 
     beforeEach(() => {
-      testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      if (testFixture === null) {
+        testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      } else {
+        testFixture.resetTestEnvironment();
+      }
     });
 
     it('fails if the sync function does not throw an error', () => {
@@ -196,10 +204,14 @@ describe('Test fixture maker:', () => {
   });
 
   describe('when verifying that document contents are correct', () => {
-    let testFixture;
+    let testFixture = null;
 
     beforeEach(() => {
-      testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      if (testFixture === null) {
+        testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      } else {
+        testFixture.resetTestEnvironment();
+      }
     });
 
     it('fails if the channel assignment function was not called', () => {
@@ -214,10 +226,14 @@ describe('Test fixture maker:', () => {
   });
 
   describe('when verifying access assignments', () => {
-    let testFixture;
+    let testFixture = null;
 
     beforeEach(() => {
-      testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      if (testFixture === null) {
+        testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      } else {
+        testFixture.resetTestEnvironment();
+      }
     });
 
     it('fails if a different set of channel access is assigned than what was expected', () => {
@@ -291,3 +307,16 @@ describe('Test fixture maker:', () => {
     });
   });
 });
+
+function fakeTestEnvironment() {
+  return {
+    _: simpleMock.stub(),
+    requireAccess: simpleMock.stub(),
+    requireRole: simpleMock.stub(),
+    requireUser: simpleMock.stub(),
+    channel: simpleMock.stub(),
+    access: simpleMock.stub(),
+    role: simpleMock.stub(),
+    syncFunction: simpleMock.stub()
+  };
+}

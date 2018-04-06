@@ -2,10 +2,11 @@ const testFixtureMaker = require('../src/testing/test-fixture-maker');
 const errorFormatter = require('../src/testing/validation-error-formatter');
 
 describe('Type identifier validator', () => {
-  let testFixture;
+  const testFixture =
+    testFixtureMaker.initFromSyncFunction('build/sync-functions/test-type-id-validator-sync-function.js');
 
-  beforeEach(() => {
-    testFixture = testFixtureMaker.initFromSyncFunction('build/sync-functions/test-type-id-validator-sync-function.js');
+  afterEach(() => {
+    testFixture.resetTestEnvironment();
   });
 
   it('allows a valid string value', () => {
