@@ -18,22 +18,16 @@ const fileFragmentLoader = require('./file-fragment-loader');
 function loadFromFile(docDefinitionsFile, formatOptions = { }) {
   const syncFuncTemplateDir = path.resolve(__dirname, '../../templates/sync-function');
   const syncFuncTemplatePath = path.resolve(syncFuncTemplateDir, 'template.js');
-  let syncFuncTemplate;
-  try {
-    syncFuncTemplate = fs.readFileSync(syncFuncTemplatePath, 'utf8');
-  } catch (ex) {
-    console.error(`ERROR: Unable to read the sync function template file: ${ex}`);
-
-    throw ex;
-  }
+  const rawSyncFuncTemplate = fs.readFileSync(syncFuncTemplatePath, 'utf8');
 
   // Automatically replace each instance of the "importSyncFunctionFragment" macro with the contents of the file that is specified
-  syncFuncTemplate = fileFragmentLoader.load(syncFuncTemplateDir, 'importSyncFunctionFragment', syncFuncTemplate);
+  const fullSyncFuncTemplate =
+    fileFragmentLoader.load(syncFuncTemplateDir, 'importSyncFunctionFragment', rawSyncFuncTemplate);
 
   const docDefinitions = docDefinitionsLoader.load(docDefinitionsFile);
 
   // Load the document definitions into the sync function template
-  const rawSyncFuncString = syncFuncTemplate.replace('$DOCUMENT_DEFINITIONS$', () => docDefinitions);
+  const rawSyncFuncString = fullSyncFuncTemplate.replace('$DOCUMENT_DEFINITIONS$', () => docDefinitions);
 
   return formatSyncFunction(rawSyncFuncString, formatOptions);
 }
