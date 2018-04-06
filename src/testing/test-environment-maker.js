@@ -2,10 +2,10 @@
  * Creates simulated Sync Gateway sync function environments for use in tests.
  *
  * @param {string} rawSyncFunction The raw string contents of the sync function
- * @param {boolean} [unescapeBackticks] Whether backticks in the sync function string have been replaced with an escape
- *                                      sequence and must be "unescaped" for the test environment. False by default.
  * @param {string} [syncFunctionFile] The optional path to the sync function file, to be used to generate stack traces
  *                                    when errors occur
+ * @param {boolean} [unescapeBackticks] Whether backticks in the sync function string have been replaced with an escape
+ *                                      sequence and must be "unescaped" for the test environment. False by default.
  *
  * @returns {Object} The simulated environment created for the sync function
  */
@@ -17,7 +17,7 @@ const vm = require('vm');
 const underscore = require('../../lib/underscore/underscore-min');
 const simpleMock = require('../../lib/simple-mock/index');
 
-function init(rawSyncFunction, unescapeBackticks, syncFunctionFile) {
+function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
   const options = {
     filename: syncFunctionFile,
     displayErrors: true

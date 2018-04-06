@@ -23,14 +23,14 @@ describe('Test environment maker', () => {
   });
 
   it('creates a test environment from the input with a filename for stack traces', () => {
-    verifyParse('my-sync-func-\\`1\\`', false, 'my-original-filename');
+    verifyParse('my-sync-func-\\`1\\`', 'my-original-filename', true);
   });
 
   it('creates a test environment from the input but without a filename', () => {
-    verifyParse('my-sync-func-\\`2\\`', true);
+    verifyParse('my-sync-func-\\`2\\`', null, false);
   });
 
-  function verifyParse(rawSyncFunction, unescapeBackticks, originalFilename) {
+  function verifyParse(rawSyncFunction, originalFilename, unescapeBackticks) {
     const envTemplateFileContents = 'template: $SYNC_FUNC_PLACEHOLDER$';
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
@@ -44,7 +44,7 @@ describe('Test environment maker', () => {
 
     vmMock.runInThisContext.returnWith(mockVmEnvironment);
 
-    const result = testEnvironmentMaker.init(rawSyncFunction, unescapeBackticks, originalFilename);
+    const result = testEnvironmentMaker.init(rawSyncFunction, originalFilename, unescapeBackticks);
 
     expect(result).to.eql(expectedResult);
 
