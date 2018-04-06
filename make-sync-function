@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
 const commander = require('./lib/commander/index');
 const syncFunctionLoader = require('./src/loading/sync-function-loader');
 const syncFunctionWriter = require('./src/saving/sync-function-writer');
