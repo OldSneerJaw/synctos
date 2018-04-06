@@ -5,6 +5,8 @@
  * @param {string} syncFunctionString The full contents of the sync function
  * @param {Object} [formatOptions] Controls how the sync function is formatted. Options:
  *                                 - jsonString: Boolean indicating whether to return the result enclosed in a JSON-compatible string
+ *
+ * @throws if the output directory could not be created or the file could not be created/overwritten (e.g. access denied)
  */
 exports.save = save;
 
