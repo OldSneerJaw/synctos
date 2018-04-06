@@ -13,7 +13,7 @@
       exclusiveRangeValidationProp: {
         type: 'date',
         minimumValueExclusive: '2018',
-        maximumValueExclusive: '2018-02-02'
+        maximumValueExclusive: '+002018-02-02'
       },
       formatValidationProp: {
         type: 'date'

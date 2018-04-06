@@ -8,7 +8,7 @@ describe('Date/time validation type', () => {
     testFixture.resetTestEnvironment();
   });
 
-  describe('format validation', () => {
+  describe('simple format validation', () => {
     it('accepts a valid date/time with time and time zone components', () => {
       const doc = {
         _id: 'datetimeDoc',
@@ -81,6 +81,33 @@ describe('Date/time validation type', () => {
       testFixture.verifyDocumentCreated(doc);
     });
 
+    it('accepts a leap day for a year that is a multiple of four', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '0008-02-29T05:10+05:00'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a leap day for a year that is a multiple of 400', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '0400-02-29T21:21+01:00'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a leap day for year 0 (1 BCE)', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '0000-02-29T00:00:00.328Z'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
     it('rejects a date/time with an invalid year', () => {
       const doc = {
         _id: 'datetimeDoc',
@@ -103,6 +130,24 @@ describe('Date/time validation type', () => {
       const doc = {
         _id: 'datetimeDoc',
         formatValidationProp: '2016-07-00T15:20:09.348-07:00'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a leap day for a year that is not a multiple of four', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '1337-02-29T00:31:38.9-02:00'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a leap day for a year that is a multiple of 100 but not 400', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '0100-02-29T16:57-01:00'
       };
 
       testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
@@ -224,6 +269,203 @@ describe('Date/time validation type', () => {
 
       testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
     });
+
+    it('rejects a date/time with a positive signed year', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+2016-07-17T15:20:09.348-07:00'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date/time with a negative signed year', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-2016-07-17T15:20:09.348-07:00'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a value that is not a string', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: 1522691916336
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.typeConstraintViolation('formatValidationProp', 'datetime'));
+    });
+  });
+
+  describe('extended year format validation', () => {
+    it('accepts a valid date/time with a positive year and all components', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+001483-08-28T11:03:29.573-04:30'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with a negative year and all components', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-110283-12-04T22:43:17.8Z'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with a positive year and time component but no time zone', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+010031-04-30T17:32:57.34'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with a negative year and time component but no time zone', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-207754-01-18T07:07'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with a positive year but neither time nor time zone components', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+287396-12-31'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a valid date/time with a negative year but neither time nor time zone components', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-283457-01-01'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a leap day with a positive year that is a multiple of 4', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+009380-02-29T14:45+0830'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts a leap day with a negative year that is a multiple of 4', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-135016-02-29T11:21:05-10:00'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a leap day for a positive year that is not a multiple of four', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+119322-02-29'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a leap day for a negative year that is not a multiple of four', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-000009-02-29'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a positive year with too many digits', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+0123456-12-16T01:35+14:00'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a negative year with too many digits', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-0123456-03-23T06:22:15Z'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a positive year with too few digits', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+12345-11-09T12:59:42.3'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a negative year with too few digits', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-12345-03-31'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date with a positive year that is too large', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '+287397-01-01T00:00Z'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a date with a negative year that is too small', () => {
+      const doc = {
+        _id: 'datetimeDoc',
+        formatValidationProp: '-283458-12-31T23:59:59.999Z'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'datetimeDoc',
+        errorFormatter.datetimeFormatInvalid('formatValidationProp'));
+    });
   });
 
   describe('inclusive range validation for min and max dates with time and time zone components', () => {
@@ -245,7 +487,7 @@ describe('Date/time validation type', () => {
       testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
+        errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatetimesProp', '+002016-06-24T05:52:17.123Z'));
     });
 
     it('cannot create a doc with a date without time and time zone components that is less than the minimum value', () => {
@@ -257,7 +499,7 @@ describe('Date/time validation type', () => {
       testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatetimesProp', '2016-06-24T05:52:17.123Z'));
+        errorFormatter.minimumValueViolation('inclusiveRangeValidationAsDatetimesProp', '+002016-06-24T05:52:17.123Z'));
     });
 
     it('cannot create a doc with a date/time that is greater than the maximum value', () => {
