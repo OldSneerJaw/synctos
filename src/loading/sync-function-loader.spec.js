@@ -35,15 +35,14 @@ describe('Sync function loader', () => {
   it('should load a sync function as a multi-line JavaScript block', () => {
     validateLoadSuccess(
       'my\n  \r\nfinal\rsync `func`',
-      null,
-      'my\n\nfinal\nsync \\`func\\`');
+      'my\n\nfinal\nsync `func`');
   });
 
   it('should load a validation function as a JSON string', () => {
     validateLoadSuccess(
       'my\n  \r\n"final"\r`sync` \\func\\',
-      { jsonString: true },
-      '"my\\n\\n\\"final\\"\\n\\\\`sync\\\\` \\\\func\\\\"');
+      '"my\\n\\n\\"final\\"\\n`sync` \\\\func\\\\"',
+      { jsonString: true });
   });
 
   it('should throw an exception if the sync function template file does not exist', () => {
@@ -69,7 +68,7 @@ describe('Sync function loader', () => {
     expect(indentMock.js.callCount).to.equal(0);
   });
 
-  function validateLoadSuccess(indentedSyncFunc, formatOptions, expectedSyncFunc) {
+  function validateLoadSuccess(indentedSyncFunc, expectedSyncFunc, formatOptions) {
     const docDefinitionsFile = 'my/doc-definitions.js';
     const docDefinitionsContent = 'my-doc-definitions';
     const originalSyncFuncTemplate = 'my-original-sync-fync-template';

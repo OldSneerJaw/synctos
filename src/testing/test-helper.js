@@ -245,17 +245,17 @@ const defaultWriteChannel = 'write';
 function initSyncFunction(filePath) {
   const rawSyncFunction = fs.readFileSync(filePath, 'utf8').toString();
 
-  init(rawSyncFunction, filePath);
+  init(rawSyncFunction, true, filePath);
 }
 
 function initDocumentDefinitions(filePath) {
   const rawSyncFunction = syncFunctionLoader.load(filePath);
 
-  init(rawSyncFunction);
+  init(rawSyncFunction, false);
 }
 
-function init(rawSyncFunction, syncFunctionFile) {
-  const testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
+function init(rawSyncFunction, unescapeBackticks, syncFunctionFile) {
+  const testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, unescapeBackticks, syncFunctionFile);
 
   exports.requireAccess = testHelperEnvironment.requireAccess;
   exports.requireRole = testHelperEnvironment.requireRole;
