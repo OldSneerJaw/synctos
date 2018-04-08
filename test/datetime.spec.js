@@ -120,7 +120,7 @@ describe('Date/time validation type', () => {
     it('accepts a date/time with midnight specified as hour 24', () => {
       const doc = {
         _id: 'datetimeDoc',
-        formatValidationProp: '2018-04-02T24:00:00+0300'
+        formatValidationProp: '2018-04-02T24:00:00+03:00'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -129,7 +129,7 @@ describe('Date/time validation type', () => {
     it('rejects a date/time with a time that is one millisecond over the maximum', () => {
       const doc = {
         _id: 'datetimeDoc',
-        formatValidationProp: '2018-04-02T24:00:00.001+0300'
+        formatValidationProp: '2018-04-02T24:00:00.001+03:00'
       };
 
       testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
@@ -138,7 +138,7 @@ describe('Date/time validation type', () => {
     it('rejects a date/time with a time that is one second over the maximum', () => {
       const doc = {
         _id: 'datetimeDoc',
-        formatValidationProp: '2018-04-02T24:00:01.000+0300'
+        formatValidationProp: '2018-04-02T24:00:01.000+03:00'
       };
 
       testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
@@ -147,7 +147,7 @@ describe('Date/time validation type', () => {
     it('rejects a date/time with a time that is one minute over the maximum', () => {
       const doc = {
         _id: 'datetimeDoc',
-        formatValidationProp: '2018-04-02T24:01:00.000+0300'
+        formatValidationProp: '2018-04-02T24:01:00.000+03:00'
       };
 
       testFixture.verifyDocumentNotCreated(doc, 'datetimeDoc', errorFormatter.datetimeFormatInvalid('formatValidationProp'));
