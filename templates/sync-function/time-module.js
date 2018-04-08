@@ -67,12 +67,8 @@ function timeModule(utils) {
       timezone.minute <= 59;
   }
 
-  function isValidDayOfMonth(date) {
-    if (date.day < 1) {
-      return false;
-    }
-
-    switch (date.month) {
+  function numDaysInMonth(year, month) {
+    switch (month) {
       case 1: // Jan
       case 3: // Mar
       case 5: // May
@@ -80,16 +76,28 @@ function timeModule(utils) {
       case 8: // Aug
       case 10: // Oct
       case 12: // Dec
-        return date.day <= 31;
+        return 31;
       case 4: // Apr
       case 6: // Jun
       case 9: // Sep
       case 11: // Nov
-        return date.day <= 30;
+        return 30;
       case 2: // Feb
-        return (date.day === 29) ? isLeapYear(date.year) : date.day <= 28;
+        return isLeapYear(year) ? 29 : 28;
       default:
-        return false;
+        return NaN;
+    }
+  }
+
+  function isValidDayOfMonth(date) {
+    if (date.day < 1) {
+      return false;
+    } else if (date.month === 2) {
+      // This is a small optimization; checking whether February has a leap day is a moderately expensive operation, so
+      // only perform that check if the day of the month is 29.
+      return (date.day === 29) ? isLeapYear(date.year) : date.day <= 28;
+    } else {
+      return date.day <= numDaysInMonth(date.year, date.month);
     }
   }
 
@@ -141,6 +149,19 @@ function timeModule(utils) {
     }
   }
 
+  // Converts the given time to the number of milliseconds since hour 0
+  function normalizeIso8601Time(time, timezoneOffsetMinutes) {
+    var msPerSecond = 1000;
+    var msPerMinute = 60000;
+    var msPerHour = 3600000;
+    var effectiveTimezoneOffset = timezoneOffsetMinutes || 0;
+
+    var rawTimeMs =
+      (time.hour * msPerHour) + (time.minute * msPerMinute) + (time.second * msPerSecond) + time.millisecond;
+
+    return rawTimeMs - (effectiveTimezoneOffset * msPerMinute);
+  }
+
   // Compares the given time strings. Returns a negative number if a is less than b, a positive number if a is greater
   // than b, or zero if a and b are equal.
   function compareTimes(a, b) {
@@ -148,24 +169,7 @@ function timeModule(utils) {
       return NaN;
     }
 
-    var aTime = parseIso8601Time(a);
-    var bTime = parseIso8601Time(b);
-    if (!isValidTimeStructure(aTime) || !isValidTimeStructure(bTime)) {
-      return NaN;
-    }
-
-    var aTimePieces = [ aTime.hour, aTime.minute, aTime.second, aTime.millisecond ];
-    var bTimePieces = [ bTime.hour, bTime.minute, bTime.second, bTime.millisecond ];
-    for (var timePieceIndex = 0; timePieceIndex < aTimePieces.length; timePieceIndex++) {
-      if (aTimePieces[timePieceIndex] < bTimePieces[timePieceIndex]) {
-        return -1;
-      } else if (aTimePieces[timePieceIndex] > bTimePieces[timePieceIndex]) {
-        return 1;
-      }
-    }
-
-    // If we got here, the two parameters represent the same time of day
-    return 0;
+    return normalizeIso8601Time(parseIso8601Time(a)) - normalizeIso8601Time(parseIso8601Time(b));
   }
 
   function parseIso8601Date(value) {
@@ -220,41 +224,85 @@ function timeModule(utils) {
     }
   }
 
-  // Converts the given date representation to a timestamp that represents the number of ms since the Unix epoch
-  function convertToTimestamp(value) {
+  function extractDatePiecesFromDateObject(value) {
+    var timeStructure = {
+      hour: value.getUTCHours(),
+      minute: value.getUTCMinutes(),
+      second: value.getUTCSeconds(),
+      millisecond: value.getUTCMilliseconds()
+    };
+    var timeOfDayMs = normalizeIso8601Time(timeStructure);
+
+    return [ value.getUTCFullYear(), value.getUTCMonth() + 1, value.getUTCDate(), timeOfDayMs ];
+  }
+
+  function extractDatePiecesFromIso8601String(value) {
+    var dateAndTimePieces = splitDateAndTime(value);
+
+    var date = extractDateStructureFromDateAndTime(dateAndTimePieces);
+    if (!isValidDateStructure(date)) {
+      return null;
+    }
+
+    var timeAndTimezone = extractTimeStructuresFromDateAndTime(dateAndTimePieces);
+    var time = timeAndTimezone.time;
+    var timezone = timeAndTimezone.timezone;
+    if (!isValidTimeStructure(time)) {
+      return null;
+    } else if (timezone !== null && !isValidTimeZoneStructure(timezone)) {
+      return null;
+    }
+
+    var calculatedYear = date.year;
+    var calculatedMonth = date.month;
+    var calculatedDay = date.day;
+    var calculatedTimeOfDayMs = normalizeIso8601Time(time, normalizeIso8601TimeZone(timezone));
+
+    // Carry the overflow/underflow of the time of day to the day of the month
+    var msPerDay = 86400000;
+    if (calculatedTimeOfDayMs >= msPerDay) {
+      calculatedDay++;
+      calculatedTimeOfDayMs -= msPerDay;
+    } else if (calculatedTimeOfDayMs < 0) {
+      calculatedDay--;
+      calculatedTimeOfDayMs += msPerDay;
+    }
+
+    // Carry the overflow/underflow of the day of the month to the month
+    var maxDaysInMonth = numDaysInMonth(calculatedYear, calculatedMonth);
+    if (calculatedDay > maxDaysInMonth) {
+      calculatedMonth++;
+      calculatedDay = 1;
+    } else if (calculatedDay < 1) {
+      calculatedMonth--;
+
+      // There was an underflow, so set the day to the last day of the new month
+      if (calculatedMonth > 12) {
+        calculatedDay = numDaysInMonth(calculatedYear + 1, 1);
+      } else if (calculatedMonth < 1) {
+        calculatedDay = numDaysInMonth(calculatedYear - 1, 12);
+      } else {
+        calculatedDay = numDaysInMonth(calculatedYear, calculatedMonth);
+      }
+    }
+
+    // Carry the overflow/underflow of the month to the year
+    if (calculatedMonth > 12) {
+      calculatedYear++;
+      calculatedMonth = 1;
+    } else if (calculatedMonth < 1) {
+      calculatedYear--;
+      calculatedMonth = 12;
+    }
+
+    return [ calculatedYear, calculatedMonth, calculatedDay, calculatedTimeOfDayMs ];
+  }
+
+  function extractDatePieces(value) {
     if (value instanceof Date) {
-      return value.getTime();
-    } else if (typeof value === 'number') {
-      return Math.floor(value);
+      return extractDatePiecesFromDateObject(value);
     } else if (typeof value === 'string') {
-      var dateAndTimePieces = splitDateAndTime(value);
-
-      var date = extractDateStructureFromDateAndTime(dateAndTimePieces);
-      if (!isValidDateStructure(date)) {
-        return NaN;
-      }
-
-      var timeAndTimezone = extractTimeStructuresFromDateAndTime(dateAndTimePieces);
-      var time = timeAndTimezone.time;
-      var timezone = timeAndTimezone.timezone;
-      if (!isValidTimeStructure(time)) {
-        return NaN;
-      } else if (timezone !== null && !isValidTimeZoneStructure(timezone)) {
-        return NaN;
-      }
-
-      var timezoneOffsetMinutes = normalizeIso8601TimeZone(timezone);
-
-      var dateAndTime = new Date(0);
-      dateAndTime.setUTCFullYear(date.year);
-      dateAndTime.setUTCMonth(date.month - 1);
-      dateAndTime.setUTCDate(date.day);
-      dateAndTime.setUTCHours(time.hour);
-      dateAndTime.setUTCMinutes(time.minute - timezoneOffsetMinutes);
-      dateAndTime.setUTCSeconds(time.second);
-      dateAndTime.setUTCMilliseconds(time.millisecond);
-
-      return dateAndTime.getTime();
+      return extractDatePiecesFromIso8601String(value);
     } else {
       return NaN;
     }
@@ -263,14 +311,23 @@ function timeModule(utils) {
   // Compares the given date representations. Returns a negative number if a is less than b, a positive number if a is
   // greater than b, or zero if a and b are equal.
   function compareDates(a, b) {
-    var aTimestamp = convertToTimestamp(a);
-    var bTimestamp = convertToTimestamp(b);
+    var aPieces = extractDatePieces(a);
+    var bPieces = extractDatePieces(b);
 
-    if (isNaN(aTimestamp) || isNaN(bTimestamp)) {
+    if (aPieces === null || bPieces === null) {
       return NaN;
-    } else {
-      return aTimestamp - bTimestamp;
     }
+
+    for (var pieceIndex = 0; pieceIndex < aPieces.length; pieceIndex++) {
+      if (aPieces[pieceIndex] < bPieces[pieceIndex]) {
+        return -1;
+      } else if (aPieces[pieceIndex] > bPieces[pieceIndex]) {
+        return 1;
+      }
+    }
+
+    // If we got here, the two parameters represent the same date/point in time
+    return 0;
   }
 
   function parseIso8601TimeZone(value) {

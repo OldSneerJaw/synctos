@@ -719,6 +719,134 @@ describe('Date/time validation type', () => {
     });
   });
 
+  describe('dynamic range validation', () => {
+    it('allows a datetime that matches expected datetimes that fall on different days because they have different time zones', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '0900-06-09T19:30Z',
+        expectedMinimumValue: '+000900-06-10T01:30:00+06:00',
+        expectedMaximumValue: '0900-06-08T22:00:00.000-21:30',
+        expectedEqualityValue: '0900-06-10T19:29:00.0+2359'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a datetime that exceeds a maximum datetime that falls on a different day because it has a different time zone', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '+000900-06-08T22:00:00.001-21:30',
+        expectedMinimumValue: '0900-06-10T01:30:00+06:00',
+        expectedMaximumValue: '0900-06-09T19:30Z',
+        expectedEqualityValue: '0900-06-09T15:00:00.001-04:30'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDatetimeDocType',
+        [ errorFormatter.maximumValueViolation('dynamicRangeValidationProp', '0900-06-09T19:30Z') ]);
+    });
+
+    it('rejects a datetime that precedes a minimum datetime that falls on a different day because it has a different time zone', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '0900-06-10T01:29:59+06:00',
+        expectedMinimumValue: '+000900-06-09T19:30Z',
+        expectedMaximumValue: '0900-06-08T22:00:00.000-21:30',
+        expectedEqualityValue: '0900-06-08T21:59:59.000-21:30'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDatetimeDocType',
+        [ errorFormatter.minimumValueViolation('dynamicRangeValidationProp', '+000900-06-09T19:30Z') ]);
+    });
+
+    it('allows a datetime that matches expected datetimes that fall on different months because they have different time zones', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '-001337-08-31T22:15:00.000-0800',
+        expectedMinimumValue: '-001337-09-01T06:15:00Z',
+        expectedMaximumValue: '-001337-09-02T00:45+1830',
+        expectedEqualityValue: '-001337-08-31T12:45:00.000-17:30'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a datetime that exceeds a maximum datetime that falls on a different month because it has a different time zone', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '1600-03-01T00:46+1830',
+        expectedMinimumValue: '1600-02-29T06:15:00Z',
+        expectedMaximumValue: '1600-02-28T22:15:00.000-0800',
+        expectedEqualityValue: '1600-02-28T22:16:00.000-0800'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDatetimeDocType',
+        [ errorFormatter.maximumValueViolation('dynamicRangeValidationProp', '1600-02-28T22:15:00.000-0800') ]);
+    });
+
+    it('rejects a datetime that precedes a minimum datetime that falls on a different month because it has a different time zone', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '-001337-09-01T06:14:59.999+08:00',
+        expectedMinimumValue: '-001337-08-30T23:45-22:30',
+        expectedMaximumValue: '-001337-08-31T22:15:00.000Z',
+        expectedEqualityValue: '-001337-08-30T23:44:59.999-22:30'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDatetimeDocType',
+        [ errorFormatter.minimumValueViolation('dynamicRangeValidationProp', '-001337-08-30T23:45-22:30') ]);
+    });
+
+    it('allows a datetime that matches expected datetimes that fall on different years because they have different time zones', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '3248-01-01T09:45:32.000+16:45',
+        expectedMinimumValue: '3247-12-30T23:30:32-17:30',
+        expectedMaximumValue: '3247-12-31T17:00:32.0Z',
+        expectedEqualityValue: '3247-12-30T23:30:32-17:30'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a datetime that exceeds a maximum datetime that falls on a different year because it has a different time zone', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '1900-01-01T12:01Z',
+        expectedMinimumValue: '1900-01-02T04:00:00.000+16:00',
+        expectedMaximumValue: '1899-12-31T15:15:00-20:45',
+        expectedEqualityValue: '1899-12-31T15:16:00-20:45'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDatetimeDocType',
+        [ errorFormatter.maximumValueViolation('dynamicRangeValidationProp', '1899-12-31T15:15:00-20:45') ]);
+    });
+
+    it('rejects a datetime that precedes a minimum datetime that falls on a different year because it has a different time zone', () => {
+      const doc = {
+        _id: 'dynamicDatetimeDocType',
+        dynamicRangeValidationProp: '9999-12-31T22:59:59.9-1445',
+        expectedMinimumValue: '+010000-01-01T13:45Z',
+        expectedMaximumValue: '9999-12-31T24:00:00.0-13:45',
+        expectedEqualityValue: '+010000-01-01T13:44:59.900Z'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDatetimeDocType',
+        [ errorFormatter.minimumValueViolation('dynamicRangeValidationProp', '+010000-01-01T13:45Z') ]);
+    });
+  });
+
   describe('intelligent equality constraint', () => {
     it('allows a datetime that exactly matches the expected datetime', () => {
       const doc = {
