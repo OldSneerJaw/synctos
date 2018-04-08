@@ -800,7 +800,7 @@ describe('Strict immutable item constraint:', () => {
         staticImmutableDateProp: '1970',
         staticImmutableDatetimeProp: '1970-01-01T18:24Z',
         staticImmutableTimeProp: '00:00',
-        staticImmutableTimezoneProp: '+13:00',
+        staticImmutableTimezoneProp: 'Z',
         staticImmutableUuidProp: '3bf7118b-19fa-48e2-b0c9-dab20b65bad8'
       };
 
@@ -809,7 +809,7 @@ describe('Strict immutable item constraint:', () => {
         staticImmutableDateProp: '1970-01-01',
         staticImmutableDatetimeProp: '1970-01-01T18:24:00.000Z',
         staticImmutableTimeProp: '00:00:00.000',
-        staticImmutableTimezoneProp: '+1300',
+        staticImmutableTimezoneProp: '+00:00',
         staticImmutableUuidProp: oldDoc.staticImmutableUuidProp.toUpperCase()
       };
 

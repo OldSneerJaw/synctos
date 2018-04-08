@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 
 ### Fixed
 - [#276](https://github.com/Kashoo/synctos/issues/276): Date range validation is incorrect for dates between years 0 and 99
+- [#294](https://github.com/Kashoo/synctos/issues/294): Time zones incorrectly allow the colon to be omitted
 
 ## [2.2.1] - 2018-03-21
 ### Fixed

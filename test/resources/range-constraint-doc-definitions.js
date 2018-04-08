@@ -34,8 +34,8 @@ function () {
         },
         staticDatetimeProp: {
           type: 'datetime',
-          minimumValue: '2016-07-19T19:24:38.920-0700',
-          maximumValue: '2016-07-19T19:24:38.920-0700'
+          minimumValue: '2016-07-19T19:24:38.920-07:00',
+          maximumValue: '2016-07-19T19:24:38.920-07:00'
         },
         staticDateProp: {
           type: 'date',
@@ -85,8 +85,8 @@ function () {
         },
         staticDatetimeProp: {
           type: 'datetime',
-          minimumValueExclusive: '2016-07-19T19:24:38.919-0700',
-          maximumValueExclusive: '2016-07-19T19:24:38.921-0700'
+          minimumValueExclusive: '2016-07-19T19:24:38.919-07:00',
+          maximumValueExclusive: '2016-07-19T19:24:38.921-07:00'
         },
         staticDateProp: {
           type: 'date',
