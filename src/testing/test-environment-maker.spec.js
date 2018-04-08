@@ -58,7 +58,7 @@ describe('Test environment maker', () => {
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
       `(${expectedTestEnvString});`,
       {
-        filename: originalFilename,
+        filename: originalFilename ? path.resolve(process.cwd(), originalFilename) : originalFilename,
         displayErrors: true
       }
     ]);
