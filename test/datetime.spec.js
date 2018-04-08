@@ -792,16 +792,16 @@ describe('Date/time validation type', () => {
     it('rejects a datetime that precedes a minimum datetime that falls on a different month because it has a different time zone', () => {
       const doc = {
         _id: 'dynamicDatetimeDocType',
-        dynamicRangeValidationProp: '-001337-09-01T06:14:59.999+08:00',
-        expectedMinimumValue: '-001337-08-30T23:45-22:30',
-        expectedMaximumValue: '-001337-08-31T22:15:00.000Z',
-        expectedEqualityValue: '-001337-08-30T23:44:59.999-22:30'
+        dynamicRangeValidationProp: '-001337-03-01T06:14:59.999+08:00',
+        expectedMinimumValue: '-001337-02-27T23:45-22:30',
+        expectedMaximumValue: '-001337-02-28T22:15:00.000Z',
+        expectedEqualityValue: '-001337-02-27T23:44:59.999-22:30'
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDatetimeDocType',
-        [ errorFormatter.minimumValueViolation('dynamicRangeValidationProp', '-001337-08-30T23:45-22:30') ]);
+        [ errorFormatter.minimumValueViolation('dynamicRangeValidationProp', '-001337-02-27T23:45-22:30') ]);
     });
 
     it('allows a datetime that matches expected datetimes that fall on different years because they have different time zones', () => {
