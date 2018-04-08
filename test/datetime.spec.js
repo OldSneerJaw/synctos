@@ -726,7 +726,7 @@ describe('Date/time validation type', () => {
         dynamicRangeValidationProp: '0900-06-09T19:30Z',
         expectedMinimumValue: '+000900-06-10T01:30:00+06:00',
         expectedMaximumValue: '0900-06-08T22:00:00.000-21:30',
-        expectedEqualityValue: '0900-06-10T19:29:00.0+2359'
+        expectedEqualityValue: '0900-06-10T19:29:00.0+23:59'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -765,10 +765,10 @@ describe('Date/time validation type', () => {
     it('allows a datetime that matches expected datetimes that fall on different months because they have different time zones', () => {
       const doc = {
         _id: 'dynamicDatetimeDocType',
-        dynamicRangeValidationProp: '-001337-08-31T22:15:00.000-0800',
-        expectedMinimumValue: '-001337-09-01T06:15:00Z',
-        expectedMaximumValue: '-001337-09-02T00:45+1830',
-        expectedEqualityValue: '-001337-08-31T12:45:00.000-17:30'
+        dynamicRangeValidationProp: '-001337-08-31T24:00:00Z',
+        expectedMinimumValue: '-001337-09-01T18:30+18:30',
+        expectedMaximumValue: '-001337-08-31T16:00:00.000-08:00',
+        expectedEqualityValue: '-001337-09-01'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -777,16 +777,16 @@ describe('Date/time validation type', () => {
     it('rejects a datetime that exceeds a maximum datetime that falls on a different month because it has a different time zone', () => {
       const doc = {
         _id: 'dynamicDatetimeDocType',
-        dynamicRangeValidationProp: '1600-03-01T00:46+1830',
+        dynamicRangeValidationProp: '1600-03-01T00:46+18:30',
         expectedMinimumValue: '1600-02-29T06:15:00Z',
-        expectedMaximumValue: '1600-02-28T22:15:00.000-0800',
-        expectedEqualityValue: '1600-02-28T22:16:00.000-0800'
+        expectedMaximumValue: '1600-02-28T22:15:00.000-08:00',
+        expectedEqualityValue: '1600-02-28T22:16:00.000-08:00'
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicDatetimeDocType',
-        [ errorFormatter.maximumValueViolation('dynamicRangeValidationProp', '1600-02-28T22:15:00.000-0800') ]);
+        [ errorFormatter.maximumValueViolation('dynamicRangeValidationProp', '1600-02-28T22:15:00.000-08:00') ]);
     });
 
     it('rejects a datetime that precedes a minimum datetime that falls on a different month because it has a different time zone', () => {
@@ -834,7 +834,7 @@ describe('Date/time validation type', () => {
     it('rejects a datetime that precedes a minimum datetime that falls on a different year because it has a different time zone', () => {
       const doc = {
         _id: 'dynamicDatetimeDocType',
-        dynamicRangeValidationProp: '9999-12-31T22:59:59.9-1445',
+        dynamicRangeValidationProp: '9999-12-31T22:59:59.9-14:45',
         expectedMinimumValue: '+010000-01-01T13:45Z',
         expectedMaximumValue: '9999-12-31T24:00:00.0-13:45',
         expectedEqualityValue: '+010000-01-01T13:44:59.900Z'

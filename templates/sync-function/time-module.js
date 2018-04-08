@@ -304,7 +304,7 @@ function timeModule(utils) {
     } else if (typeof value === 'string') {
       return extractDatePiecesFromIso8601String(value);
     } else {
-      return NaN;
+      return null;
     }
   }
 
