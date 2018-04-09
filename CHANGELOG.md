@@ -1,6 +1,9 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
+## [Unreleased]
+Nothing yet.
+
 ## [2.3.0] - 2018-04-09
 ### Added
 - [#285](https://github.com/Kashoo/synctos/issues/285): Throw an Error object when there is an authorization or validation failure
