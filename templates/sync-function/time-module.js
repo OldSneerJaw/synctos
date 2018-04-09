@@ -5,6 +5,8 @@ function timeModule(utils) {
     minute: 0
   };
 
+  // NOTE: Many of the following functions make use of custom logic, rather than relying on the built-in Date object, to
+  // work around a number of deficiencies in the Date implementation from Sync Gateway's JavaScript engine (otto)
   return {
     isIso8601DateTimeString: isIso8601DateTimeString,
     isIso8601DateString: isIso8601DateString,
