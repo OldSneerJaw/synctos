@@ -44,5 +44,36 @@
         mustEqual: '2018-01-01T11:00:00.000+09:30'
       }
     }
+  },
+  dynamicDatetimeDocType: {
+    typeFilter: function(doc) {
+      return doc._id === 'dynamicDatetimeDocType';
+    },
+    channels: { write: 'write' },
+    propertyValidators: function(doc, oldDoc) {
+      return {
+        dynamicRangeValidationProp: {
+          type: 'datetime',
+          minimumValue: function(doc, oldDoc, value, oldValue) {
+            return doc.expectedMinimumValue;
+          },
+          maximumValue: function(doc, oldDoc, value, oldValue) {
+            return doc.expectedMaximumValue;
+          },
+          mustEqual: function(doc, oldDoc, value, oldValue) {
+            return doc.expectedEqualityValue;
+          }
+        },
+        expectedMinimumValue: {
+          type: 'datetime'
+        },
+        expectedMaximumValue: {
+          type: 'datetime'
+        },
+        expectedEqualityValue: {
+          type: 'datetime'
+        }
+      };
+    }
   }
 }
