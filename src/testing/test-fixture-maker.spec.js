@@ -39,7 +39,7 @@ describe('Test fixture maker:', () => {
       expect(fsMock.readFileSync.calls[0].args).to.eql([ fakeFilePath, 'utf8' ]);
 
       expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
-      expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, fakeFilePath ]);
+      expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, fakeFilePath, true ]);
 
       verifyTestEnvironment(testFixture);
     });
@@ -53,7 +53,7 @@ describe('Test fixture maker:', () => {
       expect(syncFunctionLoaderMock.load.calls[0].args).to.eql([ fakeFilePath ]);
 
       expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
-      expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, void 0 ]);
+      expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, void 0, void 0 ]);
 
       verifyTestEnvironment(testFixture);
     });

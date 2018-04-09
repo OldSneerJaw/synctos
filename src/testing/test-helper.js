@@ -245,7 +245,7 @@ const defaultWriteChannel = 'write';
 function initSyncFunction(filePath) {
   const rawSyncFunction = fs.readFileSync(filePath, 'utf8').toString();
 
-  init(rawSyncFunction, filePath);
+  init(rawSyncFunction, filePath, true);
 }
 
 function initDocumentDefinitions(filePath) {
@@ -254,8 +254,8 @@ function initDocumentDefinitions(filePath) {
   init(rawSyncFunction);
 }
 
-function init(rawSyncFunction, syncFunctionFile) {
-  const testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
+function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
+  const testHelperEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile, unescapeBackticks);
 
   exports.requireAccess = testHelperEnvironment.requireAccess;
   exports.requireRole = testHelperEnvironment.requireRole;
