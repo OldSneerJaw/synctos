@@ -6,6 +6,7 @@ describe('Main package module', () => {
     expect(index).to.eql({
       documentDefinitionsValidator: require('./validation/document-definitions-validator'),
       syncFunctionLoader: require('./loading/sync-function-loader'),
+      syncFunctionWriter: require('./saving/sync-function-writer'),
       testFixtureMaker: require('./testing/test-fixture-maker'),
       testHelper: require('./testing/test-helper'),
       validationErrorFormatter: require('./testing/validation-error-formatter')

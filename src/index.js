@@ -11,6 +11,11 @@ exports.documentDefinitionsValidator = require('./validation/document-definition
 exports.syncFunctionLoader = require('./loading/sync-function-loader');
 
 /**
+ * The sync-function-writer module. Writes sync functions to files.
+ */
+exports.syncFunctionWriter = require('./saving/sync-function-writer');
+
+/**
  * The test-fixture-maker module. Provides a number of conveniences to test the behaviour of document definitions.
  */
 exports.testFixtureMaker = require('./testing/test-fixture-maker');

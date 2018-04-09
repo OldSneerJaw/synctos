@@ -23,20 +23,20 @@ describe('Test environment maker', () => {
   });
 
   it('creates a test environment from the input with a filename for stack traces', () => {
-    verifyParse('my-sync-func-`1`', 'my-original-filename');
+    verifyParse('my-sync-func-\\`1\\`', 'my-original-filename', true);
   });
 
   it('creates a test environment from the input but without a filename', () => {
-    verifyParse('my-sync-func-\\`2\\`');
+    verifyParse('my-sync-func-\\`2\\`', null, false);
   });
 
-  function verifyParse(rawSyncFunction, originalFilename) {
+  function verifyParse(rawSyncFunction, originalFilename, unescapeBackticks) {
     const envTemplateFileContents = 'template: $SYNC_FUNC_PLACEHOLDER$';
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
     const expectedTestEnvString = envTemplateFileContents.replace(
       '$SYNC_FUNC_PLACEHOLDER$',
-      () => rawSyncFunction.replace(/\\`/g, () => '`'));
+      () => unescapeBackticks ? rawSyncFunction.replace(/\\`/g, () => '`') : rawSyncFunction);
 
     const expectedResult = { bar: 'foo' };
     const mockVmEnvironment = simpleMock.stub();
@@ -44,7 +44,7 @@ describe('Test environment maker', () => {
 
     vmMock.runInThisContext.returnWith(mockVmEnvironment);
 
-    const result = testEnvironmentMaker.init(rawSyncFunction, originalFilename);
+    const result = testEnvironmentMaker.init(rawSyncFunction, originalFilename, unescapeBackticks);
 
     expect(result).to.eql(expectedResult);
 
@@ -58,7 +58,7 @@ describe('Test environment maker', () => {
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
       `(${expectedTestEnvString});`,
       {
-        filename: originalFilename,
+        filename: originalFilename ? path.resolve(process.cwd(), originalFilename) : originalFilename,
         displayErrors: true
       }
     ]);

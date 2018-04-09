@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
 const commander = require('./lib/commander/index');
-const mkdirp = require('./lib/mkdirp/index');
 const syncFunctionLoader = require('./src/loading/sync-function-loader');
+const syncFunctionWriter = require('./src/saving/sync-function-writer');
 
 const errorStatus = 1;
 
@@ -37,25 +35,14 @@ const outputFilename = commander.args[1];
 
 let syncFuncString;
 try {
+  syncFuncString = syncFunctionLoader.load(docDefnFilename);
+} catch (ex) {
+  process.exit(errorStatus);
+}
+
+try {
   const formatOptions = { jsonString: commander.jsonString };
-  syncFuncString = syncFunctionLoader.load(docDefnFilename, formatOptions);
-} catch (ex) {
-  process.exit(errorStatus);
-}
-
-try {
-  const outputDirectory = path.dirname(outputFilename);
-  if (!fs.existsSync(outputDirectory)) {
-    mkdirp.sync(outputDirectory);
-  }
-} catch (ex) {
-  console.error(`ERROR: Unable to create the sync function output directory: ${ex}`);
-
-  process.exit(errorStatus);
-}
-
-try {
-  fs.writeFileSync(outputFilename, syncFuncString, 'utf8');
+  syncFunctionWriter.save(outputFilename, syncFuncString, formatOptions);
 } catch (ex) {
   console.error(`ERROR: Unable to write the sync function to the output file: ${ex}`);
 

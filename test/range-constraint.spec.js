@@ -31,7 +31,7 @@ describe('Range constraints:', () => {
     it('allow a datetime that matches the minimum and maximum constraints', () => {
       const doc = {
         _id: 'inclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.920-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.920-07:00'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -85,19 +85,25 @@ describe('Range constraints:', () => {
     it('reject a datetime that is below the minimum constraint', () => {
       const doc = {
         _id: 'inclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.919-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.919-07:00'
       };
 
-      testFixture.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.minimumValueViolation('staticDatetimeProp', '2016-07-19T19:24:38.920-0700'));
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'inclusiveRangeDocType',
+        errorFormatter.minimumValueViolation('staticDatetimeProp', '2016-07-19T19:24:38.920-07:00'));
     });
 
     it('reject a datetime that is above the maximum constraint', () => {
       const doc = {
         _id: 'inclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.921-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.921-07:00'
       };
 
-      testFixture.verifyDocumentNotCreated(doc, 'inclusiveRangeDocType', errorFormatter.maximumValueViolation('staticDatetimeProp', '2016-07-19T19:24:38.920-0700'));
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'inclusiveRangeDocType',
+        errorFormatter.maximumValueViolation('staticDatetimeProp', '2016-07-19T19:24:38.920-07:00'));
     });
 
     it('reject a date that is below the minimum constraint', () => {
@@ -143,7 +149,7 @@ describe('Range constraints:', () => {
     it('allow a datetime that matches the minimum and maximum constraints', () => {
       const doc = {
         _id: 'inclusiveRangeDocType',
-        dynamicDatetimeProp: '2017-04-07T18:24:38.920-0700',
+        dynamicDatetimeProp: '2017-04-07T18:24:38.920-07:00',
         dynamicPropertyValuesAllowed: true
       };
 
@@ -189,7 +195,7 @@ describe('Range constraints:', () => {
     it('reject a datetime that is outside the minimum and maximum constraints', () => {
       const doc = {
         _id: 'inclusiveRangeDocType',
-        dynamicDatetimeProp: '2016-07-19T19:24:38.919-0700',
+        dynamicDatetimeProp: '2016-07-19T19:24:38.919-07:00',
         dynamicPropertyValuesAllowed: false
       };
 
@@ -241,7 +247,7 @@ describe('Range constraints:', () => {
     it('allow a datetime that is within the minimum and maximum constraints', () => {
       const doc = {
         _id: 'exclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.920-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.920-07:00'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -331,49 +337,49 @@ describe('Range constraints:', () => {
     it('reject a datetime that is equal to the minimum constraint', () => {
       const doc = {
         _id: 'exclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.919-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.919-07:00'
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.minimumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.919-0700'));
+        errorFormatter.minimumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.919-07:00'));
     });
 
     it('reject a datetime that is less than the minimum constraint', () => {
       const doc = {
         _id: 'exclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.918-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.918-07:00'
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.minimumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.919-0700'));
+        errorFormatter.minimumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.919-07:00'));
     });
 
     it('reject a datetime that is equal to the maximum constraint', () => {
       const doc = {
         _id: 'exclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.921-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.921-07:00'
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.maximumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.921-0700'));
+        errorFormatter.maximumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.921-07:00'));
     });
 
     it('reject a datetime that is greater than the maximum constraint', () => {
       const doc = {
         _id: 'exclusiveRangeDocType',
-        staticDatetimeProp: '2016-07-19T19:24:38.922-0700'
+        staticDatetimeProp: '2016-07-19T19:24:38.922-07:00'
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'exclusiveRangeDocType',
-        errorFormatter.maximumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.921-0700'));
+        errorFormatter.maximumValueExclusiveViolation('staticDatetimeProp', '2016-07-19T19:24:38.921-07:00'));
     });
 
     it('reject a date that is equal to the minimum constraint', () => {
@@ -449,7 +455,7 @@ describe('Range constraints:', () => {
     it('allow a datetime that matches the minimum and maximum constraints', () => {
       const doc = {
         _id: 'exclusiveRangeDocType',
-        dynamicDatetimeProp: '2017-04-07T18:24:38.920-0700',
+        dynamicDatetimeProp: '2017-04-07T18:24:38.920-07:00',
         dynamicPropertyValuesAllowed: true
       };
 
@@ -501,7 +507,7 @@ describe('Range constraints:', () => {
     it('reject a datetime that is outside the minimum and maximum constraints', () => {
       const doc = {
         _id: 'exclusiveRangeDocType',
-        dynamicDatetimeProp: '2016-07-19T19:24:38.919-0700',
+        dynamicDatetimeProp: '2016-07-19T19:24:38.919-07:00',
         dynamicPropertyValuesAllowed: false
       };
 

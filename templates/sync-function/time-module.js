@@ -334,7 +334,7 @@ function timeModule(utils) {
     if (value === 'Z') {
       return utcTimeZone;
     } else {
-      var matches = /^([+-])(\d\d):?(\d\d)$/.exec(value);
+      var matches = /^([+-])(\d\d):(\d\d)$/.exec(value);
       if (matches !== null) {
         return {
           multiplicationFactor: (matches[1] === '+') ? 1 : -1,

@@ -13,7 +13,7 @@
       },
       minAndMaxExclusiveValuesProp: {
         type: 'timezone',
-        minimumValueExclusive: '-1131',
+        minimumValueExclusive: '-11:31',
         maximumValueExclusive: '+12:31'
       },
       immutableValidationProp: {
