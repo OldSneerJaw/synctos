@@ -39,6 +39,26 @@ describe('Time validation type:', () => {
       testFixture.verifyDocumentCreated(doc);
     });
 
+    it('accepts midnight represented as hour 0', () => {
+      const doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        formatValidationProp: '00:00'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('accepts midnight represented as hour 24', () => {
+      const doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        formatValidationProp: '24:00:00.000'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
     it('rejects a time without the minute, second and millisecond components', () => {
       const doc = {
         _id: 'my-doc',
@@ -49,21 +69,41 @@ describe('Time validation type:', () => {
       testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
     });
 
-    it('rejects a time that is above the maximum value', () => {
-      const doc = {
-        _id: 'my-doc',
-        type: 'timeDoc',
-        formatValidationProp: '24:00:00.000'
-      };
-
-      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
-    });
-
     it('rejects a time that is formatted incorrectly', () => {
       const doc = {
         _id: 'my-doc',
         type: 'timeDoc',
         formatValidationProp: '235959.999'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a time that is one millisecond over the maximum time', () => {
+      const doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        formatValidationProp: '24:00:00.001'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a time that is one second over the maximum time', () => {
+      const doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        formatValidationProp: '24:00:01.000'
+      };
+
+      testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
+    });
+
+    it('rejects a time that is one minute over the maximum time', () => {
+      const doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        formatValidationProp: '24:01:00.000'
       };
 
       testFixture.verifyDocumentNotCreated(doc, 'timeDoc', errorFormatter.timeFormatInvalid('formatValidationProp'));
@@ -321,6 +361,22 @@ describe('Time validation type:', () => {
         _id: 'my-doc',
         type: 'timeDoc',
         immutableValidationProp: '12:34:56.78'
+      };
+
+      testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'timeDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
+    });
+
+    it('rejects a time of midnight when there is a mismatch between hours 0 and 24', () => {
+      const oldDoc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '00:00:00'
+      };
+
+      const doc = {
+        _id: 'my-doc',
+        type: 'timeDoc',
+        immutableValidationProp: '24:00:00'
       };
 
       testFixture.verifyDocumentNotReplaced(doc, oldDoc, 'timeDoc', [ errorFormatter.immutableItemViolation('immutableValidationProp') ]);
