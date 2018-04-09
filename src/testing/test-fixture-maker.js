@@ -12,7 +12,7 @@ const validationErrorFormatter = require('./validation-error-formatter');
 exports.initFromSyncFunction = function(filePath) {
   const rawSyncFunction = fs.readFileSync(filePath, 'utf8').toString();
 
-  return init(rawSyncFunction, filePath);
+  return init(rawSyncFunction, filePath, true);
 };
 
 /**
@@ -26,8 +26,8 @@ exports.initFromDocumentDefinitions = function(filePath) {
   return init(rawSyncFunction);
 };
 
-function init(rawSyncFunction, syncFunctionFile) {
-  const testEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
+function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
+  const testEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile, unescapeBackticks);
 
   const fixture = {
     /**
@@ -266,7 +266,7 @@ function init(rawSyncFunction, syncFunctionFile) {
   const defaultWriteChannel = 'write';
 
   function resetTestEnvironment() {
-    const newEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile);
+    const newEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile, unescapeBackticks);
     Object.assign(testEnvironment, newEnvironment);
 
     return testEnvironment;

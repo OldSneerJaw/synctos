@@ -35,41 +35,17 @@ describe('Sync function loader', () => {
   it('should load a sync function as a multi-line JavaScript block', () => {
     validateLoadSuccess(
       'my\n  \r\nfinal\rsync `func`',
-      null,
-      'my\n\nfinal\nsync \\`func\\`');
+      'my\n\nfinal\nsync `func`');
   });
 
   it('should load a validation function as a JSON string', () => {
     validateLoadSuccess(
       'my\n  \r\n"final"\r`sync` \\func\\',
-      { jsonString: true },
-      '"my\\n\\n\\"final\\"\\n\\\\`sync\\\\` \\\\func\\\\"');
+      '"my\\n\\n\\"final\\"\\n`sync` \\\\func\\\\"',
+      { jsonString: true });
   });
 
-  it('should throw an exception if the sync function template file does not exist', () => {
-    const docDefinitionsFile = 'my/doc-definitions.js';
-    const expectedException = new Error('my-expected-exception');
-
-    fsMock.readFileSync.throwWith(expectedException);
-    fileFragmentLoaderMock.load.returnWith('');
-    docDefinitionsLoaderMock.load.returnWith('');
-    indentMock.js.returnWith('');
-
-    expect(() => {
-      syncFunctionLoader.load(docDefinitionsFile);
-    }).to.throw(expectedException.message);
-
-    expect(fsMock.readFileSync.callCount).to.equal(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([ syncFuncTemplateFile, 'utf8' ]);
-
-    expect(fileFragmentLoaderMock.load.callCount).to.equal(0);
-
-    expect(docDefinitionsLoaderMock.load.callCount).to.equal(0);
-
-    expect(indentMock.js.callCount).to.equal(0);
-  });
-
-  function validateLoadSuccess(indentedSyncFunc, formatOptions, expectedSyncFunc) {
+  function validateLoadSuccess(indentedSyncFunc, expectedSyncFunc, formatOptions) {
     const docDefinitionsFile = 'my/doc-definitions.js';
     const docDefinitionsContent = 'my-doc-definitions';
     const originalSyncFuncTemplate = 'my-original-sync-fync-template';
