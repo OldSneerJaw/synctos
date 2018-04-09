@@ -401,7 +401,7 @@ describe('Date/time validation type', () => {
     it('accepts a leap day with a positive year that is a multiple of 4', () => {
       const doc = {
         _id: 'datetimeDoc',
-        formatValidationProp: '+009380-02-29T14:45+0830'
+        formatValidationProp: '+009380-02-29T14:45+08:30'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -517,7 +517,7 @@ describe('Date/time validation type', () => {
     it('can create a doc with a date/time that is within the minimum and maximum values', () => {
       const doc = {
         _id: 'datetimeDoc',
-        inclusiveRangeValidationAsDatetimesProp: '2016-06-24T08:22:17.123+0230'  // Same date/time as the min and max values, different time zone
+        inclusiveRangeValidationAsDatetimesProp: '2016-06-24T08:22:17.123+02:30'  // Same as the min and max values, different time zone
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -679,19 +679,19 @@ describe('Date/time validation type', () => {
       testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9-0500'));
+        errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9-05:00'));
     });
 
     it('rejects a date/time that is equal to the minimum value', () => {
       const doc = {
         _id: 'datetimeDoc',
-        exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:37.900-0500').toISOString() // Output as UTC
+        exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:37.900-05:00').toISOString() // Output as UTC
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'datetimeDoc',
-        errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9-0500'));
+        errorFormatter.minimumValueExclusiveViolation('exclusiveRangeValidationAsDatetimesProp', '2018-02-08T12:22:37.9-05:00'));
     });
 
     it('rejects a date/time that is greater than the maximum value', () => {
@@ -709,7 +709,7 @@ describe('Date/time validation type', () => {
     it('rejects a date/time that is equal to the maximum value', () => {
       const doc = {
         _id: 'datetimeDoc',
-        exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:38.10-0500').toISOString() // Output as UTC
+        exclusiveRangeValidationAsDatetimesProp: new Date('2018-02-08T12:22:38.10-05:00').toISOString() // Output as UTC
       };
 
       testFixture.verifyDocumentNotCreated(
@@ -797,12 +797,12 @@ describe('Date/time validation type', () => {
     it('rejects a datetime that does not match the existing datetime', () => {
       const oldDoc = {
         _id: 'datetimeDoc',
-        immutabilityValidationProp: '1999-12-31T23:59:59.999-0800'
+        immutabilityValidationProp: '1999-12-31T23:59:59.999-08:00'
       };
 
       const doc = {
         _id: 'datetimeDoc',
-        immutabilityValidationProp: '1999-12-31T23:59:59.999-0700'
+        immutabilityValidationProp: '1999-12-31T23:59:59.999-07:00'
       };
 
       testFixture.verifyDocumentNotReplaced(

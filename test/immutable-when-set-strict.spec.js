@@ -222,7 +222,7 @@ describe('Strict immutable when set constraint:', () => {
         staticImmutableDateProp: '1935',
         staticImmutableDatetimeProp: '1621T18:24Z',
         staticImmutableTimeProp: '00:12',
-        staticImmutableTimezoneProp: '-10:30',
+        staticImmutableTimezoneProp: '+00:00',
         staticImmutableUuidProp: '0b028c34-4891-4427-8e9d-9122163d28c4'
       };
 
@@ -231,7 +231,7 @@ describe('Strict immutable when set constraint:', () => {
         staticImmutableDateProp: '1935-01-01',
         staticImmutableDatetimeProp: '1621-01-01T18:24:00.000Z',
         staticImmutableTimeProp: '00:12:00.000',
-        staticImmutableTimezoneProp: '-1030',
+        staticImmutableTimezoneProp: '-00:00',
         staticImmutableUuidProp: oldDoc.staticImmutableUuidProp.toUpperCase()
       };
 

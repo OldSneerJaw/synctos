@@ -17,7 +17,7 @@
       },
       exclusiveRangeValidationAsDatetimesProp: {
         type: 'datetime',
-        minimumValueExclusive: '2018-02-08T12:22:37.9-0500',
+        minimumValueExclusive: '2018-02-08T12:22:37.9-05:00',
         maximumValueExclusive: '2018-02-08T12:22:38.1-05:00'
       },
       formatValidationProp: {
