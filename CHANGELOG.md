@@ -1,7 +1,7 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
-## [Unreleased]
+## [2.3.0] - 2018-04-09
 ### Added
 - [#285](https://github.com/Kashoo/synctos/issues/285): Throw an Error object when there is an authorization or validation failure
 - [#281](https://github.com/Kashoo/synctos/issues/281): Mechanism to reset test environment between test cases
@@ -14,6 +14,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 - [#288](https://github.com/Kashoo/synctos/issues/288): Backticks are escaped even if sync function is not written to a file
 - [#293](https://github.com/Kashoo/synctos/issues/293): Incorrect line numbers in test case failure stack traces
 - [#294](https://github.com/Kashoo/synctos/issues/294): Time zones incorrectly allow the colon to be omitted
+
+### Deprecated
+- `src/loading/sync-function-loader.js` module: the `load` function's `formatOptions` parameter
 
 ## [2.2.1] - 2018-03-21
 ### Fixed
@@ -188,7 +191,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.1...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/Kashoo/synctos/compare/v2.2.1...v2.3.0
 [2.2.1]: https://github.com/Kashoo/synctos/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/Kashoo/synctos/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/Kashoo/synctos/compare/v2.0.2...v2.1.0
