@@ -18,13 +18,18 @@ const underscore = require('../../lib/underscore/underscore-min');
 const simpleMock = require('../../lib/simple-mock/index');
 
 function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
+  // If the given file path is relative, it will be interpreted as relative to the process' current working directory.
+  // On the other hand, if it's already absolute, it will remain unchanged.
+  const absoluteFilePath = syncFunctionFile ? path.resolve(process.cwd(), syncFunctionFile) : syncFunctionFile;
   const options = {
-    filename: syncFunctionFile,
+    filename: absoluteFilePath,
     displayErrors: true
   };
 
   const filePath = path.resolve(__dirname, '../../templates/environments/test-environment-template.js');
-  const environmentTemplate = fs.readFileSync(filePath, 'utf8').trim();
+  const environmentTemplate = fs.readFileSync(filePath, 'utf8')
+    .trim()
+    .replace(/(?:\r\n)|(?:\r)|(?:\n)/g, () => ' '); // Ensures stack trace line numbers are correct by compressing the template to one line
 
   // The test environment includes a placeholder string called "$SYNC_FUNC_PLACEHOLDER$" that is to be replaced with the contents of
   // the sync function
