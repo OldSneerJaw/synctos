@@ -50,7 +50,7 @@ function timeModule(utils) {
   function isValidDateStructure(date) {
     return isSupportedYear(date.year) &&
       date.month >= 1 && date.month <= 12 &&
-      isValidDayOfMonth(date);
+      isValidDayOfMonth(date.year, date.month, date.day);
   }
 
   function isValidTimeStructure(time) {
@@ -89,15 +89,15 @@ function timeModule(utils) {
     }
   }
 
-  function isValidDayOfMonth(date) {
-    if (date.day < 1) {
+  function isValidDayOfMonth(year, month, day) {
+    if (day < 1) {
       return false;
-    } else if (date.month === 2) {
+    } else if (month === 2) {
       // This is a small optimization; checking whether February has a leap day is a moderately expensive operation, so
       // only perform that check if the day of the month is 29.
-      return (date.day === 29) ? isLeapYear(date.year) : date.day <= 28;
+      return (day === 29) ? isLeapYear(year) : day <= 28;
     } else {
-      return date.day <= numDaysInMonth(date.year, date.month);
+      return day <= numDaysInMonth(year, month);
     }
   }
 
@@ -258,25 +258,21 @@ function timeModule(utils) {
     var calculatedDay = date.day;
     var calculatedTimeOfDayMs = normalizeIso8601Time(time, normalizeIso8601TimeZone(timezone));
 
-    // Carry the overflow/underflow of the time of day to the day of the month
+    // Carry the overflow/underflow of the time of day to the day of the month as necessary
     var msPerDay = 86400000;
-    if (calculatedTimeOfDayMs >= msPerDay) {
-      calculatedDay++;
-      calculatedTimeOfDayMs -= msPerDay;
-    } else if (calculatedTimeOfDayMs < 0) {
+    if (calculatedTimeOfDayMs < 0) {
       calculatedDay--;
       calculatedTimeOfDayMs += msPerDay;
+    } else if (calculatedTimeOfDayMs >= msPerDay) {
+      calculatedDay++;
+      calculatedTimeOfDayMs -= msPerDay;
     }
 
-    // Carry the overflow/underflow of the day of the month to the month
-    var maxDaysInMonth = numDaysInMonth(calculatedYear, calculatedMonth);
-    if (calculatedDay > maxDaysInMonth) {
-      calculatedMonth++;
-      calculatedDay = 1;
-    } else if (calculatedDay < 1) {
+    // Carry the overflow/underflow of the day of the month to the month as necessary
+    if (calculatedDay < 1) {
       calculatedMonth--;
 
-      // There was an underflow, so set the day to the last day of the new month
+      // There was an underflow, so roll back to the last day of the previous month
       if (calculatedMonth > 12) {
         calculatedDay = numDaysInMonth(calculatedYear + 1, 1);
       } else if (calculatedMonth < 1) {
@@ -284,15 +280,19 @@ function timeModule(utils) {
       } else {
         calculatedDay = numDaysInMonth(calculatedYear, calculatedMonth);
       }
+    } else if (!isValidDayOfMonth(calculatedYear, calculatedMonth, calculatedDay)) {
+      // There was an overflow, so roll over to the first day of the next month
+      calculatedMonth++;
+      calculatedDay = 1;
     }
 
-    // Carry the overflow/underflow of the month to the year
-    if (calculatedMonth > 12) {
-      calculatedYear++;
-      calculatedMonth = 1;
-    } else if (calculatedMonth < 1) {
+    // Carry the overflow/underflow of the month to the year as necessary
+    if (calculatedMonth < 1) {
       calculatedYear--;
       calculatedMonth = 12;
+    } else if (calculatedMonth > 12) {
+      calculatedYear++;
+      calculatedMonth = 1;
     }
 
     return [ calculatedYear, calculatedMonth, calculatedDay, calculatedTimeOfDayMs ];
