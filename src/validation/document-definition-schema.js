@@ -1,5 +1,5 @@
 const joi = require('../../lib/joi/joi.bundle');
-const propertyValidatorSchema = require('./property-validator-schema');
+const { propertyValidatorSchema, datetimeStringSchema } = require('./property-validator-schema');
 const makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 const integerSchema = joi.number().integer();
@@ -90,11 +90,26 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
           }).or('roles', 'users') // At least one of "roles" or "users" must be provided
         }))),
 
+  expiry: dynamicConstraintSchema(joi.any().when(
+    joi.string(),
+    {
+      then: datetimeStringSchema,
+      otherwise: joi.any().when(
+        joi.number(),
+        {
+          then: joi.number().integer().min(0),
+          otherwise: joi.date().options({ convert: false })
+        }
+      )
+    }
+  )),
+
   customActions: joi.object().min(1).keys({
     onTypeIdentificationSucceeded: customActionEventSchema,
     onAuthorizationSucceeded: customActionEventSchema,
     onValidationSucceeded: customActionEventSchema,
     onAccessAssignmentsSucceeded: customActionEventSchema,
+    onExpiryAssignmentSucceeded: customActionEventSchema,
     onDocumentChannelAssignmentSucceeded: customActionEventSchema
   }),
 

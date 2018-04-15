@@ -38,9 +38,11 @@ describe('Document definitions validator:', () => {
             type: 'invalid-type' // Must be either "role", "channel" or null
           }
         ],
+        expiry: -25637, // Must be no less than zero
         customActions: {
           onTypeIdentificationSucceeded: (a, b, c, extraParam) => extraParam, // Too many parameters
           onAuthorizationSucceeded: 5, // Must be a function
+          onExpiryAssignmentSucceeded: (a, b, c) => c,
           invalidEvent: (a, b, c) => c // Unsupported event type
         }
       }
@@ -65,6 +67,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.accessAssignments.2.users: \"users\" must contain at least 1 items',
         'myDoc1.accessAssignments.2.channels: \"channels\" is not allowed',
         'myDoc1.accessAssignments.3.type: \"type\" must be one of [channel, role, null]',
+        'myDoc1.expiry: \"expiry\" must be larger than or equal to 0',
         'myDoc1.customActions.onTypeIdentificationSucceeded: \"onTypeIdentificationSucceeded\" must have an arity lesser or equal to 3',
         'myDoc1.customActions.onAuthorizationSucceeded: \"onAuthorizationSucceeded\" must be a Function',
         'myDoc1.customActions.invalidEvent: \"invalidEvent\" is not allowed'
@@ -220,7 +223,8 @@ describe('Document definitions validator:', () => {
                 }
               }
             }
-          }
+          },
+          expiry: '20180415T1357-0700' // Must be a valid ISO 8601 date string
         }
       };
     };
@@ -290,7 +294,8 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidMustEqualConstraintProperty.mustEqual: \"mustEqual\" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.noTypeProperty.type: "type" is required',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [array, attachmentReference, boolean, date, datetime, enum, float, hashtable, integer, object, string, time, timezone, uuid]'
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [array, attachmentReference, boolean, date, datetime, enum, float, hashtable, integer, object, string, time, timezone, uuid]',
+        'myDoc1.expiry: \"expiry\" with value \"20180415T1357-0700\" fails to match the required pattern: /^([+-]\\d{6}|\\d{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\\d|3[01]))?)?(T((([01]\\d|2[0-3])(:[0-5]\\d)(:[0-5]\\d(\\.\\d{1,3})?)?)|(24:00(:00(\\.0{1,3})?)?))(Z|([+-])([01]\\d|2[0-3]):([0-5]\\d))?)?$/',
       ]);
   });
 });

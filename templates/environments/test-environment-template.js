@@ -1,14 +1,15 @@
-function makeTestEnvironment(_, simple) {
+function makeTestEnvironment(_, simpleMock) {
   const JSON = {
     parse: global.JSON.parse,
     stringify: global.JSON.stringify
   };
-  const requireAccess = simple.stub();
-  const requireRole = simple.stub();
-  const requireUser = simple.stub();
-  const channel = simple.stub();
-  const access = simple.stub();
-  const role = simple.stub();
+  const requireAccess = simpleMock.stub();
+  const requireRole = simpleMock.stub();
+  const requireUser = simpleMock.stub();
+  const channel = simpleMock.stub();
+  const access = simpleMock.stub();
+  const role = simpleMock.stub();
+  const expiry = simpleMock.stub();
 
   return {
     _,
@@ -19,6 +20,7 @@ function makeTestEnvironment(_, simple) {
     channel,
     access,
     role,
+    expiry,
     syncFunction: $SYNC_FUNC_PLACEHOLDER$
   };
 }

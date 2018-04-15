@@ -8,6 +8,7 @@
     "_": false,
     "access": false,
     "channel": false,
+    "expiry": false,
     "importSyncFunctionFragment": false,
     "JSON": false,
     "requireAccess": false,

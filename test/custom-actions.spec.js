@@ -131,6 +131,49 @@ describe('Custom actions:', () => {
     });
   });
 
+  describe('the onExpiryAssignmentSucceeded event', () => {
+    it('executes a custom action when a document is created', () => {
+      const docType = 'onTimestampExpiryAssignedDoc';
+      const doc = { _id: docType };
+
+      verifyCustomActionExecution(doc, null, docType, 'onExpiryAssignmentSucceeded');
+    });
+
+    it('executes a custom action when a document is replaced', () => {
+      const docType = 'onStringExpiryAssignedDoc';
+      const doc = { _id: docType };
+      const oldDoc = { _id: docType };
+
+      verifyCustomActionExecution(doc, oldDoc, docType, 'onExpiryAssignmentSucceeded');
+    });
+
+    it('does not execute a custom action when a document is deleted', () => {
+      const oldDoc = { _id: 'onDateObjectExpiryAssignedDoc' };
+
+      testFixture.verifyDocumentDeleted(oldDoc, expectedAuthorization);
+    });
+
+    it('does not execute a custom action when the expiry is not defined', () => {
+      const doc = { _id: 'missingExpiryDoc' };
+
+      testFixture.verifyDocumentCreated(doc, expectedAuthorization);
+    });
+
+    it('executes a custom action when expiry is specified as an offset', () => {
+      const docType = 'onOffsetExpiryAssignedDoc';
+      const doc = { _id: docType };
+
+      verifyCustomActionExecution(doc, null, docType, 'onExpiryAssignmentSucceeded');
+    });
+
+    it('executes a custom action when expiry is specified as a Date object', () => {
+      const docType = 'onDateObjectExpiryAssignedDoc';
+      const doc = { _id: docType };
+
+      verifyCustomActionExecution(doc, null, docType, 'onExpiryAssignmentSucceeded');
+    });
+  });
+
   describe('the onDocumentChannelAssignmentSucceeded event', () => {
     const docType = 'onDocChannelsAssignedDoc';
     const doc = { _id: docType };
@@ -197,6 +240,14 @@ describe('Custom actions:', () => {
       return;
     }
 
+    if (!docDeleted) {
+      verifyExpiryMetadata(actualMetadata);
+    }
+
+    if (expectedActionType === 'onExpiryAssignmentSucceeded') {
+      return;
+    }
+
     verifyDocChannelsMetadata(actualMetadata);
   }
 
@@ -215,12 +266,14 @@ describe('Custom actions:', () => {
   }
 
   function verifyAccessAssignmentMetadata(actualMetadata) {
-    if (actualMetadata.documentDefinition.accessAssignments) {
-      const expectedAssignments = actualMetadata.documentDefinition.accessAssignments.map((assignment) => {
+    const rawExpectedAssignments = actualMetadata.documentDefinition.accessAssignments;
+    const actualAssignments = actualMetadata.accessAssignments;
+    if (rawExpectedAssignments) {
+      const expectedAssignments = rawExpectedAssignments.map((assignment) => {
         const type = assignment.type || 'channel';
-        const channels = toArray(assignment.channels) || [ ];
-        const users = toArray(assignment.users) || [ ];
-        const roles = toArray(assignment.roles) || [ ];
+        const channels = resolveCollection(assignment.channels);
+        const users = resolveCollection(assignment.users);
+        const roles = resolveCollection(assignment.roles);
         const roleNames = roles.map((roleName) => `role:${roleName}`);
         if (type === 'channel') {
           return {
@@ -235,21 +288,44 @@ describe('Custom actions:', () => {
             roles: roleNames
           };
         } else {
-          expect().fail(`Invalid access assignmen type: ${type}`);
+          expect.fail(null, null, `Invalid access assignment type: ${type}`);
         }
       });
 
-      expect(actualMetadata.accessAssignments).to.eql(expectedAssignments);
+      expect(actualAssignments).to.eql(expectedAssignments);
     } else {
-      expect(1).to.equal(2);
+      expect.fail(null, null, 'Missing access assignments in document definition');
     }
   }
 
-  function toArray(item) {
-    if (item === null || item === void 0) {
-      return item;
+  function verifyExpiryMetadata(actualMetadata) {
+    const actualExpiry = actualMetadata.expirationDate;
+    const rawExpectedExpiry = actualMetadata.documentDefinition.expiry;
+    if (typeof rawExpectedExpiry === 'string') {
+      expect(actualExpiry).to.equal(rawExpectedExpiry);
+    } else if (typeof rawExpectedExpiry === 'number') {
+      if (rawExpectedExpiry <= 2592000) {
+        // The expiry was specified as an offset - ensure that it falls within a range of +/- 3 seconds from the
+        // expected date
+        const minimumExpiryDate = new Date();
+        minimumExpiryDate.setSeconds(minimumExpiryDate.getSeconds() + rawExpectedExpiry - 3);
+
+        const maximumExpiryDate = new Date();
+        maximumExpiryDate.setSeconds(maximumExpiryDate.getSeconds() + rawExpectedExpiry + 3);
+
+        const actualExpirationDate = new Date(actualExpiry);
+
+        expect(actualExpiry).to.be.a('string');
+        expect(actualExpirationDate).to.be.above(minimumExpiryDate);
+        expect(actualExpirationDate).to.be.below(maximumExpiryDate);
+      } else {
+        // The expiry was specified as a Unix timestamp
+        expect(actualExpiry).to.equal(new Date(rawExpectedExpiry * 1000).toISOString());
+      }
+    } else if (rawExpectedExpiry instanceof Date) {
+      expect(actualExpiry).to.equal(rawExpectedExpiry.toISOString());
     } else {
-      return Array.isArray(item) ? item : [ item ];
+      expect.fail(null, null, `Invalid document expiry: ${rawExpectedExpiry}`);
     }
   }
 
@@ -262,5 +338,13 @@ describe('Custom actions:', () => {
       _id: docType,
       _deleted: true
     };
+  }
+
+  function resolveCollection(value) {
+    if (value === null || value === void 0) {
+      return [ ];
+    } else {
+      return Array.isArray(value) ? value : [ value ];
+    }
   }
 });

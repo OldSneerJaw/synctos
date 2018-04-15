@@ -60,6 +60,7 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
      *                                               - expectedChannels: an optional list of channels to assign to the users and roles
      *                                               - expectedUsers: an optional list of users to which to assign the channels
      *                                               - expectedRoles: an optional list of roles to which to assign the channels
+     * @param {string|number|Date} [expectedExpiry] The date/time or offset at which the document is expected to expire
      */
     verifyDocumentAccepted,
 
@@ -79,6 +80,7 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
      *                                               - expectedChannels: an optional list of channels to assign to the users and roles
      *                                               - expectedUsers: an optional list of users to which to assign the channels
      *                                               - expectedRoles: an optional list of roles to which to assign the channels
+     * @param {string|number|Date} [expectedExpiry] The date/time or offset at which the document is expected to expire
      */
     verifyDocumentCreated,
 
@@ -99,6 +101,7 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
      *                                               - expectedChannels: an optional list of channels to assign to the users and roles
      *                                               - expectedUsers: an optional list of users to which to assign the channels
      *                                               - expectedRoles: an optional list of roles to which to assign the channels
+     * @param {string|number|Date} [expectedExpiry] The date/time or offset at which the document is expected to expire
      */
     verifyDocumentReplaced,
 
@@ -259,6 +262,7 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
      * - channel: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#channel-name
      * - access: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#access-username-channelname
      * - role: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#role-username-rolename
+     * - expiry: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#expiry-value
      */
     testEnvironment
   };
@@ -430,6 +434,19 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
     }
   }
 
+  function verifyDocumentExpiry(rawExpectedExpiry) {
+    const expectedExpiry = (rawExpectedExpiry instanceof Date) ? rawExpectedExpiry.toISOString() : rawExpectedExpiry;
+
+    assert.equal(testEnvironment.expiry.callCount, 1, 'Document expiry was not set');
+
+    const actualArgs = testEnvironment.expiry.calls[0].args;
+    assert.equal(actualArgs.length, 1, 'The expiry function received the wrong number of arguments');
+    assert.deepEqual(
+      actualArgs,
+      [ expectedExpiry ],
+      `Document expiry was not set with the expected value (${expectedExpiry}). Actual value: ${actualArgs[0]}`);
+  }
+
   function verifyOperationChannelsAssigned(doc, expectedChannels) {
     if (testEnvironment.channel.callCount !== 1) {
       assert.fail('Document channels were not assigned');
@@ -496,11 +513,15 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
     return expectedOperationChannels;
   }
 
-  function verifyDocumentAccepted(doc, oldDoc, expectedAuthorization, expectedAccessAssignments) {
+  function verifyDocumentAccepted(doc, oldDoc, expectedAuthorization, expectedAccessAssignments, expectedExpiry) {
     testEnvironment.syncFunction(doc, oldDoc || null);
 
     if (expectedAccessAssignments) {
       verifyAccessAssignments(expectedAccessAssignments);
+    }
+
+    if (expectedExpiry) {
+      verifyDocumentExpiry(expectedExpiry);
     }
 
     const expectedOperationChannels = verifyAuthorization(expectedAuthorization);
@@ -508,12 +529,22 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
     verifyOperationChannelsAssigned(doc, expectedOperationChannels);
   }
 
-  function verifyDocumentCreated(doc, expectedAuthorization, expectedAccessAssignments) {
-    verifyDocumentAccepted(doc, null, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
+  function verifyDocumentCreated(doc, expectedAuthorization, expectedAccessAssignments, expectedExpiry) {
+    verifyDocumentAccepted(
+      doc,
+      null,
+      expectedAuthorization || defaultWriteChannel,
+      expectedAccessAssignments,
+      expectedExpiry);
   }
 
-  function verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, expectedAccessAssignments) {
-    verifyDocumentAccepted(doc, oldDoc, expectedAuthorization || defaultWriteChannel, expectedAccessAssignments);
+  function verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, expectedAccessAssignments, expectedExpiry) {
+    verifyDocumentAccepted(
+      doc,
+      oldDoc,
+      expectedAuthorization || defaultWriteChannel,
+      expectedAccessAssignments,
+      expectedExpiry);
   }
 
   function verifyDocumentDeleted(oldDoc, expectedAuthorization) {

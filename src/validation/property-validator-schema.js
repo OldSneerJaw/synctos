@@ -9,7 +9,7 @@ const regexSchema = joi.object().type(RegExp);
 // string format than Sync Gateway's JavaScript interpreter does. To prevent the validator from allowing date or
 // date-time strings that cannot be parsed when a generated sync function is used in Sync Gateway, strings with explicit
 // regular expression definitions are used for the "date" and "datetime" types rather than `joi.date().iso()`.
-const datetimeStringSchema = joi.string()
+const datetimeStringSchema = exports.datetimeStringSchema = joi.string()
   .regex(/^([+-]\d{6}|\d{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\d|3[01]))?)?(T((([01]\d|2[0-3])(:[0-5]\d)(:[0-5]\d(\.\d{1,3})?)?)|(24:00(:00(\.0{1,3})?)?))(Z|([+-])([01]\d|2[0-3]):([0-5]\d))?)?$/);
 const datetimeSchema = joi.any().when(
   joi.string(),
@@ -101,7 +101,7 @@ const schema = joi.object().keys({
  * A partial schema for a single entry in a "propertyValidators" object at either the top level of a document definition
  * or nested within an "object" validator.
  */
-module.exports = exports = schema;
+exports.propertyValidatorSchema = schema;
 
 // Defined as a function rather than a plain object because it contains lazy references that result in recursive
 // references between the complex types (e.g. "array", "object", "hashtable") and the main "propertyValidators" schema

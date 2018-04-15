@@ -2,6 +2,9 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
+### Added
+- [#301](https://github.com/Kashoo/synctos/issues/301): Configuration of document expiry
+
 ### Fixed
 - [#302](https://github.com/Kashoo/synctos/issues/302): Access assignment results are sometimes unavailable to subsequent custom actions
 
