@@ -15,6 +15,24 @@ function() {
   var authorizedRoles = { write: 'write-role' };
   var authorizedUsers = { write: 'write-user' };
 
+  var accessAssignments = [
+    {
+      users: 'user1',
+      roles: 'role1',
+      channels: 'channel1'
+    },
+    {
+      type: 'role',
+      users: [ 'user1', 'user2' ],
+      roles: [ 'role1' ]
+    },
+    {
+      type: 'channel',
+      roles: [ 'role1', 'role2' ],
+      channels: [ 'channel1', 'channel2' ]
+    }
+  ];
+
   return {
     onTypeIdentifiedDoc: {
       typeFilter: function(doc, oldDoc) {
@@ -54,13 +72,7 @@ function() {
       authorizedRoles: authorizedRoles,
       authorizedUsers: authorizedUsers,
       propertyValidators: { },
-      accessAssignments: [
-        {
-          users: 'user1',
-          roles: 'role1',
-          channels: 'channel1'
-        }
-      ],
+      accessAssignments: accessAssignments,
       customActions: { onAccessAssignmentsSucceeded: customAction('onAccessAssignmentsSucceeded') }
     },
     missingAccessAssignmentsDoc: {
@@ -92,6 +104,7 @@ function() {
       authorizedRoles: authorizedRoles,
       authorizedUsers: authorizedUsers,
       propertyValidators: { },
+      accessAssignments: accessAssignments,
       customActions: { onDocumentChannelAssignmentSucceeded: customAction('onDocumentChannelAssignmentSucceeded') }
     }
   };
