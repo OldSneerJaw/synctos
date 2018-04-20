@@ -150,12 +150,13 @@ function synctos(doc, oldDoc) {
 
   if (theDocDefinition.accessAssignments && !doc._deleted) {
     var accessAssignments = accessAssignmentModule.assignUserAccess(doc, oldDoc, theDocDefinition);
-
-    if (theDocDefinition.customActions &&
-        typeof theDocDefinition.customActions.onAccessAssignmentsSucceeded === 'function' &&
-        accessAssignments.length > 0) {
+    if (accessAssignments.length > 0) {
       customActionMetadata.accessAssignments = accessAssignments;
-      theDocDefinition.customActions.onAccessAssignmentsSucceeded(doc, oldDoc, customActionMetadata);
+
+      if (theDocDefinition.customActions &&
+          typeof theDocDefinition.customActions.onAccessAssignmentsSucceeded === 'function') {
+        theDocDefinition.customActions.onAccessAssignmentsSucceeded(doc, oldDoc, customActionMetadata);
+      }
     }
   }
 

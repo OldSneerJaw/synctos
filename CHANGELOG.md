@@ -2,7 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-Nothing yet.
+### Fixed
+- [#302](https://github.com/Kashoo/synctos/issues/302): Access assignment results are sometimes unavailable to subsequent custom actions
 
 ## [2.3.0] - 2018-04-09
 ### Added

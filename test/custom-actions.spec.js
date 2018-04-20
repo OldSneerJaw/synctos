@@ -173,10 +173,10 @@ describe('Custom actions:', () => {
     expect(syncFuncError.oldDoc).to.eql(oldDoc);
     expect(syncFuncError.actionType).to.eql(expectedActionType);
 
-    verifyCustomActionMetadata(syncFuncError.customActionMetadata, docType, expectedActionType);
+    verifyCustomActionMetadata(syncFuncError.customActionMetadata, docType, expectedActionType, doc._deleted);
   }
 
-  function verifyCustomActionMetadata(actualMetadata, docType, expectedActionType) {
+  function verifyCustomActionMetadata(actualMetadata, docType, expectedActionType, docDeleted) {
     verifyTypeMetadata(actualMetadata, docType);
 
     if (expectedActionType === 'onTypeIdentificationSucceeded') {
@@ -189,7 +189,9 @@ describe('Custom actions:', () => {
       return;
     }
 
-    verifyAccessAssignmentMetadata(actualMetadata);
+    if (!docDeleted) {
+      verifyAccessAssignmentMetadata(actualMetadata);
+    }
 
     if (expectedActionType === 'onAccessAssignmentsSucceeded') {
       return;
@@ -214,15 +216,40 @@ describe('Custom actions:', () => {
 
   function verifyAccessAssignmentMetadata(actualMetadata) {
     if (actualMetadata.documentDefinition.accessAssignments) {
-      const expectedAssignments = actualMetadata.documentDefinition.accessAssignments.map((assignment) => ({
-        type: 'channel',
-        channels: [ assignment.channels ],
-        usersAndRoles: [ assignment.users, `role:${assignment.roles}` ]
-      }));
+      const expectedAssignments = actualMetadata.documentDefinition.accessAssignments.map((assignment) => {
+        const type = assignment.type || 'channel';
+        const channels = toArray(assignment.channels) || [ ];
+        const users = toArray(assignment.users) || [ ];
+        const roles = toArray(assignment.roles) || [ ];
+        const roleNames = roles.map((roleName) => `role:${roleName}`);
+        if (type === 'channel') {
+          return {
+            type,
+            channels,
+            usersAndRoles: [ ...users, ...roleNames ]
+          };
+        } else if (type === 'role') {
+          return {
+            type,
+            users,
+            roles: roleNames
+          };
+        } else {
+          expect().fail(`Invalid access assignmen type: ${type}`);
+        }
+      });
 
       expect(actualMetadata.accessAssignments).to.eql(expectedAssignments);
     } else {
-      expect(actualMetadata.accessAssignments).to.equal(void 0);
+      expect(1).to.equal(2);
+    }
+  }
+
+  function toArray(item) {
+    if (item === null || item === void 0) {
+      return item;
+    } else {
+      return Array.isArray(item) ? item : [ item ];
     }
   }
 
