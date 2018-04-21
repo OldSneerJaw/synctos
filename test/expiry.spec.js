@@ -55,16 +55,18 @@ describe('Expiry:', () => {
     });
 
     it('sets document expiry as a date object when creating a document', () => {
+      const expectedExpiryDate = new Date(Date.UTC(3018, 3, 15, 3, 26, 58));
       const doc = { type: 'staticDateExpiryDoc' };
 
-      testFixture.verifyDocumentCreated(doc, expectedAuthorization, null, '3018-04-15T03:26:58.000Z');
+      testFixture.verifyDocumentCreated(doc, expectedAuthorization, null, toUnixTimestamp(expectedExpiryDate));
     });
 
     it('sets document expiry as a date object when replacing a document', () => {
+      const expectedExpiryDate = new Date(Date.UTC(3018, 3, 15, 3, 26, 58));
       const oldDoc = { type: 'staticDateExpiryDoc' };
       const doc = { type: 'staticDateExpiryDoc' };
 
-      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, null, '3018-04-15T03:26:58.000Z');
+      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, null, toUnixTimestamp(expectedExpiryDate));
     });
 
     it('does not set document expiry as a date object when deleting a document', () => {
@@ -121,3 +123,7 @@ describe('Expiry:', () => {
     });
   });
 });
+
+function toUnixTimestamp(date) {
+  return Math.floor(date.getTime() / 1000);
+}

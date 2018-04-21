@@ -384,7 +384,7 @@ accessAssignments: function(doc, oldDoc) {
         * `roles`: A list of roles that were assigned to the users.
         * `users`: A list of users to which the roles were assigned. Note that, as per the sync function API, each role element's value is prefixed with "role:".
   6. `onExpiryAssignmentSucceeded`: Executed immediately after document [expiry](https://developer.couchbase.com/documentation/mobile/2.0/guides/sync-gateway/sync-function-api-guide/index.html#expiry-value) is set and before channels are assigned to the document. Not executed if the document definition does not include an `expiry` constraint. NOTE: Only supported on Sync Gateway 2.0 and later. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
-    * `expirationDate`: An ISO 8601 date-time string that specifies the absolute point in time at which the document will expire and be purged from the database.
+    * `expiryDate`: A JavaScript `Date` object that specifies the absolute point in time at which the document will expire and be purged from the database.
   7. `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document revision is written. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
     * `documentChannels`: A list of channels that were assigned to the document.
 

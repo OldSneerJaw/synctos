@@ -435,7 +435,8 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
   }
 
   function verifyDocumentExpiry(rawExpectedExpiry) {
-    const expectedExpiry = (rawExpectedExpiry instanceof Date) ? rawExpectedExpiry.toISOString() : rawExpectedExpiry;
+    const expectedExpiry =
+      (rawExpectedExpiry instanceof Date) ? Math.floor(rawExpectedExpiry.getTime() / 1000) : rawExpectedExpiry;
 
     assert.equal(testEnvironment.expiry.callCount, 1, 'Document expiry was not set');
 

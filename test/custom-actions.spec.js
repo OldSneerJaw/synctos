@@ -299,10 +299,12 @@ describe('Custom actions:', () => {
   }
 
   function verifyExpiryMetadata(actualMetadata) {
-    const actualExpiry = actualMetadata.expirationDate;
+    const actualExpiry = actualMetadata.expiryDate;
+    expect(actualExpiry).to.be.an.instanceof(Date);
+
     const rawExpectedExpiry = actualMetadata.documentDefinition.expiry;
     if (typeof rawExpectedExpiry === 'string') {
-      expect(actualExpiry).to.equal(rawExpectedExpiry);
+      expect(actualExpiry).to.eql(new Date(rawExpectedExpiry));
     } else if (typeof rawExpectedExpiry === 'number') {
       if (rawExpectedExpiry <= 2592000) {
         // The expiry was specified as an offset - ensure that it falls within a range of +/- 3 seconds from the
@@ -313,17 +315,14 @@ describe('Custom actions:', () => {
         const maximumExpiryDate = new Date();
         maximumExpiryDate.setSeconds(maximumExpiryDate.getSeconds() + rawExpectedExpiry + 3);
 
-        const actualExpirationDate = new Date(actualExpiry);
-
-        expect(actualExpiry).to.be.a('string');
-        expect(actualExpirationDate).to.be.above(minimumExpiryDate);
-        expect(actualExpirationDate).to.be.below(maximumExpiryDate);
+        expect(actualExpiry).to.be.above(minimumExpiryDate);
+        expect(actualExpiry).to.be.below(maximumExpiryDate);
       } else {
         // The expiry was specified as a Unix timestamp
-        expect(actualExpiry).to.equal(new Date(rawExpectedExpiry * 1000).toISOString());
+        expect(actualExpiry).to.eql(new Date(rawExpectedExpiry * 1000));
       }
     } else if (rawExpectedExpiry instanceof Date) {
-      expect(actualExpiry).to.equal(rawExpectedExpiry.toISOString());
+      expect(actualExpiry).to.eql(rawExpectedExpiry);
     } else {
       expect.fail(null, null, `Invalid document expiry: ${rawExpectedExpiry}`);
     }

@@ -174,7 +174,7 @@ function synctos(doc, oldDoc) {
   }
 
   if (!isValueNullOrUndefined(theDocDefinition.expiry) && !doc._deleted) {
-    customActionMetadata.expirationDate = expiryModule.setDocExpiry(doc, oldDoc, theDocDefinition.expiry);
+    customActionMetadata.expiryDate = expiryModule.setDocExpiry(doc, oldDoc, theDocDefinition.expiry);
 
     if (theDocDefinition.customActions &&
         typeof theDocDefinition.customActions.onExpiryAssignmentSucceeded === 'function') {
