@@ -129,7 +129,7 @@ function() {
       authorizedUsers: authorizedUsers,
       propertyValidators: { },
       accessAssignments: accessAssignments,
-      expiry: '2031-04-15T16:32:59.285-07:00',
+      expiry: '2031-04-15T16:32:59-07:00',
       customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
     },
     onDateObjectExpiryAssignedDoc: {
@@ -164,7 +164,7 @@ function() {
       authorizedUsers: authorizedUsers,
       propertyValidators: { },
       accessAssignments: accessAssignments,
-      expiry: '2028-04-18T12:00Z',
+      expiry: '2028-04-18T12:00:45Z',
       customActions: { onDocumentChannelAssignmentSucceeded: customAction('onDocumentChannelAssignmentSucceeded') }
     }
   };

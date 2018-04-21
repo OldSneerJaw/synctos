@@ -295,7 +295,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.emptyPropertyValidatorsProperty.propertyValidators: \"propertyValidators\" must have at least 1 children',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.noTypeProperty.type: "type" is required',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.unrecognizedTypeProperty.type: "type" must be one of [array, attachmentReference, boolean, date, datetime, enum, float, hashtable, integer, object, string, time, timezone, uuid]',
-        'myDoc1.expiry: \"expiry\" with value \"20180415T1357-0700\" fails to match the required pattern: /^([+-]\\d{6}|\\d{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\\d|3[01]))?)?(T((([01]\\d|2[0-3])(:[0-5]\\d)(:[0-5]\\d(\\.\\d{1,3})?)?)|(24:00(:00(\\.0{1,3})?)?))(Z|([+-])([01]\\d|2[0-3]):([0-5]\\d))?)?$/',
+        'myDoc1.expiry: \"expiry\" with value \"20180415T1357-0700\" fails to match the required pattern: /^\\d{4}-(((0[13578]|1[02])-(0[1-9]|[12]\\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\\d|30))|(02-(0[1-9]|[12]\\d)))T([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(Z|[+-]([01]\\d|2[0-3]):[0-5]\\d)$/',
       ]);
   });
 });

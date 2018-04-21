@@ -1,5 +1,5 @@
 const joi = require('../../lib/joi/joi.bundle');
-const { propertyValidatorSchema, datetimeStringSchema } = require('./property-validator-schema');
+const propertyValidatorSchema = require('./property-validator-schema');
 const makeConstraintSchemaDynamic = require('./dynamic-constraint-schema-maker');
 
 const integerSchema = joi.number().integer();
@@ -14,6 +14,10 @@ const authorizationSchema = dynamicConstraintSchema(
       write: arrayOrSingleItemSchema(nonEmptyStringSchema)
     }));
 const accessAssignmentEntryPropertySchema = dynamicConstraintSchema(arrayOrSingleItemSchema(nonEmptyStringSchema, 1));
+
+// The regular expression for expiry dates is considerably more restrictive than it is for other property constraints
+const expiryDateStringSchema = joi.string()
+ .regex(/^\d{4}-(((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\d|30))|(02-(0[1-9]|[12]\d)))T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(Z|[+-]([01]\d|2[0-3]):[0-5]\d)$/);
 
 /**
  * The full schema for a single document definition object.
@@ -93,7 +97,7 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
   expiry: dynamicConstraintSchema(joi.any().when(
     joi.string(),
     {
-      then: datetimeStringSchema,
+      then: expiryDateStringSchema,
       otherwise: joi.any().when(
         joi.number(),
         {

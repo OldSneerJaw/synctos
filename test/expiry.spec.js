@@ -35,14 +35,14 @@ describe('Expiry:', () => {
     it('sets document expiry as a string when creating a document', () => {
       const doc = { type: 'staticDateStringExpiryDoc' };
 
-      testFixture.verifyDocumentCreated(doc, expectedAuthorization, null, '2050-12-31T24:00Z');
+      testFixture.verifyDocumentCreated(doc, expectedAuthorization, null, '2050-12-31T01:52:35+12:00');
     });
 
     it('sets document expiry as a string when replacing a document', () => {
       const oldDoc = { type: 'staticDateStringExpiryDoc' };
       const doc = { type: 'staticDateStringExpiryDoc' };
 
-      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, null, '2050-12-31T24:00Z');
+      testFixture.verifyDocumentReplaced(doc, oldDoc, expectedAuthorization, null, '2050-12-31T01:52:35+12:00');
     });
 
     it('does not set document expiry as a string when deleting a document', () => {

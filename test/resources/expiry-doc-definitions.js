@@ -20,7 +20,7 @@ function() {
       typeFilter: simpleTypeFilter,
       channels: { write: 'write' },
       propertyValidators: { },
-      expiry: '2050-12-31T24:00Z'
+      expiry: '2050-12-31T01:52:35+12:00'
     },
     staticDateExpiryDoc: {
       typeFilter: simpleTypeFilter,
