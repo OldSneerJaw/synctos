@@ -132,15 +132,30 @@ describe('Custom actions:', () => {
   });
 
   describe('the onExpiryAssignmentSucceeded event', () => {
-    it('executes a custom action when a document is created', () => {
+    it('executes a custom action when expiry is specified as a Unix timestamp', () => {
       const docType = 'onTimestampExpiryAssignedDoc';
       const doc = { _id: docType };
 
       verifyCustomActionExecution(doc, null, docType, 'onExpiryAssignmentSucceeded');
     });
 
-    it('executes a custom action when a document is replaced', () => {
+    it('executes a custom action when expiry is specified as an ISO 8601 date string', () => {
       const docType = 'onStringExpiryAssignedDoc';
+      const doc = { _id: docType };
+      const oldDoc = { _id: docType };
+
+      verifyCustomActionExecution(doc, oldDoc, docType, 'onExpiryAssignmentSucceeded');
+    });
+
+    it('executes a custom action when expiry is specified as an offset in seconds', () => {
+      const docType = 'onOffsetExpiryAssignedDoc';
+      const doc = { _id: docType };
+
+      verifyCustomActionExecution(doc, null, docType, 'onExpiryAssignmentSucceeded');
+    });
+
+    it('executes a custom action when expiry is specified as a Date object', () => {
+      const docType = 'onDateObjectExpiryAssignedDoc';
       const doc = { _id: docType };
       const oldDoc = { _id: docType };
 
@@ -157,20 +172,6 @@ describe('Custom actions:', () => {
       const doc = { _id: 'missingExpiryDoc' };
 
       testFixture.verifyDocumentCreated(doc, expectedAuthorization);
-    });
-
-    it('executes a custom action when expiry is specified as an offset', () => {
-      const docType = 'onOffsetExpiryAssignedDoc';
-      const doc = { _id: docType };
-
-      verifyCustomActionExecution(doc, null, docType, 'onExpiryAssignmentSucceeded');
-    });
-
-    it('executes a custom action when expiry is specified as a Date object', () => {
-      const docType = 'onDateObjectExpiryAssignedDoc';
-      const doc = { _id: docType };
-
-      verifyCustomActionExecution(doc, null, docType, 'onExpiryAssignmentSucceeded');
     });
   });
 

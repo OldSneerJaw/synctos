@@ -105,7 +105,7 @@ function() {
       authorizedUsers: authorizedUsers,
       propertyValidators: { },
       accessAssignments: accessAssignments,
-      expiry: 1234567890,
+      expiry: 2592001,
       customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
     },
     onOffsetExpiryAssignedDoc: {
@@ -117,7 +117,7 @@ function() {
       authorizedUsers: authorizedUsers,
       propertyValidators: { },
       accessAssignments: accessAssignments,
-      expiry: 3600,
+      expiry: 2592000,
       customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
     },
     onStringExpiryAssignedDoc: {
