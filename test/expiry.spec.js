@@ -55,14 +55,14 @@ describe('Expiry:', () => {
     });
 
     it('sets document expiry as a date object when creating a document', () => {
-      const expectedExpiryDate = new Date(Date.UTC(3018, 3, 15, 3, 26, 58));
+      const expectedExpiryDate = new Date(Date.UTC(2105, 3, 15, 3, 26, 58));
       const doc = { type: 'staticDateExpiryDoc' };
 
       testFixture.verifyDocumentCreated(doc, expectedAuthorization, null, toUnixTimestamp(expectedExpiryDate));
     });
 
     it('sets document expiry as a date object when replacing a document', () => {
-      const expectedExpiryDate = new Date(Date.UTC(3018, 3, 15, 3, 26, 58));
+      const expectedExpiryDate = new Date(Date.UTC(2105, 3, 15, 3, 26, 58));
       const oldDoc = { type: 'staticDateExpiryDoc' };
       const doc = { type: 'staticDateExpiryDoc' };
 

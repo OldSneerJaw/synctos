@@ -26,7 +26,7 @@ function() {
       typeFilter: simpleTypeFilter,
       channels: { write: 'write' },
       propertyValidators: { },
-      expiry: new Date(Date.UTC(3018, 3, 15, 3, 26, 58))
+      expiry: new Date(Date.UTC(2105, 3, 15, 3, 26, 58))
     },
     dynamicExpiryDoc: {
       typeFilter: simpleTypeFilter,
