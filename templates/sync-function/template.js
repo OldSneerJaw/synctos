@@ -85,7 +85,7 @@ function synctos(doc, oldDoc) {
   // The access assignment module is responsible for dynamically assigning channels and roles to users
   var accessAssignmentModule = importSyncFunctionFragment('./access-assignment-module.js')(utils);
 
-  // The expiry module is responsible for controlling when the document will expire
+  // The expiry module is responsible for controlling when the document will expire and be purged from the DB
   var expiryModule = importSyncFunctionFragment('./expiry-module.js')(utils);
 
   var rawDocDefinitions = $DOCUMENT_DEFINITIONS$;
