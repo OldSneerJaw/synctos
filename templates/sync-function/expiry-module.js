@@ -5,7 +5,7 @@ function expirationModule(utils) {
 
       if (typeof resolvedExpiryValue === 'number') {
         // The positive sign is applied to numeric values as a workaround to this Sync Gateway issue:
-        // https://github.com/couchbase/sync_gateway/issues/3489
+        // https://github.com/couchbase/sync_gateway/issues/3452
         expiry(+resolvedExpiryValue);
 
         var secondsPer30Days = 2592000;
