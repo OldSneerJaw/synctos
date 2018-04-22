@@ -16,7 +16,7 @@ function() {
       propertyValidators: { },
       expiry: 4077433455
     },
-    staticDateStringExpiryDoc: {
+    staticStringExpiryDoc: {
       typeFilter: simpleTypeFilter,
       channels: { write: 'write' },
       propertyValidators: { },

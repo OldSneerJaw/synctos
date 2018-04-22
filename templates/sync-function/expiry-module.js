@@ -4,14 +4,16 @@ function expirationModule(utils) {
       var resolvedExpiryValue = utils.resolveDocumentConstraint(expiryValue);
 
       if (typeof resolvedExpiryValue === 'number') {
-        expiry(resolvedExpiryValue);
+        // The positive sign is applied to numeric values as a workaround to this Sync Gateway issue:
+        // https://github.com/couchbase/sync_gateway/issues/3489
+        expiry(+resolvedExpiryValue);
 
         var secondsPer30Days = 2592000;
         if (resolvedExpiryValue > secondsPer30Days) {
           // Expiry was specified as the number of seconds since the Unix epoch
           return new Date(resolvedExpiryValue * 1000);
         } else {
-          // Expiry was specified as the number of seconds in the future
+          // Expiry was specified as the number of seconds offset from now
           var relativeDate = new Date();
           relativeDate.setSeconds(relativeDate.getSeconds() + resolvedExpiryValue);
 
