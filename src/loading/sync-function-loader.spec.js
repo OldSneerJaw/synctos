@@ -38,7 +38,7 @@ describe('Sync function loader', () => {
       'my\n\nfinal\nsync `func`');
   });
 
-  it('should load a validation function as a JSON string', () => {
+  it('should load a sync function as a JSON string', () => {
     validateLoadSuccess(
       'my\n  \r\n"final"\r`sync` \\func\\',
       '"my\\n\\n\\"final\\"\\n`sync` \\\\func\\\\"',
