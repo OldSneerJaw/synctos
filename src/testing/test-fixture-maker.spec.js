@@ -306,17 +306,62 @@ describe('Test fixture maker:', () => {
       }).to.throw(`Unrecognized expected access assignment type ("${expectedInvalidAccessAssignment.expectedType}")`);
     });
   });
+
+  describe('when verifying document expiry', () => {
+    let testFixture = null;
+
+    beforeEach(() => {
+      if (testFixture === null) {
+        testFixture = testFixtureMaker.initFromDocumentDefinitions(fakeFilePath);
+      } else {
+        testFixture.resetTestEnvironment();
+      }
+    });
+
+    it('fails if an expiry is expected but never set', () => {
+      testFixture.testEnvironment.syncFunction = () => { };
+
+      expect(() => {
+        testFixture.verifyDocumentAccepted({ }, null, [ ], null, 15);
+      }).to.throw('Document expiry was not set');
+    });
+
+    it('fails if the expiry function is called with the wrong number of arguments', () => {
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.expiry(1, 2);
+      };
+
+      expect(() => {
+        testFixture.verifyDocumentAccepted({ }, null, [ ], null, 1);
+      }).to.throw('The expiry function received the wrong number of arguments');
+    });
+
+    it('fails if the expiry function is called with the wrong expiry value', () => {
+      const expectedExpiry = 42;
+      const actualExpiry = '2018-04-20';
+
+      testFixture.testEnvironment.syncFunction = () => {
+        testFixture.testEnvironment.expiry(actualExpiry);
+      };
+
+      expect(() => {
+        testFixture.verifyDocumentAccepted({ }, null, [ ], null, expectedExpiry);
+      }).to.throw(`Document expiry was not set with the expected value (${expectedExpiry}). Actual value: ${actualExpiry}`);
+    });
+  });
 });
 
 function fakeTestEnvironment() {
   return {
     _: simpleMock.stub(),
+    JSON,
     requireAccess: simpleMock.stub(),
     requireRole: simpleMock.stub(),
     requireUser: simpleMock.stub(),
     channel: simpleMock.stub(),
     access: simpleMock.stub(),
     role: simpleMock.stub(),
+    expiry: simpleMock.stub(),
     syncFunction: simpleMock.stub()
   };
 }

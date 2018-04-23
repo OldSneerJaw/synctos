@@ -98,7 +98,7 @@ function accessAssignmentModule(utils) {
 
   // Assigns role access to users and/or channel access to users/roles according to the given access assignment definitions
   function assignUserAccess(doc, oldDoc, documentDefinition) {
-    var effectiveOldDoc = utils.resolveOldDoc(oldDoc);
+    var effectiveOldDoc = utils.resolveOldDoc();
     var accessAssignmentDefinitions = resolveAccessAssignmentsDefinition(doc, effectiveOldDoc, documentDefinition.accessAssignments);
 
     var effectiveAssignments = [ ];

@@ -16,18 +16,9 @@ function authorizationModule(utils) {
     }
   }
 
-  // A document definition may define its authorized channels, roles or users as either a function or an object/hashtable
-  function getAuthorizationMap(doc, oldDoc, authorizationDefinition) {
-    if (typeof authorizationDefinition === 'function') {
-      return authorizationDefinition(doc, utils.resolveOldDoc(oldDoc));
-    } else {
-      return authorizationDefinition;
-    }
-  }
-
   // Retrieves a list of channels the document belongs to based on its specified type
-  function getAllDocChannels(doc, oldDoc, docDefinition) {
-    var docChannelMap = getAuthorizationMap(doc, oldDoc, docDefinition.channels);
+  function getAllDocChannels(docDefinition) {
+    var docChannelMap = utils.resolveDocumentConstraint(docDefinition.channels);
 
     var allChannels = [ ];
     if (docChannelMap) {
@@ -43,7 +34,7 @@ function authorizationModule(utils) {
 
   // Retrieves a list of authorizations (e.g. channels, roles, users) for the current document write operation type (add, replace or remove)
   function getRequiredAuthorizations(doc, oldDoc, authorizationDefinition) {
-    var authorizationMap = getAuthorizationMap(doc, oldDoc, authorizationDefinition);
+    var authorizationMap = utils.resolveDocumentConstraint(authorizationDefinition);
 
     if (utils.isValueNullOrUndefined(authorizationMap)) {
       // This document type does not define any authorizations (channels, roles, users) at all

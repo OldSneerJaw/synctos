@@ -34,7 +34,7 @@ function synctos(doc, oldDoc) {
 
   // Retrieves the old doc's effective value. If it is null, undefined or its "_deleted" property is true, returns null. Otherwise, returns
   // the value of the "oldDoc" parameter.
-  function resolveOldDoc(oldDoc) {
+  function resolveOldDoc() {
     return !isDocumentMissingOrDeleted(oldDoc) ? oldDoc : null;
   }
 
@@ -52,6 +52,15 @@ function synctos(doc, oldDoc) {
     return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
   }
 
+  // Retrieves the effective value of a top-level document constraint (e.g. "channels", "documentIdRegexPattern", "accessAssignments")
+  function resolveDocumentConstraint(constraintDefinition) {
+    if (typeof constraintDefinition === 'function') {
+      return constraintDefinition(doc, resolveOldDoc());
+    } else {
+      return constraintDefinition;
+    }
+  }
+
   // Converts a given value to a JSON string. Exists because JSON.stringify is not supported by all versions of Sync
   // Gateway's JavaScript engine.
   var jsonStringify =
@@ -63,7 +72,8 @@ function synctos(doc, oldDoc) {
     isValueNullOrUndefined: isValueNullOrUndefined,
     jsonStringify: jsonStringify,
     padRight: padRight,
-    resolveOldDoc: resolveOldDoc
+    resolveOldDoc: resolveOldDoc,
+    resolveDocumentConstraint: resolveDocumentConstraint
   };
 
   // The document authorization module is responsible for verifying the user's permissions (e.g. roles, channels)
@@ -75,6 +85,9 @@ function synctos(doc, oldDoc) {
   // The access assignment module is responsible for dynamically assigning channels and roles to users
   var accessAssignmentModule = importSyncFunctionFragment('./access-assignment-module.js')(utils);
 
+  // The expiry module is responsible for controlling when the document will expire and be purged from the DB
+  var expiryModule = importSyncFunctionFragment('./expiry-module.js')(utils);
+
   var rawDocDefinitions = $DOCUMENT_DEFINITIONS$;
 
   var docDefinitions;
@@ -84,8 +97,8 @@ function synctos(doc, oldDoc) {
     docDefinitions = rawDocDefinitions;
   }
 
-  function getDocumentType(doc, oldDoc) {
-    var effectiveOldDoc = resolveOldDoc(oldDoc);
+  function getDocumentType() {
+    var effectiveOldDoc = resolveOldDoc();
 
     for (var docType in docDefinitions) {
       var docDefn = docDefinitions[docType];
@@ -100,7 +113,7 @@ function synctos(doc, oldDoc) {
 
 
   // Now put the pieces together
-  var theDocType = getDocumentType(doc, oldDoc);
+  var theDocType = getDocumentType();
 
   if (isValueNullOrUndefined(theDocType)) {
     if (doc._deleted) {
@@ -160,8 +173,17 @@ function synctos(doc, oldDoc) {
     }
   }
 
+  if (!isValueNullOrUndefined(theDocDefinition.expiry) && !doc._deleted) {
+    customActionMetadata.expiryDate = expiryModule.setDocExpiry(doc, oldDoc, theDocDefinition.expiry);
+
+    if (theDocDefinition.customActions &&
+        typeof theDocDefinition.customActions.onExpiryAssignmentSucceeded === 'function') {
+      theDocDefinition.customActions.onExpiryAssignmentSucceeded(doc, oldDoc, customActionMetadata);
+    }
+  }
+
   // Getting here means the document revision is authorized and valid, and the appropriate channel(s) should now be assigned
-  var allDocChannels = authorizationModule.getAllDocChannels(doc, oldDoc, theDocDefinition);
+  var allDocChannels = authorizationModule.getAllDocChannels(theDocDefinition);
   channel(allDocChannels);
   customActionMetadata.documentChannels = allDocChannels;
 

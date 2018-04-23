@@ -23,8 +23,8 @@ For validation of documents in Apache CouchDB, see the [couchster](https://githu
     - [Validating](#validating)
     - [Specifications](#specifications)
       - [Document type definitions](#document-type-definitions)
-        - [Essential document properties](#essential-document-properties)
-        - [Advanced document properties](#advanced-document-properties)
+        - [Essential document constraints](#essential-document-constraints)
+        - [Advanced document constraints](#advanced-document-constraints)
       - [Content validation](#content-validation)
         - [Simple type validation](#simple-type-validation)
         - [Complex type validation](#complex-type-validation)
@@ -126,7 +126,7 @@ At the top level, the document definitions object contains a property for each d
 
 Each document type is defined as an object with a number of properties that control authorization, content validation and access control.
 
-##### Essential document properties
+##### Essential document constraints
 
 The following properties include the basics necessary to build a document definition:
 
@@ -222,7 +222,7 @@ propertyValidators: function(doc, oldDoc) {
 }
 ```
 
-##### Advanced document properties
+##### Advanced document constraints
 
 Additional properties that provide finer grained control over documents:
 
@@ -360,6 +360,12 @@ accessAssignments: function(doc, oldDoc) {
   * `supportedExtensions`: (optional) An array of case-insensitive file extensions that are allowed for an attachment's filename (e.g. "txt", "jpg", "pdf"). In addition to a static value (e.g. `supportedExtensions: [ 'png', 'gif', 'jpg' ]`), this property may also be assigned a value dynamically via a function (e.g. `supportedExtensions: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). No restriction by default.
   * `supportedContentTypes`: (optional) An array of content/MIME types that are allowed for an attachment's contents (e.g. "image/png", "text/html", "application/xml"). In addition to a static value (e.g. `supportedContentTypes: [ 'image/png', 'image/gif', 'image/jpeg' ]`), this property may also be assigned a value dynamically via a function (e.g. `supportedContentTypes: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). No restriction by default.
   * `requireAttachmentReferences`: (optional) Whether every one of a document's attachments must have a corresponding `attachmentReference`-type property referencing it. In addition to a static value (e.g. `requireAttachmentReferences: true`), this property may also be assigned a value dynamically via a function (e.g. `requireAttachmentReferences: function(doc, oldDoc) { ... }`) where the parameters are as follows: (1) the document (if deleted, the `_deleted` property will be `true`) and (2) the document that is being replaced (if any; it will be `null` if it has been deleted or does not exist). Defaults to `false`.
+* `expiry`: (optional) Specifies when documents of this type will [expire](https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#expiry-value) and subsequently get purged from the database. The constraint is only applied when a document is created or replaced. NOTE: This constraint is only supported by Sync Gateway 2.0 and later and, furthermore, it is not supported when using a [Walrus](https://developer.couchbase.com/documentation/mobile/current/installation/sync-gateway/index.html#walrus-mode) database. The constraint's value may be specified in one of the following ways:
+  * an integer whose value is greater than 2,592,000 (i.e. the number of seconds in 30 days), indicating an absolute point in time as the number of seconds since the Unix epoch (1970-01-01T00:00Z)
+  * an integer whose value is at most 2,592,000 (i.e. the number of seconds in 30 days), indicating a relative offset as the number of seconds in the future
+  * a string in [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) date and time format. Unlike for other constraints that accept a date/time string, this constraint does not consider any component of the date to be optional. In other words, the string must include year, month, day, hour, minute, second and time zone offset (e.g. "2018-04-22T14:47:35-07:00").
+  * a JavaScript [`Date`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date) object
+  * a function that accepts as parameters (1) the new document and (2) the old document that is being replaced (if any; it will be `null` if it has been deleted or does not exist) and returns any of the aforementioned results
 * `customActions`: (optional) Defines custom actions to be executed at various events during the generated sync function's execution. Specified as an object where each property specifies a JavaScript function to be executed when the corresponding event is completed. In each case, the function accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any) and (3) an object that is populated with metadata generated by each event. In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be `null` and, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. At each stage of the generated sync function's execution, the third parameter (the custom action metadata parameter) is augmented with properties that provide additional context to the custom action being executed. Custom actions may call functions from the [standard sync function API](http://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html) (e.g. `requireAccess`, `requireRole`, `requireUser`, `access`, `role`, `channel`) and may indicate errors via the `throw` statement to prevent the document from being written. The custom actions that are available, in the order their corresponding events occur:
   1. `onTypeIdentificationSucceeded`: Executed immediately after the document's type is determined and before checking authorization. The custom action metadata object parameter contains the following properties:
     * `documentTypeId`: The unique ID of the document type.
@@ -367,7 +373,7 @@ accessAssignments: function(doc, oldDoc) {
   2. `onAuthorizationSucceeded`: Executed immediately after the user is authorized to make the modification and before validating document contents. Not executed if user authorization is denied. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
     * `authorization`: An object that indicates which channels, roles and users were used to authorize the current operation, as specified by the `channels`, `roles` and `users` list properties.
   3. `onValidationSucceeded`: Executed immediately after the document's contents are validated and before channels are assigned to users/roles and the document. Not executed if the document's contents are invalid. The custom action metadata object parameter includes properties from all previous events but does not include any additional properties.
-  4. `onAccessAssignmentsSucceeded`: Executed immediately after channel access is assigned to users/roles and before channels are assigned to the document. Not executed if the document definition does not include an `accessAssignments` property. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+  4. `onAccessAssignmentsSucceeded`: Executed immediately after channel access is assigned to users/roles and before document expiry is set. Not executed if the document definition does not include an `accessAssignments` constraint. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
     * `accessAssignments`: A list that contains each of the access assignments that were applied. Each element is an object that represents either a channel access assignment or a role access assignment depending on the value of its `type` property. The assignment types are specified as follows:
       * Channel access assignments:
         * `type`: Value of "channel".
@@ -377,7 +383,9 @@ accessAssignments: function(doc, oldDoc) {
         * `type`: Value of "role".
         * `roles`: A list of roles that were assigned to the users.
         * `users`: A list of users to which the roles were assigned. Note that, as per the sync function API, each role element's value is prefixed with "role:".
-  5. `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document revision is written. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+  6. `onExpiryAssignmentSucceeded`: Executed immediately after document [expiry](https://developer.couchbase.com/documentation/mobile/2.0/guides/sync-gateway/sync-function-api-guide/index.html#expiry-value) is set and before channels are assigned to the document. Not executed if the document definition does not include an `expiry` constraint. NOTE: Only supported by Sync Gateway 2.0 and later. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+    * `expiryDate`: A JavaScript `Date` object that specifies the absolute point in time at which the document will expire and be purged from the database.
+  7. `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document revision is written. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
     * `documentChannels`: A list of channels that were assigned to the document.
 
 An example of an `onAuthorizationSucceeded` custom action that stores a property in the metadata object parameter for later use by the `onDocumentChannelAssignmentSucceeded` custom action:

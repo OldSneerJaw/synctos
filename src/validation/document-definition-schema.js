@@ -15,6 +15,10 @@ const authorizationSchema = dynamicConstraintSchema(
     }));
 const accessAssignmentEntryPropertySchema = dynamicConstraintSchema(arrayOrSingleItemSchema(nonEmptyStringSchema, 1));
 
+// The regular expression for expiry dates is considerably more restrictive than it is for other property constraints
+const expiryDateStringSchema = joi.string()
+ .regex(/^\d{4}-(((0[13578]|1[02])-(0[1-9]|[12]\d|3[01]))|((0[469]|11)-(0[1-9]|[12]\d|30))|(02-(0[1-9]|[12]\d)))T([01]\d|2[0-3]):[0-5]\d:[0-5]\d(Z|[+-]([01]\d|2[0-3]):[0-5]\d)$/);
+
 /**
  * The full schema for a single document definition object.
  */
@@ -90,11 +94,26 @@ module.exports = exports = joi.object().options({ convert: false }).keys({
           }).or('roles', 'users') // At least one of "roles" or "users" must be provided
         }))),
 
+  expiry: dynamicConstraintSchema(joi.any().when(
+    joi.string(),
+    {
+      then: expiryDateStringSchema,
+      otherwise: joi.any().when(
+        joi.number(),
+        {
+          then: joi.number().integer().min(0),
+          otherwise: joi.date().options({ convert: false })
+        }
+      )
+    }
+  )),
+
   customActions: joi.object().min(1).keys({
     onTypeIdentificationSucceeded: customActionEventSchema,
     onAuthorizationSucceeded: customActionEventSchema,
     onValidationSucceeded: customActionEventSchema,
     onAccessAssignmentsSucceeded: customActionEventSchema,
+    onExpiryAssignmentSucceeded: customActionEventSchema,
     onDocumentChannelAssignmentSucceeded: customActionEventSchema
   }),
 

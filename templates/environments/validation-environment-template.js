@@ -1,17 +1,18 @@
-function makeValidationEnvironment(_, simple) {
+function makeValidationEnvironment(_, simpleMock) {
   const doc = { };
   const oldDoc = { };
   const typeIdValidator = { type: 'string' };
-  const simpleTypeFilter = simple.stub();
-  const isDocumentMissingOrDeleted = simple.stub();
-  const isValueNullOrUndefined = simple.stub();
-  const jsonStringify = simple.stub();
-  const requireAccess = simple.stub();
-  const requireRole = simple.stub();
-  const requireUser = simple.stub();
-  const channel = simple.stub();
-  const access = simple.stub();
-  const role = simple.stub();
+  const simpleTypeFilter = simpleMock.stub();
+  const isDocumentMissingOrDeleted = simpleMock.stub();
+  const isValueNullOrUndefined = simpleMock.stub();
+  const jsonStringify = simpleMock.stub();
+  const requireAccess = simpleMock.stub();
+  const requireRole = simpleMock.stub();
+  const requireUser = simpleMock.stub();
+  const channel = simpleMock.stub();
+  const access = simpleMock.stub();
+  const role = simpleMock.stub();
+  const expiry = simpleMock.stub();
 
   return {
     _,
@@ -28,6 +29,7 @@ function makeValidationEnvironment(_, simple) {
     channel,
     access,
     role,
+    expiry,
     documentDefinitions: $DOC_DEFINITIONS_PLACEHOLDER$
   };
 }

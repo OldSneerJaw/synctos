@@ -96,6 +96,65 @@ function() {
       accessAssignments: [ ],
       customActions: { onAccessAssignmentsSucceeded: customAction('onAccessAssignmentsSucceeded') }
     },
+    onTimestampExpiryAssignedDoc: {
+      typeFilter: function(doc, oldDoc) {
+        return doc._id === 'onTimestampExpiryAssignedDoc';
+      },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
+      propertyValidators: { },
+      accessAssignments: accessAssignments,
+      expiry: 2592001,
+      customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
+    },
+    onOffsetExpiryAssignedDoc: {
+      typeFilter: function(doc, oldDoc) {
+        return doc._id === 'onOffsetExpiryAssignedDoc';
+      },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
+      propertyValidators: { },
+      accessAssignments: accessAssignments,
+      expiry: 2592000,
+      customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
+    },
+    onStringExpiryAssignedDoc: {
+      typeFilter: function(doc, oldDoc) {
+        return doc._id === 'onStringExpiryAssignedDoc';
+      },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
+      propertyValidators: { },
+      accessAssignments: accessAssignments,
+      expiry: '2031-04-15T16:32:59-07:00',
+      customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
+    },
+    onDateObjectExpiryAssignedDoc: {
+      typeFilter: function(doc, oldDoc) {
+        return doc._id === 'onDateObjectExpiryAssignedDoc';
+      },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
+      propertyValidators: { },
+      accessAssignments: accessAssignments,
+      expiry: new Date(Date.UTC(2019, 0, 1, 23, 45, 16, 235)),
+      customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
+    },
+    missingExpiryDoc: {
+      typeFilter: function(doc, oldDoc) {
+        return doc._id === 'missingExpiryDoc';
+      },
+      channels: channels,
+      authorizedRoles: authorizedRoles,
+      authorizedUsers: authorizedUsers,
+      propertyValidators: { },
+      accessAssignments: accessAssignments,
+      customActions: { onExpiryAssignmentSucceeded: customAction('onExpiryAssignmentSucceeded') }
+    },
     onDocChannelsAssignedDoc: {
       typeFilter: function(doc, oldDoc) {
         return doc._id === 'onDocChannelsAssignedDoc';
@@ -105,6 +164,7 @@ function() {
       authorizedUsers: authorizedUsers,
       propertyValidators: { },
       accessAssignments: accessAssignments,
+      expiry: '2028-04-18T12:00:45Z',
       customActions: { onDocumentChannelAssignmentSucceeded: customAction('onDocumentChannelAssignmentSucceeded') }
     }
   };
