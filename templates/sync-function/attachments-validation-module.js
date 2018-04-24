@@ -1,4 +1,4 @@
-function attachmentModule(utils, buildItemPath, resolveItemConstraint) {
+function attachmentsValidationModule(utils, buildItemPath, resolveItemConstraint) {
   var attachmentReferenceValidators = { };
 
   return {

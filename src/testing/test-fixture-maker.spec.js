@@ -59,7 +59,7 @@ describe('Test fixture maker:', () => {
     });
 
     function verifyTestEnvironment(testFixture) {
-      // Verify the validation function source code
+      // Verify the sync function source code
       expect(testFixture.testEnvironment.syncFunction).to.be.a('function');
       expect(testFixture.testEnvironment.syncFunction.toString())
         .to.equal(fakeTestEnvironment().syncFunction.toString());

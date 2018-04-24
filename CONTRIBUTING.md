@@ -6,9 +6,9 @@ Synctos is an open source project. Contributions, whether as bug reports, featur
 
 Every bug or feature request should have a corresponding issue logged in the GitHub project's [Issues](https://github.com/Kashoo/synctos/issues) tab.
 
-For bugs, be sure to include clear steps to reproduce the issue, including which versions of synctos are affected, as well as which versions of Couchbase Server and Sync Gateway the issue is reproducible with. When a bug has been reviewed by a project contributor, it will be assigned the [bug](https://github.com/Kashoo/synctos/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Abug) label.
+For bugs, be sure to include clear steps to reproduce the issue, including which versions of synctos are affected, as well as which versions of Couchbase Server and Sync Gateway the issue is reproducible with. When a bug has been reviewed by a project maintainer, it will be assigned the [bug](https://github.com/Kashoo/synctos/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Abug) label.
 
-For feature requests, describe the desired behaviour and provide examples of valid and invalid document definition configuration, where applicable. When a feature request has been reviewed and accepted by a project contributor, it will be assigned the [enhancement](https://github.com/Kashoo/synctos/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Aenhancement) label.
+For feature requests, describe the desired behaviour and provide examples of valid and invalid document definition configuration, where applicable. When a feature request has been reviewed and accepted by a project maintainer, it will be assigned the [enhancement](https://github.com/Kashoo/synctos/issues?utf8=%E2%9C%93&q=is%3Aissue+label%3Aenhancement) label.
 
 # Implementing Changes
 
@@ -75,7 +75,7 @@ The project's `samples` directory contains a number of document definitions as e
 
 ### Backward compatibility
 
-The project's public API will evolve over time, but it is important to avoid changes that break the behaviour of validation types, document type definition properties, helper functions, etc. that are referenced in `README.md` and the functions and variables that are defined in the package's main module (i.e. `index.js`) and any other Node.js modules that may be introduced as public components over time. Only under special circumstances and with prior deliberation and approval from official project contributors will breaking changes be considered for inclusion.
+The project's public API will evolve over time, but it is important to avoid changes that break the behaviour of validation types, document type definition properties, helper functions, etc. that are referenced in `README.md` and the functions and variables that are defined in the package's main module (i.e. `index.js`) and any other Node.js modules that may be introduced as public components over time. Only under special circumstances and with prior deliberation and approval from official project maintainers will breaking changes be considered for inclusion.
 
 ### Package dependencies
 
@@ -85,7 +85,7 @@ In that event, create a new directory for the dependency in the `lib` directory 
 
 Note that development dependencies (i.e. `devDependencies` in `package.json`) _may be_ allowed since they are not transitive, but one should exercise good judgement and only include dependencies that provide vital and non-trivial functionality.
 
-Dependencies of either type may be rejected at the discretion of official project contributors if they are deemed unnecessary.
+Dependencies of either type may be rejected at the discretion of official project maintainers if they are deemed unnecessary.
 
 ### Package versioning
 
@@ -93,13 +93,13 @@ The project follows the principle of [Semantic Versioning](https://semver.org/).
 
 ### Pull requests
 
-Each change must be implemented in its own feature branch and submitted via a GitHub [pull request](https://help.github.com/articles/about-pull-requests/) for code review by a synctos project contributor. Generally, unless you are a project contributor with write access to the repo, this will require you to fork the repo, create a new branch for the feature/bug, commit the changes to the branch on your fork and then open a pull request on the original synctos repo from your fork's branch.
+Each change must be implemented in its own feature branch and submitted via a GitHub [pull request](https://help.github.com/articles/about-pull-requests/) for code review by a synctos project maintainer. Generally, unless you are a project maintainer with write access to the repo, this will require you to fork the repo, create a new branch for the feature/bug, commit the changes to the branch on your fork and then open a pull request on the original synctos repo from your fork's branch.
 
 The project's Travis CI [build job](https://travis-ci.org/Kashoo/synctos) will be triggered automatically to execute all test cases and lint the code whenever there is a new or updated pull request. If the build fails, it is your responsibility to fix the problem and update the pull request with new commits.
 
 # Reviewing Changes
 
-Once a change has been posted as a GitHub pull request, a synctos project contributor other than the change's author needs to examine the code for style, correctness, test coverage, documentation and semantics. As part of your due diligence, verify that the Travis CI build job successfully ran to completion for the pull request.
+Once a change has been posted as a GitHub pull request, a synctos project maintainer other than the change's author needs to examine the code for style, correctness, test coverage, documentation and semantics. As part of your due diligence, verify that the Travis CI build job successfully ran to completion for the pull request.
 
 Special care should be taken to ensure that each submission is captured as a GitHub issue, thoroughly documented in `README.md` and in `CHANGELOG.md`'s "Unreleased" section, comprehensively covered by test cases, includes examples in the sample document definitions directory, does not introduce breaking changes to public APIs, does not introduce new package dependencies and does not make use of advanced JavaScript/ECMAScript language features that are not supported by the [version](https://github.com/robertkrimen/otto/tree/5282a5a45ba989692b3ae22f730fa6b9dd67662f) of the otto JavaScript engine/interpreter that is used by Sync Gateway.
 
@@ -107,7 +107,7 @@ If/when a change is deemed satisfactory, it is the responsibility of the reviewe
 
 # Publishing
 
-When it is time to publish a new release, a project contributor should follow these steps:
+When it is time to publish a new release, a project maintainer should follow these steps:
 
 1. Create a GitHub issue/ticket for the release (e.g. https://github.com/Kashoo/synctos/issues/272) with the [task](https://github.com/Kashoo/synctos/issues?q=is%3Aissue+label%3Atask) label and assigned to your own GitHub user
 2. Create a release branch (e.g. `v2.2.1-release`)
