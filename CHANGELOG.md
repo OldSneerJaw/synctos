@@ -1,6 +1,9 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
+## [Unreleased]
+Nothing yet.
+
 ## [2.4.0] - 2018-04-24
 ### Added
 - [#301](https://github.com/Kashoo/synctos/issues/301): Configuration of document expiry
