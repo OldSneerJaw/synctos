@@ -1,18 +1,16 @@
 const { expect } = require('chai');
+const mockRequire = require('mock-require');
 const path = require('path');
 const simpleMock = require('../../lib/simple-mock/index');
-const mockRequire = require('mock-require');
+const underscore = require('../../lib/underscore/underscore-min');
 
 describe('Test environment maker', () => {
-  let testEnvironmentMaker, fsMock, vmMock;
+  let testEnvironmentMaker, stubbedEnvironmentMakerMock;
 
   beforeEach(() => {
     // Mock out the "require" calls in the module under test
-    fsMock = { readFileSync: simpleMock.stub() };
-    mockRequire('fs', fsMock);
-
-    vmMock = { runInThisContext: simpleMock.stub() };
-    mockRequire('vm', vmMock);
+    stubbedEnvironmentMakerMock = { create: simpleMock.stub() };
+    mockRequire('../environments/stubbed-environment-maker', stubbedEnvironmentMakerMock);
 
     testEnvironmentMaker = mockRequire.reRequire('./test-environment-maker');
   });
@@ -22,47 +20,38 @@ describe('Test environment maker', () => {
     mockRequire.stopAll();
   });
 
-  it('creates a test environment from the input with a filename for stack traces', () => {
-    verifyParse('my-sync-func-\\`1\\`', 'my-original-filename', true);
+  it('creates a stubbed environment for tests with backticks unescaped', () => {
+    verify(true);
   });
 
-  it('creates a test environment from the input but without a filename', () => {
-    verifyParse('my-sync-func-\\`2\\`', null, false);
+  it('creates a stubbed environment for tests with backticks left unescaped', () => {
+    verify(false);
   });
 
-  function verifyParse(rawSyncFunction, originalFilename, unescapeBackticks) {
-    const envTemplateFileContents = 'template: $SYNC_FUNC_PLACEHOLDER$';
-    fsMock.readFileSync.returnWith(envTemplateFileContents);
+  function verify(unescapeBackticks) {
+    const syncFunctionString = 'my-sync-func';
+    const syncFunctionFile = 'my-original-filename';
 
-    const expectedTestEnvString = envTemplateFileContents.replace(
-      '$SYNC_FUNC_PLACEHOLDER$',
-      () => unescapeBackticks ? rawSyncFunction.replace(/\\`/g, () => '`') : rawSyncFunction);
+    const expectedResult = { foo: 'baz' };
+    const mockEnvironment = simpleMock.stub();
+    mockEnvironment.returnWith(expectedResult);
 
-    const expectedResult = { bar: 'foo' };
-    const mockVmEnvironment = simpleMock.stub();
-    mockVmEnvironment.returnWith(expectedResult);
+    stubbedEnvironmentMakerMock.create.returnWith(mockEnvironment);
 
-    vmMock.runInThisContext.returnWith(mockVmEnvironment);
-
-    const result = testEnvironmentMaker.init(rawSyncFunction, originalFilename, unescapeBackticks);
+    const result = testEnvironmentMaker.create(syncFunctionString, syncFunctionFile, unescapeBackticks);
 
     expect(result).to.eql(expectedResult);
 
-    expect(fsMock.readFileSync.callCount).to.equal(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([
+    expect(stubbedEnvironmentMakerMock.create.callCount).to.equal(1);
+    expect(stubbedEnvironmentMakerMock.create.calls[0].args).to.eql([
       path.resolve(__dirname, '../../templates/environments/test-environment-template.js'),
-      'utf8'
+      '$SYNC_FUNC_PLACEHOLDER$',
+      syncFunctionString,
+      path.resolve(process.cwd(), syncFunctionFile),
+      unescapeBackticks
     ]);
 
-    expect(vmMock.runInThisContext.callCount).to.equal(1);
-    expect(vmMock.runInThisContext.calls[0].args).to.eql([
-      `(${expectedTestEnvString});`,
-      {
-        filename: originalFilename ? path.resolve(process.cwd(), originalFilename) : originalFilename,
-        displayErrors: true
-      }
-    ]);
-
-    expect(mockVmEnvironment.callCount).to.equal(1);
+    expect(mockEnvironment.callCount).to.equal(1);
+    expect(mockEnvironment.calls[0].args).to.eql([ underscore, simpleMock ]);
   }
 });

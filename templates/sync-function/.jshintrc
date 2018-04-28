@@ -4,7 +4,7 @@
   "node": false,
   "varstmt": false,
   "globals": {
-    "$DOCUMENT_DEFINITIONS$": false,
+    "$DOCUMENT_DEFINITIONS_PLACEHOLDER$": false,
     "_": false,
     "access": false,
     "channel": false,

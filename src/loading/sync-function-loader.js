@@ -27,7 +27,7 @@ function loadFromFile(docDefinitionsFile, formatOptions = { }) {
   const docDefinitions = docDefinitionsLoader.load(docDefinitionsFile);
 
   // Load the document definitions into the sync function template
-  const rawSyncFuncString = fullSyncFuncTemplate.replace('$DOCUMENT_DEFINITIONS$', () => docDefinitions);
+  const rawSyncFuncString = fullSyncFuncTemplate.replace('$DOCUMENT_DEFINITIONS_PLACEHOLDER$', () => docDefinitions);
 
   return formatSyncFunction(rawSyncFuncString, formatOptions);
 }
