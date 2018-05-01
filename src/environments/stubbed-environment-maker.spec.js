@@ -22,27 +22,27 @@ describe('Stubbed environment maker', () => {
   });
 
   it('creates a environment from the input with a filename for stack traces', () => {
-    verifyParse('my-sync-func-\\`1\\`', 'my-sync-func-`1`', 'my-original-filename', true);
+    verifyParse('my-sync-func-\\`1\\`', 'my-filename');
   });
 
   it('creates a environment from the input but without a filename', () => {
-    verifyParse('my-sync-func-\\`2\\`', 'my-sync-func-\\`2\\`');
+    verifyParse('my-sync-func-\\`2\\`');
   });
 
-  function verifyParse(originalContents, expectedContents, originalFilename, unescapeBackticks) {
+  function verifyParse(fileContents, filename) {
     const templateFile = 'my-template-file-path';
     const macroName = '$my-template-macro$';
 
     const envTemplateFileContents = `template: ${macroName}`;
     fsMock.readFileSync.returnWith(envTemplateFileContents);
 
-    const expectedEnvString = envTemplateFileContents.replace(macroName, () => expectedContents);
+    const expectedEnvString = envTemplateFileContents.replace(macroName, () => fileContents);
 
     const expectedResult = { bar: 'foo' };
     vmMock.runInThisContext.returnWith(expectedResult);
 
     const result =
-      environmentMaker.create(templateFile, macroName, originalContents, originalFilename, unescapeBackticks);
+      environmentMaker.create(templateFile, macroName, fileContents, filename);
 
     expect(result).to.eql(expectedResult);
 
@@ -53,7 +53,7 @@ describe('Stubbed environment maker', () => {
     expect(vmMock.runInThisContext.calls[0].args).to.eql([
       `(${expectedEnvString});`,
       {
-        filename: originalFilename,
+        filename: filename,
         displayErrors: true
       }
     ]);

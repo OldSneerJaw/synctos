@@ -20,25 +20,22 @@ describe('Test environment maker', () => {
     mockRequire.stopAll();
   });
 
-  it('creates a stubbed environment for tests with backticks unescaped', () => {
-    verify(true);
+  it('creates a stubbed environment for tests with backtick escape sequences unescaped', () => {
+    verify('my-\\`sync\\`-func-\\`1\\`', 'my-`sync`-func-`1`', 'my-filename', true);
   });
 
-  it('creates a stubbed environment for tests with backticks left unescaped', () => {
-    verify(false);
+  it('creates a stubbed environment for tests with backtick escape sequences left unmodified', () => {
+    verify('my-sync-func-\\`2\\`', 'my-sync-func-\\`2\\`');
   });
 
-  function verify(unescapeBackticks) {
-    const syncFunctionString = 'my-sync-func';
-    const syncFunctionFile = 'my-original-filename';
-
+  function verify(originalSyncFuncString, expectedSyncFuncString, syncFunctionFile, unescapeBackticks) {
     const expectedResult = { foo: 'baz' };
     const mockEnvironment = simpleMock.stub();
     mockEnvironment.returnWith(expectedResult);
 
     stubbedEnvironmentMakerMock.create.returnWith(mockEnvironment);
 
-    const result = testEnvironmentMaker.create(syncFunctionString, syncFunctionFile, unescapeBackticks);
+    const result = testEnvironmentMaker.create(originalSyncFuncString, syncFunctionFile, unescapeBackticks);
 
     expect(result).to.eql(expectedResult);
 
@@ -46,9 +43,8 @@ describe('Test environment maker', () => {
     expect(stubbedEnvironmentMakerMock.create.calls[0].args).to.eql([
       path.resolve(__dirname, '../../templates/environments/test-environment-template.js'),
       '$SYNC_FUNC_PLACEHOLDER$',
-      syncFunctionString,
-      path.resolve(process.cwd(), syncFunctionFile),
-      unescapeBackticks
+      expectedSyncFuncString,
+      syncFunctionFile ? path.resolve(process.cwd(), syncFunctionFile) : syncFunctionFile
     ]);
 
     expect(mockEnvironment.callCount).to.equal(1);

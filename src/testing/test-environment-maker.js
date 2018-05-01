@@ -19,12 +19,23 @@ exports.create = function(syncFunctionString, syncFunctionFile, unescapeBacktick
   // On the other hand, if it's already absolute, it will remain unchanged.
   const absoluteSyncFuncFilePath = syncFunctionFile ? path.resolve(process.cwd(), syncFunctionFile) : syncFunctionFile;
 
+  // If the contents were read from a sync function file, then backtick escape sequences (i.e. "\`") must be
+  // unescaped first
+  const escapedSyncFuncString = unescapeBackticks ? doUnescapeBackticks(syncFunctionString) : syncFunctionString;
+
   const envFunction = stubbedEnvironmentMaker.create(
     path.resolve(__dirname, '../../templates/environments/test-environment-template.js'),
     '$SYNC_FUNC_PLACEHOLDER$',
-    syncFunctionString,
-    absoluteSyncFuncFilePath,
-    unescapeBackticks);
+    escapedSyncFuncString,
+    absoluteSyncFuncFilePath);
 
   return envFunction(underscore, simpleMock);
 };
+
+// Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string.
+// The sync function generator script automatically escapes backtick characters with the sequence "\`" so that it
+// produces a valid multiline string. However, when loaded by the test fixture, a sync function is not inserted into a
+// Sync Gateway configuration file so we must "unescape" backtick characters to preserve the original intention.
+function doUnescapeBackticks(originalString) {
+  return originalString.replace(/\\`/g, () => '`');
+}

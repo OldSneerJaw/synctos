@@ -10,12 +10,10 @@ const vm = require('vm');
  * @param {string} sourceContents The raw string contents to be inserted into the template
  * @param {string} [sourceFile] The optional path to the file from which the source contents originated, to be used to
  *                              generate stack traces when errors occur
- * @param {boolean} [unescapeBackticks] Whether backticks in the sync function string have been replaced with an escape
- *                                      sequence and must be "unescaped" for the test environment. False by default.
  *
  * @returns {*} The raw stubbed environment
  */
-exports.create = function(templateFile, macroName, sourceContents, sourceFile, unescapeBackticks) {
+exports.create = function(templateFile, macroName, sourceContents, sourceFile) {
   const vmOptions = {
     filename: sourceFile,
     displayErrors: true
@@ -25,13 +23,7 @@ exports.create = function(templateFile, macroName, sourceContents, sourceFile, u
     .replace(/(?:\r\n)|(?:\r)|(?:\n)/g, () => ' '); // Compress the template to one line to ensure stack trace line numbers are correct
 
   // The test environment includes a placeholder string (a macro) that is to be replaced with the contents of the source
-  const environmentString = environmentTemplate.replace(
-    macroName,
-    () => {
-      // If the contents were read from a sync function file, then backtick escape sequences (i.e. "\`") must be
-      // unescaped first
-      return unescapeBackticks ? doUnescapeBackticks(sourceContents) : sourceContents;
-    });
+  const environmentString = environmentTemplate.replace(macroName, () => sourceContents);
 
   // The code that is compiled must be an expression or a sequence of one or more statements. Surrounding it with
   // parentheses makes it a valid expression.
@@ -41,11 +33,3 @@ exports.create = function(templateFile, macroName, sourceContents, sourceFile, u
   // "channel", etc. stubs as defined by the template
   return vm.runInThisContext(environmentStatement, vmOptions);
 };
-
-// Sync Gateway configuration files use the backtick character to denote the beginning and end of a multiline string.
-// The sync function generator script automatically escapes backtick characters with the sequence "\`" so that it
-// produces a valid multiline string. However, when loaded by the test fixture, a sync function is not inserted into a
-// Sync Gateway configuration file so we must "unescape" backtick characters to preserve the original intention.
-function doUnescapeBackticks(originalString) {
-  return originalString.replace(/\\`/g, () => '`');
-}
