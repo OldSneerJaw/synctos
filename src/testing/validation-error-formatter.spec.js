@@ -172,6 +172,12 @@ describe('Validation error formatter', () => {
         .to.equal(`value of item "${fakeItemPath}" must equal ${JSON.stringify(value)}`);
     });
 
+    it('produces mustEqualIgnoreCase violation messages', () => {
+      const value = 'FOO';
+      expect(errorFormatter.mustEqualIgnoreCaseViolation(fakeItemPath, value))
+        .to.equal(`value of item "${fakeItemPath}" must equal (case insensitive) "${value}"`);
+    });
+
     it('produces mustNotBeEmpty violation messages', () => {
       expect(errorFormatter.mustNotBeEmptyViolation(fakeItemPath)).to.equal(`item "${fakeItemPath}" must not be empty`);
     });

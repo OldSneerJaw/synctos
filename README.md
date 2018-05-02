@@ -428,6 +428,7 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `minimumValueExclusive`: Reject strings with an alphanumeric sort order that is less than or equal to this. No restriction by default.
   * `maximumValue`: Reject strings with an alphanumeric sort order that is greater than this. No restriction by default.
   * `maximumValueExclusive`: Reject strings with an alphanumeric sort order that is greater than or equal to this. No restriction by default.
+  * `mustEqualIgnoreCase`: The item's value must be equal to the specified value, ignoring differences in case. For example, `"CAD"` and `"cad"` would be considered equal by this constraint. No restriction by default.
 * `integer`: The value is a number with no fractional component. Additional parameters:
   * `minimumValue`: Reject values that are less than this. No restriction by default.
   * `minimumValueExclusive`: Reject values that are less than or equal to this. No restriction by default.

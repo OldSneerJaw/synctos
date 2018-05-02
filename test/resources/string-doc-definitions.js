@@ -105,6 +105,15 @@ function() {
           type: 'string',
           minimumValueExclusive: dynamicMinimumValue,
           maximumValueExclusive: dynamicMaximumValue
+        },
+        dynamicCaseInsensitiveEqualityValue: {
+          type: 'string'
+        },
+        dynamicMustEqualIgnoreCaseValidationProp: {
+          type: 'string',
+          mustEqualIgnoreCase: function(doc, oldDoc, value, oldValue) {
+            return doc.dynamicCaseInsensitiveEqualityValue;
+          }
         }
       }
     }
