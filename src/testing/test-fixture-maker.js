@@ -27,7 +27,7 @@ exports.initFromDocumentDefinitions = function(filePath) {
 };
 
 function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
-  const testEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile, unescapeBackticks);
+  const testEnvironment = testEnvironmentMaker.create(rawSyncFunction, syncFunctionFile, unescapeBackticks);
 
   const fixture = {
     /**
@@ -270,7 +270,7 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
   const defaultWriteChannel = 'write';
 
   function resetTestEnvironment() {
-    const newEnvironment = testEnvironmentMaker.init(rawSyncFunction, syncFunctionFile, unescapeBackticks);
+    const newEnvironment = testEnvironmentMaker.create(rawSyncFunction, syncFunctionFile, unescapeBackticks);
     Object.assign(testEnvironment, newEnvironment);
 
     return testEnvironment;

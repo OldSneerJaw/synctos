@@ -18,8 +18,8 @@ describe('Test fixture maker:', () => {
     syncFunctionLoaderMock.load.returnWith(fakeSyncFunctionContents);
     mockRequire('../loading/sync-function-loader', syncFunctionLoaderMock);
 
-    testEnvironmentMakerMock = { init: simpleMock.stub() };
-    testEnvironmentMakerMock.init.callFn(fakeTestEnvironment);
+    testEnvironmentMakerMock = { create: simpleMock.stub() };
+    testEnvironmentMakerMock.create.callFn(fakeTestEnvironment);
     mockRequire('./test-environment-maker', testEnvironmentMakerMock);
 
     testFixtureMaker = mockRequire.reRequire('./test-fixture-maker');
@@ -38,8 +38,8 @@ describe('Test fixture maker:', () => {
       expect(fsMock.readFileSync.callCount).to.equal(1);
       expect(fsMock.readFileSync.calls[0].args).to.eql([ fakeFilePath, 'utf8' ]);
 
-      expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
-      expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, fakeFilePath, true ]);
+      expect(testEnvironmentMakerMock.create.callCount).to.equal(1);
+      expect(testEnvironmentMakerMock.create.calls[0].args).to.eql([ fakeSyncFunctionContents, fakeFilePath, true ]);
 
       verifyTestEnvironment(testFixture);
     });
@@ -52,8 +52,8 @@ describe('Test fixture maker:', () => {
       expect(syncFunctionLoaderMock.load.callCount).to.equal(1);
       expect(syncFunctionLoaderMock.load.calls[0].args).to.eql([ fakeFilePath ]);
 
-      expect(testEnvironmentMakerMock.init.callCount).to.equal(1);
-      expect(testEnvironmentMakerMock.init.calls[0].args).to.eql([ fakeSyncFunctionContents, void 0, void 0 ]);
+      expect(testEnvironmentMakerMock.create.callCount).to.equal(1);
+      expect(testEnvironmentMakerMock.create.calls[0].args).to.eql([ fakeSyncFunctionContents, void 0, void 0 ]);
 
       verifyTestEnvironment(testFixture);
     });

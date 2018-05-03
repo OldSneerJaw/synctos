@@ -1,20 +1,18 @@
 const { expect } = require('chai');
+const mockRequire = require('mock-require');
 const path = require('path');
 const simpleMock = require('../../lib/simple-mock/index');
-const mockRequire = require('mock-require');
+const underscore = require('../../lib/underscore/underscore-min');
 
 describe('Validation environment maker', () => {
-  let environmentMaker, fsMock, vmMock;
+  let validationEnvironmentMaker, stubbedEnvironmentMakerMock;
 
   beforeEach(() => {
     // Mock out the "require" calls in the module under test
-    fsMock = { readFileSync: simpleMock.stub() };
-    mockRequire('fs', fsMock);
+    stubbedEnvironmentMakerMock = { create: simpleMock.stub() };
+    mockRequire('../environments/stubbed-environment-maker', stubbedEnvironmentMakerMock);
 
-    vmMock = { runInThisContext: simpleMock.stub() };
-    mockRequire('vm', vmMock);
-
-    environmentMaker = mockRequire.reRequire('./validation-environment-maker');
+    validationEnvironmentMaker = mockRequire.reRequire('./validation-environment-maker');
   });
 
   afterEach(() => {
@@ -22,47 +20,27 @@ describe('Validation environment maker', () => {
     mockRequire.stopAll();
   });
 
-  function verifyParse(rawDocumentDefinitions, originalFilename) {
-    const envTemplateFileContents = 'template: $DOC_DEFINITIONS_PLACEHOLDER$';
-    fsMock.readFileSync.returnWith(envTemplateFileContents);
+  it('creates a stubbed environment for schema validation', () => {
+    const documentDefinitionsString = 'my-doc-definitions-1';
 
-    const expectedEnvString = envTemplateFileContents.replace(
-      '$DOC_DEFINITIONS_PLACEHOLDER$',
-      () => rawDocumentDefinitions);
+    const expectedResult = { foo: 'baz' };
+    const mockEnvironment = simpleMock.stub();
+    mockEnvironment.returnWith(expectedResult);
 
-    const expectedResult = { foo: 'bar' };
-    const mockVmEnvironment = simpleMock.stub();
-    mockVmEnvironment.returnWith(expectedResult);
+    stubbedEnvironmentMakerMock.create.returnWith(mockEnvironment);
 
-    vmMock.runInThisContext.returnWith(mockVmEnvironment);
-
-    const result = environmentMaker.init(rawDocumentDefinitions, originalFilename);
+    const result = validationEnvironmentMaker.create(documentDefinitionsString);
 
     expect(result).to.eql(expectedResult);
 
-    expect(fsMock.readFileSync.callCount).to.equal(1);
-    expect(fsMock.readFileSync.calls[0].args).to.eql([
+    expect(stubbedEnvironmentMakerMock.create.callCount).to.equal(1);
+    expect(stubbedEnvironmentMakerMock.create.calls[0].args).to.eql([
       path.resolve(__dirname, '../../templates/environments/validation-environment-template.js'),
-      'utf8'
+      '$DOC_DEFINITIONS_PLACEHOLDER$',
+      documentDefinitionsString
     ]);
 
-    expect(vmMock.runInThisContext.callCount).to.equal(1);
-    expect(vmMock.runInThisContext.calls[0].args).to.eql([
-      `(${expectedEnvString});`,
-      {
-        filename: originalFilename,
-        displayErrors: true
-      }
-    ]);
-
-    expect(mockVmEnvironment.callCount).to.equal(1);
-  }
-
-  it('creates an environment from the input with a filename for stack traces', () => {
-    verifyParse('my-doc-definitions-1', 'my-original-filename');
-  });
-
-  it('creates an environment from the input but without a filename', () => {
-    verifyParse('my-doc-definitions-2');
+    expect(mockEnvironment.callCount).to.equal(1);
+    expect(mockEnvironment.calls[0].args).to.eql([ underscore, simpleMock ]);
   });
 });

@@ -88,7 +88,7 @@ function synctos(doc, oldDoc) {
   // The expiry module is responsible for controlling when the document will expire and be purged from the DB
   var expiryModule = importSyncFunctionFragment('./expiry-module.js')(utils);
 
-  var rawDocDefinitions = $DOCUMENT_DEFINITIONS$;
+  var rawDocDefinitions = $DOCUMENT_DEFINITIONS_PLACEHOLDER$;
 
   var docDefinitions;
   if (typeof rawDocDefinitions === 'function') {

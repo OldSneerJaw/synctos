@@ -19,7 +19,7 @@ exports.validate = (documentDefinitions, docDefinitionsFilename) => {
 };
 
 function validateDocumentDefinitionsString(rawDocDefinitionsString, docDefinitionsFilename) {
-  const validationEnv = validationEnvironmentMaker.init(rawDocDefinitionsString, docDefinitionsFilename);
+  const validationEnv = validationEnvironmentMaker.create(rawDocDefinitionsString, docDefinitionsFilename);
 
   return validateDocumentDefinitionsObjectOrFunction(validationEnv.documentDefinitions);
 }
