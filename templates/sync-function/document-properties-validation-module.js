@@ -286,6 +286,12 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
         if (mustBeTrimmed && isStringUntrimmed(itemValue)) {
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not have any leading or trailing whitespace');
         }
+
+        var mustEqualIgnoreCase = resolveItemConstraint(validator.mustEqualIgnoreCase);
+        if (!utils.isValueNullOrUndefined(mustEqualIgnoreCase) &&
+            (itemValue.toLowerCase() !== mustEqualIgnoreCase.toLowerCase())) {
+          validationErrors.push('value of item "' + buildItemPath(itemStack) + '" must equal (case insensitive) "' + mustEqualIgnoreCase + '"');
+        }
       }
 
       function validateArray(elementValidator) {

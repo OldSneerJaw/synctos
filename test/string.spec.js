@@ -452,4 +452,39 @@ describe('String validation type', () => {
       });
     });
   });
+
+  describe('case insensitive equality constraint', () => {
+    it('allows a value that matches the expected value exactly', () => {
+      const doc = {
+        _id: 'stringDoc',
+        dynamicCaseInsensitiveEqualityValue: 'FOObar',
+        dynamicMustEqualIgnoreCaseValidationProp: 'FOObar'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('allows a value that differs from the expected value in case only', () => {
+      const doc = {
+        _id: 'stringDoc',
+        dynamicCaseInsensitiveEqualityValue: 'FOObar',
+        dynamicMustEqualIgnoreCaseValidationProp: 'fooBAR'
+      };
+
+      testFixture.verifyDocumentCreated(doc);
+    });
+
+    it('rejects a value that does not match', () => {
+      const doc = {
+        _id: 'stringDoc',
+        dynamicCaseInsensitiveEqualityValue: 'FOObar',
+        dynamicMustEqualIgnoreCaseValidationProp: 'FOObarBAZ'
+      };
+
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'stringDoc',
+        errorFormatter.mustEqualIgnoreCaseViolation('dynamicMustEqualIgnoreCaseValidationProp', 'FOObar'));
+    });
+  });
 });

@@ -186,6 +186,15 @@ exports.mustBeTrimmedViolation = (itemPath) => `item "${itemPath}" must not have
 exports.mustEqualViolation =
   (itemPath, expectedItemValue) => `value of item "${itemPath}" must equal ${JSON.stringify(expectedItemValue)}`;
 
+  /**
+ * Formats a message for the error that occurs when a string does not equal the expected string (case insensitive).
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[3].stringProp")
+ * @param {*} expectedItemValue The value that is expected
+ */
+exports.mustEqualIgnoreCaseViolation =
+  (itemPath, expectedItemValue) => `value of item "${itemPath}" must equal (case insensitive) "${expectedItemValue}"`;
+
 /**
  * Formats a message for the error that occurs when there is an attempt to assign an empty string or array to a property or element where
  * that is forbidden.

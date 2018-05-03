@@ -164,7 +164,8 @@ describe('Document definitions validator:', () => {
                     propertyValidators: {
                       stringProperty: {
                         type: 'string',
-                        mustEqual: null, // Must not be defined in conjunction with "regexPattern"
+                        mustEqual: 'FooBar', // Must not be defined in conjunction with "mustEqualIgnoreCase"
+                        mustEqualIgnoreCase: null, // Must not be null or defined with "mustEqual"
                         mustBeTrimmed: 0, // Must be a boolean
                         regexPattern: /^[a-z]+$/,
                         minimumLength: () => 9,
@@ -267,6 +268,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.customValidation: \"customValidation\" must have an arity lesser or equal to 4',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.predefinedValues.3: \"predefinedValues\" at position 3 does not match any of the allowed types',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" conflict with forbidden peer \"mustEqualStrict\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqualStrict: \"mustEqualStrict\" conflict with forbidden peer \"mustEqual\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a string',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a number',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.maximumSize: \"maximumSize\" must be larger than or equal to 2',
@@ -277,6 +279,9 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.mustEqual: \"mustEqual\" must be a string',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.minimumLength: \"minimumLength\" must be an integer',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.maximumLength: \"maximumLength\" must be an integer',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.mustEqual: \"mustEqual\" conflict with forbidden peer \"mustEqualIgnoreCase\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.mustEqualIgnoreCase: \"mustEqualIgnoreCase\" conflict with forbidden peer \"mustEqual\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.mustEqualIgnoreCase: \"mustEqualIgnoreCase\" must be a string',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.mustBeTrimmed: \"mustBeTrimmed\" must be a boolean',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.maximumLength: \"maximumLength\" must be larger than or equal to 0',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.booleanProperty.mustEqual: \"mustEqual\" must be a boolean',

@@ -46,7 +46,7 @@ const typeEqualitySchemas = {
   hashtable: joi.object().unknown()
 };
 
-const validPropertyTypes = Object.keys(typeEqualitySchemas).sort().map((key) => key);
+const validPropertyTypes = Object.keys(typeEqualitySchemas).sort();
 
 const schema = joi.object().keys({
   type: dynamicConstraintSchema(joi.string().only(validPropertyTypes)).required()
@@ -116,7 +116,8 @@ function typeSpecificConstraintSchemas() {
       minimumValue: dynamicConstraintSchema(joi.string()),
       minimumValueExclusive: dynamicConstraintSchema(joi.string()),
       maximumValue: dynamicConstraintSchema(joi.string()),
-      maximumValueExclusive: dynamicConstraintSchema(joi.string())
+      maximumValueExclusive: dynamicConstraintSchema(joi.string()),
+      mustEqualIgnoreCase: dynamicConstraintSchema(joi.string())
     },
     integer: {
       minimumValue: dynamicConstraintSchema(integerSchema),
@@ -203,15 +204,17 @@ function makeTypeConstraintsSchema(typeName) {
     .without('mustNotBeNull', [ 'required', 'mustNotBeMissing' ])
 
     // Prevent the use of more than one constraint from the "equality" category
-    .without('mustEqual', [ 'mustEqualStrict' ])
+    .without('mustEqual', [ 'mustEqualStrict', 'mustEqualIgnoreCase' ])
+    .without('mustEqualStrict', [ 'mustEqual', 'mustEqualIgnoreCase' ])
+    .without('mustEqualIgnoreCase', [ 'mustEqual', 'mustEqualStrict' ])
 
     // Prevent the use of more than one constraint from the "minimum value" category
-    .without('minimumValue', [ 'minimumValueExclusive', 'mustEqual', 'mustEqualStrict' ])
-    .without('minimumValueExclusive', [ 'minimumValue', 'mustEqual', 'mustEqualStrict' ])
+    .without('minimumValue', [ 'minimumValueExclusive', 'mustEqual', 'mustEqualStrict', 'mustEqualIgnoreCase' ])
+    .without('minimumValueExclusive', [ 'minimumValue', 'mustEqual', 'mustEqualStrict', 'mustEqualIgnoreCase' ])
 
     // Prevent the use of more than one constraint from the "maximum value" category
-    .without('maximumValue', [ 'maximumValueExclusive', 'mustEqualStrict', 'mustEqual' ])
-    .without('maximumValueExclusive', [ 'maximumValue', 'mustEqualStrict', 'mustEqual' ])
+    .without('maximumValue', [ 'maximumValueExclusive', 'mustEqualStrict', 'mustEqual', 'mustEqualIgnoreCase' ])
+    .without('maximumValueExclusive', [ 'maximumValue', 'mustEqualStrict', 'mustEqual', 'mustEqualIgnoreCase' ])
 
     // Prevent the use of more than one constraint from the "immutability" category
     .without('immutable', [ 'immutableStrict', 'immutableWhenSet', 'immutableWhenSetStrict' ])
