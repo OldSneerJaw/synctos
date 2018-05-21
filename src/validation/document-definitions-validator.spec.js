@@ -91,7 +91,8 @@ describe('Document definitions validator:', () => {
             maximumIndividualSize: 20971521, // Must be no greater than 20971520 (the max Sync Gateway attachment size)
             maximumTotalSize: 20971520, // Must be greater or equal to "maximumIndividualSize"
             supportedExtensions: (doc, oldDoc, extraParam) => [ extraParam ], // Has too many params
-            supportedContentTypes: [ ] // Must have at least one element
+            supportedContentTypes: [ ], // Must have at least one element
+            filenameRegexPattern: { foo: 'bar' } // Must be a RegExp
           },
           accessAssignments: (a, b, extraParam) => extraParam, // Too many parameters
           customActions: { }, // Must have at least one property
@@ -245,6 +246,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.attachmentConstraints.maximumTotalSize: \"maximumTotalSize\" must be larger than or equal to 20971521',
         'myDoc1.attachmentConstraints.supportedExtensions: "supportedExtensions" must have an arity lesser or equal to 2',
         'myDoc1.attachmentConstraints.supportedContentTypes: \"supportedContentTypes\" must contain at least 1 items',
+        'myDoc1.attachmentConstraints.filenameRegexPattern: \"filenameRegexPattern\" must be an instance of \"RegExp\"',
         'myDoc1.accessAssignments: \"accessAssignments\" must have an arity lesser or equal to 2',
         'myDoc1.customActions: \"customActions\" must have at least 1 children',
         'myDoc1.propertyValidators.timeProperty.immutable: \"immutable\" must be a boolean',

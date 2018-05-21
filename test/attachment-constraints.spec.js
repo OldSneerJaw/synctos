@@ -388,6 +388,78 @@ describe('File attachment constraints:', () => {
           errorFormatter.requireAttachmentReferencesViolation('baz.jpg'));
       });
     });
+
+    describe('filename regex pattern validation', () => {
+      const expectedRegexPattern = /^(foo|bar)\.(xls|xlsx)$/;
+
+      it('should allow document creation when document attachment names satisfy the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foo.xls': { },
+            'bar.xlsx': { }
+          }
+        };
+
+        testFixture.verifyDocumentCreated(doc);
+      });
+
+      it('should allow document replacement when document attachment names satisfy the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foo.xlsx': { }
+          }
+        };
+        const oldDoc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc'
+        };
+
+        testFixture.verifyDocumentReplaced(doc, oldDoc);
+      });
+
+      it('should block document creation when document attachment names violate the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foo.txt': { },
+            'invalid.xls': { }
+          }
+        };
+
+        testFixture.verifyDocumentNotCreated(
+          doc,
+          'staticAttachmentFilenameRegexPatternDoc',
+          [
+            errorFormatter.attachmentFilenameRegexPatternViolation('foo.txt', expectedRegexPattern),
+            errorFormatter.attachmentFilenameRegexPatternViolation('invalid.xls', expectedRegexPattern)
+          ]);
+      });
+
+      it('should block document replacement when document attachment names violate the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foobar': { }
+          }
+        };
+        const oldDoc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc'
+        };
+
+        testFixture.verifyDocumentNotReplaced(
+          doc,
+          oldDoc,
+          'staticAttachmentFilenameRegexPatternDoc',
+          [ errorFormatter.attachmentFilenameRegexPatternViolation('foobar', expectedRegexPattern) ]);
+      });
+    });
   });
 
   describe('with dynamic validation', () => {

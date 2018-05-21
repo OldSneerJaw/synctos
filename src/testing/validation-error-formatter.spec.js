@@ -7,6 +7,13 @@ describe('Validation error formatter', () => {
       expect(errorFormatter.allowAttachmentsViolation()).to.equal('document type does not support attachments');
     });
 
+    it('produces attachmentFilenameRegexPatternViolation messages', () => {
+      const attachmentName = 'my-attachment-name';
+      const regexPattern = /^my-regex-pattern$/;
+      expect(errorFormatter.attachmentFilenameRegexPatternViolation(attachmentName, regexPattern))
+        .to.equal(`attachment "${attachmentName}" must conform to expected pattern ${regexPattern}`);
+    });
+
     it('produces cannotDelete violation messages', () => {
       expect(errorFormatter.cannotDeleteDocViolation()).to.equal('documents of this type cannot be deleted');
     });
