@@ -66,6 +66,9 @@
         },
         requireAttachmentReferences: function(doc, oldDoc) {
           return doc.requireAttachmentReferences;
+        },
+        filenameRegexPattern: function(doc, oldDoc) {
+          return doc.filenameRegexPattern ? new RegExp(doc.filenameRegexPattern) : null;
         }
       };
     },
@@ -96,6 +99,9 @@
         arrayElementsValidator: {
           type: 'attachmentReference'
         }
+      },
+      filenameRegexPattern: {
+        type: 'string'
       }
     }
   }
