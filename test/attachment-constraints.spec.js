@@ -388,6 +388,78 @@ describe('File attachment constraints:', () => {
           errorFormatter.requireAttachmentReferencesViolation('baz.jpg'));
       });
     });
+
+    describe('filename regex pattern validation', () => {
+      const expectedRegexPattern = /^(foo|bar)\.(xls|xlsx)$/;
+
+      it('should allow document creation when document attachment names satisfy the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foo.xls': { },
+            'bar.xlsx': { }
+          }
+        };
+
+        testFixture.verifyDocumentCreated(doc);
+      });
+
+      it('should allow document replacement when document attachment names satisfy the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foo.xlsx': { }
+          }
+        };
+        const oldDoc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc'
+        };
+
+        testFixture.verifyDocumentReplaced(doc, oldDoc);
+      });
+
+      it('should block document creation when document attachment names violate the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foo.txt': { },
+            'invalid.xls': { }
+          }
+        };
+
+        testFixture.verifyDocumentNotCreated(
+          doc,
+          'staticAttachmentFilenameRegexPatternDoc',
+          [
+            errorFormatter.attachmentFilenameRegexPatternViolation('foo.txt', expectedRegexPattern),
+            errorFormatter.attachmentFilenameRegexPatternViolation('invalid.xls', expectedRegexPattern)
+          ]);
+      });
+
+      it('should block document replacement when document attachment names violate the regex', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc',
+          _attachments: {
+            'foobar': { }
+          }
+        };
+        const oldDoc = {
+          _id: 'my-doc',
+          type: 'staticAttachmentFilenameRegexPatternDoc'
+        };
+
+        testFixture.verifyDocumentNotReplaced(
+          doc,
+          oldDoc,
+          'staticAttachmentFilenameRegexPatternDoc',
+          [ errorFormatter.attachmentFilenameRegexPatternViolation('foobar', expectedRegexPattern) ]);
+      });
+    });
   });
 
   describe('with dynamic validation', () => {
@@ -416,7 +488,8 @@ describe('File attachment constraints:', () => {
         supportedExtensions: [ 'pdf', 'html', 'foo' ],
         supportedContentTypes: [ 'application/pdf', 'text/html', 'text/bar' ],
         requireAttachmentReferences: true,
-        attachmentReferences: [ 'foo.pdf', 'bar.html', 'baz.foo' ]
+        attachmentReferences: [ 'foo.pdf', 'bar.html', 'baz.foo' ],
+        filenameRegexPattern: '^(foo|bar|baz)\\..*$'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -425,6 +498,7 @@ describe('File attachment constraints:', () => {
     it('should block creation of a document whose attachments violate the constraints', () => {
       const supportedExtensions = [ 'pdf', 'foo' ];
       const supportedContentTypes = [ 'application/pdf', 'text/html' ];
+      const filenameRegexString = '^(bar|baz)\\..*$';
       const doc = {
         _id: 'myDoc',
         _attachments: {
@@ -449,7 +523,8 @@ describe('File attachment constraints:', () => {
         supportedExtensions,
         supportedContentTypes,
         requireAttachmentReferences: true,
-        attachmentReferences: [ 'foo.pdf', 'bar.html' ]
+        attachmentReferences: [ 'foo.pdf', 'bar.html' ],
+        filenameRegexPattern: filenameRegexString
       };
 
       testFixture.verifyDocumentNotCreated(
@@ -461,7 +536,8 @@ describe('File attachment constraints:', () => {
           errorFormatter.maximumTotalAttachmentSizeViolation(30),
           errorFormatter.maximumAttachmentCountViolation(2),
           errorFormatter.supportedExtensionsRawAttachmentViolation('bar.html', supportedExtensions),
-          errorFormatter.supportedContentTypesRawAttachmentViolation('baz.foo', supportedContentTypes)
+          errorFormatter.supportedContentTypesRawAttachmentViolation('baz.foo', supportedContentTypes),
+          errorFormatter.attachmentFilenameRegexPatternViolation('foo.pdf', new RegExp(filenameRegexString))
         ]);
     });
 

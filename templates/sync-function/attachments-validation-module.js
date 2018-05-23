@@ -68,6 +68,9 @@ function attachmentsValidationModule(utils, buildItemPath, resolveItemConstraint
     var requireAttachmentReferences =
       attachmentConstraints ? utils.resolveDocumentConstraint(attachmentConstraints.requireAttachmentReferences) : false;
 
+    var filenameRegexPattern =
+      attachmentConstraints ? utils.resolveDocumentConstraint(attachmentConstraints.filenameRegexPattern) : null;
+
     var totalSize = 0;
     var attachmentCount = 0;
     for (var attachmentName in doc._attachments) {
@@ -107,6 +110,10 @@ function attachmentsValidationModule(utils, buildItemPath, resolveItemConstraint
             utils.isValueNullOrUndefined(attachmentRefValidator.supportedContentTypes)) {
           validationErrors.push('attachment "' + attachmentName + '" must have a supported content type (' + supportedContentTypes.join(',') + ')');
         }
+      }
+
+      if (filenameRegexPattern && !filenameRegexPattern.test(attachmentName)) {
+        validationErrors.push('attachment "' + attachmentName + '" must conform to expected pattern ' + filenameRegexPattern);
       }
     }
 

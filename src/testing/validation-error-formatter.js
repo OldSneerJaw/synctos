@@ -6,6 +6,16 @@
 exports.allowAttachmentsViolation = () => 'document type does not support attachments';
 
 /**
+ * Formats a message for the error that occurs when an attachment's filename does not match the expected regular
+ * expression pattern.
+ *
+ * @param {string} attachmentName The name of the attachment in question
+ * @param {RegExp} expectedRegex The regular expression pattern to which the attachment name must conform
+ */
+exports.attachmentFilenameRegexPatternViolation =
+  (attachmentName, expectedRegex) => `attachment "${attachmentName}" must conform to expected pattern ${expectedRegex}`;
+
+/**
  * Formats a message for the error that occurs when there is an attempt to delete a document that cannot be deleted.
  */
 exports.cannotDeleteDocViolation = () => 'documents of this type cannot be deleted';
@@ -186,7 +196,7 @@ exports.mustBeTrimmedViolation = (itemPath) => `item "${itemPath}" must not have
 exports.mustEqualViolation =
   (itemPath, expectedItemValue) => `value of item "${itemPath}" must equal ${JSON.stringify(expectedItemValue)}`;
 
-  /**
+/**
  * Formats a message for the error that occurs when a string does not equal the expected string (case insensitive).
  *
  * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "arrayProp[3].stringProp")
