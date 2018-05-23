@@ -24,6 +24,11 @@ function attachmentsValidationModule(utils, buildItemPath, resolveItemConstraint
         }
       }
 
+      var regexPattern = resolveItemConstraint(validator.regexPattern);
+      if (regexPattern && !regexPattern.test(itemValue)) {
+        validationErrors.push('attachment reference "' + buildItemPath(itemStack) + '" must conform to expected pattern ' + regexPattern);
+      }
+
       // Because the addition of an attachment is typically a separate operation from the creation/update of the associated document, we
       // can't guarantee that the attachment is present when the attachment reference property is created/updated for it, so only
       // validate it if it's present. The good news is that, because adding an attachment is a two part operation (create/update the
@@ -113,7 +118,12 @@ function attachmentsValidationModule(utils, buildItemPath, resolveItemConstraint
       }
 
       if (filenameRegexPattern && !filenameRegexPattern.test(attachmentName)) {
-        validationErrors.push('attachment "' + attachmentName + '" must conform to expected pattern ' + filenameRegexPattern);
+        // If this attachment is owned by an attachment reference property, that property's content types constraint
+        // (if any) takes precedence
+        if (utils.isValueNullOrUndefined(attachmentRefValidator) ||
+            utils.isValueNullOrUndefined(attachmentRefValidator.supportedContentTypes)) {
+          validationErrors.push('attachment "' + attachmentName + '" must conform to expected pattern ' + filenameRegexPattern);
+        }
       }
     }
 

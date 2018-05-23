@@ -14,7 +14,7 @@ describe('Attachment reference validation type', () => {
       it('allows an attachment reference with a valid file extension', () => {
         const doc = {
           _id: 'foo',
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           staticExtensionsValidationProp: 'bar.htm'
         };
 
@@ -24,13 +24,13 @@ describe('Attachment reference validation type', () => {
       it('rejects an attachment reference with an invalid file extension', () => {
         const doc = {
           _id: 'foo',
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           staticExtensionsValidationProp: 'bar.pdf'
         };
 
         testFixture.verifyDocumentNotCreated(
           doc,
-          'attachmentsDoc',
+          'attachmentReferencesDoc',
           errorFormatter.supportedExtensionsAttachmentReferenceViolation('staticExtensionsValidationProp', [ 'html', 'htm' ]));
       });
     });
@@ -39,7 +39,7 @@ describe('Attachment reference validation type', () => {
       it('allows an attachment reference with a valid file extension', () => {
         const doc = {
           _id: 'foo',
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           dynamicExtensionsValidationProp: 'bar.txt',
           dynamicSupportedExtensions: [ 'txt' ]
         };
@@ -51,14 +51,14 @@ describe('Attachment reference validation type', () => {
         const expectedSupportedExtensions = [ 'png', 'jpg', 'gif' ];
         const doc = {
           _id: 'foo',
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           dynamicExtensionsValidationProp: 'bar.ico',
           dynamicSupportedExtensions: expectedSupportedExtensions
         };
 
         testFixture.verifyDocumentNotCreated(
           doc,
-          'attachmentsDoc',
+          'attachmentReferencesDoc',
           errorFormatter.supportedExtensionsAttachmentReferenceViolation('dynamicExtensionsValidationProp', expectedSupportedExtensions));
       });
     });
@@ -72,7 +72,7 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { content_type: 'text/plain' }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           staticContentTypesValidationProp: 'foo.bar'
         };
 
@@ -85,13 +85,13 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { content_type: 'application/pdf' }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           staticContentTypesValidationProp: 'foo.bar'
         };
 
         testFixture.verifyDocumentNotCreated(
           doc,
-          'attachmentsDoc',
+          'attachmentReferencesDoc',
           errorFormatter.supportedContentTypesAttachmentReferenceViolation('staticContentTypesValidationProp', [ 'text/plain', 'text/html' ]));
       });
     });
@@ -103,7 +103,7 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { content_type: 'text/plain' }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           dynamicContentTypesValidationProp: 'foo.bar',
           dynamicSupportedContentTypes: [ 'text/plain' ]
         };
@@ -118,14 +118,14 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { content_type: 'application/pdf' }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           dynamicContentTypesValidationProp: 'foo.bar',
           dynamicSupportedContentTypes: expectedSupportedContentTypes
         };
 
         testFixture.verifyDocumentNotCreated(
           doc,
-          'attachmentsDoc',
+          'attachmentReferencesDoc',
           errorFormatter.supportedContentTypesAttachmentReferenceViolation('dynamicContentTypesValidationProp', expectedSupportedContentTypes));
       });
     });
@@ -139,7 +139,7 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { length: 200 }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           staticMaxSizeValidationProp: 'foo.bar'
         };
 
@@ -152,13 +152,13 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { length: 201 }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           staticMaxSizeValidationProp: 'foo.bar'
         };
 
         testFixture.verifyDocumentNotCreated(
           doc,
-          'attachmentsDoc',
+          'attachmentReferencesDoc',
           errorFormatter.maximumSizeAttachmentViolation('staticMaxSizeValidationProp', 200));
       });
     });
@@ -170,7 +170,7 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { length: 150 }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           dynamicMaxSizeValidationProp: 'foo.bar',
           dynamicMaxSize: 150
         };
@@ -184,15 +184,71 @@ describe('Attachment reference validation type', () => {
           _attachments: {
             'foo.bar': { length: 151 }
           },
-          type: 'attachmentsDoc',
+          type: 'attachmentReferencesDoc',
           dynamicMaxSizeValidationProp: 'foo.bar',
           dynamicMaxSize: 150
         };
 
         testFixture.verifyDocumentNotCreated(
           doc,
-          'attachmentsDoc',
+          'attachmentReferencesDoc',
           errorFormatter.maximumSizeAttachmentViolation('dynamicMaxSizeValidationProp', 150));
+      });
+    });
+  });
+
+  describe('regular expression pattern constraint', () => {
+    describe('with static validation', () => {
+      it('allows an attachment whose name matches the pattern', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'attachmentReferencesDoc',
+          staticRegexPatternValidationProp: 'a03.hc'
+        };
+
+        testFixture.verifyDocumentCreated(doc);
+      });
+
+      it('allows an attachment whose name violates the pattern', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'attachmentReferencesDoc',
+          staticRegexPatternValidationProp: '123ABC'
+        };
+
+        testFixture.verifyDocumentNotCreated(
+          doc,
+          'attachmentReferencesDoc',
+          errorFormatter.attachmentReferenceRegexPatternViolation('staticRegexPatternValidationProp', /^[a-z][a-z0-9]*\.[a-z]+$/));
+      });
+    });
+
+    describe('with dynamic validation', () => {
+      const expectedRegexString = '^\\d+\\.[a-z]+$';
+
+      it('allows an attachment whose name matches the pattern', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'attachmentReferencesDoc',
+          dynamicRegexPattern: expectedRegexString,
+          dynamicRegexPatternValidationProp: '66134.txt'
+        };
+
+        testFixture.verifyDocumentCreated(doc);
+      });
+
+      it('allows an attachment whose name violates the pattern', () => {
+        const doc = {
+          _id: 'my-doc',
+          type: 'attachmentReferencesDoc',
+          dynamicRegexPattern: expectedRegexString,
+          dynamicRegexPatternValidationProp: 'd.foo'
+        };
+
+        testFixture.verifyDocumentNotCreated(
+          doc,
+          'attachmentReferencesDoc',
+          errorFormatter.attachmentReferenceRegexPatternViolation('dynamicRegexPatternValidationProp', new RegExp(expectedRegexString)));
       });
     });
   });

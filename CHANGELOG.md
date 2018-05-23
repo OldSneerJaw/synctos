@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Added
 - [#311](https://github.com/Kashoo/synctos/issues/311): Case insensitive equality constraint for strings
 - [#313](https://github.com/Kashoo/synctos/issues/313): Attachment filename regular expression constraint
+- [#316](https://github.com/Kashoo/synctos/issues/316): Attachment reference regular expression constraint
 
 ## [2.4.0] - 2018-04-24
 ### Added
