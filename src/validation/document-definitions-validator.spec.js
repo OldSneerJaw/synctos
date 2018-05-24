@@ -19,7 +19,7 @@ describe('Document definitions validator:', () => {
         allowUnknownProperties: 1, // Must be a boolean
         immutable: true,
         cannotDelete: true, // Must not be defined if "immutable" is also defined
-        attachmentConstraints: (a, b) => b, // "allowAttachments" must also be defined,
+        attachmentConstraints: (a, b) => b, // "allowAttachments" must also be defined
         accessAssignments: [
           { // Must include either a "roles" or "users" property
             channels: [ ] // Must not be empty
@@ -139,6 +139,10 @@ describe('Document definitions validator:', () => {
                   ],
                   mustEqual: true, // Must be an integer or string
                   mustEqualStrict: 3 // Must not be defined in conjunction with "mustEqual"
+                },
+                attachmentReferenceProperty: {
+                  type: 'attachmentReference',
+                  regexPattern: '^abc$' // Must be a RegExp object
                 },
                 hashtableProperty: {
                   type: 'hashtable',
@@ -273,6 +277,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqualStrict: \"mustEqualStrict\" conflict with forbidden peer \"mustEqual\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a string',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.enumProperty.mustEqual: \"mustEqual\" must be a number',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.attachmentReferenceProperty.regexPattern: \"regexPattern\" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.maximumSize: \"maximumSize\" must be larger than or equal to 2',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableKeysValidator.regexPattern: "regexPattern" must be an object',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.hashtableProperty.hashtableValuesValidator.minimumValue: \"minimumValue\" with value \"Mon, 25 Dec 1995 13:30:00 +0430\" fails to match the required pattern: /^([+-]\\d{6}|\\d{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\\d|3[01]))?)?(T((([01]\\d|2[0-3])(:[0-5]\\d)(:[0-5]\\d(\\.\\d{1,3})?)?)|(24:00(:00(\\.0{1,3})?)?))(Z|([+-])([01]\\d|2[0-3]):([0-5]\\d))?)?$/',

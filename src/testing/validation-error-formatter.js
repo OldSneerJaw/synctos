@@ -16,6 +16,16 @@ exports.attachmentFilenameRegexPatternViolation =
   (attachmentName, expectedRegex) => `attachment "${attachmentName}" must conform to expected pattern ${expectedRegex}`;
 
 /**
+ * Formats a message for the error that occurs when an attachment reference's value does not match the expected regular
+ * expression pattern.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "objectProp.attachmentRefProp")
+ * @param {RegExp} expectedRegex The regular expression pattern to which the value must conform
+ */
+exports.attachmentReferenceRegexPatternViolation =
+  (itemPath, expectedRegex) => `attachment reference "${itemPath}" must conform to expected pattern ${expectedRegex}`;
+
+/**
  * Formats a message for the error that occurs when there is an attempt to delete a document that cannot be deleted.
  */
 exports.cannotDeleteDocViolation = () => 'documents of this type cannot be deleted';

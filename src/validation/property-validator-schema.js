@@ -168,7 +168,8 @@ function typeSpecificConstraintSchemas() {
     attachmentReference: {
       maximumSize: dynamicConstraintSchema(integerSchema.min(1).max(20971520)),
       supportedExtensions: dynamicConstraintSchema(joi.array().min(1).items(joi.string())),
-      supportedContentTypes: dynamicConstraintSchema(joi.array().min(1).items(joi.string().min(1)))
+      supportedContentTypes: dynamicConstraintSchema(joi.array().min(1).items(joi.string().min(1))),
+      regexPattern: dynamicConstraintSchema(regexSchema)
     },
     array: {
       mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),

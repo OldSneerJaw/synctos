@@ -23,13 +23,13 @@ describe('File attachment constraints:', () => {
               length: 15,
               content_type: 'text/html'
             },
-            'baz.foo': {
+            'other.foo': {
               length: 5,
               content_type: 'text/bar'
             }
           },
           type: 'staticRegularAttachmentsDoc',
-          attachmentRefProp: 'baz.foo' // The attachmentReference overrides the document's supported extensions and content types
+          attachmentRefProp: 'other.foo' // The attachmentReference overrides supported extensions, content types and the regex pattern
         };
 
         testFixture.verifyDocumentCreated(doc);
@@ -111,7 +111,7 @@ describe('File attachment constraints:', () => {
       });
 
       describe('maximum attachment count constraint', () => {
-        it('should block creation of a document whose attachments exceed the limit', () => {
+        it('should block creation of a document whose number of attachments exceed the limit', () => {
           const doc = {
             _id: 'myDoc',
             _attachments: {

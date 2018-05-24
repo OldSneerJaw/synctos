@@ -1,5 +1,5 @@
 {
-  attachmentsDoc: {
+  attachmentReferencesDoc: {
     typeFilter: simpleTypeFilter,
     channels: { write: 'write' },
     allowAttachments: true,
@@ -41,6 +41,19 @@
         type: 'attachmentReference',
         maximumSize: function(doc, oldDoc, value, oldValue) {
           return doc.dynamicMaxSize;
+        }
+      },
+      staticRegexPatternValidationProp: {
+        type: 'attachmentReference',
+        regexPattern: /^[a-z][a-z0-9]*\.[a-z]+$/
+      },
+      dynamicRegexPattern: {
+        type: 'string'
+      },
+      dynamicRegexPatternValidationProp: {
+        type: 'attachmentReference',
+        regexPattern: function(doc, oldDoc, value, oldValue) {
+          return doc.dynamicRegexPattern ? new RegExp(doc.dynamicRegexPattern) : null;
         }
       }
     }

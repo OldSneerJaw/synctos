@@ -79,6 +79,12 @@ describe('Validation error formatter', () => {
   describe('at the property/element level', () => {
     const fakeItemPath = 'my.fake[item]';
 
+    it('produces attachment reference regex pattern violation messages', () => {
+      const expectedRegex = /^[A-Za-z][A-Za-z0-9]*\.[a-z]{3}$/;
+      expect(errorFormatter.attachmentReferenceRegexPatternViolation(fakeItemPath, expectedRegex))
+        .to.equal(`attachment reference "${fakeItemPath}" must conform to expected pattern ${expectedRegex}`);
+    });
+
     it('produces invalid date format messages', () => {
       expect(errorFormatter.dateFormatInvalid(fakeItemPath))
         .to.equal(`item "${fakeItemPath}" must be an ECMAScript simplified ISO 8601 date string with no time or time zone components`);
