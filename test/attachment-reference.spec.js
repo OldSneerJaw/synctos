@@ -209,7 +209,7 @@ describe('Attachment reference validation type', () => {
         testFixture.verifyDocumentCreated(doc);
       });
 
-      it('allows an attachment whose name violates the pattern', () => {
+      it('rejects an attachment whose name violates the pattern', () => {
         const doc = {
           _id: 'my-doc',
           type: 'attachmentReferencesDoc',
@@ -237,7 +237,7 @@ describe('Attachment reference validation type', () => {
         testFixture.verifyDocumentCreated(doc);
       });
 
-      it('allows an attachment whose name violates the pattern', () => {
+      it('rejects an attachment whose name violates the pattern', () => {
         const doc = {
           _id: 'my-doc',
           type: 'attachmentReferencesDoc',
