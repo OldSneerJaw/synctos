@@ -118,8 +118,8 @@ function attachmentsValidationModule(utils, buildItemPath, resolveItemConstraint
       }
 
       if (filenameRegexPattern && !filenameRegexPattern.test(attachmentName)) {
-        // If this attachment is owned by an attachment reference property, that property's content types constraint
-        // (if any) takes precedence
+        // If this attachment is owned by an attachment reference property, that property's regular expression pattern
+        // constraint (if any) takes precedence
         if (utils.isValueNullOrUndefined(attachmentRefValidator) ||
             utils.isValueNullOrUndefined(attachmentRefValidator.supportedContentTypes)) {
           validationErrors.push('attachment "' + attachmentName + '" must conform to expected pattern ' + filenameRegexPattern);
