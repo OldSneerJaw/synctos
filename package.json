@@ -1,6 +1,6 @@
 {
   "name": "synctos",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "The Syncmaker. A tool to build comprehensive sync functions for Couchbase Sync Gateway.",
   "keywords": [
     "couchbase",
@@ -16,9 +16,9 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "jshint": "^2.9.5",
-    "mocha": "^5.1.1",
+    "mocha": "^5.2.0",
     "mock-require": "^3.0.2",
-    "nyc": "^11.7.1"
+    "nyc": "^11.8.0"
   },
   "scripts": {
     "clean": "rm -rf build .nyc_output",
