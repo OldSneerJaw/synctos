@@ -1,6 +1,9 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
+## [Unreleased]
+Nothing yet.
+
 ## [2.5.0] - 2018-05-30
 ### Added
 - [#311](https://github.com/Kashoo/synctos/issues/311): Case insensitive equality constraint for strings
