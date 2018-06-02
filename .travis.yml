@@ -6,5 +6,7 @@ node_js:
 # Enable Greenkeeper's support for npm 5+ lockfiles: https://github.com/greenkeeperio/greenkeeper-lockfile
 before_install:
   - npm install -g greenkeeper-lockfile@1
+install:
+  - npm install # Travis' default is to use `npm ci` which does NOT update the lockfile
 before_script: greenkeeper-lockfile-update
 after_script: greenkeeper-lockfile-upload
