@@ -33,7 +33,7 @@ describe('Skip validation for unchanged value constraint:', () => {
       testFixture.verifyDocumentCreated(doc);
     });
 
-    it('allows document replacement with invalid values that match the original values', () => {
+    it('allows document replacement with invalid values that semantically equal the original values', () => {
       const oldDoc = {
         _id: 'my-doc',
         type: 'staticSkipValidationWhenValueUnchangedDoc',
@@ -53,7 +53,24 @@ describe('Skip validation for unchanged value constraint:', () => {
         hashtableProp: { bar: 'baz' }
       };
 
-      const doc = Object.assign({ }, oldDoc);
+      const doc = {
+        _id: 'my-doc',
+        type: 'staticSkipValidationWhenValueUnchangedDoc',
+        integerProp: -1.0,
+        floatProp: 14.360,
+        stringProp: 'foo',
+        booleanProp: false,
+        dateProp: '1953-01-15',
+        datetimeProp: '2018-06-14T01:33:00+01:00',
+        timeProp: '17:45:53.911',
+        timezoneProp: '+15:30',
+        enumProp: 'a',
+        uuidProp: '34F0D4A2-BC77-4AEA-B3FD-D579B66EE4BC',
+        attachmentReferenceProp: 'foobar.baz',
+        arrayProp: [ 'a', 'b', 'c', 'd' ],
+        objectProp: { foo: 'bar' },
+        hashtableProp: { bar: 'baz' }
+      };
 
       testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
