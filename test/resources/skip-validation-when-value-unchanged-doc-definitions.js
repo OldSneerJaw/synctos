@@ -96,10 +96,16 @@ function() {
         allowValidationSkip: {
           type: 'boolean'
         },
-        myProp: {
+        minimumUuidValue: {
+          type: 'uuid'
+        },
+        uuidProp: {
           type: 'uuid',
           skipValidationWhenValueUnchanged: function(doc, oldDoc, value, oldValue) {
-            return oldDoc ? oldDoc.allowValidationSkip : doc.allowValidationSkip;
+            return !isDocumentMissingOrDeleted(oldDoc) ? oldDoc.allowValidationSkip : doc.allowValidationSkip;
+          },
+          minimumValue: function(doc, oldDoc, value, oldValue) {
+            return doc.minimumUuidValue;
           }
         }
       }

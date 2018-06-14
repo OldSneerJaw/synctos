@@ -279,7 +279,8 @@ describe('Skip validation for unchanged value constraint:', () => {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
         allowValidationSkip: true,
-        myProp: '7ed6ad77-b18f-4a1a-bf72-6e74a22b88c1'
+        uuidProp: '7ed6ad77-b18f-4a1a-bf72-6e74a22b88c1',
+        minimumUuidValue: '70000000-0000-0000-0000-000000000000'
       };
 
       testFixture.verifyDocumentCreated(doc);
@@ -290,13 +291,14 @@ describe('Skip validation for unchanged value constraint:', () => {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
         allowValidationSkip: true,
-        myProp: 'not-a-uuid'
+        uuidProp: '189331f4-62dd-4036-90e5-291648b05e38'
       };
 
       const doc = {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
-        myProp: 'not-a-uuid'
+        uuidProp: '189331F4-62DD-4036-90E5-291648B05E38', // Same value; just converted to uppercase
+        minimumUuidValue: '20000000-0000-0000-0000-000000000000'
       };
 
       testFixture.verifyDocumentReplaced(doc, oldDoc);
@@ -307,13 +309,14 @@ describe('Skip validation for unchanged value constraint:', () => {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
         allowValidationSkip: true,
-        myProp: 'not-a-uuid'
+        uuidProp: '0b352e9b-1c1f-433a-9c98-dd0242127185',
+        minimumUuidValue: '10000000-0000-0000-0000-000000000000'
       };
 
       testFixture.verifyDocumentNotCreated(
         doc,
         'dynamicSkipValidationWhenValueUnchangedDoc',
-        [ errorFormatter.uuidFormatInvalid('myProp') ]);
+        [ errorFormatter.minimumValueViolation('uuidProp', '10000000-0000-0000-0000-000000000000') ]);
     });
 
     it('rejects document replacement with unequal invalid values when validation is allowed to be skipped', () => {
@@ -321,20 +324,21 @@ describe('Skip validation for unchanged value constraint:', () => {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
         allowValidationSkip: true,
-        myProp: '4b424579-81c9-4740-9511-eca9c8a89f95'
+        uuidProp: '4b424579-81c9-4740-9511-eca9c8a89f95'
       };
 
       const doc = {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
-        myProp: 'not-a-uuid'
+        uuidProp: '1d9d9668-249e-47fe-95e0-06cdac93f0f1',
+        minimumUuidValue: '50000000-0000-0000-0000-000000000000'
       };
 
       testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'dynamicSkipValidationWhenValueUnchangedDoc',
-        [ errorFormatter.uuidFormatInvalid('myProp') ]);
+        [ errorFormatter.minimumValueViolation('uuidProp', '50000000-0000-0000-0000-000000000000') ]);
     });
 
     it('rejects document replacement with equal invalid values when validation is NOT allowed to be skipped', () => {
@@ -342,20 +346,21 @@ describe('Skip validation for unchanged value constraint:', () => {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
         allowValidationSkip: false,
-        myProp: 'not-a-uuid'
+        uuidProp: '22632a18-4045-4dfc-a5f0-23d2aa6af894'
       };
 
       const doc = {
         _id: 'my-doc',
         type: 'dynamicSkipValidationWhenValueUnchangedDoc',
-        myProp: 'not-a-uuid'
+        uuidProp: '22632a18-4045-4dfc-a5f0-23d2aa6af894',
+        minimumUuidValue: 'd0000000-0000-0000-0000-000000000000'
       };
 
       testFixture.verifyDocumentNotReplaced(
         doc,
         oldDoc,
         'dynamicSkipValidationWhenValueUnchangedDoc',
-        [ errorFormatter.uuidFormatInvalid('myProp') ]);
+        [ errorFormatter.minimumValueViolation('uuidProp', 'd0000000-0000-0000-0000-000000000000') ]);
     });
   });
 });
