@@ -221,7 +221,10 @@ function makeTypeConstraintsSchema(typeName) {
     .without('immutable', [ 'immutableStrict', 'immutableWhenSet', 'immutableWhenSetStrict' ])
     .without('immutableStrict', [ 'immutable', 'immutableWhenSet', 'immutableWhenSetStrict' ])
     .without('immutableWhenSet', [ 'immutable', 'immutableStrict', 'immutableWhenSetStrict' ])
-    .without('immutableWhenSetStrict', [ 'immutable', 'immutableStrict', 'immutableWhenSet' ]);
+    .without('immutableWhenSetStrict', [ 'immutable', 'immutableStrict', 'immutableWhenSet' ])
+
+    // Prevent the use of more than one constraint from the "skip validation" category
+    .without('skipValidationWhenValueUnchanged', [ 'skipValidationWhenValueUnchangedStrict' ]);
 }
 
 function mustEqualConstraintSchema(comparisonSchema) {
@@ -241,6 +244,7 @@ function universalConstraintSchemas(typeEqualitySchema) {
     mustEqual: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
     mustEqualStrict: dynamicConstraintSchema(mustEqualConstraintSchema(typeEqualitySchema)),
     skipValidationWhenValueUnchanged: dynamicConstraintSchema(joi.boolean()),
+    skipValidationWhenValueUnchangedStrict: dynamicConstraintSchema(joi.boolean()),
     customValidation: joi.func().maxArity(4) // Function parameters: doc, oldDoc, currentItemEntry, validationItemStack
   };
 }

@@ -119,7 +119,8 @@ describe('Document definitions validator:', () => {
               propertyValidators: {
                 _validName: {
                   type: 'boolean',
-                  skipValidationWhenValueUnchanged: 1 // Must be a boolean
+                  skipValidationWhenValueUnchanged: 1, // Must be a boolean
+                  skipValidationWhenValueUnchangedStrict: true // Must not be defined in conjunction with "skipValidationWhenValueUnchanged"
                 },
                 dateProperty: {
                   type: 'date',
@@ -268,6 +269,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators._invalidName: "_invalidName" is not allowed',
         'myDoc1.propertyValidators.nestedObject.unrecognizedConstraint: "unrecognizedConstraint" is not allowed',
         'myDoc1.propertyValidators.nestedObject.propertyValidators._validName.skipValidationWhenValueUnchanged: \"skipValidationWhenValueUnchanged\" must be a boolean',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators._validName.skipValidationWhenValueUnchanged: \"skipValidationWhenValueUnchanged\" conflict with forbidden peer \"skipValidationWhenValueUnchangedStrict\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutableWhenSet: \"immutableWhenSet\" conflict with forbidden peer \"immutable\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.immutable: \"immutable\" conflict with forbidden peer \"immutableWhenSet\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.dateProperty.maximumValue: "maximumValue" with value "2018-01-31T17:31:27.283-08:00" fails to match the required pattern: /^([+-]\\d{6}|\\d{4})(-(0[1-9]|1[0-2])(-(0[1-9]|[12]\\d|3[01]))?)?$/',

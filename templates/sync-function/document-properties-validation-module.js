@@ -93,12 +93,18 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
         var itemValue = currentItemEntry.itemValue;
         var validatorType = resolveItemConstraint(validator.type);
 
-        if (!utils.isDocumentMissingOrDeleted(oldDoc) &&
-            resolveItemConstraint(validator.skipValidationWhenValueUnchanged) &&
-            comparisonModule.checkItemEquality(itemValue, currentItemEntry.oldItemValue, validatorType)) {
-          // No need to perform further validation since the validator is configured to skip validation when the current
-          // value and old value are semantically equal to each other
-          return;
+        if (!utils.isDocumentMissingOrDeleted(oldDoc)) {
+          // No need to perform further validation if the validator is configured to skip validation when the current
+          // value and old value are equal to each other
+          if (resolveItemConstraint(validator.skipValidationWhenValueUnchanged) &&
+              comparisonModule.checkItemEquality(itemValue, currentItemEntry.oldItemValue, validatorType)) {
+            // Semantically equal - skip validation
+            return;
+          } else if (resolveItemConstraint(validator.skipValidationWhenValueUnchangedStrict) &&
+              comparisonModule.checkItemEquality(itemValue, currentItemEntry.oldItemValue)) {
+            // Strictly equal - skip validation
+            return;
+          }
         }
 
         if (validator.customValidation) {
