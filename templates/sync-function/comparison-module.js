@@ -1,5 +1,6 @@
 function comparisonModule(utils, buildItemPath, timeModule) {
   return {
+    checkItemEquality: checkItemEquality,
     validateMinValueInclusiveConstraint: validateMinValueInclusiveConstraint,
     validateMaxValueInclusiveConstraint: validateMaxValueInclusiveConstraint,
     validateMinValueExclusiveConstraint: validateMinValueExclusiveConstraint,
