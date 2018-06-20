@@ -93,18 +93,8 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
         var itemValue = currentItemEntry.itemValue;
         var validatorType = resolveItemConstraint(validator.type);
 
-        if (!utils.isDocumentMissingOrDeleted(oldDoc)) {
-          // No need to perform further validation if the validator is configured to skip validation when the current
-          // value and old value are equal to each other
-          if (resolveItemConstraint(validator.skipValidationWhenValueUnchanged) &&
-              comparisonModule.checkItemEquality(itemValue, currentItemEntry.oldItemValue, validatorType)) {
-            // Semantically equal - skip validation
-            return;
-          } else if (resolveItemConstraint(validator.skipValidationWhenValueUnchangedStrict) &&
-              comparisonModule.checkItemEquality(itemValue, currentItemEntry.oldItemValue)) {
-            // Strictly equal - skip validation
-            return;
-          }
+        if (shouldSkipItemValidation(validator, validatorType)) {
+          return;
         }
 
         if (validator.customValidation) {
@@ -425,6 +415,30 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
             currentItemEntry.oldItemValue);
         } else {
           return constraintDefinition;
+        }
+      }
+
+      function shouldSkipItemValidation(validator, validatorType) {
+        var currentItemEntry = itemStack[itemStack.length - 1];
+        var itemValue = currentItemEntry.itemValue;
+        var oldItemValue = currentItemEntry.oldItemValue;
+
+        if (utils.isDocumentMissingOrDeleted(oldDoc)) {
+          // Can't skip validation when creating a new document
+          return false;
+        } else if (utils.isDocumentMissingOrDeleted(doc)) {
+          // No need to validate when deleting an existing document
+          return true;
+        } else if (resolveItemConstraint(validator.skipValidationWhenValueUnchanged) &&
+            comparisonModule.checkItemEquality(itemValue, oldItemValue, validatorType)) {
+          // Old and new values are semantically equal and the item is allowed to skip validation
+          return true;
+        } else if (resolveItemConstraint(validator.skipValidationWhenValueUnchangedStrict) &&
+            comparisonModule.checkItemEquality(itemValue, oldItemValue)) {
+          // Old and new values are strictly equal and the item is allowed skip validation
+          return true;
+        } else {
+          return false;
         }
       }
     }
