@@ -30,6 +30,7 @@ const timeOnlySchema = joi.string().regex(/^((([01]\d|2[0-3])(:[0-5]\d)(:[0-5]\d
 const timezoneSchema = joi.string().regex(/^(Z|([+-])([01]\d|2[0-3]):([0-5]\d))$/);
 
 const typeEqualitySchemas = {
+  any: joi.any(),
   string: joi.string(),
   integer: integerSchema,
   float: joi.number(),
@@ -51,6 +52,9 @@ const validPropertyTypes = Object.keys(typeEqualitySchemas).sort();
 const schema = joi.object().keys({
   type: dynamicConstraintSchema(joi.string().only(validPropertyTypes)).required()
 })
+  .when(
+    joi.object().unknown().keys({ type: 'any' }),
+    { then: makeTypeConstraintsSchema('any') })
   .when(
     joi.object().unknown().keys({ type: 'string' }),
     { then: makeTypeConstraintsSchema('string') })
@@ -107,6 +111,7 @@ module.exports = exports = schema;
 // references between the complex types (e.g. "array", "object", "hashtable") and the main "propertyValidators" schema
 function typeSpecificConstraintSchemas() {
   return {
+    any: { },
     string: {
       mustNotBeEmpty: dynamicConstraintSchema(joi.boolean()),
       mustBeTrimmed: dynamicConstraintSchema(joi.boolean()),

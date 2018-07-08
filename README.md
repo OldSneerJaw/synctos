@@ -473,6 +473,7 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-wide `supportedContentTypes` constraint for the referenced attachment. No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Takes precedence over the document-wide `maximumIndividualSize` constraint for the referenced attachment. Unlimited by default.
   * `regexPattern`: A regular expression pattern that must be satisfied by the value. Takes precedence over the document-wide `attachmentConstraints.filenameRegexPattern` constraint for the referenced attachment. No restriction by default.
+* `any`: The value may be any JSON data type: number, string, boolean, array or object. No additional parameters.
 
 ##### Complex type validation
 
