@@ -179,6 +179,9 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
           }
 
           switch (validatorType) {
+            case 'any':
+              // Any type of value is allowed - no further validation required
+              break;
             case 'string':
               if (typeof itemValue !== 'string') {
                 validationErrors.push('item "' + buildItemPath(itemStack) + '" must be a string');
