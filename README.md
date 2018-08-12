@@ -28,7 +28,8 @@ For validation of documents in Apache CouchDB, see the [couchster](https://githu
       - [Content validation](#content-validation)
         - [Simple type validation](#simple-type-validation)
         - [Complex type validation](#complex-type-validation)
-        - [Universal constraint validation](#universal-constraint-validation)
+        - [Multi-type validation](#multi-type-validation)
+        - [Universal validation constraints](#universal-validation-constraints)
         - [Predefined validators](#predefined-validators)
         - [Dynamic constraint validation](#dynamic-constraint-validation)
     - [Definition file](#definition-file)
@@ -473,7 +474,6 @@ Validation for simple data types (e.g. integers, floating point numbers, strings
   * `supportedContentTypes`: An array of content/MIME types that are allowed for the attachment's contents (e.g. "image/png", "text/html", "application/xml"). Takes precedence over the document-wide `supportedContentTypes` constraint for the referenced attachment. No restriction by default.
   * `maximumSize`: The maximum file size, in bytes, of the attachment. May not be greater than 20MB (20,971,520 bytes), as Couchbase Server/Sync Gateway sets that as the hard limit per document or attachment. Takes precedence over the document-wide `maximumIndividualSize` constraint for the referenced attachment. Unlimited by default.
   * `regexPattern`: A regular expression pattern that must be satisfied by the value. Takes precedence over the document-wide `attachmentConstraints.filenameRegexPattern` constraint for the referenced attachment. No restriction by default.
-* `any`: The value may be any JSON data type: number, string, boolean, array or object. No additional parameters.
 
 ##### Complex type validation
 
@@ -543,7 +543,64 @@ myHash1: {
 }
 ```
 
-##### Universal constraint validation
+##### Multi-type validation
+
+These validation types support more than a single data type:
+
+* `any`: The value may be any JSON data type: number, string, boolean, array or object. No additional parameters.
+* `conditional`: The value must match any one of some number of candidate validators. Each validator is accompanied by a condition that determines whether that validator should be applied to the value. Additional parameters:
+  * `validationCandidates`: A list of candidates to act as the property or element's validator if their conditions are satisfied. Each condition is defined as a function that returns a boolean and accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any; it will be `null` if it has been deleted or does not exist), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). Conditions are tested in the order they are defined; if two or more candidates' conditions would evaluate to `true`, only the first candidate's validator will be applied to the property or element value. When a matching validation candidate declares the same constraint as the containing `conditional` validator, the candidate validator's constraint takes precedence. An example:
+
+```javascript
+entries: {
+  type: 'hashtable',
+  hashtableValuesValidator: {
+    type: 'object',
+    required: true,
+    propertyValidators: {
+      entryType: {
+        type: 'enum',
+        required: true,
+        predefinedValues: [ 'name', 'codes' ]
+      },
+      entryValue: {
+        type: 'conditional',
+        required: true,
+        validationCandidates: [
+          {
+            condition: function(doc, oldDoc, currentItemEntry, validationItemStack) {
+              var parentEntry = validationItemStack[validationItemStack.length - 1];
+
+              return parentEntry.itemValue.entryType === 'name';
+            },
+            validator: {
+              type: 'string',
+              mustNotBeEmpty: true
+            }
+          },
+          {
+            condition: function(doc, oldDoc, currentItemEntry, validationItemStack) {
+              var parentEntry = validationItemStack[validationItemStack.length - 1];
+
+              return parentEntry.itemValue.entryType === 'codes';
+            },
+            validator: {
+              type: 'array',
+              arrayElementsValidator: {
+                type: 'integer',
+                required: true,
+                minimumValue: 1
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+##### Universal validation constraints
 
 Validation for all simple and complex data types support the following additional parameters:
 
@@ -558,7 +615,7 @@ Validation for all simple and complex data types support the following additiona
 * `mustEqualStrict`: The value of the property or element must be strictly equal to the specified value. Differs from `mustEqual` in that specialized string validation types (e.g. `date`, `datetime`, `time`, `timezone`, `uuid`) are not compared semantically; for example, the two `timezone` values of "Z" and "+00:00" are _not_ considered equal because the strings are not strictly equal. No constraint by default.
 * `skipValidationWhenValueUnchanged`: When set to `true`, the property or element is not validated if the document is being replaced and its value is _semantically_ equal to the same property or element value from the previous document revision. Useful if a change that is not backward compatible must be introduced to a property/element validator and existing values from documents that are already stored in the database should be preserved as they are. Differs from `skipValidationWhenValueUnchangedStrict` in that it checks for semantic equality of specialized string validation types (e.g. `date`, `datetime`, `time`, `timezone`, `uuid`); for example, the two `date` values of "2018" and "2018-01-01" are considered equal with this constraint since they represent the same date. Defaults to `false`.
 * `skipValidationWhenValueUnchangedStrict`: When set to `true`, the property or element is not validated if the document is being replaced and its value is _strictly_ equal to the same property or element value from the previous document revision. Useful if a change that is not backward compatible must be introduced to a property/element validator and existing values from documents that are already stored in the database should be preserved as they are. Differs from `skipValidationWhenValueUnchanged` in that specialized string validation types (e.g. `date`, `datetime`, `time`, `timezone`, `uuid`) are not compared semantically; for example, the two `datetime` values of "2018-06-23T14:30:00.000Z" and "2018-06-23T14:30+00:00" are _not_ considered equal because the strings are not strictly equal. Defaults to `false`.
-* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). In cases where the document is in the process of being deleted, the first parameter's `_deleted` property will be `true`, so be sure to account for such cases. If the document does not yet exist, the second parameter will be `null`. And, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
+* `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). If the document does not yet exist, the second parameter will be `null`. And, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
 ```
 propertyValidators: {

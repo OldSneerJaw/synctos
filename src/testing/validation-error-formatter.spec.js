@@ -239,6 +239,11 @@ describe('Validation error formatter', () => {
       expect(errorFormatter.uuidFormatInvalid(fakeItemPath)).to.equal(`item "${fakeItemPath}" must be a UUID string`);
     });
 
+    it('produces validation conditions violation messages', () => {
+      expect(errorFormatter.validationConditionsViolation(fakeItemPath))
+        .to.equal(`item "${fakeItemPath}" does not satisfy any candidate validation conditions`);
+    });
+
     describe('type constraint violations', () => {
       it('formats messages for general types', () => {
         const typeDescriptions = {
