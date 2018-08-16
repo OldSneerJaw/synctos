@@ -70,7 +70,7 @@ describe('Sample business notification doc definition', () => {
       subject: 'pay up!',
       message: 'you best pay up now, or else...',
       createdAt: '2016-02-29T17:13:43.666Z',
-      actions: [ { url: 'http://foobar.baz', label: 'pay up here'} ],
+      actions: [ 'http://foobar.baz', 'http://bazbar.foo' ],
       users: [ 'foobar', 'baz' ]
     };
 

@@ -93,7 +93,9 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
         var itemValue = currentItemEntry.itemValue;
         var validatorType = resolveItemConstraint(validator.type);
 
-        if (shouldSkipItemValidation(validator, validatorType)) {
+        if (validatorType === 'conditional') {
+          return performConditionalValidation(validator);
+        } else if (shouldSkipItemValidation(validator, validatorType)) {
           return;
         }
 
@@ -103,7 +105,7 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
 
         if (!utils.isDocumentMissingOrDeleted(oldDoc)) {
           if (resolveItemConstraint(validator.immutable)) {
-            storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, false, validator.type));
+            storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, false, validatorType));
           }
 
           if (resolveItemConstraint(validator.immutableStrict)) {
@@ -113,7 +115,7 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
           }
 
           if (resolveItemConstraint(validator.immutableWhenSet)) {
-            storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, true, validator.type));
+            storeOptionalValidationErrors(comparisonModule.validateImmutable(itemStack, true, validatorType));
           }
 
           if (resolveItemConstraint(validator.immutableWhenSetStrict)) {
@@ -125,7 +127,7 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
 
         var expectedEqualValue = resolveItemConstraint(validator.mustEqual);
         if (expectedEqualValue !== void 0) {
-          storeOptionalValidationErrors(comparisonModule.validateEquality(itemStack, expectedEqualValue, validator.type));
+          storeOptionalValidationErrors(comparisonModule.validateEquality(itemStack, expectedEqualValue, validatorType));
         }
 
         var expectedStrictEqualValue = resolveItemConstraint(validator.mustEqualStrict);
@@ -391,6 +393,42 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
         }
       }
 
+      function performConditionalValidation(validator) {
+        var currentItemEntry = itemStack[itemStack.length - 1];
+
+        // Copy all but the last element so that the item's parent is at the top of the stack for condition functions
+        var conditionalValidationItemStack = itemStack.slice(0, -1);
+
+        var resolvedOldDoc = utils.resolveOldDoc(oldDoc);
+        var validationCandidates = resolveItemConstraint(validator.validationCandidates) || [ ];
+        for (var candidateIndex = 0; candidateIndex < validationCandidates.length; candidateIndex++) {
+          var candidate = validationCandidates[candidateIndex];
+          if (typeof candidate.condition === 'function' &&
+              candidate.condition(doc, resolvedOldDoc, currentItemEntry, conditionalValidationItemStack)) {
+
+            // Create a new validator that merges the universal constraints from the conditional validator and the more
+            // specific constraints from the candidate validator
+            var combinedValidator =
+              assignProperties({ }, [ validator, candidate.validator ], [ 'validationCandidates' ]);
+
+            return validateItemValue(combinedValidator);
+          }
+        }
+
+        // If we got here, then none of the candidate validator conditions were satisfied
+        if (shouldSkipItemValidation(validator, resolveItemConstraint('conditional'))) {
+          return;
+        } else if (utils.isValueNullOrUndefined(currentItemEntry.itemValue)) {
+          // Ensure that a null/missing value does not violate any of the universal constraints specified by the
+          // conditional validator (e.g. required, immutable)
+          var nullValidator = assignProperties({ }, [ validator, { type: 'any' } ], [ 'validationCandidates' ]);
+
+          validateItemValue(nullValidator);
+        } else {
+          validationErrors.push('item "' + buildItemPath(itemStack) + '" does not satisfy any candidate validation conditions');
+        }
+      }
+
       function performCustomValidation(validator) {
         var currentItemEntry = itemStack[itemStack.length - 1];
 
@@ -478,5 +516,19 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
     }
 
     return nameComponents.join('');
+  }
+
+  function assignProperties(target, sources, skipPropertyNames) {
+    var actualSkipPropertyNames = skipPropertyNames || [ ];
+    for (var sourceIndex = 0; sourceIndex < sources.length; sourceIndex++) {
+      var source = sources[sourceIndex];
+      for (var propertyName in source) {
+        if (source.hasOwnProperty(propertyName) && actualSkipPropertyNames.indexOf(propertyName) < 0) {
+          target[propertyName] = source[propertyName];
+        }
+      }
+    }
+
+    return target;
   }
 }

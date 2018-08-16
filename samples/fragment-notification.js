@@ -101,22 +101,42 @@
       type: 'array',
       immutable: true,
       arrayElementsValidator: {
-        type: 'object',
+        type: 'conditional',
         required: true,
-        propertyValidators: {
-          url: {
-            // The URL of the action
-            type: 'string',
-            required: true,
-            mustNotBeEmpty: true
+        validationCandidates: [
+          {
+            condition: function(doc, oldDoc, currentItemEntry, validationItemStack) {
+              return typeof currentItemEntry.itemValue === 'object';
+            },
+            validator: {
+              type: 'object',
+              propertyValidators: {
+                url: {
+                  // The URL of the action
+                  type: 'string',
+                  required: true,
+                  mustNotBeEmpty: true
+                },
+                label: {
+                  // A plain text label for the action
+                  type: 'string',
+                  required: true,
+                  mustNotBeEmpty: true
+                }
+              }
+            }
           },
-          label: {
-            // A plain text label for the action
-            type: 'string',
-            required: true,
-            mustNotBeEmpty: true
+          {
+            condition: function(doc, oldDoc, currentItemEntry, validationItemStack) {
+              return typeof currentItemEntry.itemValue === 'string';
+            },
+            validator: {
+              // The URL of the action
+              type: 'string',
+              mustNotBeEmpty: true
+            }
           }
-        }
+        ]
       }
     }
   }

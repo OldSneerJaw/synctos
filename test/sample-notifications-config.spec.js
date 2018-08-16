@@ -20,7 +20,9 @@ describe('Sample business notifications config doc definition', () => {
         invoicePayments: {
           enabledTransports: [
             { transportId: 'ET1' },
-            { transportId: 'ET2' }
+            { transportId: 'ET2' },
+            'ET3',
+            'ET4'
           ]
         }
       }
@@ -36,7 +38,8 @@ describe('Sample business notifications config doc definition', () => {
         invoicePayments: {
           enabledTransports: [
             { 'invalid-property': 'blah' },
-            { transportId: '' }
+            { transportId: '' },
+            ''
           ]
         },
         'Invalid-Type': {
@@ -56,6 +59,7 @@ describe('Sample business notifications config doc definition', () => {
         errorFormatter.unsupportedProperty('notificationTypes[invoicePayments].enabledTransports[0].invalid-property'),
         errorFormatter.requiredValueViolation('notificationTypes[invoicePayments].enabledTransports[0].transportId'),
         errorFormatter.mustNotBeEmptyViolation('notificationTypes[invoicePayments].enabledTransports[1].transportId'),
+        errorFormatter.mustNotBeEmptyViolation('notificationTypes[invoicePayments].enabledTransports[2]'),
         errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[Invalid-Type]', /^[a-zA-Z]+$/),
         errorFormatter.hashtableKeyEmpty('notificationTypes'),
         errorFormatter.regexPatternHashtableKeyViolation('notificationTypes[]', /^[a-zA-Z]+$/),

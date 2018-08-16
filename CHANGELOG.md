@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Added
 - [#323](https://github.com/Kashoo/synctos/issues/323): Option to ignore item validation errors when value is unchanged
 - [#324](https://github.com/Kashoo/synctos/issues/324): Validation type that accepts any type of value
+- [#86](https://github.com/Kashoo/synctos/issues/86): Conditional validation type
 
 ## [2.5.0] - 2018-05-30
 ### Added

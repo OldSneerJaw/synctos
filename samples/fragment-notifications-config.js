@@ -22,16 +22,36 @@
             // The list of notification transports that are enabled for the notification type
             type: 'array',
             arrayElementsValidator: {
-              type: 'object',
+              type: 'conditional',
               required: true,
-              propertyValidators: {
-                transportId: {
-                  // The ID of the notification transport
-                  type: 'string',
-                  required: true,
-                  mustNotBeEmpty: true
+              validationCandidates: [
+                {
+                  condition: function(doc, oldDoc, currentItemEntry, validationItemStack) {
+                    return typeof currentItemEntry.itemValue === 'object';
+                  },
+                  validator: {
+                    type: 'object',
+                    propertyValidators: {
+                      transportId: {
+                        // The ID of the notification transport
+                        type: 'string',
+                        required: true,
+                        mustNotBeEmpty: true
+                      }
+                    }
+                  }
+                },
+                {
+                  condition: function(doc, oldDoc, currentItemEntry, validationItemStack) {
+                    return typeof currentItemEntry.itemValue === 'string';
+                  },
+                  validator: {
+                    // The ID of the notification transport
+                    type: 'string',
+                    mustNotBeEmpty: true
+                  }
                 }
-              }
+              ]
             }
           }
         }

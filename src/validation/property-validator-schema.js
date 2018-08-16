@@ -44,7 +44,8 @@ const typeEqualitySchemas = {
   attachmentReference: joi.string(),
   array: joi.array(),
   object: joi.object().unknown(),
-  hashtable: joi.object().unknown()
+  hashtable: joi.object().unknown(),
+  conditional: joi.any()
 };
 
 const validPropertyTypes = Object.keys(typeEqualitySchemas).sort();
@@ -97,6 +98,9 @@ const schema = joi.object().keys({
   .when(
     joi.object().unknown().keys({ type: 'hashtable' }),
     { then: makeTypeConstraintsSchema('hashtable') })
+  .when(
+    joi.object().unknown().keys({ type: 'conditional' }),
+    { then: makeTypeConstraintsSchema('conditional') })
   .when(
     joi.object().unknown().keys({ type: joi.func() }),
     { then: joi.object().unknown() });
@@ -194,6 +198,9 @@ function typeSpecificConstraintSchemas() {
         regexPattern: dynamicConstraintSchema(regexSchema)
       })),
       hashtableValuesValidator: dynamicConstraintSchema(joi.lazy(() => schema))
+    },
+    conditional: {
+      validationCandidates: dynamicConstraintSchema(conditionalValidationCandidatesSchema()).required()
     }
   };
 }
@@ -294,6 +301,15 @@ function maximumValueExclusiveNumberConstraintSchema(numberType) {
           otherwise: dynamicConstraintSchema(numberType)
         })
     });
+}
+
+function conditionalValidationCandidatesSchema() {
+  return joi.array().min(1).items([
+    joi.object().keys({
+      condition: joi.func().maxArity(4).required(),
+      validator: joi.lazy(() => schema).required()
+    })
+  ]);
 }
 
 // Generates a schema that can be used for property validator constraints

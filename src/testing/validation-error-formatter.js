@@ -369,6 +369,15 @@ exports.unsupportedProperty = (propertyPath) => `property "${propertyPath}" is n
  */
 exports.uuidFormatInvalid = (itemPath) => `item "${itemPath}" must be ${getTypeDescription('uuid')}`;
 
+/**
+ * Formats a message for the error that occurs when a value does not satisfy any of the candidate validators for
+ * conditional validation.
+ *
+ * @param {string} itemPath The full path of the property or element in which the error occurs (e.g. "hashtableProp[my-key]")
+ */
+exports.validationConditionsViolation =
+  (itemPath) => `item "${itemPath}" does not satisfy any candidate validation conditions`;
+
 function getTypeDescription(type) {
   switch (type) {
     case 'array':
