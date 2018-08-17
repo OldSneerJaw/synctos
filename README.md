@@ -70,7 +70,7 @@ node_modules/.bin/synctos /path/to/my-document-definitions.js /path/to/my-genera
 
 Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
 
-```json
+```javascript
 "scripts": {
   "build": "synctos /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js"
 }
@@ -92,7 +92,7 @@ node_modules/.bin/synctos-validate /path/to/my-document-definitions.js
 
 Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
 
-```json
+```javascript
 "scripts": {
   "validate": "synctos-validate /path/to/my-document-definitions.js"
 }
@@ -954,7 +954,7 @@ The `testFixture.validationErrorFormatter` object in the preceding example provi
 
 To execute the tests in the `test/` directory, ensure that the project's `package.json` file contains a "test" script. For example:
 
-```json
+```javascript
 "scripts": {
   "test": "mocha test/"
 }
