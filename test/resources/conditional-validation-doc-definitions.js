@@ -9,7 +9,11 @@ function() {
           propertyValidators: {
             conditionalValidationProp: {
               type: 'conditional',
-              immutableWhenSet: true,
+              immutableWhenSet: function(doc, oldDoc) {
+                // This constraint is specified as a function to verify that the conditional validator's constraints
+                // will be inherited by its candidate validators regardless of whether they are static or dynamic
+                return true;
+              },
               skipValidationWhenValueUnchanged: true,
               validationCandidates: [
                 {

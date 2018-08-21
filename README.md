@@ -64,13 +64,13 @@ As a convenience, otto - and, by extension, Sync Gateway - does support the [Und
 
 Once synctos is installed, you can run it from your project's directory as follows:
 
-```
+```bash
 node_modules/.bin/synctos /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js
 ```
 
 Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
 
-```
+```javascript
 "scripts": {
   "build": "synctos /path/to/my-document-definitions.js /path/to/my-generated-sync-function.js"
 }
@@ -86,13 +86,13 @@ Generated sync functions are compatible with Sync Gateway 1.x and 2.x.
 
 To validate that your document definitions file is structured correctly and does not contain any obvious semantic violations, execute the built in validation script as follows:
 
-```
+```bash
 node_modules/.bin/synctos-validate /path/to/my-document-definitions.js
 ```
 
 Or as a custom [script](https://docs.npmjs.com/misc/scripts) in your project's `package.json` as follows:
 
-```
+```javascript
 "scripts": {
   "validate": "synctos-validate /path/to/my-document-definitions.js"
 }
@@ -108,7 +108,7 @@ Document definitions must conform to the following specification. See the `sampl
 
 At the top level, the document definitions object contains a property for each document type that is to be supported by the Sync Gateway bucket. For example:
 
-```
+```javascript
 {
   myDocType1: {
     channels: ...,
@@ -135,13 +135,13 @@ The following properties include the basics necessary to build a document defini
 
 An example of the simple type filter:
 
-```
+```javascript
 typeFilter: simpleTypeFilter
 ```
 
 And an example of a more complex custom type filter:
 
-```
+```javascript
 typeFilter: function(doc, oldDoc, currentDocType) {
   var typePropertyMatches;
   if (oldDoc) {
@@ -175,7 +175,7 @@ typeFilter: function(doc, oldDoc, currentDocType) {
 
 For example:
 
-```
+```javascript
 channels: {
   add: [ 'create', 'new' ],
   replace: 'update',
@@ -185,7 +185,7 @@ channels: {
 
 Or:
 
-```
+```javascript
 channels: function(doc, oldDoc) {
   return {
     view: doc._id + '-readonly',
@@ -198,7 +198,7 @@ channels: function(doc, oldDoc) {
 
 An example static definition:
 
-```
+```javascript
 propertyValidators: {
   myProp1: {
     type: 'boolean',
@@ -213,7 +213,7 @@ propertyValidators: {
 
 And a dynamic definition:
 
-```
+```javascript
 propertyValidators: function(doc, oldDoc) {
   var dynamicProp = (doc._id.indexOf('foobar') >= 0) ? { type: 'string' } : { type: 'float' }
 
@@ -240,7 +240,7 @@ Additional properties that provide finer grained control over documents:
 
 For example:
 
-```
+```javascript
 authorizedRoles: {
   add: 'manager',
   replace: [ 'manager', 'employee' ],
@@ -250,7 +250,7 @@ authorizedRoles: {
 
 Or:
 
-```
+```javascript
 authorizedRoles: function(doc, oldDoc) {
   return {
     write: oldDoc ? oldDoc.roles : doc.roles
@@ -266,7 +266,7 @@ authorizedRoles: function(doc, oldDoc) {
 
 For example:
 
-```
+```javascript
 authorizedUsers: {
   add: [ 'sally', 'roger', 'samantha' ],
   replace: [ 'roger', 'samantha' ],
@@ -276,7 +276,7 @@ authorizedUsers: {
 
 Or:
 
-```
+```javascript
 authorizedUsers: function(doc, oldDoc) {
   return {
     write: oldDoc ? oldDoc.users : doc.users
@@ -297,7 +297,7 @@ authorizedUsers: function(doc, oldDoc) {
 
 An example of a static mix of channel and role access assignments:
 
-```
+```javascript
 accessAssignments: [
   {
     type: 'role',
@@ -326,7 +326,7 @@ accessAssignments: [
 
 And an example of dynamic channel and role access assignments:
 
-```
+```javascript
 accessAssignments: function(doc, oldDoc) {
   var accessAssignments = [ ];
 
@@ -392,7 +392,7 @@ accessAssignments: function(doc, oldDoc) {
 
 An example of an `onAuthorizationSucceeded` custom action that stores a property in the metadata object parameter for later use by the `onDocumentChannelAssignmentSucceeded` custom action:
 
-```
+```javascript
 customActions: {
   onAuthorizationSucceeded: function(doc, oldDoc, customActionMetadata) {
     var extraChannel = customActionMetadata.documentTypeId + '-modify';
@@ -485,7 +485,7 @@ Validation for complex data types (e.g. objects, arrays, hashtables):
   * `maximumLength`: The maximum number of elements (inclusive) allowed in the array. Undefined by default.
   * `arrayElementsValidator`: The validation that is applied to each element of the array. Any validation type, including those for complex data types, may be used. Undefined by default. An example:
 
-```
+```javascript
 myArray1: {
   type: 'array',
   mustNotBeEmpty: true,
@@ -500,7 +500,7 @@ myArray1: {
   * `allowUnknownProperties`: Whether to allow the existence of properties that are not explicitly declared in the object definition. Not applied recursively to objects that are nested within this object. Defaults to `false` if the `propertyValidators` parameter is specified; otherwise, it defaults to `true`.
   * `propertyValidators`: An object/hash of validators to be applied to the properties that are explicitly supported by the object. Any validation type, including those for complex data types, may be used for each property validator. Undefined by default. If defined, then any property that is not declared will be rejected by the sync function unless the `allowUnknownProperties` parameter is `true`. An example:
 
-```
+```javascript
 myObj1: {
   type: 'object',
   propertyValidators: {
@@ -524,7 +524,7 @@ myObj1: {
     * `regexPattern`: A regular expression pattern that must be satisfied for key strings to be accepted. Undefined by default.
   * `hashtableValuesValidator`: The validation that is applied to each of the values in the object/hash. Undefined by default. Any validation type, including those for complex data types, may be used. An example:
 
-```
+```javascript
 myHash1: {
   type: 'hashtable',
   hashtableKeysValidator: {
@@ -617,7 +617,7 @@ Validation for all simple and complex data types support the following additiona
 * `skipValidationWhenValueUnchangedStrict`: When set to `true`, the property or element is not validated if the document is being replaced and its value is _strictly_ equal to the same property or element value from the previous document revision. Useful if a change that is not backward compatible must be introduced to a property/element validator and existing values from documents that are already stored in the database should be preserved as they are. Differs from `skipValidationWhenValueUnchanged` in that specialized string validation types (e.g. `date`, `datetime`, `time`, `timezone`, `uuid`) are not compared semantically; for example, the two `datetime` values of "2018-06-23T14:30:00.000Z" and "2018-06-23T14:30+00:00" are _not_ considered equal because the strings are not strictly equal. Defaults to `false`.
 * `customValidation`: A function that accepts as parameters (1) the new document, (2) the old document that is being replaced/deleted (if any), (3) an object that contains metadata about the current item to validate and (4) a stack of the items (e.g. object properties, array elements, hashtable element values) that have gone through validation, where the last/top element contains metadata for the direct parent of the item currently being validated and the first/bottom element is metadata for the root (i.e. the document). If the document does not yet exist, the second parameter will be `null`. And, in some cases where the document previously existed (i.e. it was deleted), the second parameter _may_ be non-null and its `_deleted` property will be `true`. Generally, custom validation should not throw exceptions; it's recommended to return an array/list of error descriptions so the sync function can compile a list of all validation errors that were encountered once full validation is complete. A return value of `null`, `undefined` or an empty array indicate there were no validation errors. An example:
 
-```
+```javascript
 propertyValidators: {
   myStringProp: {
     type: 'string'
@@ -661,7 +661,7 @@ The following predefined item validators may also be useful:
 
 * `typeIdValidator`: A property validator that is suitable for application to the property that specifies the type of a document. Its constraints include ensuring the value is a string, is neither null nor undefined, is not an empty string and cannot be modified. NOTE: If a document type specifies `simpleTypeFilter` as its type filter, it is not necessary to explicitly include a `type` property validator; it will be supported implicitly as a `typeIdValidator`. An example usage:
 
-```
+```javascript
 propertyValidators: {
   type: typeIdValidator,
   foobar: {
@@ -681,7 +681,7 @@ In addition to defining any of the item validation constraints above, including 
 
 For example:
 
-```
+```javascript
 propertyValidators: {
   sequence: {
     type: 'integer',
@@ -716,7 +716,7 @@ A document definitions file specifies all the document types that belong to a si
 
 For example, a document definitions file implemented as an object:
 
-```
+```javascript
 {
   myDocType1: {
     channels: {
@@ -753,7 +753,7 @@ For example, a document definitions file implemented as an object:
 
 Or a functionally equivalent document definitions file implemented as a function:
 
-```
+```javascript
 function() {
   var sharedChannels = {
     view: 'view',
@@ -797,37 +797,37 @@ Document definitions are also modular. By invoking the `importDocumentDefinition
 
 * `my-doc-type1-fragment.js`:
 
-```
-    {
-      channels: sharedChannels,
-      typeFilter: myDocTypeFilter,
-      propertyValidators: {
-        type: typeIdValidator,
-        myProp1: {
-          type: 'integer'
-        }
-      }
+```javascript
+{
+  channels: sharedChannels,
+  typeFilter: myDocTypeFilter,
+  propertyValidators: {
+    type: typeIdValidator,
+    myProp1: {
+      type: 'integer'
     }
+  }
+}
 ```
 
 * `my-doc-type2-fragment.js`:
 
-```
-    {
-      channels: sharedChannels,
-      typeFilter: myDocTypeFilter,
-      propertyValidators: {
-        type: typeIdValidator,
-        myProp2: {
-          type: 'datetime'
-        }
-      }
+```javascript
+{
+  channels: sharedChannels,
+  typeFilter: myDocTypeFilter,
+  propertyValidators: {
+    type: typeIdValidator,
+    myProp2: {
+      type: 'datetime'
     }
+  }
+}
 ```
 
 And then each fragment can be imported into the main document definitions file:
 
-```
+```javascript
 function() {
   var sharedChannels = {
     view: 'view',
@@ -878,13 +878,13 @@ Install the testing libraries locally and add them as development dependencies i
 
 After that, create a new specification file in your project's `test/` directory (e.g. `test/foobar-spec.js`) and import the test fixture module into the empty spec:
 
-```
+```javascript
 var testFixtureMaker = require('synctos').testFixtureMaker;
 ```
 
 Create a new `describe` block to encapsulate the forthcoming test cases, initialize the synctos test fixture and also reset the state after each test case using the `afterEach` function. For example:
 
-```
+```javascript
 describe('My new sync function', function() {
   var testFixture = testFixtureMaker.initFromDocumentDefinitions('/path/to/my-doc-definitions.js');
 
@@ -898,7 +898,7 @@ describe('My new sync function', function() {
 
 Now you can begin writing specs/test cases inside the `describe` block using the test fixture's convenience functions to verify the behaviour of the generated sync function. For example, to verify that a new document passes validation, specifies the correct channels, roles and usernames for authorization, and assigns the desired channel access to a list of users:
 
-```
+```javascript
 it('can create a myDocType document', function() {
   var doc = {
     _id: 'myDocId',
@@ -930,7 +930,7 @@ it('can create a myDocType document', function() {
 
 Or to verify that a document cannot be created because it fails validation:
 
-```
+```javascript
 it('cannot create a myDocType doc when required property foo is missing', function() {
   var doc = {
     _id: 'myDocId',
@@ -954,7 +954,7 @@ The `testFixture.validationErrorFormatter` object in the preceding example provi
 
 To execute the tests in the `test/` directory, ensure that the project's `package.json` file contains a "test" script. For example:
 
-```
+```javascript
 "scripts": {
   "test": "mocha test/"
 }

@@ -6,6 +6,10 @@ const path = require('path');
 module.exports = exports = {
   target: 'node',
   entry: './lib/index.js',
+  mode: 'production',
+  optimization: {
+    minimize: false
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'joi.bundle.js',

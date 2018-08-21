@@ -181,7 +181,7 @@ describe('Conditional validation type:', () => {
       };
 
       // The outer (conditional) validator specifies that the property is immutable, but that is overridden by the inner
-      // (datetime) validator
+      // (integer) validator
       testFixture.verifyDocumentReplaced(doc, oldDoc);
     });
 

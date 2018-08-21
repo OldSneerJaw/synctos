@@ -1,7 +1,7 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
-## [Unreleased]
+## [2.6.0] - 2018-08-20
 ### Added
 - [#323](https://github.com/Kashoo/synctos/issues/323): Option to ignore item validation errors when value is unchanged
 - [#324](https://github.com/Kashoo/synctos/issues/324): Validation type that accepts any type of value
@@ -210,7 +210,8 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ## [1.0.0] - 2016-07-12
 First public release
 
-[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/Kashoo/synctos/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/Kashoo/synctos/compare/v2.4.0...v2.5.0
 [2.4.0]: https://github.com/Kashoo/synctos/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/Kashoo/synctos/compare/v2.2.1...v2.3.0
