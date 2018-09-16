@@ -356,6 +356,7 @@ function fakeTestEnvironment() {
     _: simpleMock.stub(),
     JSON,
     requireAccess: simpleMock.stub(),
+    requireAdmin: simpleMock.stub(),
     requireRole: simpleMock.stub(),
     requireUser: simpleMock.stub(),
     channel: simpleMock.stub(),

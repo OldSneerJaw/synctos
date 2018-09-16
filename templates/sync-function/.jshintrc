@@ -12,6 +12,7 @@
     "importSyncFunctionFragment": false,
     "JSON": false,
     "requireAccess": false,
+    "requireAdmin": false,
     "requireRole": false,
     "requireUser": false,
     "role": false
