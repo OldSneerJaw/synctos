@@ -4,6 +4,7 @@ function makeTestEnvironment(_, simpleMock) {
     stringify: global.JSON.stringify
   };
   const requireAccess = simpleMock.stub();
+  const requireAdmin = simpleMock.stub();
   const requireRole = simpleMock.stub();
   const requireUser = simpleMock.stub();
   const channel = simpleMock.stub();
@@ -15,6 +16,7 @@ function makeTestEnvironment(_, simpleMock) {
     _,
     JSON,
     requireAccess,
+    requireAdmin,
     requireRole,
     requireUser,
     channel,

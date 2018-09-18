@@ -2,7 +2,8 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
-Nothing yet.
+### Added
+- [#331](https://github.com/Kashoo/synctos/issues/331): Support the `requireAdmin` function in test fixtures
 
 ## [2.6.0] - 2018-08-20
 ### Added

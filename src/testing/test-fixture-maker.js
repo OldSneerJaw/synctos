@@ -257,6 +257,7 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
      * Gateway API functions:
      *
      * - requireAccess: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireaccesschannels
+     * - requireAdmin: https://github.com/couchbase/sync_gateway/issues/3276
      * - requireRole: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requirerolerolename
      * - requireUser: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireuserusername
      * - channel: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#channel-name
@@ -714,6 +715,10 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
         testEnvironment.requireAccess.callCount,
         0,
         `Unexpected attempt to specify required channels: ${JSON.stringify(testEnvironment.requireAccess.calls)}`);
+      assert.equal(
+        testEnvironment.requireAdmin.callCount,
+        0,
+        `Unexpected attempt to specify an admin is required: ${JSON.stringify(testEnvironment.requireAdmin.calls)}`);
       assert.equal(
         testEnvironment.requireRole.callCount,
         0,
