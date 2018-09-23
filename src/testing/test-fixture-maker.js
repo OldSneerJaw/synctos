@@ -256,10 +256,10 @@ function init(rawSyncFunction, syncFunctionFile, unescapeBackticks) {
      * function itself via the "syncFunction" property along with several simple-mock stubs for the following Sync
      * Gateway API functions:
      *
-     * - requireAccess: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireaccesschannels
+     * - requireAccess: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireaccess-channels
      * - requireAdmin: https://github.com/couchbase/sync_gateway/issues/3276
-     * - requireRole: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requirerolerolename
-     * - requireUser: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireuserusername
+     * - requireRole: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requirerole-rolename
+     * - requireUser: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#requireuser-username
      * - channel: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#channel-name
      * - access: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#access-username-channelname
      * - role: https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#role-username-rolename

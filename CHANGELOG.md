@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Added
 - [#331](https://github.com/Kashoo/synctos/issues/331): Support the `requireAdmin` function in test fixtures
 
+### Changed
+- [#332](https://github.com/Kashoo/synctos/issues/332): Update links to official Couchbase documentation
+
 ## [2.6.0] - 2018-08-20
 ### Added
 - [#323](https://github.com/Kashoo/synctos/issues/323): Option to ignore item validation errors when value is unchanged
