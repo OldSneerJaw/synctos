@@ -14,11 +14,11 @@
   "main": "src/index.js",
   "dependencies": {},
   "devDependencies": {
-    "chai": "^4.1.2",
+    "chai": "^4.2.0",
     "jshint": "^2.9.6",
     "mocha": "^5.2.0",
     "mock-require": "^3.0.2",
-    "nyc": "^12.0.2"
+    "nyc": "^13.1.0"
   },
   "scripts": {
     "clean": "rm -rf build .nyc_output",
