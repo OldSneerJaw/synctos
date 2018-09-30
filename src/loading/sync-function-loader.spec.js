@@ -16,7 +16,7 @@ describe('Sync function loader', () => {
     mockRequire('fs', fsMock);
 
     indentMock = { js: simpleMock.stub() };
-    mockRequire('../../lib/indent.js/indent.min.js', indentMock);
+    mockRequire('../../lib/indent.js/indent.js', indentMock);
 
     fileFragmentLoaderMock = { load: simpleMock.stub() };
     mockRequire('./file-fragment-loader.js', fileFragmentLoaderMock);

@@ -11,7 +11,7 @@ exports.load = loadFromFile;
 
 const fs = require('fs');
 const path = require('path');
-const indent = require('../../lib/indent.js/indent.min');
+const indent = require('../../lib/indent.js/indent');
 const docDefinitionsLoader = require('./document-definitions-loader');
 const fileFragmentLoader = require('./file-fragment-loader');
 
