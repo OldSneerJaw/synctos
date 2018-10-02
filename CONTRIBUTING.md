@@ -120,9 +120,11 @@ When it is time to publish a new release, a project maintainer should follow the
     4. Create a pull request that targets the _release_ branch, rather than the master branch (e.g. https://github.com/Kashoo/synctos/pull/273)
 6. After the pull request is reviewed and merged, create a GitHub release tag (e.g. `v2.2.1`) from the HEAD of the release branch; include the version's changelog content in the description
 7. Publish the new version to npm: `git checkout <release_branch_name> && git reset --hard && git pull && npm publish`
-8. Merge the release branch into the master branch
-9. Delete the release branch
-10. Restore the "Unreleased" section to `CHANGELOG.md` in the master branch. Ensure that the range comparison link at the bottom of the file for the "Unreleased" section is accurate (e.g. `[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.1...HEAD`).
-11. Upgrade the project's runtime dependencies (i.e. the contents of the `lib` directory) as necessary
-12. Post a release announcement to the official Couchbase forum: https://forums.couchbase.com/t/utility-to-make-building-sync-functions-for-sync-gateway-easier/9107
-13. Close the GitHub issue/ticket for the release
+8. Create a new branch (e.g. `issue-272-post-2.2.1-release`) based off of the release branch, rather than the master branch
+    1. Restore the "Unreleased" section to `CHANGELOG.md` in the master branch. Ensure that the range comparison link at the bottom of the file for the "Unreleased" section is accurate (e.g. `[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.1...HEAD`).
+    2. Upgrade the project's runtime dependencies (i.e. the contents of the `lib` directory) as necessary
+    3. Create a pull request that targets the _release_ branch, rather than the master branch (e.g. https://github.com/Kashoo/synctos/pull/309)
+9. Merge the release branch into the master branch
+10. Delete the release branch
+11. Post a release announcement to the official Couchbase forum: https://forums.couchbase.com/t/utility-to-make-building-sync-functions-for-sync-gateway-easier/9107
+12. Close the GitHub issue/ticket for the release
