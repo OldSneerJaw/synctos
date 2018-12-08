@@ -211,11 +211,6 @@ function makeTypeConstraintsSchema(typeName) {
   const constraints = Object.assign({ }, universalConstraintSchemas(typeEqualitySchemas[typeName]), allTypeConstraints[typeName]);
 
   return joi.object().keys(constraints)
-    // Prevent the use of more than one constraint from the "required value" category
-    .without('required', [ 'mustNotBeMissing', 'mustNotBeNull' ])
-    .without('mustNotBeMissing', [ 'required', 'mustNotBeNull' ])
-    .without('mustNotBeNull', [ 'required', 'mustNotBeMissing' ])
-
     // Prevent the use of more than one constraint from the "equality" category
     .without('mustEqual', [ 'mustEqualStrict', 'mustEqualIgnoreCase' ])
     .without('mustEqualStrict', [ 'mustEqual', 'mustEqualIgnoreCase' ])
@@ -247,8 +242,10 @@ function universalConstraintSchemas(typeEqualitySchema) {
   return {
     type: dynamicConstraintSchema(joi.string()).required(),
     required: dynamicConstraintSchema(joi.boolean()),
-    mustNotBeMissing: dynamicConstraintSchema(joi.boolean()),
-    mustNotBeNull: dynamicConstraintSchema(joi.boolean()),
+    mustNotBeMissing: joi.any().forbidden().error(() =>
+      ({ message: '"mustNotBeMissing" is deprecated; use "required" instead' })),
+    mustNotBeNull: joi.any().forbidden().error(() =>
+      ({ message: '"mustNotBeNull" is deprecated; use "required" instead' })),
     immutable: dynamicConstraintSchema(joi.boolean()),
     immutableStrict: dynamicConstraintSchema(joi.boolean()),
     immutableWhenSet: dynamicConstraintSchema(joi.boolean()),

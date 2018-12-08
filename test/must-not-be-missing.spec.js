@@ -29,7 +29,7 @@ describe('Non-missing value constraint', () => {
       testFixture.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with top-level values that are null', () => {
+    it('blocks a doc with top-level values that are null', () => {
       const doc = {
         _id: 'staticDoc',
         stringProp: null,
@@ -45,10 +45,25 @@ describe('Non-missing value constraint', () => {
         hashtableProp: null,
       };
 
-      testFixture.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'staticDoc',
+        [
+          errorFormatter.mustNotBeMissingValueViolation('hashtableProp'),
+          errorFormatter.mustNotBeMissingValueViolation('objectProp'),
+          errorFormatter.mustNotBeMissingValueViolation('arrayProp'),
+          errorFormatter.mustNotBeMissingValueViolation('attachmentReferenceProp'),
+          errorFormatter.mustNotBeMissingValueViolation('enumProp'),
+          errorFormatter.mustNotBeMissingValueViolation('dateProp'),
+          errorFormatter.mustNotBeMissingValueViolation('datetimeProp'),
+          errorFormatter.mustNotBeMissingValueViolation('booleanProp'),
+          errorFormatter.mustNotBeMissingValueViolation('floatProp'),
+          errorFormatter.mustNotBeMissingValueViolation('integerProp'),
+          errorFormatter.mustNotBeMissingValueViolation('stringProp')
+        ]);
     });
 
-    it('allows a doc with nested values that are null', () => {
+    it('blocks a doc with nested values that are null', () => {
       const doc = {
         _id: 'staticDoc',
         stringProp: 'foobar',
@@ -64,7 +79,14 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': null },
       };
 
-      testFixture.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'staticDoc',
+        [
+          errorFormatter.mustNotBeMissingValueViolation('arrayProp[0]'),
+          errorFormatter.mustNotBeMissingValueViolation('objectProp.subProp'),
+          errorFormatter.mustNotBeMissingValueViolation('hashtableProp[key]')
+        ]);
     });
 
     it('blocks a doc with top-level values that are undefined', () => {
@@ -220,7 +242,7 @@ describe('Non-missing value constraint', () => {
       testFixture.verifyDocumentCreated(doc);
     });
 
-    it('allows a doc with top-level values that are null', () => {
+    it('blocks a doc with top-level values that are null', () => {
       const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
@@ -237,10 +259,25 @@ describe('Non-missing value constraint', () => {
         hashtableProp: null,
       };
 
-      testFixture.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDoc',
+        [
+          errorFormatter.mustNotBeMissingValueViolation('hashtableProp'),
+          errorFormatter.mustNotBeMissingValueViolation('objectProp'),
+          errorFormatter.mustNotBeMissingValueViolation('arrayProp'),
+          errorFormatter.mustNotBeMissingValueViolation('attachmentReferenceProp'),
+          errorFormatter.mustNotBeMissingValueViolation('enumProp'),
+          errorFormatter.mustNotBeMissingValueViolation('dateProp'),
+          errorFormatter.mustNotBeMissingValueViolation('datetimeProp'),
+          errorFormatter.mustNotBeMissingValueViolation('booleanProp'),
+          errorFormatter.mustNotBeMissingValueViolation('floatProp'),
+          errorFormatter.mustNotBeMissingValueViolation('integerProp'),
+          errorFormatter.mustNotBeMissingValueViolation('stringProp')
+        ]);
     });
 
-    it('allows a doc with nested values that are null', () => {
+    it('blocks a doc with nested values that are null', () => {
       const doc = {
         _id: 'dynamicDoc',
         dynamicPropsRequired: true,
@@ -257,7 +294,14 @@ describe('Non-missing value constraint', () => {
         hashtableProp: { 'key': null },
       };
 
-      testFixture.verifyDocumentCreated(doc);
+      testFixture.verifyDocumentNotCreated(
+        doc,
+        'dynamicDoc',
+        [
+          errorFormatter.mustNotBeMissingValueViolation('arrayProp[0]'),
+          errorFormatter.mustNotBeMissingValueViolation('objectProp.subProp'),
+          errorFormatter.mustNotBeMissingValueViolation('hashtableProp[key]')
+        ]);
     });
 
     it('blocks a doc with top-level values that are undefined', () => {
