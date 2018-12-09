@@ -2,8 +2,12 @@
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
 ## [Unreleased]
+### Fixed
+- [#338](https://github.com/Kashoo/synctos/issues/338): The `mustNotBeMissing` and `mustNotBeNull` constraints do not behave as expected
+
 ### Deprecated
-- [#338](https://github.com/Kashoo/synctos/issues/338): the `mustNotBeMissing` and `mustNotBeNull` constraints
+- `mustNotBeMissing` constraint
+- `mustNotBeNull` constraint
 
 ## [2.7.0] - 2018-10-01
 ### Added
