@@ -263,10 +263,10 @@ function documentPropertiesValidationModule(utils, simpleTypeFilter, typeIdValid
         } else if (resolveItemConstraint(validator.required)) {
           // The item has no value (either it's null or undefined), but the validator indicates it is required
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be null or missing');
-        } else if (resolveItemConstraint(validator.mustNotBeMissing) && itemValue === void 0) {
+        } else if (resolveItemConstraint(validator.mustNotBeMissing)) {
           // The item is missing (i.e. it's undefined), but the validator indicates it must not be
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be missing');
-        } else if (resolveItemConstraint(validator.mustNotBeNull) && itemValue === null) {
+        } else if (resolveItemConstraint(validator.mustNotBeNull)) {
           // The item is null, but the validator indicates it must not be
           validationErrors.push('item "' + buildItemPath(itemStack) + '" must not be null');
         }

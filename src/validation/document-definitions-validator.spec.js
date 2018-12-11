@@ -100,6 +100,7 @@ describe('Document definitions validator:', () => {
             conditionalTypeProperty: {
               type: 'conditional',
               immutableWhenSetStrict: true,
+              mustNotBeNull: false, // "mustNotBeNull" is deprecated
               minimumValue: -15, // Unsupported constraint for this validation type
               validationCandidates: [
                 {
@@ -216,7 +217,7 @@ describe('Document definitions validator:', () => {
                       invalidIntegerProperty: {
                         type: 'integer',
                         required: true,
-                        mustNotBeMissing: true, // Must not be defined if "required" is defined
+                        mustNotBeMissing: true, // "mustNotBeMissing" is deprecated
                         minimumValueExclusive: 1,
                         maximumValue: 1, // Must be greater than "minimumValueExclusive"
                         maximumValueExclusive: 1 // Must be greater than "minimumValueExclusive"
@@ -287,6 +288,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.attachmentConstraints.filenameRegexPattern: \"filenameRegexPattern\" must be an instance of \"RegExp\"',
         'myDoc1.accessAssignments: \"accessAssignments\" must have an arity lesser or equal to 2',
         'myDoc1.customActions: \"customActions\" must have at least 1 children',
+        'myDoc1.propertyValidators.conditionalTypeProperty.mustNotBeNull: \"mustNotBeNull\" is deprecated; use "required" instead',
         'myDoc1.propertyValidators.conditionalTypeProperty.minimumValue: \"minimumValue\" is not allowed',
         'myDoc1.propertyValidators.conditionalTypeProperty.validationCandidates.0.condition: \"condition\" must have an arity lesser or equal to 4',
         'myDoc1.propertyValidators.conditionalTypeProperty.validationCandidates.0.foobar: \"foobar\" is not allowed',
@@ -335,8 +337,7 @@ describe('Document definitions validator:', () => {
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.mustBeTrimmed: \"mustBeTrimmed\" must be a boolean',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.stringProperty.maximumLength: \"maximumLength\" must be larger than or equal to 0',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.booleanProperty.mustEqual: \"mustEqual\" must be a boolean',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.required: \"required\" conflict with forbidden peer \"mustNotBeMissing\"',
-        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.mustNotBeMissing: \"mustNotBeMissing\" conflict with forbidden peer \"required\"',
+        'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.mustNotBeMissing: \"mustNotBeMissing\" is deprecated; use "required" instead',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValue: \"maximumValue\" must be greater than 1',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValue: \"maximumValue\" conflict with forbidden peer \"maximumValueExclusive\"',
         'myDoc1.propertyValidators.nestedObject.propertyValidators.arrayProperty.arrayElementsValidator.propertyValidators.invalidIntegerProperty.maximumValueExclusive: \"maximumValueExclusive\" must be greater than 1',
