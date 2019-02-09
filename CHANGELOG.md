@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/). All notable c
 ### Fixed
 - [#338](https://github.com/Kashoo/synctos/issues/338): The `mustNotBeMissing` and `mustNotBeNull` constraints do not behave as expected
 
+### Security
+- [340](https://github.com/Kashoo/synctos/issues/340): Security vulnerability in lodash dev dependency
+
 ### Deprecated
 - `mustNotBeMissing` constraint
 - `mustNotBeNull` constraint
