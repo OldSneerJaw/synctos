@@ -113,14 +113,14 @@ When it is time to publish a new release, a project maintainer should follow the
 2. Create a release branch (e.g. `v2.2.1-release`)
 3. Create a GitHub release candidate tag (e.g. `v2.2.1-rc.1`) from the HEAD of the release branch; include the version's changelog content in the description and mark it as a "pre-release"
 4. Validate the release candidate with [kashoo-document-definitions](https://github.com/Kashoo/kashoo-document-definitions), for example, by changing the package's "synctos" dependency version to target the release candidate tag (e.g. "git@github.com:Kashoo/synctos.git#v2.2.1-rc.1") and then running `npm install && npm test`. Confirm that a generated sync function also works with live instances of both Sync Gateway 1.x and 2.x.
-5. Create a new branch (e.g. `issue-272-release-2.2.1`) based off of the _release_ branch, rather than the master branch:
+5. Create a new branch (e.g. `272-prep-release-2.2.1`) based off of the _release_ branch, rather than the master branch:
     1. Modify the "Unreleased" section of `CHANGELOG.md` to display the new version number and date stamp. Be sure to also create a new range comparison link for the new version (e.g. `[2.2.1]: https://github.com/Kashoo/synctos/compare/v2.2.0...v2.2.1`) and update the range comparison link for the "Unreleased" section (e.g. `[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.1...HEAD`) at the bottom of the file.
     2. Update the "version" property in `package.json` and then regenerate the package lock file using `npm install`
     3. Upgrade the project's npm development dependencies (i.e. the "devDependencies" property in `package.json`) as necessary
     4. Create a pull request that targets the _release_ branch, rather than the master branch (e.g. https://github.com/Kashoo/synctos/pull/273)
 6. After the pull request is reviewed and merged, create a GitHub release tag (e.g. `v2.2.1`) from the HEAD of the release branch; include the version's changelog content in the description
 7. Publish the new version to npm: `git checkout <release_branch_name> && git reset --hard && git pull && npm publish`
-8. Create a new branch (e.g. `issue-272-post-2.2.1-release`) based off of the release branch, rather than the master branch
+8. Create a new branch (e.g. `272-post-release-2.2.1`) based off of the release branch, rather than the master branch
     1. Restore the "Unreleased" section to `CHANGELOG.md` in the master branch. Ensure that the range comparison link at the bottom of the file for the "Unreleased" section is accurate (e.g. `[Unreleased]: https://github.com/Kashoo/synctos/compare/v2.2.1...HEAD`).
     2. Upgrade the project's runtime dependencies (i.e. the contents of the `lib` directory) as necessary
     3. Create a pull request that targets the _release_ branch, rather than the master branch (e.g. https://github.com/Kashoo/synctos/pull/309)
