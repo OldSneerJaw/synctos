@@ -1,6 +1,9 @@
 # Change Log
 This project adheres to [Semantic Versioning](http://semver.org/). All notable changes will be documented in this file.
 
+## [Unreleased]
+Nothing yet.
+
 ## [2.7.1] - 2019-02-11
 ### Fixed
 - [#338](https://github.com/Kashoo/synctos/issues/338): The `mustNotBeMissing` and `mustNotBeNull` constraints do not behave as expected
