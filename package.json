@@ -16,7 +16,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "jshint": "^2.10.2",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "mocha": "^6.0.0",
     "mock-require": "^3.0.3",
     "nyc": "^14.0.0"
