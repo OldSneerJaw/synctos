@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Kashoo/synctos.svg?branch=master)](https://travis-ci.org/Kashoo/synctos)
 [![npm version](https://badge.fury.io/js/synctos.svg)](https://www.npmjs.com/package/synctos)
 [![dependencies Status](https://david-dm.org/Kashoo/synctos/master/status.svg)](https://david-dm.org/Kashoo/synctos/master)
-[![devDependencies Status](https://david-dm.org/Kashoo/synctos/master/dev-status.svg)](https://david-dm.org/Kashoo/synctos/master?type=dev)
+[![devDependencies Status](https://david-dm.org/Kashoo/synctos/master/dev-status.svg)](https://david-dm.org/Kashoo/synctos/master?type=dev) [![Greenkeeper badge](https://badges.greenkeeper.io/OldSneerJaw/synctos.svg)](https://greenkeeper.io/)
 
 Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
 
