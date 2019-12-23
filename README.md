@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/Kashoo/synctos.svg?branch=master)](https://travis-ci.org/Kashoo/synctos)
 [![npm version](https://badge.fury.io/js/synctos.svg)](https://www.npmjs.com/package/synctos)
 [![dependencies Status](https://david-dm.org/Kashoo/synctos/master/status.svg)](https://david-dm.org/Kashoo/synctos/master)
-[![devDependencies Status](https://david-dm.org/Kashoo/synctos/master/dev-status.svg)](https://david-dm.org/Kashoo/synctos/master?type=dev) [![Greenkeeper badge](https://badges.greenkeeper.io/OldSneerJaw/synctos.svg)](https://greenkeeper.io/)
+[![devDependencies Status](https://david-dm.org/Kashoo/synctos/master/dev-status.svg)](https://david-dm.org/Kashoo/synctos/master?type=dev)
 
 Synctos: The Syncmaker. A utility to aid with the process of designing well-structured sync functions for Couchbase Sync Gateway.
 
@@ -385,9 +385,9 @@ accessAssignments: function(doc, oldDoc) {
         * `type`: Value of "role".
         * `roles`: A list of roles that were assigned to the users.
         * `users`: A list of users to which the roles were assigned. Note that, as per the sync function API, each role element's value is prefixed with "role:".
-  6. `onExpiryAssignmentSucceeded`: Executed immediately after document [expiry](https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#expiry-value) is set and before channels are assigned to the document. Not executed if the document definition does not include an `expiry` constraint. NOTE: Only supported by Sync Gateway 2.0 and later. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+  5. `onExpiryAssignmentSucceeded`: Executed immediately after document [expiry](https://developer.couchbase.com/documentation/mobile/current/guides/sync-gateway/sync-function-api-guide/index.html#expiry-value) is set and before channels are assigned to the document. Not executed if the document definition does not include an `expiry` constraint. NOTE: Only supported by Sync Gateway 2.0 and later. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
     * `expiryDate`: A JavaScript `Date` object that specifies the absolute point in time at which the document will expire and be purged from the database.
-  7. `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document revision is written. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
+  6. `onDocumentChannelAssignmentSucceeded`: Executed immediately after channels are assigned to the document. The last step before the sync function is finished executing and the document revision is written. The custom action metadata object parameter includes properties from all previous events in addition to the following properties:
     * `documentChannels`: A list of channels that were assigned to the document.
 
 An example of an `onAuthorizationSucceeded` custom action that stores a property in the metadata object parameter for later use by the `onDocumentChannelAssignmentSucceeded` custom action:
