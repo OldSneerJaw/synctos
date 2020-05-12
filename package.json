@@ -15,11 +15,11 @@
   "dependencies": {},
   "devDependencies": {
     "chai": "^4.2.0",
-    "jshint": "^2.10.2",
+    "jshint": "^2.11.0",
     "lodash": "^4.17.15",
-    "mocha": "^7.0.1",
+    "mocha": "^7.1.2",
     "mock-require": "^3.0.3",
-    "nyc": "^15.0.0"
+    "nyc": "^15.0.1"
   },
   "scripts": {
     "clean": "rm -rf build .nyc_output",
