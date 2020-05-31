@@ -1,4 +1,4 @@
-Select from either the Feature Request or Bug Report templates below to file an issue. Review the project's [contribution guidelines](https://github.com/Kashoo/synctos/blob/master/CONTRIBUTING.md) before proceeding.
+Select from either the Feature Request or Bug Report templates below to file an issue. Review the project's [contribution guidelines](https://github.com/OldSneerJaw/synctos/blob/master/CONTRIBUTING.md) before proceeding.
 
 # Feature Request
 

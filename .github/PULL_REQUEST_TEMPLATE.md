@@ -1,6 +1,6 @@
 # Description
 
-Enter a few sentences to describe the issue that is being addressed by this change. Review the project's [contribution guidelines](https://github.com/Kashoo/synctos/blob/master/CONTRIBUTING.md) before proceeding.
+Enter a few sentences to describe the issue that is being addressed by this change. Review the project's [contribution guidelines](https://github.com/OldSneerJaw/synctos/blob/master/CONTRIBUTING.md) before proceeding.
 
 # Testing
 
