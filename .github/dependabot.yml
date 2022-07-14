@@ -1,0 +1,14 @@
+version: 2
+updates:
+
+  # Synctos project dependencies
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+
+  # Actions used in GitHub Workflows
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
