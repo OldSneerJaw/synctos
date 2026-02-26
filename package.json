@@ -19,7 +19,7 @@
     "lodash": "^4.17.23",
     "mocha": "^11.7.5",
     "mock-require": "^3.0.3",
-    "nyc": "^17.1.0"
+    "nyc": "^18.0.0"
   },
   "scripts": {
     "clean": "rm -rf build .nyc_output",
@@ -36,6 +36,6 @@
     "synctos-validate": "./validate-document-definitions"
   },
   "engines": {
-    "node": ">=8.9.0"
+    "node": ">=20.0.0"
   }
 }

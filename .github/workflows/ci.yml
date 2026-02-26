@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['14', 'lts/*', 'latest'] # 14 is the oldest supported Node.js version
+        node-version: ['20', 'lts/*', 'latest']
 
     steps:
       - uses: actions/checkout@v6
