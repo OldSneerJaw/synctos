@@ -6,6 +6,8 @@ updates:
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 10
     versioning-strategy: increase
 
   # Actions used in GitHub Workflows
@@ -13,3 +15,5 @@ updates:
     directory: /
     schedule:
       interval: daily
+    cooldown:
+      default-days: 10
